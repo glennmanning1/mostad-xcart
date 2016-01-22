@@ -11,7 +11,27 @@
  * If using Windows and would like to try SMB Sharing, uncomment 24,25 and commen tout 26,27 and change instances of nfs to smb.  Note there are mixed reviews on performance of smb sharing
 1. Start the virtual box
  * `vagrant up`
+ * If the prompt asks for a username or password, it is your system username or password.
 1. Verify site is working by visiting <http://mostad-xcart.dev/>
+
+## Usernames and logins
+
+* Mysql
+ * username: root
+ * password: 123
+* Vagrant
+ * username: vagrant
+ * password: vagrant
+* X-Cart
+ * username: xcart@novahorizons.io
+ * password: P4ssw0rd
+
+## Helpful Vagrant information
+
+* Start the Box: `vagrant up`
+* Stop the box: `vagrant stop`
+* Pause the box: `vagrant suspend`
+* Call provisioning script: `vagrant provision`
 
 ## Questions?
 Please contact Drew <drew.brown@novahorizons.io>
