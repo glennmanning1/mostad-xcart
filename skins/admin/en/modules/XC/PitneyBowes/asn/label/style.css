@@ -1,0 +1,43 @@
+/* vim: set ts=2 sw=2 sts=2 et: */
+
+/**
+ * Shipping label style
+ *
+ * @author    Qualiteam software Ltd <info@x-cart.com>
+ * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+ * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+ * @link      http://www.x-cart.com/
+ */
+
+.shipping-label {
+	padding: 5px 15px 10px 15px;
+	background-color: #fff;
+	width: 320px;
+	height: 300px;
+	border: 1px solid #000;
+	position: relative;
+  	box-sizing: border-box;
+}
+
+.shipping-label p, .shipping-label span {
+	font-family: 'Arial';
+	font-size: 14px;
+  	box-sizing: border-box;
+  	line-height: 1.4;
+}
+
+.shipping-label .address {
+	margin: 30px 0px 20px 0px;
+}
+
+.shipping-label .barcode {
+	position: absolute;
+	bottom: 10px;
+  	box-sizing: border-box;
+}
+
+.shipping-label .barcode p.text {
+	font-size: 11px;
+	margin-left: 5px;
+    text-transform: uppercase;
+}

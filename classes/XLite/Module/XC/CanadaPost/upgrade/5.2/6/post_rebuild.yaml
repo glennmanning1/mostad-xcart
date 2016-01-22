@@ -1,0 +1,287 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Data
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Config:
+  - name: wizard_enabled
+    category: XC\CanadaPost
+    value: true
+  - name: wizard_hash
+    category: XC\CanadaPost
+
+  - name: user
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text
+    orderby: 10
+    translations:
+      - code: en
+        option_name: User
+  - name: password
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\PasswordWithValue
+    orderby: 20
+    translations:
+      - code: en
+        option_name: Password
+  - name: developer_mode
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    orderby: 30
+    translations:
+      - code: en
+        option_name: Developer mode
+  - name: debug_enabled
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    orderby: 40
+    translations:
+      - code: en
+        option_name: Log all comunications between shopping cart and UPS server
+
+  - name: additionalSettingsSeparator
+    category: XC\CanadaPost
+    type: separator
+    orderby: 100
+    translations:
+      - code: en
+        option_name: Additional settings
+
+  - name: quote_type
+    category: XC\CanadaPost
+    type: XLite\Module\XC\CanadaPost\View\FormField\Select\QuoteType
+    value: C
+    orderby: 110
+    translations:
+      - code: en
+        option_name: Quote type
+  - name: customer_number
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text
+    orderby: 120
+    translations:
+      - code: en
+        option_name: Customer number
+  - name: currency_rate
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text\Float
+    value: 1
+    orderby: 130
+    translations:
+      - code: en
+        option_name: Currency rate
+        option_comment: (specify rate X, where 1 CAD = X in shop currency)
+
+  - name: contractShippingSeparator
+    category: XC\CanadaPost
+    type: separator
+    orderby: 200
+    translations:
+      - code: en
+        option_name: Contract shipping options
+
+  - name: contract_id
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text
+    orderby: 210
+    translations:
+      - code: en
+        option_name: Contract ID
+  - name: pick_up_type
+    category: XC\CanadaPost
+    type: XLite\Module\XC\CanadaPost\View\FormField\Select\PickUpType
+    orderby: 220
+    translations:
+      - code: en
+        option_name: Shipments pick up type
+  - name: deposit_site_num
+    category: XC\CanadaPost
+    type: XLite\Module\XC\CanadaPost\View\FormField\Input\Text\DepositSiteNum
+    orderby: 230
+    translations:
+      - code: en
+        option_name: Site number of the deposit location
+        option_comment: Look up the site number using <a href="https://www.canadapost.ca/cpotools/apps/fdl/business/findDepositLocation?execution=e1s1">Find a Deposit Location</a>
+  - name: detailed_manifests
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    value: true
+    orderby: 240
+    translations:
+      - code: en
+        option_name: Render detailed manifest
+  - name: manifest_name
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text
+    orderby: 250
+    translations:
+      - code: en
+        option_name: Contact name for the manifest address
+
+  - name: deliverToPostOfficeSeparator
+    category: XC\CanadaPost
+    type: separator
+    orderby: 300
+    translations:
+      - code: en
+        option_name: Deliver to Post Office options
+
+  - name: deliver_to_po_enabled
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    value: false
+    orderby: 310
+    translations:
+      - code: en
+        option_name: Enable "Deliver to Post Office" feature
+  - name: max_post_offices
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text\Integer
+    value: 5
+    orderby: 320
+    translations:
+      - code: en
+        option_name: Maximum Post Offices that will be displayed
+
+  - name: parcelCharacteristicsSeparator
+    category: XC\CanadaPost
+    type: separator
+    orderby: 400
+    translations:
+      - code: en
+        option_name: Parcel characteristics
+
+  - name: length
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text\Float
+    value: 10
+    orderby: 410
+    translations:
+      - code: en
+        option_name: Package length (cm)
+        option_comment: Longest dimension. (3.1 digits e.g. 999.9 pattern)
+  - name: width
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text\Float
+    value: 9
+    orderby: 420
+    translations:
+      - code: en
+        option_name: Package width (cm)
+        option_comment: Second longest dimension. (3.1 digits e.g. 999.9 pattern)
+  - name: height
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text\Float
+    value: 7
+    orderby: 430
+    translations:
+      - code: en
+        option_name: Package height (cm)
+        option_comment: Shortest dimension. (3.1 digits e.g. 999.9 pattern)
+  - name: max_weight
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text\Float
+    value: 30
+    orderby: 440
+    translations:
+      - code: en
+        option_name: Package maximum weight (kg)
+        option_comment: This value will be used to separate ordered products into several packages by weight
+  - name: document
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    value: false
+    orderby: 450
+    translations:
+      - code: en
+        option_name: Document
+        option_comment: Indicates whether the shipment is a document or not.
+  - name: unpackaged
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    value: false
+    orderby: 460
+    translations:
+      - code: en
+        option_name: Unpackaged
+        option_comment: Indicates whether a shipment is unpackaged or not. For example, auto tires may be an example of an unpackaged shipment.
+  - name: mailing_tube
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    value: false
+    orderby: 470
+    translations:
+      - code: en
+        option_name: Mailing tube
+        option_comment: Indicates whether a shipment is contained in a mailing tube. (e.g. a poster tube)
+  - name: oversized
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    value: false
+    orderby: 480
+    translations:
+      - code: en
+        option_name: Oversized
+        option_comment: Indicates whether the parcel is oversized or not.
+
+  - name: parcelSeparator
+    category: XC\CanadaPost
+    type: separator
+    orderby: 500
+    translations:
+      - code: en
+        option_name: Parcel options
+
+  - name: way_to_deliver
+    category: XC\CanadaPost
+    type: XLite\Module\XC\CanadaPost\View\FormField\Select\DeliveryWayType
+    orderby: 510
+    translations:
+      - code: en
+        option_name: Way to deliver
+  - name: signature
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Checkbox\OnOffWithoutOffLabel
+    value: false
+    orderby: 520
+    translations:
+      - code: en
+        option_name: Signature
+  - name: age_proof
+    category: XC\CanadaPost
+    type: XLite\Module\XC\CanadaPost\View\FormField\Select\AgeProofType
+    orderby: 530
+    translations:
+      - code: en
+        option_name: Proof of age
+  - name: coverage
+    category: XC\CanadaPost
+    type: XLite\View\FormField\Input\Text\Float
+    value: 0.00
+    orderby: 540
+    translations:
+      - code: en
+        option_name: Coverage
+        option_comment: In percent of the order subtotal (0 - do not use coverage)
+  - name: non_delivery
+    category: XC\CanadaPost
+    type: XLite\Module\XC\CanadaPost\View\FormField\Select\NonDeliveryType
+    orderby: 550
+    translations:
+      - code: en
+        option_name: "Non-delivery instructions"
+
+XLite\Model\Shipping\Method:
+  - processor: capost
+    carrier: ''
+    enabled: false
+    added: false
+    position: 0
+    moduleName: XC_CanadaPost
+    translations:
+      - code: en
+        name: CanadaPost

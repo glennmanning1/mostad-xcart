@@ -1,0 +1,21 @@
+/* vim: set ts=2 sw=2 sts=2 et: */
+
+/**
+ * Settings common styles
+ *
+ * @author    Qualiteam software Ltd <info@x-cart.com>
+ * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+ * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+ * @link      http://www.x-cart.com/
+ */
+
+.pb-parcel .list .line .orderItem{
+    min-width: 250px;
+    width: auto;
+}
+
+.pb-parcel .list .line .parcelitem-amount,
+.pb-parcel .list .line .amount input,
+.pb-parcel .list .line .amount .view {
+    width: 50px;
+}

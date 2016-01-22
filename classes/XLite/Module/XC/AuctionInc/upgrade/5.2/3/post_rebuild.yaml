@@ -1,0 +1,164 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Data
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Config:
+  - name: additionalSettingsSeparator
+    category: XC\AuctionInc
+    type: separator
+    orderby: 100
+    translations:
+      - code: en
+        option_name: Additional settigns
+
+  - name: defaultValuesSeparator
+    category: XC\AuctionInc
+    type: separator
+    orderby: 200
+    translations:
+      - code: en
+        option_name: Default values
+        option_comment: These values will be used for any products for which you have not saved ShippingCalc settings
+  - name: calculationMethod
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\CalculationMethodSettings
+    value: C
+    orderby: 210
+    translations:
+      - code: en
+        option_name: Calculation method
+        option_comment: For carrier rates, your configured product weights (& dimensions) will be used
+  - name: package
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\Package
+    value: T
+    orderby: 220
+    translations:
+      - code: en
+        option_name: Package
+        option_comment: Pack items from the same origin together, or each in its own box.
+  - name: insurable
+    category: XC\AuctionInc
+    type: XLite\View\FormField\Select\RadioButtonsList\YesNo
+    value: N
+    orderby: 230
+    translations:
+      - code: en
+        option_name: Insurable
+        option_comment: Include product value for insurance calculation based on AuctionInc settings
+  - name: fixedFeeMode
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\FixedFeeMode
+    value: F
+    orderby: 240
+    translations:
+      - code: en
+        option_name: Mode
+  - name: fixedFeeCode
+    category: XC\AuctionInc
+    type: XLite\View\FormField\Input\Text
+    orderby: 250
+    translations:
+      - code: en
+        option_name: Code
+        option_comment: Enter your AuctionInc-configured fixed fee code
+  - name: fixedFee1
+    category: XC\AuctionInc
+    type: XLite\View\FormField\Input\Text\Price
+    orderby: 260
+    translations:
+      - code: en
+        option_name: Fee 1
+        option_comment: Enter fee for first item
+  - name: fixedFee2
+    category: XC\AuctionInc
+    type: XLite\View\FormField\Input\Text\Price
+    orderby: 270
+    translations:
+      - code: en
+        option_name: Fee 2
+        option_comment: Enter fee for additional items and quantities
+
+  - name: calculationSeparator
+    category: XC\AuctionInc
+    type: separator
+    orderby: 300
+    translations:
+      - code: en
+        option_name: Calculation options
+  - name: fallbackRate
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\FallbackRate
+    value: N
+    orderby: 310
+    translations:
+      - code: en
+        option_name: Fallback rate
+        option_comment: Optionally set default rate if the API cannot be reached or if no rates are found
+  - name: fallbackRateValue
+    category: XC\AuctionInc
+    type: XLite\View\FormField\Input\Text\Price
+    orderby: 320
+    translations:
+      - code: en
+        option_name: Fallback rate value
+
+  - name: entryPointSeparator
+    category: XC\AuctionInc
+    type: separator
+    orderby: 400
+    translations:
+      - code: en
+        option_name: Carrier Entry Point
+  - name: entryPointDHL
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\EntryPointDHL
+    value: D
+    orderby: 410
+    translations:
+      - code: en
+        option_name: DHL
+        option_comment: How you deliver your packages to the carrier
+  - name: entryPointFEDEX
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\EntryPointFedEx
+    value: D
+    orderby: 420
+    translations:
+      - code: en
+        option_name: Federal Express
+        option_comment: How you deliver your packages to the carrier
+  - name: entryPointUPS
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\EntryPointUPS
+    value: D
+    orderby: 430
+    translations:
+      - code: en
+        option_name: United Parcel Service
+        option_comment: How you deliver your packages to the carrier
+  - name: entryPointUSPS
+    category: XC\AuctionInc
+    type: XLite\Module\XC\AuctionInc\View\FormField\Select\EntryPointUSPS
+    value: R
+    orderby: 440
+    translations:
+      - code: en
+        option_name: United States Postal Service
+        option_comment: Select Comm Base if your print your labels online
+
+XLite\Model\Shipping\Method:
+  - processor: auctionInc
+    carrier: ''
+    enabled: true
+    added: true
+    position: 0
+    moduleName: XC_AuctionInc
+    translations:
+      - code: en
+        name: ShippingCalc

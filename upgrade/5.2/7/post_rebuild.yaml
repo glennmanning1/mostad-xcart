@@ -1,0 +1,14 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Data
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Config:
+  - { name: products_per_page_max, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 250, value: 100, widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'Maximum products per category listing page' }] }
+
+XLite\Model\LanguageLabel:
+  - { name: 'Free license key for this email is already registered', translations: [{ code: en, label: 'Free license key for email <em>{{email}}</em> is already registered. Please use a different email or <a href="{{url}}">click here to get key value sent to this email address</a>' }] }

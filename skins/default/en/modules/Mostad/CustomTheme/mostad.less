@@ -1,0 +1,97 @@
+
+// Overrides variables/values from:
+// - skins/default/en/css/less/variables.less
+// - skins/common/bootstrap/css/variables.less
+
+@navbar-inverse-border: transparent;
+@navbar-inverse-bg: transparent;
+@navbar-inverse-link-color: #000;
+@navbar-inverse-link-active-bg: tranparent;
+@navbar-border-radius: 0;
+
+body {
+  background: #fff url(images/page_bkgd.jpg) repeat-x top;
+  color: #363636;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  @media (max-width: @screen-sm-max) {
+    background-position-y: 40px;
+  }
+}
+
+
+
+.navbar-inverse {
+  .navbar-nav {
+    > li.last > a {
+      border-right: none;
+    }
+    > li > a {
+      border-right: 1px #CCC solid;
+      &:hover,
+      &:focus {
+        background: url(images/blue-hover-bg.jpg) repeat-x 0 0;
+      }
+    }
+    > .active > a {
+      &,
+      &:hover,
+      &focus {
+        background: url(images/blue-hover-bg.jpg) repeat-x 0 0;
+      }
+    }
+  }
+}
+
+.navbar-nav {
+    padding-top: 2px;
+}
+
+.navbar-nav > li {
+  &.first > a {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+.navbar-nav > li > a {
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.callout {
+  color: #fff;
+  font-size: 20px;
+  clear: right;
+  @media (max-width: @screen-sm-max) {
+    color: #000;
+    clear: both;
+  }
+}
+
+.callout div#callout-phone {
+  float: right;
+  font-size: 16px;
+  padding: 2px;
+  @media (max-width: @screen-sm-max) {
+    padding: 15px;
+  }
+  @media (max-width: @screen-xs-max) {
+    float: none;
+  }
+}
+
+.callout div#callout-title {
+  float: left;
+  @media (max-width: @screen-sm-max) {
+    padding: 15px;
+  }
+  @media (max-width: @screen-xs-max) {
+    display: none;
+  }
+}

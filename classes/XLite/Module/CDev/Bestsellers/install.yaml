@@ -1,0 +1,37 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Fixtures
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Config:
+  - name: bestsellers_menu
+    category: CDev\Bestsellers
+    type: 'XLite\Module\CDev\Bestsellers\View\FormField\Select\Menu'
+    orderby: 115
+    value: 0
+    translations:
+      - code: en
+        option_name: Display the list of bestsellers in
+  - name: number_of_bestsellers
+    category: CDev\Bestsellers
+    type: XLite\View\FormField\Input\Text\Integer
+    widgetParameters: { min: 1 }
+    orderby: 115
+    value: 6
+    translations:
+      - code: en
+        option_name: Number of products in the bestsellers list
+XLite\Model\LanguageLabel:
+  - { name: 'a side box', translations: [{ code: en, label: 'a side box' }] }
+  - { name: 'the main column', translations: [{ code: en, label: 'the main column' }] }
+  - { name: 'Sales sort', translations: [{ code: en, label: 'Sales' }] }
+  - { name: 'Sales asc', translations: [{ code: en, label: 'By Sales - 0-9' }] }
+  - { name: 'Sales desc', translations: [{ code: en, label: 'By Sales - 9-0' }] }
+  - { name: 'The calculation failed', translations: [{ code: en, label: 'The calculation failed' }, { code: ru, label: 'Расчет завершен с ошибкой' }] }
+  - { name: 'The calculation completed', translations: [{ code: en, label: 'The calculation completed' }, { code: ru, label: 'Расчет успешно завершен' }] }
+  - { name: 'The process of sales calculation may take a while to complete. Please do not close this page until the process is fully completed.', translations: [{ code: en, label: 'The process of sales calculation may take a while to complete. Please do not close this page until the process is fully completed.' }, { code: ru, label: 'Процесс расчета продаж может занять продолжительное время. Пожалуйста, не закрывайте эту страницу до полного завершения процесса.' }] }
+  - { name: 'Sales calculation', translations: [{ code: en, label: 'Sales calculation' }, { code: ru, label: 'Расчет продаж' }] }

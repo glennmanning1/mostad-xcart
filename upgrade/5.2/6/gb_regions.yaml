@@ -1,0 +1,21 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Data
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Region:
+  - { name: 'England', code: 'GB-ENG' }
+  - { name: 'Northern Ireland', code: 'GB-NIR' }
+  - { name: 'Scotland', code: 'GB-SCT' }
+  - { name: 'Wales', code: 'GB-WLS' }
+XLite\Model\Country:
+  - code: 'GB'
+    regions:
+      - { code: 'GB-ENG', weight: 100 }
+      - { code: 'GB-SCT', weight: 200 }
+      - { code: 'GB-WLS', weight: 300 }
+      - { code: 'GB-NIR', weight: 400 }
