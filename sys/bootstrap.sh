@@ -19,9 +19,10 @@ if [ $PROVISIONED -eq 0 ]; then
     sudo mkdir -p /var/www/logs
     sudo yum install -y httpd
     sudo yum install -y gdl
+    sudo yum install -y gd
+    sudo yum install -y ImageMagick
+    sudo yum install -y php php-pear php-gd
 
-    #isntall php
-    sudo yum install -y php php-pear
 
     # install mysql and give password to installer
     sudo yum install -y mariadb-server mariadb
