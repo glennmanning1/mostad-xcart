@@ -68,6 +68,16 @@ class Begin extends \XLite\View\AView
     }
 
     /**
+     * Return samples URL text
+     *
+     * @return string
+     */
+    protected function getSamplesURLText()
+    {
+        return static::t('Import/Export guide');
+    }
+
+    /**
      * Check - charset enabledor not
      *
      * @return boolean
@@ -77,4 +87,44 @@ class Begin extends \XLite\View\AView
         return \XLite\Core\Iconv::getInstance()->isValid();
     }
 
+    /**
+     * Return comment text for 'updateOnly' checkbox tooltip
+     *
+     * @return string
+     */
+    protected function getImportModeComment()
+    {
+        $result = '';
+
+        $importer = $this->getImporter() ?: null;
+
+        if (!$importer) {
+            $importer = new \XLite\Logic\Import\Importer(array());
+        }
+
+        $keys = $importer->getAvailableEntityKeys();
+
+        if ($keys) {
+            $rows = array();
+            foreach ($keys as $key => $list) {
+                $rows[] = '<li>' . $key . ': <em>' . implode(', ', $list) . '</em></li>';
+            }
+            $result = static::t('Import mode comment', array('keys' => implode('', $rows)));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get options for selector 'Import mode'
+     *
+     * @return array
+     */
+    protected function getImportModeOptions()
+    {
+        return array(
+            0 => static::t('Create new items and update existing items'),
+            1 => static::t('Update existing items, but skip new items'),
+        );
+    }
 }

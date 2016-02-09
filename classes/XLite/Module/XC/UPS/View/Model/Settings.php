@@ -154,7 +154,7 @@ class Settings extends \XLite\View\Model\AShippingSettings
         $currencyCode = null;
 
         $country = \XLite\Core\Database::getRepo('XLite\Model\Country')
-            ->findOneByCode(\XLite\Core\Config::getInstance()->Company->location_country);
+            ->findOneByCode(\XLite\Core\Config::getInstance()->Company->origin_country);
         if ($country && $country->getCurrency()) {
             $currencyCode = $country->getCurrency()->getCode();
         }

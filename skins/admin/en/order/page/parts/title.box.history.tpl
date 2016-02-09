@@ -12,5 +12,5 @@
  *}
 
 <div IF="isHistoryVisible()" class="history">
-  <a href="#history" title="{t(#View order history#)}" class="glyphicon glyphicon-tasks"></a>
+  <a href="#history" title="{t(#View order history#)}">{t(#View order history#)}</a>
 </div>

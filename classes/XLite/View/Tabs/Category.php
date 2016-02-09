@@ -42,13 +42,13 @@ class Category extends \XLite\View\Tabs\ATabs
      * @var array
      */
     protected $tabs = array(
-        'categories' => array(
-            'title'    => 'Subcategories for',
-            'template' => 'categories/body.tpl',
-        ),
         'category' => array(
             'title'    => 'Category info',
             'template' => 'category/body.tpl',
+        ),
+        'categories' => array(
+            'title'    => 'Subcategories',
+            'template' => 'categories/body.tpl',
         ),
         'category_products' => array(
             'title' => 'Products',
@@ -87,8 +87,7 @@ class Category extends \XLite\View\Tabs\ATabs
             in_array(\XLite\Core\Request::getInstance()->target, static::getAllowedTargets())
             && \XLite\Core\Request::getInstance()->id
         ) {
-            $this->tabs['categories']['title'] = static::t($this->tabs['categories']['title'])
-                . ' "' . $this->getCategoryName() . '"';
+            $this->tabs['categories']['title'] = static::t($this->tabs['categories']['title']);
         }
 
         if (

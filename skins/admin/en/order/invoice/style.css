@@ -343,6 +343,15 @@
   margin-top: 10px;
 }
 
+.invoice-box .addresses .wrapper .method-box .sub-data {
+  margin-top: 10px;
+}
+
+.invoice-box .addresses .wrapper .method-box .sub-data * {
+  display: block;
+  word-wrap: break-word;
+}
+
 .invoice-box .addresses .tracking-number-box {
   margin-top: 10px;
 }

@@ -42,6 +42,7 @@ abstract class AInline extends \XLite\View\AView
     const PARAM_VIEW_ONLY       = 'viewOnly';
     const PARAM_FIELD_NAMESPACE = 'fieldNamespace';
     const PARAM_VIEW_TIP        = 'viewTip';
+    const PARAM_VIEW_FULL_WIDTH = 'fullWidth';
 
     const FIELD_NAME   = 'name';
     const FIELD_PARAMS = 'parameters';
@@ -101,6 +102,7 @@ abstract class AInline extends \XLite\View\AView
             static::PARAM_VIEW_ONLY       => new \XLite\Model\WidgetParam\Bool('View only flag', false),
             static::PARAM_FIELD_NAMESPACE => new \XLite\Model\WidgetParam\String('Field namespace', ''),
             static::PARAM_VIEW_TIP        => new \XLite\Model\WidgetParam\String('View tip', $this->getDefaultViewTip()),
+            static::PARAM_VIEW_FULL_WIDTH => new \XLite\Model\WidgetParam\Bool('Is full width flag', false),
         );
     }
 
@@ -342,7 +344,9 @@ abstract class AInline extends \XLite\View\AView
      */
     protected function getFieldClassName(array $field)
     {
-        return 'subfield subfield-' . $field['field'][static::FIELD_NAME];
+        $param = isset($field['field'][static::FIELD_PARAMS][static::PARAM_VIEW_FULL_WIDTH]) ? $field['field'][static::FIELD_PARAMS][static::PARAM_VIEW_FULL_WIDTH] : false;
+        $fullWidth = $param ? 'full-width' : '';
+        return 'subfield subfield-' . $field['field'][static::FIELD_NAME] . ' ' . $fullWidth;
     }
 
     /**
@@ -504,7 +508,47 @@ abstract class AInline extends \XLite\View\AView
             $list = array_merge($list, $field[static::FIELD_PARAMS]);
         }
 
-        return array_merge($list, $this->getParam(static::PARAM_FIELD_PARAMS));
+        return array_merge($list, $this->prepareAdditionalFieldParams($field));
+    }
+
+    /**
+     * Prepare additional field parameters
+     *
+     * @param array $field Field data
+     *
+     * @return array
+     */
+    protected function prepareAdditionalFieldParams(array $field)
+    {
+        $params = $this->getParam(static::PARAM_FIELD_PARAMS);
+
+        $style = $this->getAdditionalFieldStyle($field);
+
+        if ($style) {
+
+            // Add style to the field attributes list
+
+            $attrs = \XLite\View\FormField\AFormField::PARAM_ATTRIBUTES;
+
+            if (empty($params[$attrs])) {
+                $params[$attrs] = array();
+            }
+
+            $params[$attrs]['class'] = (!empty($params[$attrs]['class']) ? $params[$attrs]['class'] . ' ' : '')
+                . $style;
+        }
+
+        return $params;
+    }
+
+    /**
+     * Get additional CSS classes for the field widget
+     *
+     * @return string
+     */
+    protected function getAdditionalFieldStyle($field)
+    {
+        return null;
     }
 
     /**

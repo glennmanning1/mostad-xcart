@@ -50,6 +50,19 @@ class MethodStatus extends \XLite\View\AView
     }
 
     /**
+     * Get js files
+     *
+     * @return array
+     */
+    public function getJSFiles()
+    {
+        $list = parent::getJSFiles();
+        $list[] = 'payment/method_status/controller.js';
+
+        return $list;
+    }
+
+    /**
      * Return widget default template
      *
      * @return string
@@ -100,6 +113,16 @@ class MethodStatus extends \XLite\View\AView
     }
 
     /**
+     * Return current payment method id
+     *
+     * @return int
+     */
+    protected function getMethodId()
+    {
+        return $this->getPaymentMethod() ? $this->getPaymentMethod()->getMethodId() : null;
+    }
+
+    /**
      * Check visibility
      *
      * @return boolean
@@ -142,6 +165,32 @@ class MethodStatus extends \XLite\View\AView
     protected function isDisabled()
     {
         return !$this->isEnabled();
+    }
+
+    /**
+     * Check if method status is switchable
+     *
+     * @return boolean
+     */
+    protected function isSwitchable()
+    {
+        $method = $this->getPaymentMethod();
+
+        return $method && $method->isEnabled() ? !$method->isForcedEnabled() : $method->canEnable();
+    }
+
+    /**
+     * Returns processor code
+     *
+     * @return string
+     */
+    protected function getProcessor()
+    {
+        $method = $this->getPaymentMethod();
+
+        return $method
+            ? $method->getProcessor()
+            : '';
     }
 
     /**

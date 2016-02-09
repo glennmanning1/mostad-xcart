@@ -14,6 +14,7 @@
 <ul class="module-info">
   <list name="sections.form.info" type="inherited" entry="{entry}" />
 </ul>
+<div class="clearfix"></div>
 {if:isAdvancedMode()}
 <div IF="isEntrySelectable(entry)" class="advanced-checkbox{if:!isModule(entry)} core{end:}">
   <label IF="{isModule(entry)}" for="entry-{getModuleID(entry)}">

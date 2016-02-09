@@ -38,8 +38,6 @@ abstract class ACustomer extends \XLite\View\ItemsList\Product\Customer\ACustome
      * Define and set widget attributes; initialize widget
      *
      * @param array $params Widget params OPTIONAL
-     *
-     * @return void
      */
     public function __construct(array $params = array())
     {

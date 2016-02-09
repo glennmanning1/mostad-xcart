@@ -37,7 +37,7 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
     /**
      * Widget param names
      */
-    const PARAM_SEARCH_ORDER     = 'order';
+    const PARAM_SEARCH_SUBSTRING = 'substring';
     const PARAM_SEARCH_PUBLIC_ID = 'public_id';
     const PARAM_SEARCH_DATE      = 'date';
     const PARAM_SEARCH_STATUS    = 'status';
@@ -73,6 +73,19 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
         return $list;
     }
 
+    /**
+     * Get a list of CSS files required to display the widget properly
+     *
+     * @return array
+     */
+    public function getJSFiles()
+    {
+        $list = parent::getJSFiles();
+
+        $list[] = 'payment_transactions/popover.js';
+
+        return $list;
+    }
 
     /**
      * Define widget parameters
@@ -84,7 +97,7 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
         parent::defineWidgetParams();
 
         $this->widgetParams += array(
-            static::PARAM_SEARCH_ORDER     => new \XLite\Model\WidgetParam\String('Order', ''),
+            static::PARAM_SEARCH_SUBSTRING => new \XLite\Model\WidgetParam\String('Substring', ''),
             static::PARAM_SEARCH_PUBLIC_ID => new \XLite\Model\WidgetParam\String('Public id', ''),
             static::PARAM_SEARCH_DATE      => new \XLite\Model\WidgetParam\String('Date', ''),
             static::PARAM_SEARCH_STATUS    => new \XLite\Model\WidgetParam\String('Status', ''),
@@ -130,12 +143,46 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
             'status' => array(
                 static::COLUMN_NAME => static::t('Status'),
                 static::COLUMN_SORT => 't.status',
+                static::COLUMN_TEMPLATE => 'payment_transactions/parts/cell.transaction_status.tpl',
             ),
             'value' => array(
                 static::COLUMN_NAME => static::t('Value'),
                 static::COLUMN_SORT => 't.value',
             ),
         );
+    }
+
+    /**
+     * Define line class as list of names
+     *
+     * @param integer              $index  Line index
+     * @param \XLite\Model\AEntity $entity Line model OPTIONAL
+     *
+     * @return array
+     */
+    protected function defineLineClass($index, \XLite\Model\AEntity $entity = null)
+    {
+        $result = parent::defineLineClass($index, $entity);
+
+        if ($entity->getStatus() === \XLite\Model\Payment\Transaction::STATUS_FAILED) {
+            $result[] = 'failed-transaction';
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get top actions
+     *
+     * @return array
+     */
+    protected function getTopActions()
+    {
+        $actions = parent::getTopActions();
+
+        $actions[] = 'payment_transactions/parts/not_finished_orders.button.tpl';
+
+        return $actions;
     }
 
     /**
@@ -251,7 +298,19 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
     protected function isLink(array $column, \XLite\Model\AEntity $entity)
     {
         return parent::isLink($column, $entity)
-            && ('order' !== $column[static::COLUMN_CODE] || $this->getOrder($entity)->getOrderNumber());
+            && ('order' !== $column[static::COLUMN_CODE] || $this->hasLinkableOrder($entity));
+    }
+
+    /*
+     * Check if transaction has order, which can be viewed by link
+     *
+     * @param \XLite\Model\AEntity $entity
+     *
+     * @return boolean
+     */
+    protected function hasLinkableOrder(\XLite\Model\AEntity $entity)
+    {
+        return $this->getOrder($entity)->getOrderNumber();
     }
 
     /**
@@ -322,17 +381,50 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
      * Preprocess status
      *
      * @param string                           $value  Status code
-     * @param array                            $column Column info
+     *
+     * @return string
+     */
+    protected function getHumanStatus($value)
+    {
+        $list = \XLite\Model\Payment\Transaction::getStatuses();
+
+        return static::t($list[$value].'[S]');
+    }
+
+    /**
+     * Is failed transactions status popover visible
+     *
+     * @param \XLite\Model\Payment\Transaction $entity Payment transaction
+     *
+     * @return boolean
+     */
+    protected function isTransactionStatusPopoverVisible(\XLite\Model\Payment\Transaction $entity)
+    {
+        return !$entity->getTransactionData()->isEmpty();
+    }
+
+    /**
+     * Failed transactions status popover
+     *
      * @param \XLite\Model\Payment\Transaction $entity Payment transaction
      *
      * @return string
      */
-    protected function preprocessStatus($value, array $column, \XLite\Model\Payment\Transaction $entity)
+    protected function getTransactionStatusPopoverContent(\XLite\Model\Payment\Transaction $entity)
     {
-        $list = \XLite\Model\Payment\Transaction::getStatuses();
-
-        return static::t($list[$value]);
+        return $this->getWidget(array('entity' => $entity), '\XLite\View\FailedTransactionTooltip')->getContent();
     }
+
+    /**
+     * Failed transactions status popover
+     *
+     * @return string
+     */
+    protected function getTransactionStatusPopoverTitle()
+    {
+        return static::t('Details');
+    }
+
 
     /**
      * Preprocess type
@@ -347,7 +439,7 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
     {
         $list = \XLite\Model\Payment\BackendTransaction::getTypes();
 
-        return static::t($list[$value]);
+        return static::t($list[$value] . '[TT]');
     }
 
     /**
@@ -394,7 +486,7 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
     public static function getSearchParams()
     {
         return array(
-            \XLite\Model\Repo\Payment\Transaction::SEARCH_ORDER     => static::PARAM_SEARCH_ORDER,
+            \XLite\Model\Repo\Payment\Transaction::SEARCH_SUBSTRING => static::PARAM_SEARCH_SUBSTRING,
             \XLite\Model\Repo\Payment\Transaction::SEARCH_PUBLIC_ID => static::PARAM_SEARCH_PUBLIC_ID,
             \XLite\Model\Repo\Payment\Transaction::SEARCH_DATE      => static::PARAM_SEARCH_DATE,
             \XLite\Model\Repo\Payment\Transaction::SEARCH_STATUS    => static::PARAM_SEARCH_STATUS,
@@ -412,7 +504,7 @@ class Transaction extends \XLite\View\ItemsList\Model\Table
     protected function defineRequestParams()
     {
         parent::defineRequestParams();
-        $this->requestParams[] = static::PARAM_SEARCH_ORDER;
+        $this->requestParams[] = static::PARAM_SEARCH_SUBSTRING;
         $this->requestParams[] = static::PARAM_SEARCH_PUBLIC_ID;
         $this->requestParams[] = static::PARAM_SEARCH_DATE;
         $this->requestParams[] = static::PARAM_SEARCH_STATUS;

@@ -14,7 +14,7 @@
 <div class="top-sellers">
 
   {foreach:getOptions(),period,name}
-  <div id="period-{period:h}" class="block-container" {if:!isDefaultPeriod(period)}style="display: none;"{end:}>
+  <div IF="isSelectedPeriod(period)" id="period-{period:h}" class="block-container">
     <widget class="\XLite\View\ItemsList\Model\Product\Admin\TopSellers" period="{period}" products_limit="5"/>
   </div>
   {end:}
@@ -24,7 +24,7 @@
     <span class="field">
       <select name="period">
         {foreach:getOptions(),period,name}
-        <option value="{period}" {if:isDefaultPeriod(period)}selected="selected"{end:}>{t(name)}</option>
+        <option value="{period}" {if:isSelectedPeriod(period)}selected="selected"{end:}>{t(name)}</option>
         {end:}
       </select>
     </span>

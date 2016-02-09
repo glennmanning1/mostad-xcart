@@ -17,6 +17,8 @@ XLite\Model\Config:
     translations:
       - code: en
         option_name: Number of news messages in the Top news list
+      - code: ru
+        option_name: Количество новостей в списке Последних новостей
   - name: items_per_page
     category: XC\News
     type: XLite\View\FormField\Input\Text\Integer
@@ -26,17 +28,17 @@ XLite\Model\Config:
     translations:
       - code: en
         option_name: News messages per page
+      - code: ru
+        option_name: Количество новостей на странице
 XLite\Model\LanguageLabel:
   - { name: 'News messages', translations: [{ code: en, label: 'News messages' }, { code: ru, label: 'Новости' }] }
   - { name: 'News message', translations: [{ code: en, label: 'News message' }, { code: ru, label: 'Новость' }] }
-  - { name: 'New news message', translations: [{ code: en, label: 'New news message' }, { code: ru, label: 'Новая новость' }] }
+  - { name: 'New news message', translations: [{ code: en, label: 'New news message' }, { code: ru, label: 'Добавить новость' }] }
   - { name: 'News', translations: [{ code: en, label: 'News' }, { code: ru, label: 'Новости' }] }
   - { name: 'Top News', translations: [{ code: en, label: 'Top News' }, { code: ru, label: 'Последние новости' }] }
   - { name: 'All news', translations: [{ code: en, label: 'All news' }, { code: ru, label: 'Все новости' }] }
   - { name: 'Previous news', translations: [{ code: en, label: 'Previous' }, { code: ru, label: 'Предыдущая новость' }] }
   - { name: 'Next news', translations: [{ code: en, label: 'Next' }, { code: ru, label: 'Следующая новость' }] }
-  - { name: 'The news message has been updated', translations: [{ code: en, label: 'The news message has been updated' }] }
-  - { name: 'The news message has been added', translations: [{ code: en, label: 'The news message has been added' }] }
-  - { name: 'Create news message', translations: [{ code: en, label: 'Create news message' }] }
-
-
+  - { name: 'The news message has been updated', translations: [{ code: en, label: 'The news message has been updated' }, {code: ru, label: 'Новость обновлена'}] }
+  - { name: 'The news message has been added', translations: [{ code: en, label: 'The news message has been added' }, {code: ru, label: 'Новость добавлена'}] }
+  - { name: 'Create news message', translations: [{ code: en, label: 'Create news message' }, {code: ru, label: 'Добавление новости'}] }

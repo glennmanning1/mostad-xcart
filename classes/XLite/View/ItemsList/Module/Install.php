@@ -597,6 +597,10 @@ class Install extends \XLite\View\ItemsList\Module\AModule
             if (isset(\XLite\Core\Request::getInstance()->clearCnd)) {
                 $cnd->{\XLite\Model\Repo\Module::P_ORDER_BY} = array(static::SORT_OPT_ALPHA, static::SORT_ORDER_ASC);
             } else {
+                if ($this->getModuleId()) {
+                    $cnd->{\XLite\Model\Repo\Module::P_MODULEIDS}    = array($this->getModuleId());
+                }
+
                 $cnd->{\XLite\Model\Repo\Module::P_PRICE_FILTER} = $this->getParam(static::PARAM_PRICE);
                 $cnd->{\XLite\Model\Repo\Module::P_SUBSTRING}    = $this->getSubstring();
 
@@ -622,7 +626,7 @@ class Install extends \XLite\View\ItemsList\Module\AModule
      */
     protected function isVisibleAddonFilters()
     {
-        return !$this->isLandingPage();
+        return !$this->isLandingPage() && !$this->getModuleId();
     }
 
     /**
@@ -917,8 +921,11 @@ class Install extends \XLite\View\ItemsList\Module\AModule
         $installed = $this->getModuleInstalled($module);
 
         return $installed
-            && version_compare($installed->getMajorVersion(), $module->getMajorVersion(), '=')
-            && version_compare($installed->getMinorVersion(), $module->getMinorVersion(), '<');
+            && (
+                version_compare($installed->getMajorVersion(), $module->getMajorVersion(), '=')
+                && version_compare($installed->getMinorVersion(), $module->getMinorVersion(), '<')
+                || version_compare($installed->getMajorVersion(), $module->getMajorVersion(), '<')
+            );
     }
 
     // }}}
@@ -996,20 +1003,8 @@ class Install extends \XLite\View\ItemsList\Module\AModule
     protected function getBannerURL($banner)
     {
         list($author, $module) = explode('-', $banner);
-        list(, $limit) = $this->getWidget(array(), '\XLite\View\Pager\Admin\Module\Install')
-            ->getLimitCondition()->limit;
 
-        $pageId = \XLite\Core\Database::getRepo('XLite\Model\Module')->getMarketplacePageId($author, $module, $limit);
-
-        return $this->buildURL(
-            'addons_list_marketplace',
-            '',
-            array(
-                'clearCnd'      => 1,
-                'clearSearch'   => 1,
-                'pageId'        => $pageId,
-                \XLite\View\ItemsList\AItemsList::PARAM_SORT_BY => \XLite\View\ItemsList\Module\AModule::SORT_OPT_ALPHA
-            )
-        ) . '#' . $module;
+        return \XLite\Core\Database::getRepo('XLite\Model\Module')
+            ->getMarketplaceUrlByName($author, $module);
     }
 }

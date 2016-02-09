@@ -73,6 +73,9 @@ class Sitemap extends \XLite\Controller\Admin\AAdmin
         $generator = \XLite\Module\CDev\XMLSitemap\Logic\SitemapGenerator::getInstance();
         $generator->generate();
         \XLite\Core\TopMessage::addInfo('XML-Sitemap generated');
+        $this->setReturnURL(
+            \XLite\Core\Converter::buildURL('sitemap')
+        );
     }
 
     /**

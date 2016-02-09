@@ -75,7 +75,7 @@ class Category extends \XLite\View\ItemsList\Model\Table
      *
      * @return string
      */
-    protected function getSessionCell()
+    public function getSessionCell()
     {
         return parent::getSessionCell() . $this->getCategory()->getCategoryId();
     }
@@ -422,6 +422,22 @@ class Category extends \XLite\View\ItemsList\Model\Table
             : \XLite\Core\Database::getRepo('XLite\Model\Category')->getRootCategoryId();
 
         return $result;
+    }
+
+    /**
+     * Return params list to use for export
+     *
+     * @return \XLite\Core\CommonCell
+     */
+    protected function getExportSearchCondition()
+    {
+        $params = parent::getExportSearchCondition();
+        if (isset($params->{\XLite\Model\Repo\Category::SEARCH_PARENT})) {
+            $params->{\XLite\Model\Repo\Category::SEARCH_SUBTREE} = $params->{\XLite\Model\Repo\Category::SEARCH_PARENT};
+            unset($params->{\XLite\Model\Repo\Category::SEARCH_PARENT});
+        }
+
+        return $params;
     }
 
     // }}}

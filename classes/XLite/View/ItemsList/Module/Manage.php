@@ -274,8 +274,7 @@ class Manage extends \XLite\View\ItemsList\Module\AModule
      */
     protected function isModuleUpgradeAvailable(\XLite\Model\Module $module)
     {
-        return !$this->areUpdatesAvailable()
-            && (bool)$this->getModuleForUpgrade($module);
+        return (bool)$this->getModuleForUpgrade($module);
     }
 
     /**
@@ -332,12 +331,7 @@ class Manage extends \XLite\View\ItemsList\Module\AModule
      */
     protected function showXCNModuleNotice(\XLite\Model\Module $module)
     {
-        $marketplaceModule = \XLite\Core\Database::getRepo('XLite\Model\Module')
-            ->findOneBy(array(
-                'name'            => $module->getName(),
-                'author'          => $module->getAuthor(),
-                'fromMarketplace' => true,
-            ));
+        $marketplaceModule = \XLite\Core\Database::getRepo('XLite\Model\Module')->getModuleFromMarketplace($module);
 
         return $marketplaceModule
             && (bool)\XLite::getXCNLicense()

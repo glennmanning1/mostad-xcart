@@ -32,14 +32,6 @@
   padding-top: 13px;
 }
 
-.coupons .uses-limit {
-  display: none;
-}
-
-.coupons .uses-limit.enabled {
-  display: block;
-}
-
 .coupons div.code-value input {
   width: 16em;
 }

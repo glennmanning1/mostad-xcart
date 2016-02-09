@@ -1444,11 +1444,11 @@ function doCreateAdminAccount(&$params, $silentMode = false)
         $profile = new \XLite\Model\Profile();
         $profile->setLogin($login);
 
-        echo xtr('Registering primary administrator profile...');
+        //echo xtr('Registering primary administrator profile...');
 
     } else {
         // Account already exists
-        echo xtr('Updating primary administrator profile...');
+        //echo xtr('Updating primary administrator profile...');
     }
 
     // Add banner for Paypal express checkout on the admin dashboard
@@ -1538,6 +1538,7 @@ function doFinishInstallation(&$params, $silentMode = false)
 
     // Prepare files permissions recommendation text
     $perms = '';
+    $perms_no_tags = '';
 
     if (!LC_OS_IS_WIN) {
 
@@ -1560,13 +1561,29 @@ function doFinishInstallation(&$params, $silentMode = false)
         }
 
         if (!empty($_perms)) {
-            $perms = implode("<br />\n", $_perms);
-            $perms = xtr('correct_permissions_text', array(':perms' => $perms));
+            $perms = '<li>' . implode("</li>\n<li>", $_perms) . '</li>';
+            $permsTitle = xtr('correct_permissions_text');
+            $copyText = xtr('Copy to clipboard');
+            $permsHTML =<<<OUT
+
+<div class="field-label">{$permsTitle}</div>
+
+<ul class="permissions-list">
+$perms
+</ul>
+
+<br />
+<div class="clipbrd">
+  <input type="button" class="btn btn-default copy2clipboard" value="{$copyText}" />
+  <div class="copy2clipboard-alert alert-success" style="display: none;"></div>
+</div>
+OUT;
+
+            $perms_no_tags = $permsTitle . "\n\n" . strip_tags($perms);
         }
     }
 
     // Prepare email notification text
-    $perms_no_tags = strip_tags($perms);
 
     $message = xtr(
         'congratulations_text',
@@ -1600,34 +1617,25 @@ function doFinishInstallation(&$params, $silentMode = false)
 <br />
 <br />
 
-<div class="field-label"><?php echo xtr('X-Cart software has been successfully installed and is now available at the following URLs:'); ?></div>
-<img src="//www.x-cart.com/img/spacer2.gif" width="1" height="1" alt="" />
+<?php echo $permsHTML; ?>
 
-<br />
+<div class="field-label second-title"><?php echo xtr('X-Cart software has been successfully installed and is now available at the following URLs:'); ?></div>
 
-<a href="cart.php" class="final-link" target="_blank"><?php echo xtr('Customer zone (front-end)'); ?>: cart.php</a>
+<p class="customer-link"><a href="cart.php" class="final-link" target="_blank"><?php echo xtr('Customer zone (front-end)'); ?></a></p>
 
-<br />
-<br />
+<p class="admin-link"><a href="admin.php" class="final-link" target="_blank"><?php echo xtr('Administrator zone (backoffice)'); ?></a></p>
 
-<a href="admin.php" class="final-link" target="_blank"><?php echo xtr('Administrator zone (backoffice)'); ?>: admin.php</a>
-
-<br />
-<br />
-<br />
-
-<?php echo $perms; ?>
-
-<br />
-<br />
-
+<p>
 <?php echo $install_rename; ?>
+</p>
 
+<p>
 <?php echo xtr('Your auth code for running install.php in the future is:'); ?> <code><?php echo get_authcode(); ?></code>
-
 <br />
-
 <?php echo xtr('PLEASE WRITE THIS CODE DOWN UNLESS YOU ARE GOING TO REMOVE ":filename"', array(':filename' => $install_name)); ?>
+</p>
+
+<img src="//www.x-cart.com/img/spacer2.gif" width="1" height="1" alt="" />
 
 <?php
 
@@ -2297,20 +2305,49 @@ function make_check_report($requirements)
         $report[] = '';
     }
 
+    $errors = array();
+    $all = array();
+
     foreach ($requirements as $reqName => $reqData) {
 
-        $report[] = '[' . $reqData['title'] . ']';
-        $report[] = 'Check result  - ' . (isset($reqData['skipped']) ? 'SKIPPED' : (($reqData['status']) ? 'OK' : 'FAILED'));
-        $report[] = 'Critical  - ' . (($reqData['critical']) ? 'Yes' : 'No');
+        $rep = array();
+        $rep[] = '[' . $reqData['title'] . ']';
+        $rep[] = 'Check result  - ' . (isset($reqData['skipped']) ? 'SKIPPED' : (($reqData['status']) ? 'OK' : 'FAILED'));
+        $rep[] = 'Critical  - ' . (($reqData['critical']) ? 'Yes' : 'No');
 
         if (!empty($reqData['value'])) {
-            $report[] = $reqData['title'] . ' - ' . $reqData['value'];
+            $rep[] = $reqData['title'] . ' - ' . $reqData['value'];
         }
 
         if (!$reqData['status'] || isset($reqData['skipped'])) {
-            $report[] = $reqData['description'];
+            $rep[] = $reqData['description'];
         }
 
+        $rep[] = '';
+
+        if (isset($reqData['skipped']) || $reqData['status']) {
+            $all = array_merge($all, $rep);
+
+        } else {
+            $errors = array_merge($errors, $rep);
+        }
+    }
+
+    if ($errors) {
+        $report[] = 'ERRORS:';
+        $report[] = '';
+        foreach ($errors as $row) {
+            $report[] = $row;
+        }
+        $report[] = '';
+    }
+
+    if ($all) {
+        $report[] = 'The rest report data:';
+        $report[] = '';
+        foreach ($all as $row) {
+            $report[] = $row;
+        }
         $report[] = '';
     }
 
@@ -2468,6 +2505,7 @@ function fatal_error($txt, $errorCategory, $errorCode) {
 function fatal_error_extended($txt, $errorCategory, $errorCode, $additionalNote = '')
 {
     global $fatalErrorMsg;
+    global $displayHelpButton;
 
     $fatalErrorMsg = $txt;
 
@@ -2476,12 +2514,78 @@ function fatal_error_extended($txt, $errorCategory, $errorCode, $additionalNote 
     ga_event('error', $errorCategory, $errorCode);
 ?>
 
-<div class="fatal-error">
-    <div><?php echo xtr('Fatal error'); ?>: <?php echo $txt ?></div>
-    <?php if($additionalNote): ?><div class="additional-note"><?php echo $additionalNote; ?></div><?php endif; ?>
-    <div class="note"><?php echo xtr('Please correct the error(s) before proceeding to the next step or get help.'); ?></div>
-  <input type="button" class="active-button" value="<?php echo xtr('Send a report'); ?>" onclick="javascript: document.getElementById('report-layer').style.display = 'block'; ga('send', 'event', 'button', 'click', 'send report popup');" />
+<div class="fatal-error extended">
+    <div class="header"><?php echo xtr('Fatal error'); ?></div>
+    <div><?php echo $txt ?></div>
+    <div class="additional-note">
+        <?php echo !empty($additionalNote) ? $additionalNote : ''; ?>
+        <?php echo xtr('Please correct the error(s) before proceeding to the next step or get help.'); ?>
+    </div>
+<?php
+    x_display_help_block(false);
+?>
+
 </div>
+
+<?php
+    $displayHelpButton = true;
+}
+
+/**
+ * Display block 'Consider hosting your X-Cart with us...'
+ *
+ * @param boolean $hidden Flag: is block should be hidden (true) or visible (false)
+ *
+ * @return void
+ */
+function x_display_help_block($hidden = true)
+{
+    global $params;
+
+    $url = 'http://www.x-cart.com/create-online-store.html?'
+        . (!empty($params['login']) ? 'email=' . urlencode($params['login']) . '&amp;' : '')
+        . 'utm_source=XC5Install&amp;utm_medium=reqsFailure&amp;utm_campaign=XC5Install';
+
+?>
+<div id="suppose-cloud" class="cloud-box" <?php echo $hidden ? 'style="display: none;"' : ''; ?>>
+
+    <div class="grey-line">
+        <div class="or-cloud"><span>OR</span></div>
+    </div>
+
+    <?php x_display_hosting_icon(); ?>
+
+    <div class="cloud-header"><?php echo xtr('Consider hosting your X-Cart with us'); ?></div>
+    <div class="cloud-text"><?php echo xtr('VPS hosting for X-Cart. No installation hassle. Fully customizable.'); ?></div>
+
+<?php if ($hidden) { ?>
+
+    <a href="<?php echo $url; ?>" target="_blank"><?php echo xtr('Create an online store for free'); ?></a>
+
+<?php } else { ?>
+
+  <input type="button" id="create-online-store" class="btn btn-default btn-lg" value="<?php echo xtr('Create an online store for free'); ?>" onclick="javascript:window.open('<?php echo $url; ?>');" />
+
+<?php } ?>
+
+</div>
+
+<?php
+}
+
+/**
+ * Display the hosting svg-icon
+ *
+ * @return void
+ */
+function x_display_hosting_icon()
+{
+?>
+
+<div class="svg-icon hosting">
+    <img src="skins/admin/en/images/icon-hosting.svg" />
+</div>
+
 <?php
 }
 
@@ -2711,6 +2815,8 @@ function update_config_settings($params)
 
     $time = \XLite\Core\Converter::time();
 
+    $poweredBy = \XLite\View\PoweredBy::getPoweredByPhraseIndex();
+
     $options = array(
         'Company::orders_department'  => $siteEmail,
         'Company::site_administrator' => $siteEmail,
@@ -2720,6 +2826,7 @@ function update_config_settings($params)
         'Company::start_year'         => date('Y', $time),
         'Version::timestamp'          => $time,
         'CleanURL::clean_url_flag'    => inst_http_request_clean_urls(),
+        'Internal::prnotice_index'    => $poweredBy,
     );
 
     if (!$options['CleanURL::clean_url_flag']) {

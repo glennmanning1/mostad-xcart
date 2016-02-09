@@ -31,3 +31,7 @@
 .settings-table .clean-url-setting-error-msg .url{
   font-size: 13px;
 }
+
+.settings-table.permissions-table td *{
+    float: none;
+}

@@ -171,7 +171,7 @@ input[type=password]:focus,
 input[type=password]:focus + .input-group-addon,
 select:focus,
 select:focus + .input-group-addon,
-textarea:focus
+textarea:focus,
 textarea:focus + .input-group-addon
 {
   border-color: #66afe9;
@@ -1698,7 +1698,7 @@ table.list div.table-value {
 }
 
 div.table-value textarea {
-  white-space: normal;
+  white-space: off;
 }
 
 div.table-value span.input {
@@ -1795,7 +1795,7 @@ ul.summary-table,
   ul.main-table,
   ul.access-table
 {
-  margin: 8px 0px 5px 27px;
+  padding: 8px 0px 5px 27px;
 }
 
 ul.summary-table li,
@@ -2447,9 +2447,9 @@ div.dialog-block div.content {
 div.dialog-block ul.data,
 div.dialog-block .subcontent
 {
-  -moz-box-shadow: 0 0 10px #bbc7d2;
-  -webkit-box-shadow: 0 0 10px #bbc7d2;
-  box-shadow: 0 0 10px #bbc7d2;
+  -webkit-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
+     -moz-box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.25);
 }
 
 div.dialog-block .subcontent {
@@ -2701,5 +2701,46 @@ button i.button-icon.state-on {
   padding: 0;
   background-color: #fff;
   opacity: .5;
-  z-index: 1000;
+  z-index: 2;
+}
+
+.promo-block {
+  padding: 10px 15px;
+  border: 1px solid #b0d4e5;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  display: table;
+}
+
+.promo-block div {
+  display: table-cell;
+  font-size: 13px;
+}
+
+.promo-content {
+  max-width: 270px;
+  padding-right: 20px;
+}
+
+.promo-block .close {
+  position: relative;
+  top: -5px;
+  right: -7px;
+}
+
+.promo-block .close svg {
+  width: 9px;
+  height: 9px;
+  fill: #31a3da;
+}
+
+.promo-block .promo-content a {
+  text-decoration: none;
+  color: #31a3da;
+}
+
+.promo-block.banner-system-promo {
+  position: absolute;
+  right: 10px;
 }

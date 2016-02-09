@@ -577,8 +577,9 @@ class Layout extends \XLite\Base\Singleton
     public function getLayoutColor()
     {
         $layoutColor = \XLite\Core\Config::getInstance()->Layout->color;
+        $availableColors = $this->getAvailableLayoutColors();
 
-        return in_array($layoutColor, array_keys($this->getAvailableLayoutColors()), true)
+        return isset($availableColors[$layoutColor])
             ? $layoutColor
             : '';
     }
@@ -593,7 +594,7 @@ class Layout extends \XLite\Base\Singleton
         $layoutColor = \XLite\Core\Config::getInstance()->Layout->color;
         $availableColors = $this->getAvailableLayoutColors();
 
-        return in_array($layoutColor, $availableColors, true)
+        return isset($availableColors[$layoutColor])
             ? $availableColors[$layoutColor]
             : '';
     }
@@ -796,8 +797,8 @@ class Layout extends \XLite\Base\Singleton
         reset($paths);
 
         while (!$found && list(, $path) = each($paths)) {
-            $found = $path['name'] == $currentSkin
-                && $path['locale'] == $currentLocale
+            $found = $path['name'] === $currentSkin
+                && $path['locale'] === $currentLocale
                 && file_exists($fullPath = $path['fs'] . LC_DS . $shortPath);
         }
 
@@ -829,7 +830,7 @@ class Layout extends \XLite\Base\Singleton
 
         $paths = $this->getSkinPaths($interface ?: $this->currentInterface, $this->getResourceModulePath($shortPath));
         foreach ($paths as $path) {
-            if ($path['name'] == $skin) {
+            if ($path['name'] === $skin) {
                 $fullPath = $path['fs'] . LC_DS . $shortPath;
                 if (file_exists($fullPath)) {
                     $result = $fullPath;
@@ -1021,7 +1022,7 @@ class Layout extends \XLite\Base\Singleton
      */
     protected function getLocalesQuery($interface)
     {
-        if (\XLite::COMMON_INTERFACE == $interface) {
+        if (\XLite::COMMON_INTERFACE === $interface) {
             $result = array(false);
 
         } else {
@@ -1650,10 +1651,10 @@ class Layout extends \XLite\Base\Singleton
      *
      * Then this method actually stores the resource into the static resources storage
      *
-     * @param string|array $resource  Resource file path or array of resources
-     * @param integer      $index
-     * @param string       $interface
-     * @param string       $type
+     * @param string|array|null $resource  Resource file path or array of resources
+     * @param integer           $index
+     * @param string            $interface
+     * @param string            $type
      *
      * @return array
      */

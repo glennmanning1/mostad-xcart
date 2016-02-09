@@ -58,6 +58,24 @@ class Attribute extends \XLite\View\Model\AModel
     );
 
     /**
+     * Return true if param value may contain anything
+     *
+     * @param string $name Param name
+     *
+     * @return boolean
+     */
+    protected function isParamTrusted($name)
+    {
+        $result = parent::isParamTrusted($name);
+
+        if (!$result && $name === 'name') {
+            $result = true;
+        }
+
+        return $result;
+    }
+
+    /**
      * Return current model ID
      *
      * @return integer

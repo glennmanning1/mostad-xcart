@@ -68,4 +68,14 @@ class DiscountValue extends \XLite\View\FormField\Inline\Input\Text\Float
     {
         return 'modules/CDev/VolumeDiscounts/form_field/discount_value_view.tpl';
     }
+
+    /**
+     * Get precision for discount value (4 digits after point)
+     *
+     * @return integer
+     */
+    protected function getE()
+    {
+        return 4;
+    }
 }

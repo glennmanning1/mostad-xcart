@@ -171,7 +171,7 @@ class Autocomplete extends \XLite\Controller\Admin\AAdmin
         $list = array();
 
         foreach (\XLite\Core\Database::getRepo('\XLite\Model\AttributeOption')->search($cnd) as $a) {
-            $name = htmlspecialchars_decode($a->getName());
+            $name = $a->getName();
             $list[$name] = $name;
         }
 

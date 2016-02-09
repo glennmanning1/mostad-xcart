@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block export-box export-failed">
+<div class="export-box export-failed">
 
   <div class="header clearfix">
     <h2><i class="icon-exclamation-sign"></i>  {t(#Export failed#)}</h2>

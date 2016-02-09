@@ -32,8 +32,11 @@ namespace XLite\Model;
 /**
  * Image settings model
  *
- * @Entity
- * @Table  (name="images_settings")
+ * @Entity (repositoryClass="\XLite\Model\Repo\ImageSettings")
+ * @Table  (name="images_settings",
+ *      uniqueConstraints={
+ *          @UniqueConstraint (name="code_model", columns={"code", "model"})
+ *      })
  */
 class ImageSettings extends \XLite\Model\AEntity
 {

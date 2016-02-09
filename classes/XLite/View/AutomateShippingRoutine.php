@@ -98,24 +98,7 @@ class AutomateShippingRoutine extends \XLite\View\AView
 
     protected function getMarketplaceURL($module)
     {
-        list(, $limit) = $this->getWidget(array(), 'XLite\View\Pager\Admin\Module\Install')
-            ->getLimitCondition()->limit;
-        $pageId = $module->getRepository()->getMarketplacePageId(
-            $module->getAuthor(),
-            $module->getName(),
-            $limit
-        );
-
-        $params = array(
-            'clearCnd'                                      => 1,
-            'clearSearch'                                   => 1,
-            \XLite\View\Pager\APager::PARAM_PAGE_ID         => $pageId,
-            \XLite\View\ItemsList\AItemsList::PARAM_SORT_BY => \XLite\View\ItemsList\Module\AModule::SORT_OPT_ALPHA,
-        );
-
-        return \XLite::getInstance()->getShopURL(
-            sprintf('%s#%s', \XLite\Core\Converter::buildURL('addons_list_marketplace', '', $params), $module->getName())
-        );
+        return $module->getMarketplaceURL();
     }
 
     /**

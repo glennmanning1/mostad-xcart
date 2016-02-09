@@ -125,6 +125,23 @@ class Export extends \XLite\Controller\Admin\AAdmin
     }
 
     /**
+     * Export action
+     *
+     * @return void
+     */
+    protected function doActionItemlistExport()
+    {
+        $state = \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->getEventState($this->getEventName());
+
+        if ($state) {
+            \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->removeEventState($this->getEventName());
+        }
+
+        \XLite\Logic\Export\Generator::run($this->assembleExportOptions());
+        $this->setPureAction(true);
+    }
+
+    /**
      * Assemble export options
      *
      * @return array
@@ -139,6 +156,8 @@ class Export extends \XLite\Controller\Admin\AAdmin
             'attrs'         => $request->options['attrs'],
             'delimiter'     => $request->options['delimiter'] ?: \XLite\Core\Config::getInstance()->Units->csv_delim,
             'charset'       => $request->options['charset'],
+            'filter'        => isset($request->options['filter']) ? $request->options['filter'] : '',
+            'selection'     => isset($request->options['selection']) ? $request->options['selection'] : array(),
         );
     }
 
@@ -225,7 +244,7 @@ class Export extends \XLite\Controller\Admin\AAdmin
      */
     public static function defineFreeFormIdActions()
     {
-        return array_merge(parent::defineFreeFormIdActions(), array('pack', 'download'));
+        return array_merge(parent::defineFreeFormIdActions(), array('itemlist_export', 'pack', 'download'));
     }
 
     /**

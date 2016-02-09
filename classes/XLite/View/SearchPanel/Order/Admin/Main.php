@@ -34,7 +34,6 @@ namespace XLite\View\SearchPanel\Order\Admin;
  */
 class Main extends \XLite\View\SearchPanel\Order\Admin\AAdmin
 {
-
     /**
      * Via this method the widget registers the CSS files which it uses.
      * During the viewers initialization the CSS files are collecting into the static storage.
@@ -125,6 +124,61 @@ class Main extends \XLite\View\SearchPanel\Order\Admin\AAdmin
                 static::CONDITION_CLASS => 'XLite\View\FormField\Input\Text',
                 \XLite\View\FormField\AFormField::PARAM_LABEL => static::t('Payment transaction ID'),
             ),
+            'sku' => array(
+                static::CONDITION_CLASS => 'XLite\View\FormField\Input\Text',
+                \XLite\View\FormField\AFormField::PARAM_LABEL => static::t('SKU'),
+                \XLite\View\FormField\Input\AInput::PARAM_PLACEHOLDER => static::t('SKU or SKU1, SKU2'),
+            ),
+            'recent' => array(
+                static::CONDITION_CLASS => 'XLite\View\FormField\Input\Checkbox',
+                \XLite\View\FormField\AFormField::PARAM_LABEL => static::t('Recent orders only'),
+                \XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => $this->getCondition('recent'),
+                \XLite\View\FormField\Input\Checkbox::PARAM_VALUE => '1',
+            ),
         );
+    }
+
+    /**
+     * Return true if search panel should use filters
+     *
+     * @return boolean
+     */
+    protected function isUseFilter()
+    {
+        return true;
+    }
+
+    /**
+     * Get name of the 'Reset filter' option
+     *
+     * @return string
+     */
+    protected function getClearFilterName()
+    {
+        return static::t('All orders');
+    }
+
+    /**
+     * Define search filters options
+     * TODO: Review and correct before commit!
+     *
+     * @return array
+     */
+    protected function defineFilterOptions()
+    {
+        $result = parent::defineFilterOptions();
+
+        // Calculate recent orders number
+        $count = \XLite\Core\Database::getRepo('XLite\Model\Order')->searchRecentOrders(null, true);
+
+        if ($count) {
+            $recentOrdersFilter = new \XLite\Model\SearchFilter();
+            $recentOrdersFilter->setId('recent');
+            $recentOrdersFilter->setName(static::t('Recent orders'));
+            $recentOrdersFilter->setSuffix(sprintf('(%d)', $count));
+            $result = array('recent' => $recentOrdersFilter) + $result;
+        }
+
+        return $result;
     }
 }

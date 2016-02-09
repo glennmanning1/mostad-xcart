@@ -34,6 +34,26 @@ namespace XLite\View\FormField\Input\Checkbox;
  */
 class Switcher extends \XLite\View\FormField\Input\Checkbox
 {
+    const PARAM_SWITCHER_ICON = 'switcherIcon';
+    const PARAM_SWITCHER_OFF_LABEL = 'offLabel';
+    const PARAM_SWITCHER_ON_LABEL = 'onLabel';
+
+    /**
+     * Define widget params
+     *
+     * @return void
+     */
+    protected function defineWidgetParams()
+    {
+        parent::defineWidgetParams();
+
+        $this->widgetParams += array(
+            self::PARAM_SWITCHER_ICON => new \XLite\Model\WidgetParam\String('Switcher icon', 'fa-power-off'),
+            self::PARAM_SWITCHER_OFF_LABEL => new \XLite\Model\WidgetParam\String('Switcher disabled label', 'Disabled'),
+            self::PARAM_SWITCHER_ON_LABEL => new \XLite\Model\WidgetParam\String('Switcher enabled label', 'Enabled'),
+        );
+    }
+
     /**
      * Get a list of CSS files required to display the widget properly
      *
@@ -134,13 +154,23 @@ class Switcher extends \XLite\View\FormField\Input\Checkbox
     }
 
     /**
+     * Get widget icon
+     *
+     * @return string
+     */
+    protected function getIcon()
+    {
+        return $this->getParam(self::PARAM_SWITCHER_ICON);
+    }
+
+    /**
      * Get 'Disable' label
      *
      * @return string
      */
     protected function getDisabledLabel()
     {
-        return 'Disabled';
+        return $this->getParam(self::PARAM_SWITCHER_OFF_LABEL);
     }
 
     /**
@@ -150,7 +180,7 @@ class Switcher extends \XLite\View\FormField\Input\Checkbox
      */
     protected function getEnabledLabel()
     {
-        return 'Enabled';
+        return $this->getParam(self::PARAM_SWITCHER_ON_LABEL);
     }
 
     /**

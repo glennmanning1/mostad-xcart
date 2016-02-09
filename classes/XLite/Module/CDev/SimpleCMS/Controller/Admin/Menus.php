@@ -80,7 +80,11 @@ class Menus extends \XLite\Controller\Admin\AAdmin
      */
     public function getTitle()
     {
-        return static::t('Menus');
+        $menuItem = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')
+                ->find(intval(\XLite\Core\Request::getInstance()->id));
+        return $menuItem
+            ? $menuItem->getName()
+            : static::t('Menus');
     }
 
     /**

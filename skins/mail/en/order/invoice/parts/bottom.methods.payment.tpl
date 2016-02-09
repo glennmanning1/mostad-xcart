@@ -21,4 +21,7 @@
   {else:}
     {t(#n/a#)}<br />
   {end:}
+  {if:order.getPaymentTransactionId()}
+    {t(#Transaction ID#)}: {order.getPaymentTransactionId()}
+  {end:}
 </div>

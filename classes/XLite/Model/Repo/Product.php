@@ -79,7 +79,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
      *
      * @var \XLite\Core\CommonCell
      */
-    protected $currentSearchCnd = null;
+    protected $currentSearchCnd;
 
     /**
      * Alternative record identifiers
@@ -131,7 +131,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
         $qb->select('COUNT(DISTINCT p.product_id)');
         $qb->orderBy('p.product_id');
 
-        return intval($qb->getSingleScalarResult());
+        return (int) $qb->getSingleScalarResult();
     }
 
     /**
@@ -187,7 +187,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
      *
      * @param string $url Clean URL
      *
-     * @return \XLite_Model_Product
+     * @return \XLite\Model\Product
      */
     public function findOneByCleanURL($url)
     {
@@ -236,7 +236,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
      */
     public function countLastUpdated($limit)
     {
-        return intval($this->defineCountLastUpdatedQuery($limit)->getSingleScalarResult());
+        return (int) $this->defineCountLastUpdatedQuery($limit)->getSingleScalarResult();
     }
 
     /**
@@ -256,7 +256,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
      *
      * @param integer $id Product id
      *
-     * @return array
+     * @return array|null
      */
     public function getProductREST($id)
     {
@@ -300,7 +300,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     {
 
         if (!\XLite::isAdminZone()
-            && 'everywhere' != \XLite\Core\Config::getInstance()->General->show_out_of_stock_products
+            && 'everywhere' !== \XLite\Core\Config::getInstance()->General->show_out_of_stock_products
         ) {
             $this->prepareCndInventory($qb, static::INV_IN);
         }
@@ -323,7 +323,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     {
         $id = $product->getProductId();
         if (11 > strlen((string)$id)) {
-            $id = str_repeat('0', 11 - strlen((string)$id)) . $id;
+            $id = '1' . str_repeat('0', 10 - strlen((string)$id)) . $id;
         }
         $sku = (string)$id;
         $i = 0;
@@ -331,7 +331,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
         $qb = $this->defineGenerateSKUQuery();
 
         while ($i < static::SKU_GENERATION_LIMIT
-            && 0 < intval($qb->setParameter('sku', $sku)->getSingleScalarResult())
+            && 0 < (int) $qb->setParameter('sku', $sku)->getSingleScalarResult()
         ) {
             $i++;
             $sku = $id . '-' . $i;
@@ -358,7 +358,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
         $base = $sku;
 
         while ($i < static::SKU_GENERATION_LIMIT
-            && 0 < intval($qb->setParameter('sku', $sku)->getSingleScalarResult())
+            && 0 < (int) $qb->setParameter('sku', $sku)->getSingleScalarResult()
         ) {
             $i++;
             $newSku = substr(uniqid($base . '-', true), 0, 32);
@@ -378,7 +378,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     /**
      * Define query for generateSKU() method
      *
-     * @return \XLite\Model\QueryBuilder\QUeryBuilder
+     * @return \XLite\Model\QueryBuilder\AQueryBuilder
      */
     public function defineGenerateSKUQuery()
     {
@@ -471,7 +471,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
      */
     protected function isSearchParamHasHandler($param)
     {
-        return in_array($param, $this->getHandlingSearchParams());
+        return in_array($param, $this->getHandlingSearchParams(), true);
     }
 
     /**
@@ -589,7 +589,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     protected function prepareCndEnabled(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
         $queryBuilder->andWhere('p.enabled = :enabled')
-            ->setParameter('enabled', intval((bool)$value));
+            ->setParameter('enabled', (int) (bool) $value);
     }
 
     /**
@@ -631,12 +631,13 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     {
         if (!empty($value)) {
             $including = $this->currentSearchCnd->{self::P_INCLUDING};
-            $including = in_array($including, $this->getAllowedIncludingValues()) ? $including : self::INCLUDING_PHRASE;
+            $including = in_array($including, $this->getAllowedIncludingValues(), true)
+                ? $including
+                : self::INCLUDING_PHRASE;
 
             $cnd = $this->{'getCndSubstring' . ucfirst($including)} ($queryBuilder, $value);
 
             $queryBuilder->andWhere($cnd);
-
         }
     }
 
@@ -652,10 +653,10 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     {
         if (is_array($value)) {
             $min = empty($value[0]) ? null : trim($value[0]);
-            $min = (0 == strlen($min) || !is_numeric($min)) ? null : doubleval($min);
+            $min = (0 === strlen($min) || !is_numeric($min)) ? null : (float) $min;
 
             $max = empty($value[1]) ? null : trim($value[1]);
-            $max = (0 == strlen($max) || !is_numeric($max)) ? null : doubleval($max);
+            $max = (0 === strlen($max) || !is_numeric($max)) ? null : (float) $max;
 
             $this->assignPriceRangeCondition($queryBuilder, $min, $max);
         }
@@ -704,19 +705,19 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
      */
     protected function assignPriceRangeCondition(\Doctrine\ORM\QueryBuilder $queryBuilder, $min, $max)
     {
-        if (isset($min) || isset($max)) {
+        if (null !== $min || null !== $max) {
             $field = \XLite::isAdminZone()
                 ? 'p.price'
                 : $this->getCalculatedField($queryBuilder, 'price');
 
-            if (isset($min)) {
+            if (null !== $min) {
                 $queryBuilder->andWhere($field . ' >= :minPrice')
-                    ->setParameter('minPrice', doubleval($min));
+                    ->setParameter('minPrice', (float) $min);
             }
 
-            if (isset($max)) {
+            if (null !== $max) {
                 $queryBuilder->andWhere($field . ' <= :maxPrice')
-                    ->setParameter('maxPrice', doubleval($max));
+                    ->setParameter('maxPrice', (float) $max);
             }
         }
     }
@@ -846,7 +847,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     {
         $queryBuilder->innerJoinInventory();
 
-        if (in_array($value, array(self::INV_LOW, self::INV_OUT))) {
+        if (in_array($value, array(self::INV_LOW, self::INV_OUT), true)) {
             $queryBuilder->andWhere('i.enabled = :enabled')
                 ->setParameter('enabled', true);
         }
@@ -857,7 +858,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
         } elseif ($value === self::INV_OUT) {
             $this->prepareCndInventoryOut($queryBuilder);
 
-        } elseif ($value == self::INV_IN) {
+        } elseif ($value === self::INV_IN) {
             $this->prepareCndInventoryIn($queryBuilder);
         }
     }
@@ -873,7 +874,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     {
         $queryBuilder->andWhere('i.lowLimitEnabled = :lowLimitEnabled')
             ->setParameter('lowLimitEnabled', true)
-            ->andWhere('i.amount < i.lowLimitAmount');
+            ->andWhere('i.amount <= i.lowLimitAmount');
     }
 
     /**
@@ -938,8 +939,8 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
     {
         if (is_array($value)) {
             $value = array_values($value);
-            $start = empty($value[0]) ? null : intval($value[0]);
-            $end = empty($value[1]) ? null : intval($value[1]);
+            $start = empty($value[0]) ? null : (int) $value[0];
+            $end = empty($value[1]) ? null : (int) $value[1];
 
             if ($start) {
                 $queryBuilder->andWhere('p.arrivalDate >= :start')
@@ -996,11 +997,11 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
             if ('i.amount' === $sort) {
                 $queryBuilder->innerJoinInventory();
 
-            } elseif ('p.price' == $sort && !\XLite::isAdminZone()) {
+            } elseif ('p.price' === $sort && !\XLite::isAdminZone()) {
                 $this->assignCalculatedField($queryBuilder, 'price');
                 $sort = 'calculatedPrice';
 
-            } elseif ('translations.name' == $sort && !$countOnly) {
+            } elseif ('translations.name' === $sort && !$countOnly) {
                 $this->addSortByTranslation($queryBuilder, $sort, $order);
                 $sort = 'calculatedName';
             }
@@ -1032,7 +1033,7 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
         // Add additional join to translations with current language code
         parent::addTranslationJoins($queryBuilder, $alias, 'st', $currentCode);
 
-        if ($currentCode != $defaultCode) {
+        if ($currentCode !== $defaultCode) {
             // Add additional join to translations with default language code
             $this->addTranslationJoins($queryBuilder, $alias, 'st2', $defaultCode);
 
@@ -1229,20 +1230,6 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
 
     // {{{ Export routines
 
-    /**
-     * Define query builder for COUNT query
-     *
-     * @return \XLite\Model\QueryBuilder\AQueryBuilder
-     */
-    protected function defineCountForExportQuery()
-    {
-        $qb = $this->createPureQueryBuilder();
-
-        return $qb->select(
-            'COUNT(DISTINCT ' . $qb->getMainAlias() . '.' . $this->getPrimaryKeyField() . ')'
-        );
-    }
-
     // }}}
 
     /**
@@ -1379,6 +1366,130 @@ class Product extends \XLite\Model\Repo\Base\I18n implements \XLite\Base\IREST
      * @return \XLite\Model\QueryBuilder\AQueryBuilder
      */
     protected function defineQuickDataIteratorQueryBuilder($position)
+    {
+        return $this->createPureQueryBuilder()
+            ->setFirstResult($position)
+            ->setMaxResults(1000000000);
+    }
+
+    // }}}
+
+    // {{{ Sales
+
+    /**
+     * Get top sellers depending on certain condition
+     *
+     * @param \XLite\Core\CommonCell $cnd       Conditions
+     * @param boolean                $countOnly Count only flag OPTIONAL
+     *
+     * @return \Doctrine\ORM\PersistentCollection|integer
+     */
+    public function getTopSellers(\XLite\Core\CommonCell $cnd, $countOnly = false)
+    {
+        $result = $this->prepareTopSellersCondition($cnd)->getResult();
+
+        return $countOnly ? count($result) : $result;
+    }
+
+    /**
+     * Prepare top sellers search condition
+     *
+     * @param \XLite\Core\CommonCell $cnd Conditions
+     *
+     * @return \XLite\Model\QueryBuilder\AQueryBuilder
+     */
+    protected function prepareTopSellersCondition(\XLite\Core\CommonCell $cnd)
+    {
+        /** @var \XLite\Model\QueryBuilder\AQueryBuilder $qb */
+        $qb = $this->createQueryBuilder()
+            ->addSelect('p.sales as cnt')
+            ->andWhere('p.sales > 0')
+            ->setMaxResults($cnd->limit)
+            ->addGroupBy('p.product_id')
+            ->addOrderBy('p.sales', 'desc');
+
+        return  $this->assignExternalEnabledCondition($qb, 'p');
+    }
+
+    /**
+     * Has top sellers
+     *
+     * @return boolean
+     */
+    public function hasTopSellers()
+    {
+        $cnd = new \XLite\Core\CommonCell();
+        $cnd->limit = 1;
+
+        return 0 < $this->getTopSellers($cnd, true);
+    }
+
+    /**
+     * Find sales by product
+     *
+     * @param \XLite\Model\Product $product Product
+     *
+     * @return \Doctrine\ORM\QueryBuilder Query builder object
+     */
+    public function findSalesByProduct(\XLite\Model\Product $product)
+    {
+        $qb = $this->createPureQueryBuilder()
+            ->linkInner('p.order_items', 'o')
+            ->linkInner('o.order', 'ord')
+            ->linkInner('ord.paymentStatus', 'ps')
+            ->select('sum(o.amount) as product_amount')
+            ->andWhere('o.object = :product')
+            ->setParameter('product', $product);
+
+        return (int) $qb->andWhere($qb->expr()->in('ps.code', \XLite\Model\Order\Status\Payment::getPaidStatuses()))
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Count items for quick data
+     *
+     * @return integer
+     */
+    public function countForSales()
+    {
+        return (int) $this->defineCountForSalesQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * Define query builder for COUNT query
+     *
+     * @return \XLite\Model\QueryBuilder\AQueryBuilder
+     */
+    protected function defineCountForSalesQuery()
+    {
+        $qb = $this->createPureQueryBuilder();
+
+        return $qb->select(
+            'COUNT(DISTINCT ' . $qb->getMainAlias() . '.' . $this->getPrimaryKeyField() . ')'
+        );
+    }
+
+    /**
+     * Define items iterator
+     *
+     * @param integer $position Position OPTIONAL
+     *
+     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
+     */
+    public function getSalesIterator($position = 0)
+    {
+        return $this->defineSalesIteratorQueryBuilder($position)
+            ->iterate();
+    }
+
+    /**
+     * Define quick data iterator query builder
+     *
+     * @param integer $position Position
+     *
+     * @return \XLite\Model\QueryBuilder\AQueryBuilder
+     */
+    protected function defineSalesIteratorQueryBuilder($position)
     {
         return $this->createPureQueryBuilder()
             ->setFirstResult($position)

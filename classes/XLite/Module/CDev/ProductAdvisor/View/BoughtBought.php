@@ -37,6 +37,13 @@ namespace XLite\Module\CDev\ProductAdvisor\View;
 class BoughtBought extends \XLite\Module\CDev\ProductAdvisor\View\ABought
 {
     /**
+     * Runtime cache for profile ids
+     *
+     * @var array
+     */
+    protected $profileIds = array();
+
+    /**
      * Returns CSS classes for the container element
      *
      * @return string
@@ -114,6 +121,9 @@ class BoughtBought extends \XLite\Module\CDev\ProductAdvisor\View\ABought
      */
     protected function getProfilesIds($productId)
     {
-        return \XLite\Core\Database::getRepo('XLite\Model\Order')->findUsersBoughtProduct($productId);
+        if (empty($this->profileIds[$productId])) {
+            $this->profileIds[$productId] = \XLite\Core\Database::getRepo('XLite\Model\Order')->findUsersBoughtProduct($productId);
+        }
+        return $this->profileIds[$productId];
     }
 }

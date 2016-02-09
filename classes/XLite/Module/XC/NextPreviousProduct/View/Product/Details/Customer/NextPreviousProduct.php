@@ -38,6 +38,11 @@ namespace XLite\Module\XC\NextPreviousProduct\View\Product\Details\Customer;
 class NextPreviousProduct extends \XLite\View\AView
 {
     /**
+     * Max count of cookies saved
+     */
+    const COOKIE_LIMIT = 10;
+
+    /**
      * Icon width for dropdown box
      */
     const DROPDOWN_ICON_WIDTH = '110';
@@ -166,6 +171,34 @@ class NextPreviousProduct extends \XLite\View\AView
     }
 
     /**
+     * Unset old cookie
+     *
+     * @return void
+     */
+    protected function unsetCookie()
+    {
+        $processed = array();
+
+        foreach ($_COOKIE as $key => $value) {
+            if (false === strpos($key, 'xc_np_product_')) {
+                continue;
+            }
+
+            $json = json_decode($value, true);
+            if (isset($json['created'])) {
+                $processed[$json['created']] = $key;
+            }
+        }
+
+        krsort($processed);
+        $toUnset = array_slice($processed, static::COOKIE_LIMIT);
+
+        foreach ($toUnset as $cookieKey) {
+            setcookie($cookieKey, "", time() - 3600);
+        }
+    }
+
+    /**
      * Get cookie key
      *
      * @return string
@@ -173,11 +206,13 @@ class NextPreviousProduct extends \XLite\View\AView
     protected function getCookieData()
     {
         if (!isset($this->cookieData)) {
-            $cookieKey = 'xc_np_product_' . \XLite\Core\Request::getInstance()->product_id;
+            $cookieKey = 'xc_np_product_' . $this->getProductId();
             if (isset($_COOKIE[$cookieKey])) {
                 $this->cookieData = json_decode($_COOKIE[$cookieKey], true);
             }
         }
+
+        $this->unsetCookie();
 
         return $this->cookieData;
     }
@@ -191,7 +226,7 @@ class NextPreviousProduct extends \XLite\View\AView
     {
         $items = $this->getNextPreviousItems();
 
-        return $items[0]->getProductId() == \XLite\Core\Request::getInstance()->product_id ? false : true;
+        return $items[0]->getProductId() == $this->getProductId() ? false : true;
     }
 
     /**
@@ -203,7 +238,7 @@ class NextPreviousProduct extends \XLite\View\AView
     {
         $items = $this->getNextPreviousItems();
 
-        return $items[count($items)-1]->getProductId() == \XLite\Core\Request::getInstance()->product_id ? false : true;
+        return $items[count($items)-1]->getProductId() == $this->getProductId() ? false : true;
     }
 
     /**
@@ -263,7 +298,7 @@ class NextPreviousProduct extends \XLite\View\AView
 
         if ($this->isProductHasMultipleCategories($item)) {
             $attributes['category_id'] = $this->isStaticCategory()
-                ? \XLite\Core\Request::getInstance()->category_id
+                ? $this->getCategoryId()
                 : $item->getCategory()->getId();
         }
 
@@ -314,6 +349,9 @@ class NextPreviousProduct extends \XLite\View\AView
             'class'        => get_called_class(),
             'realPosition' => $this->getItemPosition() - 1,
             'sessionCell'  => $this->getSessionCellName(),
+            'parameters'   => array(
+                'category_id' => (int)$this->getCategoryId(),
+            )
         );
 
         return json_encode($data);
@@ -330,6 +368,9 @@ class NextPreviousProduct extends \XLite\View\AView
             'class'        => get_called_class(),
             'realPosition' => $this->getItemPosition() + 1,
             'sessionCell'  => $this->getSessionCellName(),
+            'parameters'   => array(
+                'category_id' => (int)$this->getCategoryId(),
+            )
         );
 
         return json_encode($data);
@@ -393,6 +434,7 @@ class NextPreviousProduct extends \XLite\View\AView
         if (
             $this->getItemsList() instanceof \XLite\Module\XC\ProductFilter\View\ItemsList\Product\Customer\Category\CategoryFilter
             || $this->getItemsList() instanceof \XLite\View\ItemsList\Product\Customer\Category\Main
+            || !$this->getItemsList()
         ) {
             if (!empty($cookieData['parameters']) && !empty($cookieData['parameters']['category_id'])) {
                 $sessionKey .= $cookieData['parameters']['category_id'];
@@ -457,11 +499,7 @@ class NextPreviousProduct extends \XLite\View\AView
             $itemsListClass = 'XLite\View\ItemsList\Product\Customer\Category\Main';
             $listParams = array();
 
-            $request = \XLite\Core\Request::getInstance();
-            if (!isset($request->category_id)) {
-                $categoryId = \XLite\Core\Database::getRepo('\XLite\Model\Product')->find($request->product_id)->getCategoryId();
-                $request->{\XLite\View\ItemsList\Product\Customer\Category\ACategory::PARAM_CATEGORY_ID} = $categoryId;
-            }
+            \XLite\Core\Request::getInstance()->{\XLite\View\ItemsList\Product\Customer\Category\ACategory::PARAM_CATEGORY_ID} = $this->getCategoryId();
 
             $itemsList = new $itemsListClass($listParams);
         }
@@ -517,12 +555,11 @@ class NextPreviousProduct extends \XLite\View\AView
                 $sessionCell = \XLite\Core\Session::getInstance()->{$this->getSessionCellName()};
 
                 if (isset($sessionCell['cnd'])) {
-                    $productId = \XLite\Core\Request::getInstance()->product_id;
                     $cnd = $sessionCell['cnd'];
-                    if ($this->getItemsList() instanceof \XLite\View\ItemsList\Product\Customer\Category\Main) {
-                        $categoryId = \XLite\Core\Database::getRepo('\XLite\Model\Product')->find($productId)->getCategoryId();
+                    $productId = $this->getProductId();
 
-                        $cnd->{\XLite\Model\Repo\Product::P_CATEGORY_ID} = $categoryId;
+                    if ($this->getItemsList() instanceof \XLite\View\ItemsList\Product\Customer\Category\Main) {
+                        $cnd->{\XLite\Model\Repo\Product::P_CATEGORY_ID} = $this->getCategoryId();
                     }
                     $ids = \XLite\Core\Database::getRepo('\XLite\Model\Product')->searchOnlyIds($cnd);
 

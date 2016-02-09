@@ -36,7 +36,7 @@ if (!defined('XLITE_INSTALL_MODE')) {
 }
 
 // Current X-Cart version
-define('LC_VERSION', '5.2.10');
+define('LC_VERSION', '5.2.12');
 
 // Minimum PHP version supported
 define('LC_PHP_VERSION_MIN', '5.3.10');
@@ -140,10 +140,12 @@ $lcSettings = array(
             'Reviews',
             'UPS',
             'News',
-            'FreeShipping'
+            'FreeShipping',
+            'UpdateInventory'
         ),
         'QSL' => array(
-            'CloudSearch'
+            'CloudSearch',
+            'FlyoutCategoriesMenu'
         )
     ),
 );

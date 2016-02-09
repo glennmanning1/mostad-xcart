@@ -56,6 +56,8 @@
 @navtab-bgcolor-normal: #fff0f6;
 @navtab-bgcolor-normal-hover: #eb6ba4;
 
+@mobile-menu-bg: #212121;
+
 /* Fashion mixins */
 
 .link-transition(@animationspeed){
@@ -82,7 +84,7 @@ div.tabs .primary span:hover {
   .link-transition(0.3s);
 }
 
-#header-area .desktop-header a {
+#header-area .desktop-header a:not(.cart):not(.checkout){
   color: #8aa1b3;
 }
 
@@ -194,11 +196,6 @@ div.tabs .primary span:hover {
 }
 
 .mobile_header {
-  ul.nav-pills {
-    background: @navbar-inverse-bg;
-    height: 41px;
-  }
-
   a {
     color: @navbar-inverse-link-color;
     &:hover{
@@ -213,11 +210,6 @@ div.tabs .primary span:hover {
 
 .lc-minicart {
   color: #ffffff;
-  background-image: url("@{customer-skin}/modules/XC/ColorSchemes/Fashion/images/small_bag.png");
-}
-
-.lc-minicart .minicart-items-number {
-  color: @brand-primary !important;
 }
 
 @media (min-width: @screen-md-min) {

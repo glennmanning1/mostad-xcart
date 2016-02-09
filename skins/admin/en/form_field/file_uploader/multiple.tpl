@@ -11,7 +11,7 @@
 
 <div{getDataCode():h} class="multiple-files">
 {foreach:getFiles(),object}
-  <widget class="XLite\View\FileUploader" object="{object}" maxWidth="{getMaxWidth()}" maxHeight="{getMaxHeight()}" isImage="{isImage()}" fieldName="{getName()}" multiple="true" />
+  <widget class="XLite\View\FileUploader" object="{object}" maxWidth="{getMaxWidth()}" maxHeight="{getMaxHeight()}" isImage="{isImage()}" fieldName="{getName()}" multiple="true" isViaUrlAllowed="{isViaUrlAllowed()}" />
 {end:}
-  <widget class="XLite\View\FileUploader" maxWidth="{getMaxWidth()}" maxHeight="{getMaxHeight()}" isImage="{isImage()}" fieldName="{getName()}" multiple="true" />
+  <widget class="XLite\View\FileUploader" maxWidth="{getMaxWidth()}" maxHeight="{getMaxHeight()}" isImage="{isImage()}" fieldName="{getName()}" multiple="true" isViaUrlAllowed="{isViaUrlAllowed()}" />
 </div>

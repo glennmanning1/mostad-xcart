@@ -347,7 +347,7 @@ table.incompatible-modules-list {
 .target-upgrade #main > h2 {
   float: left;
   color: #41a13a;
-  margin: 0 17px 18px 18px;
+  margin: 5px 17px 18px 18px;
 }
 
 .target-upgrade .update-module-list.upgrade {

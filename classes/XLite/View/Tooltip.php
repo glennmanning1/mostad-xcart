@@ -40,9 +40,12 @@ class Tooltip extends \XLite\View\AView
     const PARAM_ID           = 'id';
     const PARAM_TEXT         = 'text';
     const PARAM_WIDGET       = 'helpWidget';
+    const PARAM_PLACEMENT    = 'placement';
     const PARAM_CLASS        = 'className';
     const PARAM_CAPTION      = 'caption';
     const PARAM_IS_IMAGE_TAG = 'isImageTag';
+    const PARAM_IMAGE_CLASS  = 'imageClass';
+    const PARAM_CLEAR_AFTER  = 'clear';
 
     const ATTR_CLASS = 'class';
     const ATTR_ID    = 'id';
@@ -85,10 +88,13 @@ class Tooltip extends \XLite\View\AView
         $this->widgetParams += array(
             static::PARAM_TEXT         => new \XLite\Model\WidgetParam\String('Text to show in tooltip', ''),
             static::PARAM_WIDGET       => new \XLite\Model\WidgetParam\String('Widget to show in tooltip', ''),
+            static::PARAM_PLACEMENT    => new \XLite\Model\WidgetParam\String('Tooltip placement', ''),
             static::PARAM_ID           => new \XLite\Model\WidgetParam\String('ID of element', ''),
             static::PARAM_CLASS        => new \XLite\Model\WidgetParam\String('CSS class for caption', ''),
             static::PARAM_CAPTION      => new \XLite\Model\WidgetParam\String('Caption', ''),
             static::PARAM_IS_IMAGE_TAG => new \XLite\Model\WidgetParam\Bool('Is it shown as image?', true),
+            static::PARAM_IMAGE_CLASS  => new \XLite\Model\WidgetParam\String('CSS class of image', ''),
+            static::PARAM_CLEAR_AFTER  => new \XLite\Model\WidgetParam\Bool('Should we insert clear after tooltip', true),
         );
     }
 
@@ -146,7 +152,18 @@ class Tooltip extends \XLite\View\AView
     protected function getClass()
     {
         return static::CAPTION_CSS_CLASS
-            . ($this->isImageTag() ? ' fa fa-question-circle ' : ' ')
+            . ($this->isImageTag() ? ' ' . $this->getImageCSSClass() . ' ' : ' ')
             . $this->getParam(static::PARAM_CLASS);
+    }
+
+    /**
+     * Get image CSS classes
+     *
+     * @return string
+     */
+    protected function getImageCSSClass()
+    {
+        return $this->getParam(static::PARAM_IMAGE_CLASS)
+            ?: 'fa fa-question-circle';
     }
 }

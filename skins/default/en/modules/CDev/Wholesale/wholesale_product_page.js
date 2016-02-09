@@ -45,6 +45,7 @@ function bindWholesaleTriggers()
             function () {
               var ctrl = event.currentTarget.commonController;
               if (ctrl.isChanged() && ctrl.validate(true)) {
+                ctrl.saveValue();
                 handler($this);
               }
             },
@@ -58,3 +59,9 @@ core.registerWidgetsParamsGetter('update-product-page', getWholesaleParams);
 core.registerWidgetsTriggers('update-product-page', getWholesaleTriggers);
 core.registerTriggersBind('update-product-page', bindWholesaleTriggers);
 core.registerShadowWidgets('update-product-page', getWholesaleShadowWidgets);
+core.registerShadowWidgets('update-product-page', function(){
+  return '.widget-fingerprint-product-wholesale-prices';
+});
+core.registerShadowWidgets('update-product-page', function(){
+  return '.widget-fingerprint-wholesale-quantity';
+});

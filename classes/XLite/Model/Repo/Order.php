@@ -60,12 +60,14 @@ class Order extends \XLite\Model\Repo\ARepo
     const P_ORDER_NUMBER      = 'orderNumber';
     const P_SHIPPING_METHOD_NAME = 'shippingMethodName';
     const P_PAYMENT_METHOD_NAME  = 'paymentMethodName';
+    const P_RECENT            = 'recent';
     const SEARCH_DATE_RANGE   = 'dateRange';
     const SEARCH_SUBSTRING    = 'substring';
     const SEARCH_ACCESS_LEVEL = 'accessLevel';
     const SEARCH_ZIPCODE      = 'zipcode';
     const SEARCH_CUSTOMER_NAME = 'customerName';
     const SEARCH_TRANS_ID     = 'transactionID';
+    const SEARCH_SKU          = 'sku';
 
     /**
      * currentSearchCnd
@@ -83,6 +85,50 @@ class Order extends \XLite\Model\Repo\ARepo
         array('orderNumber'),
     );
 
+
+    /**
+     * Get condition to search recent orders
+     * TODO: Review before commit!!!
+     *
+     * @return \XLite\Core\CommonCell
+     */
+    public function getRecentOrdersCondition()
+    {
+        $cnd = new \XLite\Core\CommonCell();
+        $cnd->{\XLite\Model\Repo\Order::P_RECENT} = 1;
+
+        return $cnd;
+    }
+
+    /**
+     * Search for recent orders and return its number or a list
+     *
+     * @param \XLite\Core\CommonCell $cnd   Search condition
+     * @param boolean                $count Flag: return number of recent orders
+     *
+     * @return integer|\Doctrine\Common\Collections\ArrayCollection
+     */
+    public function searchRecentOrders($cnd = null, $count = false)
+    {
+        if ($count) {
+
+            $qb = $this->createQueryBuilder();
+
+            foreach ($this->getRecentOrdersCondition() as $key => $value) {
+                if (self::P_LIMIT !== $key || !$countOnly) {
+                    $this->callSearchConditionHandler($value, $key, $qb);
+                }
+            }
+
+            $result = $qb->select('COUNT(o.order_id)')->getSingleScalarResult();
+            $result = (int) $result;
+
+        } else {
+            $result = $this->search($cnd, false);
+        }
+
+        return $result;
+    }
 
     /**
      * Find all expired temporary orders
@@ -199,10 +245,8 @@ class Order extends \XLite\Model\Repo\ARepo
      */
     public function search(\XLite\Core\CommonCell $cnd, $countOnly = false)
     {
-        $queryBuilder = $this->createQueryBuilder()
-            ->innerJoin('o.profile', 'p')
-            ->leftJoin('o.orig_profile', 'op');
-        $this->currentSearchCnd = $this->correctSearchConditions($cnd);
+        $queryBuilder = $this->createQueryBuilder();
+        $this->currentSearchCnd = $cnd;
 
         foreach ($this->currentSearchCnd as $key => $value) {
             if (self::P_LIMIT !== $key || !$countOnly) {
@@ -232,7 +276,7 @@ class Order extends \XLite\Model\Repo\ARepo
      *
      * @return \XLite\Core\CommonCell
      */
-    protected function correctSearchConditions($cnd)
+    public function correctSearchConditions($cnd)
     {
         if (
             isset($cnd->{static::P_PROFILE_ID})
@@ -275,9 +319,9 @@ class Order extends \XLite\Model\Repo\ARepo
         $queryBuilder = $this->createQueryBuilder()
             ->select('SUM(o.total) as orders_total')
             ->addSelect('c.currency_id as currency_id')
-            ->innerJoin('o.profile', 'p')
-            ->innerJoin('o.currency', 'c')
-            ->leftJoin('o.orig_profile', 'op')
+            ->linkInner('o.profile', 'p')
+            ->linkInner('o.currency', 'c')
+            ->linkLeft('o.orig_profile', 'op')
             ->addGroupBy('c.currency_id')
             ->addOrderBy('orders_total', 'DESC');
 
@@ -305,7 +349,7 @@ class Order extends \XLite\Model\Repo\ARepo
             array(
                 'category'  => 'General',
                 'name'      => 'order_number_counter',
-                'value'     => $this->getMaxOrderNumber(),
+                'value'     => $this->getMaxOrderNumber() + 1,
             )
         );
     }
@@ -317,9 +361,7 @@ class Order extends \XLite\Model\Repo\ARepo
      */
     public function getMaxOrderNumber()
     {
-        $maxIdOrder = $this->findBy(array(), array('order_id' => 'desc'), 1);
-
-        return $maxIdOrder[0]->getOrderId() + 1;
+        return $this->defineMaxOrderNumberQuery()->getSingleScalarResult();
     }
 
     /**
@@ -339,7 +381,7 @@ class Order extends \XLite\Model\Repo\ARepo
 
         $value = $orderNumber->getValue();
 
-        $lastOrderNumber = $this->defineMaxOrderNumberQuery()->getSingleScalarResult();
+        $lastOrderNumber = $this->getMaxOrderNumber();
 
         if ($lastOrderNumber) {
             $value = max($value, $lastOrderNumber + 1);
@@ -427,12 +469,14 @@ class Order extends \XLite\Model\Repo\ARepo
             static::P_ORDER_NUMBER,
             static::P_SHIPPING_METHOD_NAME,
             static::P_PAYMENT_METHOD_NAME,
+            static::P_RECENT,
             static::SEARCH_DATE_RANGE,
             static::SEARCH_SUBSTRING,
             static::SEARCH_ACCESS_LEVEL,
             static::SEARCH_ZIPCODE,
             static::SEARCH_CUSTOMER_NAME,
             static::SEARCH_TRANS_ID,
+            static::SEARCH_SKU,
         );
     }
 
@@ -519,6 +563,9 @@ class Order extends \XLite\Model\Repo\ARepo
                 $cnd->add('op.anonymous = :accessLevel');
                 $cnd->add($anonymousCnd);
 
+                $queryBuilder->linkInner('o.profile', 'p')
+                    ->linkLeft('o.orig_profile', 'op');
+
                 $queryBuilder->andWhere($cnd)
                     ->setParameter('accessLevel', $anonymous);
             }
@@ -536,8 +583,9 @@ class Order extends \XLite\Model\Repo\ARepo
      */
     protected function prepareCndDateRange(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
-        if (!empty($value)) {
-            list($start, $end) = \XLite\View\FormField\Input\Text\DateRange::convertToArray($value);
+        if ($value && is_array($value)) {
+            list($start, $end) = $value;
+
             if ($start) {
                 $queryBuilder->andWhere('o.date >= :start')
                     ->setParameter('start', $start);
@@ -565,9 +613,61 @@ class Order extends \XLite\Model\Repo\ARepo
             if (preg_match('/^\d+$/S', $number)) {
                 $number = (int)$number ;
             }
+
+            $queryBuilder->linkInner('o.profile', 'p');
+
             $queryBuilder->andWhere('o.orderNumber = :substring OR p.login LIKE :substringLike')
                 ->setParameter('substring', $number)
                 ->setParameter('substringLike', '%' . $value . '%');
+        }
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param integer                    $value        Condition data
+     *
+     * @return void
+     */
+    protected function prepareCndSku(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
+    {
+        $value = trim($value);
+
+        if (!empty($value)) {
+
+            $multiple = array_filter(array_map('trim', explode(',', $value)), 'strlen');
+
+            if (0 < count($multiple)) {
+
+                $queryBuilder->linkLeft('o.items', 'oi');
+
+                if (1 < count($multiple)) {
+                    // Detectd several values separated with comma: search for exact match
+                    $queryBuilder->andWhere($queryBuilder->expr()->in('oi.sku', $multiple));
+
+                } else {
+                    // Detected single SKU value
+                    $queryBuilder->andWhere('oi.sku LIKE :sku')
+                       ->setParameter('sku', '%' . $value . '%');
+                }
+            }
+        }
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param integer                    $value        Condition data
+     *
+     * @return void
+     */
+    protected function prepareCndRecent(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
+    {
+        if ($value) {
+            $queryBuilder->andWhere('o.recent = :recent')
+                ->setParameter('recent', true);
         }
     }
 
@@ -582,6 +682,9 @@ class Order extends \XLite\Model\Repo\ARepo
     protected function prepareCndProfile(\Doctrine\ORM\QueryBuilder $queryBuilder, \XLite\Model\Profile $value)
     {
         if (!empty($value)) {
+            $queryBuilder->linkInner('o.profile', 'p')
+                ->linkLeft('o.orig_profile', 'op');
+
             $queryBuilder->andWhere('op.profile_id = :opid')
                 ->setParameter('opid', $value->getProfileId());
         }
@@ -615,6 +718,9 @@ class Order extends \XLite\Model\Repo\ARepo
     protected function prepareCndEmail(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
         if (!empty($value)) {
+            $queryBuilder->linkInner('o.profile', 'p')
+                ->linkLeft('o.orig_profile', 'op');
+
             $queryBuilder->andWhere('p.login LIKE :email')
                 ->setParameter('email', '%' . $value . '%');
         }
@@ -793,6 +899,9 @@ class Order extends \XLite\Model\Repo\ARepo
     protected function prepareCndZipcode(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
         if (!empty($value)) {
+            $queryBuilder->linkInner('o.profile', 'p')
+                ->linkLeft('o.orig_profile', 'op');
+
             $queryBuilder->linkLeft('p.addresses', 'addresses');
 
             $this->prepareOrderByAddressField($queryBuilder, 'zipcode');
@@ -813,35 +922,13 @@ class Order extends \XLite\Model\Repo\ARepo
     protected function prepareCndCustomerName(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
         if (!empty($value)) {
-            $queryBuilder->linkLeft('p.addresses', 'addresses');
+            $queryBuilder->linkInner('o.profile', 'p')
+                ->linkLeft('o.orig_profile', 'op');
 
-            $this->prepareOrderByAddressField($queryBuilder, 'firstname');
-            $this->prepareOrderByAddressField($queryBuilder, 'lastname');
-
-            $cnd = new \Doctrine\ORM\Query\Expr\Orx();
-
-            foreach ($this->getCustomerNameSearchFields() as $field) {
-                $cnd->add($field . ' LIKE :customerName');
-            }
-
-            $queryBuilder->andWhere($cnd)
+            $queryBuilder
+                ->andWhere('p.searchFakeField LIKE :customerName')
                 ->setParameter('customerName', '%' . $value . '%');
         }
-    }
-
-    /**
-     * List of fields to use in search by customerName
-     *
-     * @return array
-     */
-    protected function getCustomerNameSearchFields()
-    {
-        return array(
-            'address_field_value_firstname.value',
-            'address_field_value_lastname.value',
-            'CONCAT(CONCAT(address_field_value_firstname.value, \' \'), address_field_value_lastname.value)',
-            'CONCAT(CONCAT(address_field_value_lastname.value, \' \'), address_field_value_firstname.value)',
-        );
     }
 
     /**
@@ -853,6 +940,8 @@ class Order extends \XLite\Model\Repo\ARepo
      */
     protected function prepareCndOrderByFullname(\Doctrine\ORM\QueryBuilder $queryBuilder)
     {
+        $queryBuilder->linkInner('o.profile', 'p')
+            ->linkLeft('o.orig_profile', 'op');
         $queryBuilder->linkLeft('p.addresses', 'addresses');
 
         $this->prepareOrderByAddressField($queryBuilder, 'firstname');
@@ -1081,7 +1170,7 @@ class Order extends \XLite\Model\Repo\ARepo
         $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder->select('COUNT(o)')
-            ->innerJoin('o.paymentStatus', 'ps')
+            ->linkInner('o.paymentStatus', 'ps')
             ->addSelect('ps.code')
             ->groupBy('o.paymentStatus');
 
@@ -1109,7 +1198,7 @@ class Order extends \XLite\Model\Repo\ARepo
         $queryBuilder = $this->createQueryBuilder();
 
         $queryBuilder->select('SUM(o.total)')
-            ->innerJoin('o.paymentStatus', 'ps')
+            ->linkInner('o.paymentStatus', 'ps')
             ->addSelect('ps.code')
             ->groupBy('o.paymentStatus');
 

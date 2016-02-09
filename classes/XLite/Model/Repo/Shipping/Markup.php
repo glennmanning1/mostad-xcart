@@ -37,9 +37,10 @@ class Markup extends \XLite\Model\Repo\ARepo
     /**
      * Search parameters
      */
-    const P_METHOD_ID = 'methodId';
-    const P_ORDER_BY  = 'orderBy';
-    const P_LIMIT     = 'limit';
+    const P_METHOD_ID     = 'methodId';
+    const P_SHIPPING_ZONE = 'shippingZone';
+    const P_ORDER_BY      = 'orderBy';
+    const P_LIMIT         = 'limit';
 
     /**
      * Repository type
@@ -293,6 +294,7 @@ class Markup extends \XLite\Model\Repo\ARepo
     {
         return array(
             static::P_METHOD_ID,
+            static::P_SHIPPING_ZONE,
             static::P_ORDER_BY,
             static::P_LIMIT,
         );
@@ -322,6 +324,20 @@ class Markup extends \XLite\Model\Repo\ARepo
     {
         $queryBuilder->andWhere('m.shipping_method = :method_id')
             ->setParameter('method_id', $value);
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param string                     $value        Profile
+     *
+     * @return void
+     */
+    protected function prepareCndShippingZone(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
+    {
+        $queryBuilder->andWhere('m.zone = :zone_id')
+            ->setParameter('zone_id', $value);
     }
 
     /**

@@ -86,37 +86,21 @@ class Admin extends \XLite\View\Dialog
 
         foreach ($addons as $addon => $title) {
 
-            if (!\Includes\Utils\Operator::checkIfClassExists('\\XLite\\Module\\' . $addon . '\\Main')) {
+            $module = \XLite\Core\Database::getRepo('XLite\Model\Module')->findOneByModuleName($addon, true);
 
-                $match = explode('\\', $addon);
-
-                $mainClassFile = LC_DIR_MODULES . str_replace('\\', '/', $addon) . '/Main.php';
-                if (\Includes\Utils\FileManager::isExists($mainClassFile)) {
-                    // Module is installed but not enabled
-                    $limit = \XLite\View\Pager\Admin\Module\Manage::getInstance()->getItemsPerPage();
-                    $pageId = \XLite\Core\Database::getRepo('XLite\Model\Module')
-                        ->getInstalledPageId($match[0], $match[1], $limit);
-                    $pageParam = 'page';
-                    $target = 'addons_list_installed';
-
-                } else {
-                    // Module is not installed
-                    list(, $limit) = $this->getWidget(array(), '\XLite\View\Pager\Admin\Module\Install')
-                        ->getLimitCondition()->limit;
-                    $pageId = \XLite\Core\Database::getRepo('XLite\Model\Module')
-                        ->getMarketplacePageId($match[0], $match[1], $limit);
-                    $pageParam = 'pageId';
-                    $target = 'addons_list_marketplace';
-                }
-
-                if (0 < $pageId) {
-                    $params[$pageParam] = $pageId;
-                }
-
-                $url = $this->buildURL($target, '', $params) . '#' . $match[1];
-
-                $modules[] = '<a href="' . $url . '">' . $title . '</a>';
+            if (!$module) {
+                continue;
             }
+
+            if ($module->getModuleInstalled() && $module->getModuleInstalled()->getEnabled()) {
+                continue;
+            }
+
+            $url = $module->isInstalled()
+                ? $module->getInstalledURL()
+                : $module->getMarketplaceURL();
+
+            $modules[] = '<a href="' . $url . '">' . $title . '</a>';
         }
 
         return (0 < count($modules))
@@ -132,8 +116,8 @@ class Admin extends \XLite\View\Dialog
     protected function getAddons()
     {
         return array(
-            'XC\\Upselling'        => 'Related Products',
-            'CDev\\ProductAdvisor' => 'Product Advisor',
+            'XC\Upselling'        => 'Related Products',
+            'CDev\ProductAdvisor' => 'Product Advisor',
         );
     }
 }

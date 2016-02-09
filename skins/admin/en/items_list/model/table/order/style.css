@@ -43,7 +43,7 @@
 }
 
 .items-list-table table.list tbody.lines tr.line td.cell.profile {
-  line-height: 20px;
+  line-height: 1.3em;
 }
 
 .items-list.orders table.list tbody td.profile .profile-email a {
@@ -72,6 +72,7 @@
   width: 95%;
   overflow: hidden;
   display: inline-block;
+  vertical-align: middle;
 }
 
 .items-list.orders .profile-box .profile-email {

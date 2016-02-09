@@ -55,6 +55,18 @@ class PaymentReturn extends \XLite\Controller\Customer\ACheckoutReturn
     }
 
     /**
+     * Updates order state by transaction
+     *
+     * @param \XLite\Model\Payment\Transaction $txn Processed payment transaction
+     *
+     * @return void
+     */
+    public function updateOrderState($txn)
+    {
+        $txn->registerTransactionInOrderHistory('web');
+    }
+
+    /**
      * Process return
      *
      * @return void
@@ -65,7 +77,8 @@ class PaymentReturn extends \XLite\Controller\Customer\ACheckoutReturn
 
         if ($txn) {
             $txn->getPaymentMethod()->getProcessor()->processReturn($txn);
-            $txn->registerTransactionInOrderHistory('web');
+
+            $this->updateOrderState($txn);
 
             $urlParams = array();
             $urlParams['order_id'] = $txn->getOrder()->getOrderId();

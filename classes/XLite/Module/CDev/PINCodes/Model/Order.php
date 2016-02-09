@@ -146,7 +146,9 @@ class Order extends \XLite\Model\Order implements \XLite\Base\IDecorator
     {
         $this->releasePINCodes();
 
-        parent::processDecline();
+        if ($this->hasPinCodes()) {
+            parent::processDecline();
+        }
     }
 
     /**

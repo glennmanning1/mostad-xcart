@@ -40,13 +40,6 @@ class CacheManagement extends \XLite\Controller\Admin\Settings
     const CACHE_MANAGEMENT_PAGE = 'CacheManagement';
 
     /**
-     * Resize
-     *
-     * @var \XLite\Logic\QuickData\Generator
-     */
-    protected $quickDataGenerator;
-
-    /**
      * Page
      *
      * @var string
@@ -98,15 +91,7 @@ class CacheManagement extends \XLite\Controller\Admin\Settings
      */
     public function getQuickDataGenerator()
     {
-        if (null === $this->quickDataGenerator) {
-            $eventName = \XLite\Logic\QuickData\Generator::getEventName();
-            $state = \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->getEventState($eventName);
-            $this->quickDataGenerator = ($state && isset($state['options']))
-                ? new \XLite\Logic\QuickData\Generator($state['options'])
-                : false;
-        }
-
-        return $this->quickDataGenerator;
+        return \XLite\Logic\QuickData\Generator::getInstance();
     }
 
     /**

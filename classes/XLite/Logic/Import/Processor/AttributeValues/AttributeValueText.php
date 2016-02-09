@@ -66,6 +66,31 @@ class AttributeValueText extends \XLite\Logic\Import\Processor\AttributeValues\A
         return $columns;
     }
 
+
+    /**
+     * Create model
+     *
+     * @param array $data Data
+     *
+     * @return \XLite\Model\AttributeValue\AAttributeValue
+     */
+    protected function createModel(array $data)
+    {
+        $data['owner'] = $this->normalizeValueAsBoolean($data['owner']);
+
+        $product = $this->getProduct($data['productSKU']);
+
+        $attribute = $this->getAttribute($data);
+
+        if (!$attribute) {
+            $attribute = $this->createAttribute($data);
+        }
+
+        $attribute->setAttributeValue($product, $data);
+
+        return null;
+    }
+
     /**
      * Get repository
      *

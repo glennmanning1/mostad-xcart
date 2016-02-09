@@ -45,6 +45,26 @@ class ProductRestrictions extends \XLite\Logic\Import\Processor\AProcessor
     }
 
     /**
+     * Return empty array to prevent displaying of the product restrictions keys in the 'Import mode' tooltip
+     *
+     * @return array
+     */
+    public function getAvailableEntityKeys()
+    {
+        return array();
+    }
+
+    /**
+     * Return true if import run in update-only mode
+     *
+     * @return boolean
+     */
+    protected function isUpdateMode()
+    {
+        return false;
+    }
+
+    /**
      * Check - specified file is imported by this processor or not
      *
      * @param \SplFileInfo $file File

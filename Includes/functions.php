@@ -406,7 +406,7 @@ function query_upload($filename, $connection = null, $ignoreErrors = false, $is_
 {
     $fp = @fopen($filename, 'rb');
     if (!$fp) {
-        echo '<font color="red">[Failed to open $filename]</font></pre>' . "\n";
+        echo '<span style="color: red;">[Failed to open $filename]</span></pre>' . "\n";
         return false;
     }
 
@@ -473,7 +473,7 @@ function query_upload($filename, $connection = null, $ignoreErrors = false, $is_
                 }
 
             } elseif ($table_name != "") {
-                echo '<font color="green">[OK]</font><br />' . "\n";
+                echo '<span style="color: green;">[OK]</span><br />' . "\n";
 
             } elseif (!($counter % 20)) {
                 echo '.';
@@ -496,13 +496,13 @@ function query_upload_error($myerr, $ignoreErrors)
 {
     if (empty($myerr)) {
         echo "\n";
-        echo '<font color="green">[OK]</font>' . "\n";
+        echo '<span style="color: green;">[OK]</span>' . "\n";
 
     } elseif ($ignoreErrors) {
-        echo '<font color="blue">[NOTE: ' . $myerr . ']</font>' . "\n";
+        echo '<span style="color: blue;">[NOTE: ' . $myerr . ']</span>' . "\n";
 
     } else {
-        echo '<font color="red">[FAILED: ' . $myerr . ']</font>' . "\n";
+        echo '<span style="color: red;">[FAILED: ' . $myerr . ']</span>' . "\n";
     }
 }
 
@@ -1106,7 +1106,7 @@ function uploadQuery($fileName, $ignoreErrors = false, $is_restore = false)
     $fp = @fopen($fileName, 'rb');
 
     if (!$fp) {
-        echo '<font color="red">[Failed to open ' . $fileName . ']</font></pre>' . "\n";
+        echo '<span style="color: red;">[Failed to open ' . $fileName . ']</span></pre>' . "\n";
         return false;
     }
 
@@ -1168,7 +1168,7 @@ function uploadQuery($fileName, $ignoreErrors = false, $is_restore = false)
                 }
 
             } elseif ($table_name != "") {
-                echo '<font color="green">[OK]</font><br />' . "\n";
+                echo '<span style="color: green;">[OK]</span><br />' . "\n";
 
             } elseif (!($counter % 5)) {
                 echo '.';
@@ -1201,13 +1201,13 @@ function showQueryStatus($myerr, $ignoreErrors)
 {
     if (empty($myerr)) {
         echo "\n";
-        echo '<font color="green">[OK]</font>' . "\n";
+        echo '<span style="color: green;">[OK]</span>' . "\n";
 
     } elseif ($ignoreErrors) {
-        echo '<font color="blue">[NOTE: ' . $myerr . ']</font>' . "\n";
+        echo '<span style="color: blue;">[NOTE: ' . $myerr . ']</span>' . "\n";
 
     } else {
-        echo '<font color="red">[FAILED: ' . $myerr . ']</font>' . "\n";
+        echo '<span style="color: red;">[FAILED: ' . $myerr . ']</span>' . "\n";
     }
 }
 

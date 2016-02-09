@@ -1211,6 +1211,7 @@ abstract class AModel extends \XLite\View\Dialog
     protected function prepareRequestDataByFormFields($requestData)
     {
         $schemas = $this->getAllSchemaCells();
+        $nonFilteredData = \XLite\Core\Request::getInstance()->getNonFilteredData();
 
         foreach ($requestData as $name => $value) {
 
@@ -1224,7 +1225,6 @@ abstract class AModel extends \XLite\View\Dialog
 
                 if ($formField->isTrusted() || !empty($schemas[$name][static::SCHEMA_TRUSTED])) {
                     // Formfield value is trusted
-                    $nonFilteredData = \XLite\Core\Request::getInstance()->getNonFilteredData();
                     $value = $nonFilteredData[$name];
                 }
 
@@ -1283,25 +1283,6 @@ abstract class AModel extends \XLite\View\Dialog
         }
 
         return $result;
-    }
-
-    /**
-     * Return an associative array(the) section field values
-     *
-     * @param string $section Section name
-     *
-     * @return array
-     */
-    protected function getSectionFieldValues($section)
-    {
-        $result = array();
-        $fields = $this->getFormFields();
-
-        foreach ($fields[$section][self::SECTION_PARAM_FIELDS] as $field) {
-            $result[$field->getName()] = $this->prepareFieldValue(null, $field->getValue(), $section);
-        }
-
-        return $fields;
     }
 
     /**

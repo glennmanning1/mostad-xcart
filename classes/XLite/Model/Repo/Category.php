@@ -38,6 +38,7 @@ class Category extends \XLite\Model\Repo\Base\I18n
      * Allowable search params
      */
     const SEARCH_PARENT = 'parent';
+    const SEARCH_SUBTREE = 'subTree';
     const SEARCH_LIMIT  = 'limit';
 
     const ROOT_LPOS = 1;
@@ -677,16 +678,30 @@ class Category extends \XLite\Model\Repo\Base\I18n
      * Adds additional condition to the query to order categories
      *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder object
+     * @param int                        $value        Category id to exclude
+     * @param string                     $alias        Entity alias OPTIONAL
+     *
+     * @return void
+     */
+    protected function addExcludeCondition(\Doctrine\ORM\QueryBuilder $queryBuilder, $value, $alias = null)
+    {
+        $alias = $alias ?: $this->getDefaultAlias();
+
+        $queryBuilder->andWhere($alias . '.category_id <> :rootId')
+            ->setParameter('rootId', intval($value));
+    }
+
+    /**
+     * Adds additional condition to the query to order categories
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder object
      * @param string                     $alias        Entity alias OPTIONAL
      *
      * @return void
      */
     protected function addExcludeRootCondition(\Doctrine\ORM\QueryBuilder $queryBuilder, $alias = null)
     {
-        $alias = $alias ?: $this->getDefaultAlias();
-
-        $queryBuilder->andWhere($alias . '.category_id <> :rootId')
-            ->setParameter('rootId', $this->getRootCategoryId());
+        $this->addExcludeCondition($queryBuilder, $this->getRootCategoryId(), $alias);
     }
 
     /**
@@ -822,7 +837,7 @@ class Category extends \XLite\Model\Repo\Base\I18n
             if ($parent) {
                 // Reload parent category from database to get correct value of indexes
                 // after batch update in previous call of performInsert on import
-                \XLite\Core\Database::getEM()->refresh($parent);
+                \XLite\Core\Database::getEM()->merge($parent);
 
                 // Update indexes in the nested set
                 $this->defineUpdateIndexQuery('lpos', $parent->getLpos())->execute();
@@ -1028,6 +1043,7 @@ class Category extends \XLite\Model\Repo\Base\I18n
         return array(
             static::SEARCH_PARENT,
             static::SEARCH_LIMIT,
+            static::SEARCH_SUBTREE,
         );
     }
 
@@ -1040,12 +1056,10 @@ class Category extends \XLite\Model\Repo\Base\I18n
      */
     protected function defineCountForExportQuery()
     {
-        $qb = $this->createPureQueryBuilder();
+        $qb = parent::defineCountForExportQuery();
         $this->addSubTreeCondition($qb, $this->getRootCategoryId());
 
-        return $qb->select(
-            'COUNT(DISTINCT ' . $qb->getMainAlias() . '.' . $this->getPrimaryKeyField() . ')'
-        );
+        return $qb;
     }
 
     /**
@@ -1078,6 +1092,22 @@ class Category extends \XLite\Model\Repo\Base\I18n
         if ($value) {
             $queryBuilder->andWhere('c.parent = :parent')
                 ->setParameter('parent', $value);
+        }
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param mixed                      $value        Parent category id
+     *
+     * @return void
+     */
+    protected function prepareCndSubTree(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
+    {
+        if ($value) {
+            $this->addExcludeCondition($queryBuilder, $value);
+            $this->addSubTreeCondition($queryBuilder, $value);
         }
     }
 

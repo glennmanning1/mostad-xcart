@@ -76,9 +76,24 @@ class Install extends \XLite\View\Pager\Admin\Module\AModule
      */
     protected function getPagerTitle()
     {
+        $pagerTitle = $this->getModuleId()
+            ? ''
+            : parent::getPagerTitle();
+
         return $this->isLandingPage()
             ? static::t(static::WHATS_NEW_TITLE)
-            : parent::getPagerTitle();
+            : $pagerTitle;
+    }
+
+    /**
+     * Check if widget is visible
+     *
+     * @return boolean
+     */
+    protected function isVisible()
+    {
+        return parent::isVisible()
+            && !$this->getModuleId();
     }
 
     /**

@@ -98,6 +98,7 @@ class Attributes extends \XLite\View\Product\Details\AAttributes
                         $this->getAttributeValueWidgetParams($attribute),
                         $attribute::getWidgetClass($attribute->getType())
                     ),
+                    'entity' => $attribute,
                 );
             }
         }

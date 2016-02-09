@@ -26,3 +26,7 @@
 .items-list-table table.list thead th {
   padding: 16px 18px 16px 28px;
 }
+
+.items-list-table table.list tbody tr{
+  height: 50px;
+}

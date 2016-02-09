@@ -88,4 +88,37 @@ class ProductVariant extends \XLite\Module\XC\ProductVariants\Model\ProductVaria
     {
         return parent::getClearPrice();
     }
+
+    /**
+     * Clone
+     *
+     * @return \XLite\Model\AEntity
+     */
+    public function cloneEntity()
+    {
+        $newEntity = parent::cloneEntity();
+
+        $this->cloneMembership($newEntity);
+
+        return $newEntity;
+    }
+
+    /**
+     * Clone membership (used in cloneEntity() method)
+     *
+     * @param \XLite\Module\XC\ProductVariants\Model\ProductVariant $newEntity
+     *
+     * @return void
+     */
+    protected function cloneMembership(\XLite\Module\XC\ProductVariants\Model\ProductVariant $newEntity)
+    {
+        $repo = \XLite\Core\Database::getRepo('XLite\Module\CDev\Wholesale\Model\ProductVariantWholesalePrice');
+
+        foreach ($repo->findBy(array('productVariant' => $this)) as $price) {
+            $newPrice = $price->cloneEntity();
+            $newPrice->setProductVariant($newEntity);
+            $newPrice->setMembership($price->getMembership());
+            $newPrice->update();
+        }
+    }
 }

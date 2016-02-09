@@ -34,4 +34,18 @@ namespace XLite\View\StickyPanel\ItemsList;
  */
 class Profile extends \XLite\View\StickyPanel\ItemsListForm
 {
+	/**
+     * Define buttons widgets
+     *
+     * @return array
+     */
+    protected function defineButtons()
+    {
+        $list = parent::defineButtons();
+        $list['export'] = $this->getWidget(
+            array(),
+            'XLite\View\Button\ItemsExport\Profile'
+        );
+        return $list;
+    }
 }

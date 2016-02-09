@@ -16,5 +16,6 @@
     class="\XLite\View\FormField\Select\OrderStatus\Shipping"
     label="Shipping status"
     fieldName="shippingStatus"
-    order="{order}" />
+    order="{order}"
+    attributes="{getOrderStatusAttributes(#shipping#))}" />
 </div>

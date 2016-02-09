@@ -121,6 +121,7 @@ class Import extends \XLite\View\AView
         $state = $repo->getEventState($this->getEventName());
 
         return $state
+            && isset($state['state'])
             && in_array($state['state'], array(\XLite\Core\EventTask::STATE_STANDBY, \XLite\Core\EventTask::STATE_IN_PROGRESS))
             && !$repo->getVar($this->getImportUserBreakFlagVarName())
             && !$repo->getVar($this->getImportCancelFlagVarName());
@@ -139,6 +140,7 @@ class Import extends \XLite\View\AView
         return \XLite\Core\Request::getInstance()->failed
             || (
                 $state
+                && isset($state['state'])
                 && \XLite\Core\EventTask::STATE_FINISHED == $state['state']
                 && \XLite\Core\Request::getInstance()->completed
                 && (!$this->getImporter() || !$this->getImporter()->isNextStepAllowed())
@@ -161,6 +163,7 @@ class Import extends \XLite\View\AView
         if (!$result) {
 
             $result = $event
+                && isset($event['state'])
                 && !$repo->getVar($this->getImportCancelFlagVarName())
                 && \XLite\Core\Request::getInstance()->completed
                 && (
@@ -207,5 +210,17 @@ class Import extends \XLite\View\AView
     protected function getImportUserBreakFlagVarName()
     {
         return \XLite\Logic\Import\Importer::getImportUserBreakFlagVarName();
+    }
+
+    /**
+     * Get data for import commented data block
+     *
+     * @return array
+     */
+    protected function getImportCommentedData()
+    {
+        return array(
+            'importTarget' => $this->getImportTarget(),
+        );
     }
 }

@@ -161,6 +161,11 @@ button.remove
   height: auto;
   margin: 0px;
   background: transparent none;
+  color: #526aa8;
+}
+
+ul.data li i.fa {
+  font-size: 18px;
 }
 
 ul.data li.remove-mark .attribute-name .inline-field.editable .view {

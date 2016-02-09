@@ -65,7 +65,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
             'link' => array(
                 static::COLUMN_NAME         => static::t('Link'),
                 static::COLUMN_CLASS        => 'XLite\View\FormField\Inline\Input\Text',
-                static::COLUMN_PARAMS       => array('required' => true),
+                static::COLUMN_PARAMS       => array('required' => false),
                 static::COLUMN_HEAD_HELP    => $this->getColumnLinkHelp(),
                 static::COLUMN_ORDERBY  => 200,
             ),
@@ -75,7 +75,27 @@ class Menu extends \XLite\View\ItemsList\Model\Table
                 static::COLUMN_PARAMS       => array('fieldOnly' => true),
                 static::COLUMN_ORDERBY  => 300,
             ),
+            'submenus' => array(
+                static::COLUMN_NAME     => \XLite\Core\Translation::lbl('Submenu'),
+                static::COLUMN_TEMPLATE => 'modules/CDev/SimpleCMS/items_list/model/table/menu/parts/info.submenus.tpl',
+                static::COLUMN_ORDERBY  => 400,
+                static::COLUMN_EDIT_LINK => true,
+                static::COLUMN_LINK      => 'menus',
+            ),
         );
+    }
+
+    /**
+     * Get Menu
+     *
+     * @return \XLite\Module\CDev\SimpleCMS\Model\Menu
+     */
+    protected function getMenu()
+    {
+        return \XLite\Core\Request::getInstance()->id
+            ? \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')
+                ->find(intval(\XLite\Core\Request::getInstance()->id))
+            : \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->getRootMenu();
     }
 
     /**
@@ -105,9 +125,95 @@ class Menu extends \XLite\View\ItemsList\Model\Table
      */
     protected function getCreateURL()
     {
-        return \XLite\Core\Converter::buildURL('menu');
+        return \XLite\Core\Converter::buildUrl(
+            'menu',
+            null,
+            array(
+                'parent' => $this->getMenu()->getMenuId(),
+            )
+        );
     }
 
+    /**
+     * Build entity page URL
+     *
+     * @param \XLite\Model\AEntity $entity Entity
+     * @param array                $column Column data
+     *
+     * @return string
+     */
+    protected function buildEntityURL(\XLite\Model\AEntity $entity, array $column)
+    {
+        $link = \XLite\Core\Converter::buildURL(
+            $column[static::COLUMN_LINK],
+            '',
+            array(
+                'id' => $entity->getMenuId(),
+                'page' => $entity->getType(),
+            )
+        );
+
+        return 'submenus' == $column[static::COLUMN_CODE]
+            ? $link
+            : parent::buildEntityURL($entity, $column);
+    }
+
+    /**
+     * Create entity
+     *
+     * @return \XLite\Model\AEntity
+     */
+    protected function createEntity()
+    {
+        $entity = parent::createEntity();
+
+        $entity->setType($this->getPage());
+
+        $parent = null;
+        if (\XLite\Core\Request::getInstance()->id) {
+            $parent = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')
+                ->find(intval(\XLite\Core\Request::getInstance()->id));
+        }
+
+        if (!$parent) {
+            $parent = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->getRootMenu();
+        }
+
+        $entity->setParent($parent);
+
+        return $entity;
+    }
+
+    // {{{ Search
+
+    /**
+     * Return params list to use for search
+     * TODO refactor
+     *
+     * @return \XLite\Core\CommonCell
+     */
+    protected function getSearchCondition()
+    {
+        $result = parent::getSearchCondition();
+
+        foreach (static::getSearchParams() as $modelParam => $requestParam) {
+            $paramValue = $this->getParam($requestParam);
+
+            if ('' !== $paramValue && 0 !== $paramValue) {
+                $result->$modelParam = $paramValue;
+            }
+        }
+
+        $result->type = $this->getPage();
+
+        $result->{\XLite\Module\CDev\SimpleCMS\Model\Repo\Menu::SEARCH_PARENT} = \XLite\Core\Request::getInstance()->id
+            ? intval(\XLite\Core\Request::getInstance()->id)
+            : \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->getRootMenuId();
+
+        return $result;
+    }
+
+    // }}}
     /**
      * Get create button label
      *
@@ -161,6 +267,34 @@ class Menu extends \XLite\View\ItemsList\Model\Table
         return static::SORT_TYPE_MOVE;
     }
 
+    /**
+     * Return true if 'Edit' link should be displayed in column line
+     *
+     * @param array                $column
+     * @param \XLite\Model\AEntity $entity
+     *
+     * @return boolean
+     */
+    protected function isEditLinkEnabled(array $column, \XLite\Model\AEntity $entity)
+    {
+        return 'submenus' == $column[static::COLUMN_CODE]
+            ? parent::isEditLinkEnabled($column, $entity)
+                && !$entity->getSubmenusCount()
+            : parent::isEditLinkEnabled($column, $entity);
+    }
+
+    /**
+     * Get label for 'Edit' link
+     *
+     * @param \XLite\Model\AEntity $entity
+     *
+     * @return string
+     */
+    protected function getEditLinkLabel($entity)
+    {
+        return static::t('Add new');
+    }
+
     // }}}
 
     /**
@@ -183,20 +317,6 @@ class Menu extends \XLite\View\ItemsList\Model\Table
         return 'XLite\Module\CDev\SimpleCMS\View\StickyPanel\ItemsList\Menu';
     }
 
-    /**
-     * Create entity
-     *
-     * @return \XLite\Model\AEntity
-     */
-    protected function createEntity()
-    {
-        $entity = parent::createEntity();
-
-        $entity->setType($this->getPage());
-
-        return $entity;
-    }
-
     // {{{ Search
 
     /**
@@ -207,29 +327,6 @@ class Menu extends \XLite\View\ItemsList\Model\Table
     static public function getSearchParams()
     {
         return array();
-    }
-
-    /**
-     * Return params list to use for search
-     * TODO refactor
-     *
-     * @return \XLite\Core\CommonCell
-     */
-    protected function getSearchCondition()
-    {
-        $result = parent::getSearchCondition();
-
-        foreach (static::getSearchParams() as $modelParam => $requestParam) {
-            $paramValue = $this->getParam($requestParam);
-
-            if ('' !== $paramValue && 0 !== $paramValue) {
-                $result->$modelParam = $paramValue;
-            }
-        }
-
-        $result->type = $this->getPage();
-
-        return $result;
     }
 
     /**
@@ -246,11 +343,23 @@ class Menu extends \XLite\View\ItemsList\Model\Table
     }
 
     /**
+     * Return true if param value may contain anything
+     *
+     * @param string $name Param name
+     *
+     * @return boolean
+     */
+    protected function isParamTrusted($name)
+    {
+        return $name === 'link';
+    }
+
+    /**
      * Return name of the session cell identifier
      *
      * @return string
      */
-    protected function getSessionCell()
+    public function getSessionCell()
     {
         return parent::getSessionCell() . $this->getPage();
     }

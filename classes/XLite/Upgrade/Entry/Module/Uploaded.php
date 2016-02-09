@@ -399,8 +399,7 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
 
         foreach ($modules as $moduleOld) {
             if ($moduleOld) {
-                if (
-                    $moduleOld->getMajorVersion() != $this->getMajorVersionNew()
+                if ($moduleOld->getMajorVersion() != $this->getMajorVersionNew()
                     || $moduleOld->getMinorVersion() != $this->getMinorVersionNew()
                 ) {
                     $module->setYamlLoaded($moduleOld->getYamlLoaded());
@@ -416,7 +415,8 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
             \XLite\Core\Database::getRepo('\XLite\Model\Module')->update($module);
 
         } else {
-            $module->setEnabled(true);
+            $module->setEnabled(!$module->isSkinModule());
+            $module->setIsSkin($module->isSkinModule());
             \XLite\Core\Database::getRepo('\XLite\Model\Module')->insert($module);
         }
 

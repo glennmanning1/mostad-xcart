@@ -28,6 +28,7 @@ core.bind(
 
           var productId = box.data('xcProductId');
           var dataString = box.data('xcNextPrevious');
+          dataString['created'] = date.getTime();
 
           if (box.data('xcCookiePath')) {
             path = '; path=' + box.data('xcCookiePath');

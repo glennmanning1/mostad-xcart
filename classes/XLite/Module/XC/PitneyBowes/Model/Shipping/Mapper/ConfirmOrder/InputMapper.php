@@ -80,15 +80,26 @@ class InputMapper extends API\Mapper\JsonPostProcessedMapper
             $consignee = array(
                 'familyName'    => $address->getLastname(),
                 'givenName'     => $address->getFirstname(),
-                'email'         => $profile->getLogin(),
-                'phoneNumbers'  => array(
-                    array(
-                        'number' => $address->getPhone(),
-                        'type' => 'other'
-                    ),
-                ),
+                'email'         => $profile->getLogin()
             );
+
+            if ($address->getPhone()) {
+                $consignee['phoneNumbers']  = array(
+                    array(
+                        'number'    => $address->getPhone(),
+                        'type'      => 'other'
+                    ),
+                );
+            } elseif (\XLite\Core\Config::getInstance()->Company->company_phone) {
+                $consignee['phoneNumbers']  = array(
+                    array(
+                        'number'    => \XLite\Core\Config::getInstance()->Company->company_phone,
+                        'type'      => 'other'
+                    ),
+                );
+            }
         }
+
         return $consignee;
     }
 

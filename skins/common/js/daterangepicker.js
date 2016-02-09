@@ -334,7 +334,7 @@
 						for(var i=0;i<opt.customShortcuts.length;i++)
 						{
 							var sh = opt.customShortcuts[i];
-							if (sh.name == name)
+							if (lang(sh.name) == name)
 							{
 								var data = [];
 								// try
@@ -686,7 +686,7 @@
 					for(var i=0;i<opt.customShortcuts.length; i++)
 					{
 						var sh = opt.customShortcuts[i];
-						html+= '&nbsp;<span class="custom-shortcut"><a href="javascript:;" shortcut="custom">'+sh.name+'</a></span>';
+						html+= '&nbsp;<span class="custom-shortcut"><a href="javascript:;" shortcut="custom">'+lang(sh.name)+'</a></span>';
 					}
 				}
 
@@ -758,7 +758,7 @@
 			var toMonth = d.getMonth();
 			for(var i=0; i<40; i++)
 			{
-				var today = moment(d).add('days', i).toDate();
+				var today = moment(d).add(i, 'days').toDate();
 				var valid = true;
 				if (opt.startDate && compare_day(today,opt.startDate) < 0) valid = false;
 				if (opt.endDate && compare_day(today,opt.endDate) > 0) valid = false;

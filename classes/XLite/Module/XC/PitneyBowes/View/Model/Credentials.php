@@ -123,36 +123,24 @@ class Credentials extends \XLite\View\Model\AModel
      */
     protected function prepareAddressFieldValue($config)
     {
-        $state = $config->Company->location_custom_state;
+        $state = '';
 
-        if (is_numeric($config->Company->location_state)) {
-            $stateEntity = \XLite\Core\Database::getRepo('XLite\Model\State')->find(
-                $config->Company->location_state
-            );
-            if ($stateEntity
-                && $stateEntity->getCountry()->getCode() == $config->Company->location_country
-            ) {
-                $state = $stateEntity->getState();
-            }
+        if ($config->Company->originState) {
+            $state = $config->Company->originState->getState();
         }
 
         $country = '';
 
-        if ($config->Company->location_country) {
-            $countryEntity = \XLite\Core\Database::getRepo('XLite\Model\Country')->find(
-                $config->Company->location_country
-            );
-            if ($countryEntity) {
-                $country = $countryEntity->getCountry();
-            }
+        if ($config->Company->originCountry) {
+            $country = $config->Company->originCountry->getCountry();
         }
 
         $fields = array(
             $country,
             $state,
-            $config->Company->location_city,
-            $config->Company->location_address,
-            $config->Company->location_zipcode
+            $config->Company->origin_city,
+            $config->Company->origin_address,
+            $config->Company->origin_zipcode
         );
 
         return implode(', ', $fields);

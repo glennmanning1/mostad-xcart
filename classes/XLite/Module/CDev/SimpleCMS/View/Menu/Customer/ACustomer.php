@@ -41,7 +41,7 @@ abstract class ACustomer extends \XLite\View\Menu\Customer\ACustomer implements 
      *
      * @return boolean
      */
-    protected function isActiveItem(array $item)
+    protected function isActiveItemWithoutLink(array $item)
     {
         $result = parent::isActiveItem($item);
 
@@ -68,5 +68,56 @@ abstract class ACustomer extends \XLite\View\Menu\Customer\ACustomer implements 
         }
 
         return $result;
+    }
+
+    /**
+     * Check is parent should be active
+     *
+     * @param integer $id Id
+     *
+     * @return boolean
+     */
+    protected function checkChilden($id)
+    {
+        $item = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->find($id);
+        $result = false;
+
+        $self = $this;
+
+        if ($item) {
+            $children = $item->getChildren()->toArray();
+
+            if ($children) {
+                $found = array_reduce(
+                    $children,
+                    function($carry, $child) use ($self){
+                        return $carry ?: $self->checkChilden($child->getId());
+                    },
+                    false
+                );
+                $result = $found ;
+            } else {
+                $childLink = \XLite::getInstance()->getShopURL($item->getLink());
+                $result = $childLink === \XLite\Core\URLManager::getCurrentURL();
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Check - specified item is active or not
+     *
+     * @param array $item Menu item
+     *
+     * @return boolean
+     */
+    protected function isActiveItem(array $item)
+    {
+        $linkMatched = isset($item['url']) && (\XLite::getInstance()->getShopURL($item['url']) === \XLite\Core\URLManager::getCurrentURL());
+
+        return ($linkMatched || $this->checkChilden($item['id']))
+            ?:
+            $this->isActiveItemWithoutLink($item);
     }
 }

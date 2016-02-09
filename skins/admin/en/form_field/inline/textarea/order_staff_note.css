@@ -1,7 +1,7 @@
 /* vim: set ts=2 sw=2 sts=2 et: */
 
 /**
- * Order staff note styles
+ * Order notes styles
  *
  * @author    Qualiteam software Ltd <info@x-cart.com>
  * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
@@ -13,44 +13,9 @@
   position: relative;
 }
 
-.inline-order-staff-note .field .arrow {
-  background-color: #fffbe5;
-  position: absolute;
-  top: 10px;
-  left: -3px;
-  width: 5px;
-  height: 5px;
-  border-top: 1px solid #e4deaa;
-  border-left: 1px solid #e4deaa;
-  -moz-transform: rotate(-45deg);
-  -ms-transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
-  transform: rotate(-45deg);
-}
-
-.inline-order-staff-note .field {
-  padding: 23px 20px;
-  padding-bottom: 14px;
-  background-color: #fffbe5;
-  border: 1px solid #e4deaa;
-  position: relative;
-  z-index: 100;
-}
-
-.inline-order-staff-note .field .close {
-  color: #c5bf8f;
-  text-decoration: none;
-  position: absolute;
-  top: 1px;
-  right: 6px;
-  font-size: 22px;
-  opacity: 1;
-}
-
 .inline-order-staff-note .field .table-value {
-  padding-top: 3px;
-  padding-bottom: 0px;
+  padding-top: 0;
+  padding-bottom: 0;
   float: none;
 }
 
@@ -59,19 +24,78 @@
 }
 
 .inline-order-staff-note .field div.table-value textarea {
-  -moz-border-radius: 0px;
-  -webkit-border-radius: 0px;
-  border-radius: 0px;
-  margin: 0px;
-  width: 310px;
-  height: 60px;
-  font-size: 10px;
-  padding: 13px 10px;
+  margin: 0;
+  margin-top: 1px;
+  margin-left: -2px;
+  width: 420px;
+  height: 110px;
+  font-size: 14px;
+  overflow-x: hidden;
+  resize: none;
 }
 
-.inline-order-staff-note .field .buttons {
-  text-align: center;
-  margin-top: 0px;
+.inline-order-staff-note .view {
+  overflow: hidden;
+  display: block;
+  min-height: 30px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  width: 400px;
+  max-height: 110px;
 }
 
+.inline-order-staff-note.expanded .view {
+  max-height: none;
+}
 
+.inline-order-staff-note.empty .view *,
+.inline-order-staff-note.empty .value {
+  color: #b4b4b4;
+}
+
+.inline-order-staff-note .view * {
+  font-size: 14px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.inline-order-staff-note .view .truncated,
+.inline-order-staff-note.expanded .view .value {
+  display: inline;
+}
+
+.inline-order-staff-note.expanded .view .truncated,
+.inline-order-staff-note .view .value {
+  display: none;
+}
+
+.inline-order-staff-note.in-progress .view {
+  display: none;
+}
+
+.inline-order-staff-note .view .more-less-link {
+  text-decoration: none;
+  border-bottom: dashed 1px;
+  font-size: 14px;
+  line-height: 14px;
+}
+
+.inline-order-staff-note .view .more,
+.inline-order-staff-note .view .less {
+  display: none;
+}
+
+.inline-order-staff-note.expanded .view.has-more-link .more,
+.inline-order-staff-note .view.has-more-link .less {
+  display: none;
+}
+
+.inline-order-staff-note.expanded .view.has-more-link .less,
+.inline-order-staff-note .view.has-more-link .more {
+  display: inline-block;
+}
+
+.inline-order-staff-note.expand-focused:hover .view {
+  background: none;
+  border-color: #ffffff;
+}

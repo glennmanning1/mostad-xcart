@@ -11,6 +11,6 @@
  * @ListChild (list="add2cart_popup.item.buttons", weight="200")
  *}
 
-<widget IF="cart.checkCart()" class="\XLite\View\Button\Link" label="Checkout" location="{buildURL(#checkout#)}" style="regular-main-button checkout" />
-<widget IF="!cart.checkCart()" class="\XLite\View\Button\Link" label="Checkout" location="{buildURL(#checkout#)}" style="regular-main-button checkout" disabled="true" />
+<widget IF="cart.checkCart()" class="\XLite\View\Button\SimpleLink" label="Checkout" location="{buildURL(#checkout#)}" style="regular-main-button checkout" />
+<widget IF="!cart.checkCart()" class="\XLite\View\Button\SimpleLink" label="Checkout" location="{buildURL(#checkout#)}" style="regular-main-button checkout" disabled="true" />
 

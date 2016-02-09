@@ -12,5 +12,5 @@
  *}
 
 <div class="item-thumbnail">
-  <widget class="\XLite\View\Image" image="{product.getImage()}" maxWidth="{getIconWidth()}" maxHeight="{getIconHeight()}" alt="{product.name}" className="photo" />
+  <widget class="\XLite\View\Image" image="{item.getImage()}" maxWidth="{getIconWidth()}" maxHeight="{getIconHeight()}" alt="{product.name}" className="photo" />
 </div>

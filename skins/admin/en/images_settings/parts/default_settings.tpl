@@ -13,7 +13,7 @@
 
 <div class="images-sizes">
 
-<h2>{t(#Default images settings#)}</h2>
+<h2>{t(#Default image settings#)}</h2>
 
 <widget class="\XLite\View\ItemsList\Model\ImagesSettings" />
 

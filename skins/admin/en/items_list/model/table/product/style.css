@@ -88,8 +88,16 @@
 }
 
 .items-list.products table.list thead th.qty {
-  width: 39px;
+  width: 90px;
   text-align: right;
+}
+
+.items-list.products table.list td.price .view,
+.items-list.products table.list td.qty .view {
+  -webkit-box-pack: end;
+  -webkit-justify-content: flex-end;
+  -ms-flex-pack: end;
+          justify-content: flex-end;
 }
 
 .items-list-table td.qty div.table-value .input-text-integer input {

@@ -888,7 +888,7 @@ class API extends \XLite\Base\Singleton
 <non-contract-shipment xmlns="http://www.canadapost.ca/ws/ncshipment">
     <delivery-spec>
         <service-code>{$parcel->getOrder()->getCapostShippingMethodCode()}</service-code>
-{$this->getSenderXmlData(static::QUOTE_TYPE_NON_CONTRACTED)}
+{$this->getSenderXmlData($parcel, static::QUOTE_TYPE_NON_CONTRACTED)}
 {$this->getDestinationXmlData($parcel->getOrder()->getProfile())}
 {$this->getOptionsCommonXmlBlockByParcel($parcel)}
 {$this->getParcelCharacteristicsXmlData($parcel, static::QUOTE_TYPE_NON_CONTRACTED)}
@@ -921,7 +921,7 @@ XML;
 {$this->getPickUpTypeXmlData()}
     <delivery-spec>
         <service-code>{$parcel->getOrder()->getCapostShippingMethodCode()}</service-code>
-{$this->getSenderXmlData(static::QUOTE_TYPE_CONTRACTED)}
+{$this->getSenderXmlData($parcel, static::QUOTE_TYPE_CONTRACTED)}
 {$this->getDestinationXmlData($parcel->getOrder()->getProfile())}
 {$this->getOptionsCommonXmlBlockByParcel($parcel)}
 {$this->getParcelCharacteristicsXmlData($parcel, static::QUOTE_TYPE_CONTRACTED)}
@@ -955,11 +955,16 @@ XML;
 
         $detailedManifests = static::getCanadaPostConfig()->detailed_manifests ? 'true' : 'false';
 
-        $companyData = \XLite\Core\Config::getInstance()->Company;
-        $companyData->locationStateCode = $companyData->locationState->getCode();
-        $companyData->location_zipcode = static::strToUpper(
-            preg_replace('/\s+/', '', $companyData->location_zipcode)
+        $sourceAddress = $parcel->getOrder()->getSourceAddress();
+        $stateCode = '';
+        if ($sourceAddress->getState()) {
+            $stateCode = $sourceAddress->getState()->getCode();
+        }
+        $zipcode = static::strToUpper(
+            preg_replace('/\s+/', '', $sourceAddress->getZipcode())
         );
+
+        $companyData = \XLite\Core\Config::getInstance()->Company;
 
         $manifestName = static::getCanadaPostConfig()->manifest_name;
 
@@ -987,11 +992,11 @@ XML;
         $request .= <<<XML
         <phone-number>{$companyData->company_phone}</phone-number>
         <address-details>
-            <address-line-1>{$companyData->location_address}</address-line-1>
-            <city>{$companyData->location_city}</city>
-            <prov-state>{$companyData->locationStateCode}</prov-state>
-            <country-code>{$companyData->location_country}</country-code>
-            <postal-zip-code>{$companyData->location_zipcode}</postal-zip-code>
+            <address-line-1>{$sourceAddress->getStreet()}</address-line-1>
+            <city>{$sourceAddress->getCity()}</city>
+            <prov-state>{$stateCode}</prov-state>
+            <country-code>{$sourceAddress->getCountryCode()}</country-code>
+            <postal-zip-code>{$zipcode}</postal-zip-code>
         </address-details>
     </manifest-address>
 </transmit-set>
@@ -1014,7 +1019,7 @@ XML;
     <shipping-point-id>{$siteNum}</shipping-point-id>
 XML;
         } else {
-            $shippingPoint = preg_replace('/\s+/', '', \XLite\Core\Config::getInstance()->Company->location_zipcode);
+            $shippingPoint = preg_replace('/\s+/', '', \XLite\Core\Config::getInstance()->Company->origin_zipcode);
 
             $xmlData = <<<XML
     <cpc-pickup-indicator>true</cpc-pickup-indicator>
@@ -1028,28 +1033,34 @@ XML;
     /**
      * Get "sender" XML data for "Create Non-Contract Shipment" and "Create Shipment" requests
      *
+     * @param \XLite\Module\XC\CanadaPost\Model\Order\Parcel $parcel Canada Post parcel object
      * @param string $quoteType Quote type
      *
      * @return string
      */
-    protected function getSenderXmlData($quoteType = self::QUOTE_TYPE_NON_CONTRACTED)
+    protected function getSenderXmlData(\XLite\Module\XC\CanadaPost\Model\Order\Parcel $parcel, $quoteType = self::QUOTE_TYPE_NON_CONTRACTED)
     {
-        $companyData = \XLite\Core\Config::getInstance()->Company;
-        $companyData->locationStateCode = $companyData->locationState->getCode();
-        $companyData->location_zipcode = static::strToUpper(
-            preg_replace('/\s+/', '', $companyData->location_zipcode)
+        $sourceAddress = $parcel->getOrder()->getSourceAddress();
+        $stateCode = '';
+        if ($sourceAddress->getState()) {
+            $stateCode = $sourceAddress->getState()->getCode();
+        }
+        $zipcode = static::strToUpper(
+            preg_replace('/\s+/', '', $sourceAddress->getZipcode())
         );
+
+        $companyData = \XLite\Core\Config::getInstance()->Company;
 
         $xmlData = <<<XML
         <sender>
             <company>{$companyData->company_name}</company>
             <contact-phone>{$companyData->company_phone}</contact-phone>
             <address-details>
-                <address-line-1>{$companyData->location_address}</address-line-1>
-                <city>{$companyData->location_city}</city>
-                <prov-state>{$companyData->locationStateCode}</prov-state>
-                <country-code>{$companyData->location_country}</country-code>
-                <postal-zip-code>{$companyData->location_zipcode}</postal-zip-code>
+                <address-line-1>{$sourceAddress->getStreet()}</address-line-1>
+                <city>{$sourceAddress->getCity()}</city>
+                <prov-state>{$stateCode}</prov-state>
+                <country-code>{$sourceAddress->getCountryCode()}</country-code>
+                <postal-zip-code>{$zipcode}</postal-zip-code>
             </address-details>
         </sender>
 XML;

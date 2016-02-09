@@ -196,7 +196,7 @@ class ParcelItem extends \XLite\View\ItemsList\Model\Table
      *
      * @return string
      */
-    protected function getSessionCell()
+    public function getSessionCell()
     {
         return parent::getSessionCell() . $this->getParcelId();
     }

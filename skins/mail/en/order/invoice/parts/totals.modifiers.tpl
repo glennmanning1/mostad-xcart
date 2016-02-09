@@ -13,17 +13,17 @@
 
 <li FOREACH="getSurchargeTotals(),sType,surcharge" style="list-style: none;padding: 0px;margin: 0px;color: #5a5a5a;">
   {if:surcharge.count=#1#}
-    <div style="display: inline-block;color: #5a5a5a;">
+    <div style="display: inline;color: #5a5a5a;">
       {surcharge.lastName}:
       <list name="invoice.base.totals.modifier.name" surcharge="{surcharge}" sType="{sType}" order="{order}" />
     </div>
   {else:}
-    <div style="display:inline-block;color: #5a5a5a;">
+    <div style="display:inline;color: #5a5a5a;">
       {surcharge.name}:
       <list name="invoice.base.totals.modifier.name" surcharge="{surcharge}" sType="{sType}" order="{order}" />
     </div>
   {end:}
-  <div style="display: inline-block;color: #5a5a5a;">
+  <div style="display: inline;color: #5a5a5a;padding-left: 6px;">
     {if:surcharge.available}{formatSurcharge(surcharge)}{else:}{t(#n/a#)}{end:}
     <list name="invoice.base.totals.modifier.value" surcharge="{surcharge}" sType="{sType}" order="{order}" />
   </div>

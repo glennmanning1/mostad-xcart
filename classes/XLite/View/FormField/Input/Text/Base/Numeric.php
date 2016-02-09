@@ -41,6 +41,7 @@ abstract class Numeric extends \XLite\View\FormField\Input\Text
     const PARAM_MAX              = 'max';
     const PARAM_MOUSE_WHEEL_CTRL = 'mouseWheelCtrl';
     const PARAM_MOUSE_WHEEL_ICON = 'mouseWheelIcon';
+    const PARAM_ALLOW_EMPTY      = 'allowEmpty';
 
     /**
      * Prepare request data (typecasting)
@@ -51,7 +52,13 @@ abstract class Numeric extends \XLite\View\FormField\Input\Text
      */
     public function prepareRequestData($value)
     {
-        return preg_replace('/[^\d\.-]/Ss', '', parent::prepareRequestData($value));
+        $result = preg_replace('/[^\d\.-]/Ss', '', parent::prepareRequestData($value));
+
+        if (!$result && !$this->getParam(self::PARAM_ALLOW_EMPTY)) {
+            $result = 0;
+        }
+
+        return $result;
     }
 
     /**
@@ -68,6 +75,7 @@ abstract class Numeric extends \XLite\View\FormField\Input\Text
             static::PARAM_MAX              => new \XLite\Model\WidgetParam\Int('Maximum', null),
             static::PARAM_MOUSE_WHEEL_CTRL => new \XLite\Model\WidgetParam\Bool('Mouse wheel control', true),
             static::PARAM_MOUSE_WHEEL_ICON => new \XLite\Model\WidgetParam\Bool('User mouse wheel icon', true),
+            static::PARAM_ALLOW_EMPTY      => new \XLite\Model\WidgetParam\Bool('Allow empty not-numeric value', true),
         );
     }
 

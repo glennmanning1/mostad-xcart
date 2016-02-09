@@ -215,7 +215,8 @@ class PaymentMethodSelection extends \XLite\Controller\Admin\AAdmin
 
         if ($method->getModuleName() && !$method->isModuleInstalled()) {
             $module = $method->getModule();
-            $result = $module->getFromMarketplace()
+            $result = $module
+                && $module->getFromMarketplace()
                 && $module->canEnable(false)
                 && (
                     $module->isFree()
@@ -252,8 +253,6 @@ class PaymentMethodSelection extends \XLite\Controller\Admin\AAdmin
     {
         $result = '';
 
-        list($moduleAuthor, $moduleName) = explode('_', $method->getModuleName());
-
         if ($method->isModuleInstalled()) {
 
             // Payment module is installed
@@ -263,20 +262,10 @@ class PaymentMethodSelection extends \XLite\Controller\Admin\AAdmin
         } else {
 
             // Payment module is not installed
-
-            $widget = new \XLite\View\Pager\Admin\Module\Install();
-            list(, $limit) = $widget->getLimitCondition()->limit;
-            $pageId = \XLite\Core\Database::getRepo('XLite\Model\Module')
-                ->getMarketplacePageId($moduleAuthor, $moduleName, $limit);
-
-            $params = array(
-                'clearCnd'                                      => 1,
-                'clearSearch'                                   => 1,
-                \XLite\View\Pager\APager::PARAM_PAGE_ID         => $pageId,
-                \XLite\View\ItemsList\AItemsList::PARAM_SORT_BY => \XLite\View\ItemsList\Module\AModule::SORT_OPT_ALPHA,
-            );
-
-            $result = $this->buildURL('addons_list_marketplace', '', $params) . '#' . $moduleName;
+            $module = $method->getModule();
+            if ($module) {
+                $result = $module->getMarketplaceURL();
+            }
         }
 
         return $result;

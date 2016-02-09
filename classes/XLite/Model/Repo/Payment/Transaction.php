@@ -36,6 +36,7 @@ class Transaction extends \XLite\Model\Repo\ARepo
 {
 
     const SEARCH_ORDER     = 'order';
+    const SEARCH_SUBSTRING = 'substring';
     const SEARCH_PUBLIC_ID = 'public_id';
     const SEARCH_DATE      = 'date';
     const SEARCH_STATUS    = 'status';
@@ -165,6 +166,7 @@ class Transaction extends \XLite\Model\Repo\ARepo
     {
         return array(
             static::SEARCH_ORDER,
+            static::SEARCH_SUBSTRING,
             static::SEARCH_PUBLIC_ID,
             static::SEARCH_DATE,
             static::SEARCH_STATUS,
@@ -196,6 +198,31 @@ class Transaction extends \XLite\Model\Repo\ARepo
                 $queryBuilder->andWhere('ordr.orderNumber = :orderNumber')
                     ->setParameter('orderNumber', $value);
             }
+        }
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param mixed                      $value        Condition data
+     * @param boolean                    $countOnly    "Count only" flag. Do not need to add "order by" clauses if only count is needed.
+     *
+     * @return void
+     */
+    protected function prepareCndSubstring(\Doctrine\ORM\QueryBuilder $queryBuilder, $value, $countOnly)
+    {
+        if (!empty($value)) {
+            $number = $value;
+            if (preg_match('/^\d+$/S', $number)) {
+                $number = (int)$number ;
+            }
+
+            $queryBuilder->linkLeft('ordr.profile', 'p');
+
+            $queryBuilder->andWhere('ordr.orderNumber = :substring OR p.login LIKE :substringLike')
+                ->setParameter('substring', $number)
+                ->setParameter('substringLike', '%' . $value . '%');
         }
     }
 
@@ -311,50 +338,6 @@ class Transaction extends \XLite\Model\Repo\ARepo
     }
 
     /**
-     * Prepare certain search condition
-     *
-     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
-     * @param integer                    $value        Condition data
-     *
-     * @return void
-     */
-    protected function prepareCndCustomerName(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
-    {
-        if (!empty($value)) {
-
-            $queryBuilder->linkLeft('ordr.profile', 'p');
-            $queryBuilder->linkLeft('p.addresses', 'addresses');
-
-            $this->prepareAddressField($queryBuilder, 'firstname');
-            $this->prepareAddressField($queryBuilder, 'lastname');
-
-            $cnd = new \Doctrine\ORM\Query\Expr\Orx();
-
-            foreach ($this->getCustomerNameSearchFields() as $field) {
-                $cnd->add($field . ' LIKE :customerName');
-            }
-
-            $queryBuilder->andWhere($cnd)
-                ->setParameter('customerName', '%' . $value . '%');
-        }
-    }
-
-    /**
-     * List of fields to use in search by customerName
-     *
-     * @return array
-     */
-    protected function getCustomerNameSearchFields()
-    {
-        return array(
-            'address_field_value_firstname.value',
-            'address_field_value_lastname.value',
-            'CONCAT(CONCAT(address_field_value_firstname.value, \' \'), address_field_value_lastname.value)',
-            'CONCAT(CONCAT(address_field_value_lastname.value, \' \'), address_field_value_firstname.value)',
-        );
-    }
-
-    /**
      * Prepare fields for fullname value (for 'order by')
      *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder object
@@ -375,6 +358,25 @@ class Transaction extends \XLite\Model\Repo\ARepo
             \Doctrine\ORM\Query\Expr\Join::WITH,
             $addressFieldName . '.addressField = :' . $fieldName
         )->setParameter($fieldName, $addressField);
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param integer                    $value        Condition data
+     *
+     * @return void
+     */
+    protected function prepareCndCustomerName(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
+    {
+        if (!empty($value)) {
+
+            $queryBuilder->linkLeft('ordr.profile', 'p');
+
+            $queryBuilder->andWhere('p.searchFakeField LIKE :customerName')
+                ->setParameter('customerName', '%' . $value . '%');
+        }
     }
 
     /**

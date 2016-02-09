@@ -65,6 +65,11 @@ abstract class ModulesManager extends \Includes\Utils\AUtils
     protected static $activeModules;
 
     /**
+     * Active modules hash
+     */
+    protected static $activeModulesHash;
+
+    /**
      * Data for class tree walker
      *
      * @var array
@@ -328,6 +333,20 @@ abstract class ModulesManager extends \Includes\Utils\AUtils
     // }}}
 
     // {{{ Active modules
+
+    /**
+     * Return list of active modules (or check a single module)
+     *
+     * @return array
+     */
+    public static function getActiveModulesHash()
+    {
+        if (!static::$activeModulesHash) {
+            static::$activeModulesHash = md5(serialize(static::getActiveModules()));
+        }
+
+        return static::$activeModulesHash;
+    }
 
     /**
      * Return list of active modules (or check a single module)
@@ -1347,7 +1366,7 @@ abstract class ModulesManager extends \Includes\Utils\AUtils
         if ($moduleRows) {
             $moduleID = intval($moduleRows[0]['moduleID']);
             $yamlLoaded = intval($moduleRows[0]['yamlLoaded']);
-            $moduleName   = static::callModuleMethod($module, 'getModuleName');            
+            $moduleName   = static::callModuleMethod($module, 'getModuleName');
             $moduleDesc   = static::callModuleMethod($module, 'getDescription');
 
             $params = array(
@@ -1374,6 +1393,7 @@ abstract class ModulesManager extends \Includes\Utils\AUtils
                 $data['yamlLoaded'] = 1;
                 $needToLoadYaml = true;
             }
+            $data['isSkin'] = (int) static::callModuleMethod($module, 'isSkinModule');
 
             $query = 'REPLACE INTO ' . $table . ' SET ' . implode(' = ?,', array_keys($data)) . ' = ?';
         }

@@ -499,7 +499,14 @@ abstract class Storage extends \XLite\Model\AEntity
                 }
 
             } else {
-                $this->setStorageType(static::STORAGE_ABSOLUTE);
+                $store = \Includes\Utils\FileManager::getRelativePath($path, $this->getStoreFileSystemRoot());
+
+                if ($store && \Includes\Utils\FileManager::isReadable($path)) {
+                    $path = $store;
+                    $this->setStorageType(static::STORAGE_RELATIVE);
+                } else {
+                    $this->setStorageType(static::STORAGE_ABSOLUTE);
+                }
             }
 
         } else {
@@ -529,27 +536,34 @@ abstract class Storage extends \XLite\Model\AEntity
             $name = basename(parse_url($url, PHP_URL_PATH));
 
             if ($copy2fs) {
-                $file = \XLite\Core\Operator::getURLContent($url);
-                $result = !empty($file);
+                $result = \XLite\Core\Operator::checkURLAvailability($url);
+                if ($result && $result->ContentLength > 0) {
+                    try {
+                        $tmp = LC_DIR_TMP . $name;
+                        $result = \XLite\Core\Operator::writeURLContentsToFile($url, $tmp);
 
-                if ($result) {
-                    $tmp = LC_DIR_TMP . $name;
-                    $result = \Includes\Utils\FileManager::write($tmp, $file);
-                    if ($result) {
-                        $result = $this->loadFromLocalFile($tmp);
+                        if ($result) {
+                            $result = $this->loadFromLocalFile($tmp);
+                            \Includes\Utils\FileManager::deleteFile($tmp);
+                        } else {
+                            $this->loadError = 'unwriteable';
+                            \XLite\Logger::getInstance()->log(
+                                'Unable to write data to file \'' . $tmp . '\'.',
+                                LOG_ERR
+                            );
+                        }
 
-                    } else {
+                    } catch (\Exception $e) {
+                        \Includes\Utils\FileManager::deleteFile($tmp);
+                        $this->loadError = 'undownloadable';
                         \XLite\Logger::getInstance()->log(
-                            'Unable to write data to file \'' . $tmp . '\'.',
+                            'Unable to download the contents of \'' . $url . '\'.',
                             LOG_ERR
                         );
                     }
 
-                    if ($result) {
-                        \Includes\Utils\FileManager::deleteFile($tmp);
-                    }
-
                 } else {
+                    $this->loadError = 'URLAvailability';
                     \XLite\Logger::getInstance()->log(
                         'Unable to get at the contents of \'' . $url . '\'.',
                         LOG_ERR

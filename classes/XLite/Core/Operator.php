@@ -90,6 +90,49 @@ class Operator extends \XLite\Base\Singleton
     }
 
     /**
+     * Try to make HEAD request and check if resource is available. Returns headers if request is successful.
+     *
+     * @param string $url URL
+     *
+     * @return mixed
+     */
+    public static function checkURLAvailability($url)
+    {
+        $result = null;
+
+        $bouncer = new \XLite\Core\HTTP\Request($url);
+        $bouncer->verb = 'HEAD';
+        $response = $bouncer->sendRequest();
+
+        if ($response && 200 == $response->code) {
+            $result = $response->headers;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Curls URL and writes it to file
+     *
+     * @param string $url URL
+     *
+     * @return string|void
+     */
+    public static function writeURLContentsToFile($url, $file)
+    {
+        $result = null;
+
+        $bouncer = new \XLite\Core\HTTP\Request($url);
+        $response = $bouncer->requestToFile($file);
+
+        if ($response && 200 == $response->code) {
+            $result = true;
+        }
+
+        return $result;
+    }
+
+    /**
      * Get URL content
      *
      * @param string $url URL

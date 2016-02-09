@@ -89,7 +89,7 @@ class Product extends \XLite\View\Model\AModel
         ),
         'shippable' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNo',
-            self::SCHEMA_LABEL    => 'Shippable',
+            self::SCHEMA_LABEL    => 'Requires shipping',
             self::SCHEMA_REQUIRED => false,
         ),
         'useSeparateBox' => array(
@@ -208,6 +208,20 @@ class Product extends \XLite\View\Model\AModel
             : null;
 
         return $model ?: new \XLite\Model\Product;
+    }
+
+    /**
+     * Return fields' saved values for current form (saved data itself)
+     *
+     * @param string $name Parameter name OPTIONAL
+     *
+     * @return array
+     */
+    public function getSavedData($name = null)
+    {
+        return 'images' == $name
+            ? null
+            : parent::getSavedData($name);
     }
 
     /**
@@ -345,10 +359,11 @@ class Product extends \XLite\View\Model\AModel
             }
         }
 
-        $time = \XLite\Core\Converter::time();
 
         if (isset($data['arrivalDate'])) {
-            $data['arrivalDate'] = (int) strtotime($data['arrivalDate'])
+            $time = \XLite\Core\Converter::time();
+
+            $data['arrivalDate'] = (int) \XLite\Core\Converter::parseFromJsFormat($data['arrivalDate'])
                 ?: mktime(0, 0, 0, date('m', $time), date('j', $time), date('Y', $time));
         }
 

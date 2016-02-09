@@ -91,14 +91,14 @@ class Dashboard extends \XLite\View\Dialog
     {
         return array(
             'low-inventory' => array(
-                'name'   => $this->t('Low inventory products', array('count' => $this->getLowInventoryProductsAmount())),
-                'widget' => '\XLite\View\ItemsList\Model\Product\Admin\LowInventoryBlock',
+                'name'   => static::t('Low inventory products', array('count' => $this->getLowInventoryProductsAmount())),
+                'widget' => 'XLite\View\ItemsList\Model\Product\Admin\LowInventoryBlock',
                 'style'  => 0 < $this->getLowInventoryProductsAmount() ? 'non-empty' : 'empty',
             ),
             'top_sellers' => array(
                 'name'   => 'Top selling products',
-                'widget' => '\XLite\View\Product\TopSellersBlock',
-                'style'  => $this->hasTopSellers() ? 'non-empty' : 'empty',
+                'widget' => 'XLite\View\Product\TopSellersBlock',
+                'style'  => 'non-empty',
             ),
         );
     }
@@ -190,22 +190,11 @@ class Dashboard extends \XLite\View\Dialog
     /**
      * Get count of products in the Top sellers list
      *
-     * @return integer
-     */
-    protected function getTopSellersCount()
-    {
-        return \XLite\Core\Database::getRepo('\XLite\Model\OrderItem')
-            ->getTopSellersCount();
-    }
-
-    /**
-     * Get count of products in the Top sellers list
-     *
      * @return boolean
      */
     protected function hasTopSellers()
     {
-        return \XLite\Core\Database::getRepo('\XLite\Model\OrderItem')
+        return \XLite\Core\Database::getRepo('XLite\Model\Product')
             ->hasTopSellers();
     }
 }

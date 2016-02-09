@@ -17,11 +17,9 @@ var amazon_pa_orefid = '{getAmazonOrderRefId()}';
 var amazon_pa_place_order_enabled = false;
 var amazon_pa_address_selected = false;
 var amazon_pa_payment_selected = false;
+var amazon_pa_order_shippable = {if:isOrderShippable()}true{else:}false{end:};
 //]]>
 </script>
-{* <script type="text/javascript" src="skins/default/en/modules/Amazon/PayWithAmazon/func.js"></script> *}
-
-<h1>{t(#Pay with Amazon#)}</h1>
 
 <table cellspacing="0" cellpadding="0" width="100%" class="amazon-mobile-checkout-tbl">
 <tr>
@@ -38,20 +36,23 @@ var amazon_pa_payment_selected = false;
     <div class="checkout-block">
     <div class="steps clearfix">
 
-    <h3>{t(#Delivery methods#)}</h3>
-    <div class="step shipping-step">
-      <div class="substep step-shipping-methods">
-        <widget class="\XLite\View\Checkout\ShippingMethodsList" />
+    {if:isOrderShippable()}
+      <h3>{t(#Delivery methods#)}</h3>
+      <div class="step shipping-step">
+        <div class="substep step-shipping-methods">
+          <widget class="\XLite\View\Checkout\ShippingMethodsList" />
+        </div>
       </div>
-    </div>
+      <div class="step-payment-methods" style="display: none;"></div>
 
-    <br />
-    <br />
+      <br />
+      <br />
+    {end:}
 
     <h3>{t(#Order review#)}</h3>
     <div class="step review-step">
       <div class="step-box clearfix">
-        {* <list name="checkout.review.selected" /> *}
+        <list name="checkout.review.selected" />
       </div>
     </div>
 

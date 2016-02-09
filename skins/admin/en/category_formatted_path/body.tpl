@@ -11,11 +11,13 @@
 
 <ul class="category-formatted-path">
   <li class="root-category">
-    <a href="{buildURL(#categories#)}">{t(#Root categories#)}</a>
-    <span class="delimiter">:</span>
+    <a href="{buildURL(#categories#)}">{t(#Categories#)}</a>
   </li>
   <li FOREACH="getCategoryPath(),index,elem">
-    <a href="{buildURL(#categories#,##,_ARRAY_(#id#^elem.getCategoryId()))}">{elem.getName()}</a>
-    <span class="delimiter">:</span>
+    {if:isCurrentCategory(elem)}
+        <a>{elem.getName()}</a>
+    {else:}
+        <a href="{buildURL(#categories#,##,_ARRAY_(#id#^elem.getCategoryId()))}">{elem.getName()}</a>
+    {end:}
   </li>
 </ul>

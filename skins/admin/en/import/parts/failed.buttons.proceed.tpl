@@ -11,5 +11,8 @@
  * @ListChild (list="import.failed.buttons", weight="200")
  *}
 
-<widget class="XLite\View\Button\Link" jsCode="return false;" label="{t(#Proceed import#)}" style="main-button disabled" IF="{!isDisplayProceedButton()}" />
-<widget class="XLite\View\Button\Link" location="{buildURL(#import#,#proceed#)}" label="{t(#Proceed import#)}" style="main-button" IF="{isDisplayProceedButton()}" />
+{if:isDisplayProceedButton()}
+	<widget class="XLite\View\Button\Link" location="{buildURL(getImportTarget(),#proceed#)}" label="{t(#Proceed import#)}" style="main-button pull-right regular-main-button" />
+{else:}
+	<widget class="XLite\View\Button\Link" jsCode="return false;" label="{t(#Proceed import#)}" style="main-button regular-main-button pull-right disabled" />
+{end:}

@@ -16,5 +16,6 @@
     class="\XLite\View\FormField\Select\OrderStatus\Payment"
     label="Payment status"
     fieldName="paymentStatus"
-    order="{order}" />
+    order="{order}"
+    attributes="{getOrderStatusAttributes(#payment#))}" />
 </div>

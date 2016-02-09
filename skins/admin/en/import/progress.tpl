@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block import-box import-progress">
+<div class="import-box import-progress">
 
   <widget class="XLite\View\Import\Titles" />
 
@@ -21,7 +21,7 @@
         <div class="rows-processed">{t(#Initializing...#)}</div>
       </div>
       <div class="help">
-        <i class="icon-info-sign"></i>
+        <i class="fa fa-exclamation-triangle"></i>
         <p>
           {if:isBlocking()}
             {t(#The process of import may take much time. You may close the page, the operation will be in progress as background. If the operation takes long enough, we will send you a notification when it is complete.#)}

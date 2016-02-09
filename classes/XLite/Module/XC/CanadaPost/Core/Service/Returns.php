@@ -251,20 +251,26 @@ XML;
      */
     protected function getXmlBlockReceiverAddress()
     {
-        $companyData = \XLite\Core\Config::getInstance()->Company;
+        $sourceAddress = $parcel->getOrder()->getSourceAddress();
+        $stateCode = '';
+        if ($sourceAddress->getState()) {
+            $stateCode = $sourceAddress->getState()->getCode();
+        }
+        $zipcode = static::strToUpper(
+            preg_replace('/\s+/', '', $sourceAddress->getZipcode())
+        );
 
-        $companyData->locationStateCode = $companyData->locationState->getCode();
-        $companyData->locationZipCode = preg_replace('/\s+/', '', $companyData->location_zipcode);
+        $companyData = \XLite\Core\Config::getInstance()->Company;
 
         $xmlData = <<<XML
     <receiver>
         <name>{$companyData->company_name}</name>
         <company>{$companyData->company_name}</company>
         <domestic-address>
-            <address-line-1>{$companyData->location_address}</address-line-1>
-            <city>{$companyData->location_city}</city>
-            <province>{$companyData->locationStateCode}</province>
-            <postal-code>{$companyData->locationZipCode}</postal-code>
+            <address-line-1>{$sourceAddress->getStreet()}</address-line-1>
+            <city>{$sourceAddress->getCity()}</city>
+            <province>{$stateCode}</province>
+            <postal-code>{$zipcode}</postal-code>
         </domestic-address>
     </receiver>
 XML;

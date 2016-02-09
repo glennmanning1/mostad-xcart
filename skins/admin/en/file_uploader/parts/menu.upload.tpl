@@ -19,7 +19,7 @@
   </a>
   <input type="file" name="uploaded-file"{if:hasMultipleSelector()} multiple="multiple"{end:} />
 </li>
-<li role="presentation">
+<li role="presentation" IF="{isViaUrlAllowed()}">
   <a role="menuitem" tabindex="-1" href="#" class="via-url">
     <i class="button-icon fa fa-link"></i>
     <span>{t(#Via URL#)}</span>

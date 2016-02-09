@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="tooltip-main">
+<div class="tooltip-main" data-placement="{getParam(#placement#)}">
 {if:isImageTag()}
 <i {getAttributesCode():h}></i>
 {else:}
@@ -18,4 +18,4 @@
 <div IF="getParam(#helpWidget#)" class="help-text" style="display: none;"><widget class="{getParam(#helpWidget#)}" /></div>
 <div IF="!getParam(#helpWidget#)" class="help-text" style="display: none;">{getParam(#text#):h}</div>
 </div>
-<div class="clear"></div>
+<div IF="clear" class="clear"></div>

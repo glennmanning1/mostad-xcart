@@ -559,6 +559,7 @@ abstract class AEntry
                 } else {
                     // Do not skip any files during upgrade: all of them must be writable
                     $this->addFileErrorMessage('File is not readable', $path, !$isTestMode);
+                    $this->wrongPermissions[] = $this->getFullPath($path);
                 }
 
             } elseif (isset($hashesForUpgrade[$path])) {
@@ -1058,13 +1059,13 @@ abstract class AEntry
                 );
 
                 // Run hook function
-                $hookResult = $function($arg);
+                $hookResult = (int) $function($arg);
 
                 // Hook has been invoked - return true
                 $result = true;
 
                 // Save result of hook function
-                \XLite\Upgrade\Cell::getInstance()->addPassedHook($file, intval($hookResult));
+                \XLite\Upgrade\Cell::getInstance()->addPassedHook($file, $hookResult);
 
                 $this->addInfoMessage(
                     'Update hook is run: {{type}}:{{file}}',
@@ -1072,7 +1073,7 @@ abstract class AEntry
                     array('type' => $this->getActualName(), 'file' => $file . $suffix)
                 );
 
-                if (0 < intval($hookResult)) {
+                if (0 < $hookResult) {
                     \XLite\Upgrade\Cell::getInstance()->setHookRedirect(true);
                     break;
                 }

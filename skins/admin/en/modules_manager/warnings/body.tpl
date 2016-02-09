@@ -25,7 +25,7 @@
       <li FOREACH="getErrorMessages(),entryName,messageList" class="warning-entry">
         {foreach:messageList,message}
         {* :NOTE: do not add t(##) here: messages are already translated *}
-        <div class="message-entry">{message}</div>
+        <div class="message-entry">{message:h}</div>
         {end:}
       </li>
     </ul>

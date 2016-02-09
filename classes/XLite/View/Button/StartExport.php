@@ -74,6 +74,6 @@ class StartExport extends \XLite\View\Button\ProgressState
     protected function getClass()
     {
         $locked = $this->isExportLocked() ? 'disabled' : '';
-        return parent::getClass() . ' submit main-button ' . $locked;
+        return parent::getClass() . ' submit main-button regular-main-button ' . $locked;
     }
 }

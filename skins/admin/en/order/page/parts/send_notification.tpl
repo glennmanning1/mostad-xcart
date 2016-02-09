@@ -10,6 +10,6 @@
  *}
 
 <label class="disabled">
-  <input type="checkbox" name="sendNotification" class="disabled" value="1" checked="checked" />
+  <input type="checkbox" name="sendNotification" class="disabled not-affect-recalculate" value="1" checked="checked" />
   <span>{t(#Notify customer#)}</span>
 </label>

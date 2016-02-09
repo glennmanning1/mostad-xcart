@@ -32,7 +32,7 @@
   border-top: 1px solid #d6d6d6;
 }
 
-.sticky-panel .box .additional-buttons button {
+.sticky-panel .box .dropdown-menu button {
   font-size: 14px;
   text-align: left;
 }

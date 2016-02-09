@@ -16,12 +16,43 @@ CommonElement.prototype.handlers.push(
     },
     handler: function() {
       var config = this.$element.data('datarangeconfig') || {};
-      config.separator = ' ~ ';
-      config.language = 'en';
-      config.shortcuts = {
-        'prev-days': [1,3,5,7],
-        'prev' : ['week','month','year']
-      };
+
+      if (config.customShortcuts && config.customShortcuts.length > 0) {
+
+        var now = new Date();
+        var format = config.format || 'YYYY-MM-YY';
+
+        for (i = 0; i < config.customShortcuts.length; i++) {
+
+          var sh = config.customShortcuts[i];
+
+          if ('today' == sh.name) {
+            config.customShortcuts[i].dates = function() {
+              return [moment().toDate(format),moment().toDate(format)];
+            }
+
+          } else if ('this week' == sh.name) {
+            config.customShortcuts[i].dates = function() {
+              return [moment().startOf('week').toDate(), moment().toDate()];
+            }
+
+          } else if ('this month' == sh.name) {
+            config.customShortcuts[i].dates = function() {
+              return [moment().startOf('month').toDate(), moment().toDate()];
+            }
+
+          } else if ('this quarter' == sh.name) {
+            config.customShortcuts[i].dates = function() {
+              return [moment().startOf('quarter').toDate(), moment().toDate()];
+            }
+
+          } else if ('this year' == sh.name) {
+            config.customShortcuts[i].dates = function() {
+              return [moment().startOf('year').toDate(), moment().toDate()];
+            }
+          }
+        }
+      }
       if (this.$element.data('end-date')) {
         config.endDate = this.$element.data('end-date');
       }

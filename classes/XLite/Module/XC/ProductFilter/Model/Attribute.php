@@ -36,6 +36,15 @@ namespace XLite\Module\XC\ProductFilter\Model;
 class Attribute extends \XLite\Model\Attribute implements \XLite\Base\IDecorator
 {
     /**
+     * Flag if attribute is visible in product filter
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean", options={ "default": true })
+     */
+    protected $visible = true;
+
+    /**
      * Return list of filtered types
      *
      * @return array

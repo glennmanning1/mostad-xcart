@@ -73,10 +73,10 @@ class PurchaseOrder extends \XLite\Model\Payment\Processor\Offline
     protected function getInputDataLabels()
     {
         return array(
-            'number'    => 'Purchase order number',
-            'company'   => 'Company name',
-            'purchaser' => 'Name of purchaser',
-            'position'  => 'Position',
+            'po_number'    => 'PO number',
+            'po_company'   => 'Company name',
+            'po_purchaser' => 'Name of purchaser',
+            'po_position'  => 'Position',
         );
     }
 
@@ -88,10 +88,22 @@ class PurchaseOrder extends \XLite\Model\Payment\Processor\Offline
     protected function getInputDataAccessLevels()
     {
         return array(
-            'number'    => \XLite\Model\Payment\TransactionData::ACCESS_CUSTOMER,
-            'company'   => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
-            'purchaser' => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
-            'position'  => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'po_number'    => \XLite\Model\Payment\TransactionData::ACCESS_CUSTOMER,
+            'po_company'   => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'po_purchaser' => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'po_position'  => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+        );
+    }
+
+    /**
+     * Get list of primary input fields
+     *
+     * @return array
+     */
+    protected function getPrimaryInputDataFields()
+    {
+        return array(
+            'po_number',
         );
     }
 }

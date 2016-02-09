@@ -11,5 +11,5 @@
 
 <span class="date-picker-widget">
   {displayCommentedData(getDatePickerOptions())}
-  <input type="text" id="{getFieldId()}" name="{getParam(#fieldName#)}" value="{getValueAsString()}" class="date-picker {getClassName()}" />
+  <input type="text" id="{getFieldId()}" name="{getParam(#fieldName#)}" autocomplete='off' value="{getValueAsString()}" class="date-picker {getClassName()}" />
 </span>

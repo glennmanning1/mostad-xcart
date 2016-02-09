@@ -10,4 +10,4 @@
  *
  * @ListChild (list="add2cart_popup.item.buttons", weight="100")
  *}
-<widget class="\XLite\View\Button\Link" label="View cart" location="{buildURL(#cart#)}" style="cart" />
+<widget class="\XLite\View\Button\SimpleLink" label="View cart" location="{buildURL(#cart#)}" style="regular-button cart" />

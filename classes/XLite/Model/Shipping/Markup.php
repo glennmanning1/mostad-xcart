@@ -166,7 +166,7 @@ class Markup extends \XLite\Model\AEntity
      *
      * @var \XLite\Model\Zone
      *
-     * @ManyToOne  (targetEntity="XLite\Model\Zone", inversedBy="shipping_markups", cascade={"detach", "merge", "persist"})
+     * @ManyToOne  (targetEntity="XLite\Model\Zone", inversedBy="shipping_markups", cascade={"merge"})
      * @JoinColumn (name="zone_id", referencedColumnName="zone_id", onDelete="CASCADE")
      */
     protected $zone;

@@ -56,12 +56,6 @@ ul.products.products-sidebar .sale-label-product-details {
   vertical-align: middle;
 }
 
-.product-cell div.sale-label-product-details .text,
-  .product-quicklook div.sale-label-product-details ul.labels
-{
-  display: none;
-}
-
 .sale-label-product-details ul.labels {
   display: inline-block;
 }

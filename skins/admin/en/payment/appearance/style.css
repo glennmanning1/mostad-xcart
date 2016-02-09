@@ -68,6 +68,6 @@ td.cell.description div.inline-field.method-description {
   color: #bec6d8;
 }
 
-.items-list.payment-methods tr.line.disabled-method td {
+.items-list.payment-methods tr.line.disabled-method {
   opacity: 0.5;
 }

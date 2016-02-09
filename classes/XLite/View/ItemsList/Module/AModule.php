@@ -645,25 +645,33 @@ abstract class AModule extends \XLite\View\ItemsList\AItemsList
      */
     protected function getDependencyData(\XLite\Model\Module $module)
     {
-        if ($module->isPersistent()) {
-            if ($module->getInstalled()) {
-                if ($module->getEnabled()) {
-                    $result = array('status' => 'enabled', 'class' => 'good');
+        $cacheKey = \Includes\Utils\ModulesManager::getActiveModulesHash() . $module->getActualName() . 'dependencyData';
+        $cacheDriver = \XLite\Core\Database::getCacheDriver();
+
+        if ($cacheDriver->contains($cacheKey)) {
+            $result = $cacheDriver->fetch($cacheKey);
+        } else{
+            if ($module->isPersistent()) {
+                if ($module->getInstalled()) {
+                    if ($module->getEnabled()) {
+                        $result = array('status' => 'enabled', 'class' => 'good');
+                    } else {
+                        $result = array('status' => 'disabled', 'class' => 'none');
+                    }
+
+                    $result['href'] = $this->getModulePageURL($module);
+
                 } else {
-                    $result = array('status' => 'disabled', 'class' => 'none');
+                    $url  = $this->buildURL('addons_list_marketplace', '', array('substring' => $module->getModuleName()));
+                    $url .= '#' . $module->getName();
+
+                    $result = array('href' => $url, 'status' => 'not installed', 'class' => 'none');
                 }
 
-                $result['href'] = $this->getModulePageURL($module);
-
             } else {
-                $url  = $this->buildURL('addons_list_marketplace', '', array('substring' => $module->getModuleName()));
-                $url .= '#' . $module->getName();
-
-                $result = array('href' => $url, 'status' => 'not installed', 'class' => 'none');
+                $result = array('status' => 'unknown', 'class' => 'poor');
             }
-
-        } else {
-            $result = array('status' => 'unknown', 'class' => 'poor');
+            $cacheDriver->save($cacheKey, $result);
         }
 
         return $result;

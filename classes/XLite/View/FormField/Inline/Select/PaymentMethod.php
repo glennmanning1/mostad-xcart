@@ -147,4 +147,18 @@ class PaymentMethod extends \XLite\View\FormField\Inline\Base\Single
         return parent::getEntity()
             ?: new \XLite\Model\Payment\Transaction;
     }
+
+    /**
+     * Get additional CSS classes for the field widget
+     *
+     * @param array $field Field data
+     *
+     * @return string
+     */
+    protected function getAdditionalFieldStyle($field)
+    {
+        $style = parent::getAdditionalFieldStyle($field);
+
+        return ($style ? $style . ' ' : '') . 'not-affect-recalculate';
+    }
 }

@@ -112,6 +112,10 @@ function ProductDetailsView(base, productId)
 
   this.productId = productId;
 
+  core.bind('mm-menu.created', function(event, api){
+    $.colorbox.remove();
+  });
+
   this.linkClickHandler = _.bind(
     function(event)
     {
@@ -169,6 +173,11 @@ ProductDetailsView.prototype.preloadHandler = function ()
 ProductDetailsView.prototype.postprocess = function(isSuccess, initial)
 {
   this.callSupermethod('postprocess', arguments);
+
+  var tabsBase = jQuery('.product-details-tabs', this.base);
+
+  tabsBase.find('.tabs-container .tab-container').removeClass('hacky-container');
+  tabsBase.find('.tabs-container .tab-container').first().show();
 
   if (isSuccess) {
 
@@ -596,3 +605,17 @@ jQuery(window).resize(
     );
   }
 );
+
+// Hack for minified cloud zoom
+(function($) {
+    var origAppend = $.fn.append;
+
+    $.fn.append = function () {
+        return origAppend.apply(this, arguments).trigger("append");
+    };
+})(jQuery);
+
+jQuery('.cloud-zoom').parent().bind("append", function() {
+  var imageUrl = core.getCommentedData(jQuery('.cloud-zoom'), 'imageUrl');
+  jQuery(this).find('.mousetrap').css('background-image', 'url("' + imageUrl + '")');
+});

@@ -41,7 +41,7 @@ class InventoryTracking extends \XLite\View\Model\AModel
      */
     protected $schemaDefault = array(
         'enabled' => array(
-            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\EnabledDisabled',
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\OnOff',
             self::SCHEMA_LABEL    => 'Inventory tracking for this product is',
         ),
         'amount' => array(
@@ -53,9 +53,18 @@ class InventoryTracking extends \XLite\View\Model\AModel
                 ),
             ),
         ),
+        'lowLimitEnabledCustomer' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\OnOff',
+            self::SCHEMA_LABEL    => 'Show low stock warning on product page',
+            self::SCHEMA_DEPENDENCY => array(
+                self::DEPENDENCY_SHOW => array(
+                    'enabled' => array(1),
+                ),
+            ),
+        ),
         'lowLimitEnabled' => array(
-            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\EnabledDisabled',
-            self::SCHEMA_LABEL    => 'Low limit notification for this product is',
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\OnOff',
+            self::SCHEMA_LABEL    => 'Notify administrator if the stock quantity of this product goes below a certain limit',
             self::SCHEMA_DEPENDENCY => array(
                 self::DEPENDENCY_SHOW => array(
                     'enabled' => array(1),
@@ -68,7 +77,6 @@ class InventoryTracking extends \XLite\View\Model\AModel
             self::SCHEMA_DEPENDENCY => array(
                 self::DEPENDENCY_SHOW => array(
                     'enabled' => array(1),
-                    'lowLimitEnabled' => array(1),
                 ),
             ),
         ),

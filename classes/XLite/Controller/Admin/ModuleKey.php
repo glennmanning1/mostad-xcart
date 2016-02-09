@@ -46,7 +46,27 @@ class ModuleKey extends \XLite\Controller\Admin\AAdmin
         return static::t('Enter license key');
     }
 
+    /**
+     * isBlockContentAllowed
+     *
+     * @return boolean
+     */
+    public function isBlockContentAllowed()
+    {
+        return false;
+    }
+
     // }}}
+
+    /**
+     * Return true if unallowed modules should be ignored on current page
+     *
+     * @return boolean
+     */
+    protected function isIgnoreUnallowedModules()
+    {
+        return true;
+    }
 
     // {{{ "Register key" action handler
 
@@ -173,8 +193,8 @@ class ModuleKey extends \XLite\Controller\Admin\AAdmin
                             );
                         }
 
-                        // Clear cache for proper installation
-                        \XLite\Core\Marketplace::getInstance()->clearActionCache();
+                        // Renew marketplace cache
+                        $this->renewMarketplaceCache();
 
                         $this->setHardRedirect();
                     }
@@ -233,17 +253,19 @@ class ModuleKey extends \XLite\Controller\Admin\AAdmin
                             );
                         }
 
-                        // We install the addon after the successfull key verification
-                        $this->setReturnURL(
-                            $this->buildURL(
-                                'upgrade',
-                                'install_addon_force',
-                                array(
-                                    'moduleIds[]' => $module->getModuleID(),
-                                    'agree'       => 'Y',
+                        if (!$module->isInstalled()) {
+                            // We install the addon after the successfull key verification
+                            $this->setReturnURL(
+                                $this->buildURL(
+                                    'upgrade',
+                                    'install_addon_force',
+                                    array(
+                                        'moduleIds[]' => $module->getModuleID(),
+                                        'agree'       => 'Y',
+                                    )
                                 )
-                            )
-                        );
+                            );
+                        }
 
                     } else {
                         $this->showError(
@@ -285,4 +307,63 @@ class ModuleKey extends \XLite\Controller\Admin\AAdmin
     }
 
     // }}}
+
+    /**
+     * Do action 'unset_core_license'
+     *
+     * @return void
+     */
+    protected function doActionUnsetCoreLicense()
+    {
+        $keys = \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')->findBy(
+            array(
+                'name'   => 'Core',
+                'author' => 'CDev',
+            )
+        );
+
+        $allKeys = \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')->findAll();
+
+        $toDelete = array();
+
+        foreach ($keys as $key) {
+            foreach ($allKeys as $key2) {
+                // Search and delete all keys with the same keyBody
+                // (used in case of license key assigned to several entities)
+                if ($key->getKeyValue() == $key2->getKeyValue()) {
+                    $toDelete[] = $key2;
+                }
+            }
+        }
+
+        if ($toDelete) {
+            // Delete core license
+            \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')->deleteInBatch($toDelete);
+
+            // Renew marketplace cache
+            $this->renewMarketplaceCache();
+        }
+
+        $this->setReturnURL($this->buildURL('main'));
+    }
+
+    /**
+     * Renew marketplace cache
+     *
+     * @return void
+     */
+    protected function renewMarketplaceCache()
+    {
+        // Force to re-read core license
+        \XLite::getXCNLicense(true);
+
+        // Clear marketplace actions cache
+        \XLite\Core\Marketplace::getInstance()->clearActionCache();
+
+        // Update addons list
+        \XLite\Core\Marketplace::getInstance()->saveAddonsList(0);
+
+        // Update inactive licenses information
+        \XLite\Core\Marketplace::getInstance()->getInactiveLicenseKeys(0);
+    }
 }

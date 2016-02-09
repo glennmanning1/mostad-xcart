@@ -41,7 +41,7 @@ class PaymentSettings extends \XLite\Controller\Admin\AAdmin
      */
     public static function defineFreeFormIdActions()
     {
-        return array_merge(parent::defineFreeFormIdActions(), array('add'));
+        return array_merge(parent::defineFreeFormIdActions(), array('add', 'switch'));
     }
 
     /**
@@ -67,15 +67,43 @@ class PaymentSettings extends \XLite\Controller\Admin\AAdmin
     }
 
     /**
+     * Returns payment method
+     *
+     * @return \XLite\Model\Payment\Method
+     */
+    protected function getMethod()
+    {
+        return \XLite\Core\Request::getInstance()->id
+            ? \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->find(\XLite\Core\Request::getInstance()->id)
+            : null;
+    }
+
+    /**
+     * Do action 'Switch'
+     *
+     * @return void
+     */
+    protected function doActionSwitch()
+    {
+        $method = $this->getMethod();
+
+        if ($method) {
+            if (!$method->getEnabled()) {
+                $this->doActionEnable();
+            } else {
+                $this->doActionDisable();
+            }
+        }
+    }
+
+    /**
      * Enable method
      *
      * @return void
      */
     protected function doActionEnable()
     {
-        $method = \XLite\Core\Request::getInstance()->id
-            ? \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->find(\XLite\Core\Request::getInstance()->id)
-            : null;
+        $method = $this->getMethod();
 
         if ($method && $method->canEnable()) {
             $method->setEnabled(true);
@@ -134,9 +162,7 @@ class PaymentSettings extends \XLite\Controller\Admin\AAdmin
      */
     protected function doActionDisable()
     {
-        $method = \XLite\Core\Request::getInstance()->id
-            ? \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->find(\XLite\Core\Request::getInstance()->id)
-            : null;
+        $method = $this->getMethod();
 
         if ($method && !$method->isForcedEnabled()) {
             $method->setEnabled(false);

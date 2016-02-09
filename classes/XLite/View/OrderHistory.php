@@ -32,7 +32,7 @@ namespace XLite\View;
 /**
  * Order history widget
  *
- * @ListChild (list="order.operations", weight="50", zone="admin")
+ * @ListChild (list="order", weight="150", zone="admin")
  */
 class OrderHistory extends \XLite\View\AView
 {
@@ -188,6 +188,7 @@ class OrderHistory extends \XLite\View\AView
         $codes = array(
             \XLite\Core\OrderHistory::CODE_ORDER_EDITED,
             \XLite\Core\OrderHistory::CODE_CHANGE_NOTES_ORDER,
+            \XLite\Core\OrderHistory::CODE_CHANGE_CUSTOMER_NOTES_ORDER,
         );
 
         if (in_array($event->getCode(), $codes)) {

@@ -976,34 +976,7 @@ class AdminMain extends \XLite\View\Model\AModel
                 );
             }
         }
-        if (
-            $this->getModelObject()->isPersistent()
-            && !$this->getModelObject()->getAnonymous()
-            && !$this->getModelObject()->isAdmin()
-        ) {
-            $result['operateAs'] = $this->getOperateAsUserButton();
-        }
 
         return $result;
-    }
-
-    /**
-     * Get "Operate as this user" button
-     * 
-     * @return \XLite\View\Button\Regular
-     */
-    protected function getOperateAsUserButton()
-    {
-        $url = $this->buildURL('profile', 'operateAs', array(
-            'profile_id' => $this->getModelObject()->getProfileId()
-        ));
-        return new \XLite\View\Button\Link(
-            array(
-                \XLite\View\Button\AButton::PARAM_LABEL => 'Operate as user',
-                \XLite\View\Button\AButton::PARAM_STYLE => 'action always-enabled',
-                \XLite\View\Button\Link::PARAM_LOCATION => $url,
-                \XLite\View\Button\Link::PARAM_BLANK    => true,
-            )
-        );
     }
 }

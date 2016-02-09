@@ -69,6 +69,8 @@ class Product extends \XLite\Model\Repo\Product implements \XLite\Base\IDecorato
 
         if (0 < $count) {
             $qb->setMaxResults($count);
+        } elseif (isset($cnd->{self::P_LIMIT})) {
+            $qb->setFrameResults($cnd->{self::P_LIMIT});
         }
 
         if (0 < $cat) {
@@ -77,77 +79,5 @@ class Product extends \XLite\Model\Repo\Product implements \XLite\Base\IDecorato
         }
 
         return \XLite\Core\Database::getRepo('XLite\Model\Product')->assignExternalEnabledCondition($qb, 'p');
-    }
-
-    /**
-     * Find sales by product
-     *
-     * @param \XLite\Model\Product $product Product
-     *
-     * @return \Doctrine\ORM\QueryBuilder Query builder object
-     */
-    public function findSalesByProduct(\XLite\Model\Product $product)
-    {
-        $qb = $this->createPureQueryBuilder()
-            ->linkInner('p.order_items', 'o')
-            ->linkInner('o.order', 'ord')
-            ->linkInner('ord.paymentStatus', 'ps')
-            ->select('sum(o.amount) as product_amount')
-            ->andWhere('o.object = :product')
-            ->setParameter('product', $product);
-
-        return (int) $qb->andWhere($qb->expr()->in('ps.code', \XLite\Model\Order\Status\Payment::getPaidStatuses()))
-            ->getSingleScalarResult();
-    }
-
-    /**
-     * Count items for quick data
-     *
-     * @return integer
-     */
-    public function countForSales()
-    {
-        return (int) $this->defineCountForSalesQuery()->getSingleScalarResult();
-    }
-
-    /**
-     * Define query builder for COUNT query
-     *
-     * @return \XLite\Model\QueryBuilder\AQueryBuilder
-     */
-    protected function defineCountForSalesQuery()
-    {
-        $qb = $this->createPureQueryBuilder();
-
-        return $qb->select(
-            'COUNT(DISTINCT ' . $qb->getMainAlias() . '.' . $this->getPrimaryKeyField() . ')'
-        );
-    }
-
-    /**
-     * Define items iterator
-     *
-     * @param integer $position Position OPTIONAL
-     *
-     * @return \Doctrine\ORM\Internal\Hydration\IterableResult
-     */
-    public function getSalesIterator($position = 0)
-    {
-        return $this->defineSalesIteratorQueryBuilder($position)
-            ->iterate();
-    }
-
-    /**
-     * Define quick data iterator query builder
-     *
-     * @param integer $position Position
-     *
-     * @return \XLite\Model\QueryBuilder\AQueryBuilder
-     */
-    protected function defineSalesIteratorQueryBuilder($position)
-    {
-        return $this->createPureQueryBuilder()
-            ->setFirstResult($position)
-            ->setMaxResults(1000000000);
     }
 }

@@ -564,10 +564,34 @@ window.core = {
     }
   },
 
+
+  clearHash: function (paramName) {
+    var scrollV, scrollH, loc = window.location;
+    var newHash = '';
+
+    if (paramName !== undefined) {
+      var pattern = '&?(' + paramName + '(\\[\\S*\\])*=[^&]*&?)';
+      var re = new RegExp(pattern, "gi");
+
+      newHash = loc.hash.replace(re, '').slice(1);
+    };
+
+    // Prevent scrolling by storing the page's current scroll offset
+    scrollV = document.body.scrollTop;
+    scrollH = document.body.scrollLeft;
+
+    loc.hash = newHash;
+
+    // Restore the scroll offset, should be flicker free
+    document.body.scrollTop = scrollV;
+    document.body.scrollLeft = scrollH;
+  },
+
   autoload: function(className)
   {
     if ('function' == typeof(className)) {
       var m = className.toString().match(/function ([^\(]+)/);
+      window[m[1]] = className;
       className = m[1];
     }
 

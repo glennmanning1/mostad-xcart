@@ -80,12 +80,14 @@ class Coupon extends \XLite\View\Model\AModel
             self::SCHEMA_CLASS    => 'XLite\Module\CDev\Coupons\View\FormField\Total',
             self::SCHEMA_LABEL    => 'Subtotal range (begin)',
             \XLite\View\FormField\Input\Text\Float::PARAM_MIN => 0,
+            \XLite\View\FormField\Input\Text\Float::PARAM_ALLOW_EMPTY => false,
             self::SCHEMA_HELP     => 'Minimum order subtotal the coupon can be applied to',
         ),
         'totalRangeEnd' => array(
             self::SCHEMA_CLASS    => 'XLite\Module\CDev\Coupons\View\FormField\Total',
             self::SCHEMA_LABEL    => 'Subtotal range (end)',
             \XLite\View\FormField\Input\Text\Float::PARAM_MIN => 0,
+            \XLite\View\FormField\Input\Text\Float::PARAM_ALLOW_EMPTY => false,
             self::SCHEMA_HELP     => 'Maximum order subtotal the coupon can be applied to',
         ),
         'usesLimitCheck' => array(
@@ -98,6 +100,22 @@ class Coupon extends \XLite\View\Model\AModel
             self::SCHEMA_LABEL    => 'The maximum number of uses',
             \XLite\View\FormField\Input\Text\Float::PARAM_MIN     => 0,
             \XLite\View\FormField\AFormField::PARAM_WRAPPER_CLASS => 'input uses-limit',
+            self::SCHEMA_DEPENDENCY => array(
+                self::DEPENDENCY_SHOW => array(
+                    'usesLimitCheck' => true,
+                ),
+            ),
+        ),
+        'usesLimitPerUser' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Integer',
+            self::SCHEMA_LABEL    => 'The maximum number of uses per user',
+            \XLite\View\FormField\Input\Text\Float::PARAM_MIN     => 0,
+            \XLite\View\FormField\AFormField::PARAM_WRAPPER_CLASS => 'input uses-per-user-limit',
+            self::SCHEMA_DEPENDENCY => array(
+                self::DEPENDENCY_SHOW => array(
+                    'usesLimitCheck' => true,
+                ),
+            ),
         ),
         'singleUse' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
@@ -119,19 +137,6 @@ class Coupon extends \XLite\View\Model\AModel
             self::SCHEMA_HELP     => 'Coupon discount can be limited to customers with these membership levels',
         ),
     );
-
-    /**
-     * Register JS files
-     *
-     * @return array
-     */
-    public function getJSFiles()
-    {
-        $list = parent::getJSFiles();
-        $list[] = 'modules/CDev/Coupons/coupon/controller.js';
-
-        return $list;
-    }
 
     /**
      * Return current model ID
@@ -217,6 +222,7 @@ class Coupon extends \XLite\View\Model\AModel
 
         if (empty($data['usesLimitCheck'])) {
             $data['usesLimit'] = 0;
+            $data['usesLimitPerUser'] = 0;
         }
 
         $data['singleUse'] = (empty($data['singleUse']) ? 0 : 1);
@@ -344,7 +350,7 @@ class Coupon extends \XLite\View\Model\AModel
     protected function prepareFieldParamsUsesLimitCheck(array $data)
     {
         $model = $this->getModelObject();
-        if ($model && 0 < $model->getUsesLimit()) {
+        if ($model && (0 < $model->getUsesLimit() || $model->getUsesLImitPerUser())) {
             $data['isChecked'] = true;
         }
 

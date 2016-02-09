@@ -211,6 +211,15 @@ class Category extends \XLite\Model\Base\Catalog
     protected $metaDescType = 'A';
 
     /**
+     * Flag to exporting entities
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $xcPendingExport = false;
+
+    /**
      * Get object unique id
      *
      * @return integer

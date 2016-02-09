@@ -39,14 +39,14 @@ abstract class CategoryFilter extends \XLite\Module\XC\ProductFilter\View\ItemsL
 
     /**
      * Define data for getDataString() method
-     * 
+     *
      * @return array
      */
     protected function defineDataForDataString()
     {
         $list = parent::defineDataForDataString();
 
-        $list['parameters']['category_id'] = \XLite\Core\Request::getInstance()->category_id;
+        $list['parameters']['category_id'] = $this->getCategoryId();
 
         return $list;
     }

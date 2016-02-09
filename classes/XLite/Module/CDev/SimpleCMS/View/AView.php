@@ -56,7 +56,7 @@ abstract class AView extends \XLite\View\AView implements \XLite\Base\IDecorator
      */
     protected function getFavicon()
     {
-        $url = \XLite\Core\Config::getInstance()->CDev->SimpleCMS->favicon;
+        $url = str_replace(LC_DS, '/', \XLite\Core\Config::getInstance()->CDev->SimpleCMS->favicon);
 
         return $url ?: parent::getFavicon();
     }
@@ -71,17 +71,5 @@ abstract class AView extends \XLite\View\AView implements \XLite\Base\IDecorator
     protected function displayFavicon()
     {
         return parent::displayFavicon() || (bool)\XLite\Core\Config::getInstance()->CDev->SimpleCMS->favicon;
-    }
-
-    /**
-     * Get invoice logo
-     *
-     * @return string
-     */
-    public function getInvoiceLogo()
-    {
-        $url = \XLite\Core\Config::getInstance()->CDev->SimpleCMS->logo;
-
-        return $url ?: parent::getInvoiceLogo();
     }
 }

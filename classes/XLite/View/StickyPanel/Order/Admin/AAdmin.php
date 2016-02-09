@@ -34,5 +34,19 @@ namespace XLite\View\StickyPanel\Order\Admin;
  */
 abstract class AAdmin extends \XLite\View\StickyPanel\Order\AOrder
 {
+	/**
+     * Define buttons widgets
+     *
+     * @return array
+     */
+    protected function defineButtons()
+    {
+        $list = parent::defineButtons();
+        $list['export'] = $this->getWidget(
+            array(),
+            'XLite\View\Button\ItemsExport\Order'
+        );
+        return $list;
+    }
 }
 

@@ -8,7 +8,7 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  *}
-<div class="settings general-settings settings-{page}">
+<div class="settings general-settings settings-{page} settings-">
   <widget IF="target=#module#" class="\XLite\View\Model\ModuleSettings" useBodyTemplate="1" />
   <widget IF="!target=#module#" class="\XLite\View\Model\Settings" useBodyTemplate="1" />
 </div>

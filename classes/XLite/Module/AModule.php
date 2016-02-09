@@ -405,6 +405,15 @@ abstract class AModule
     /**
      * Register image sizes
      *
+     * If you want to change existing image sizes only once, on module install
+     * you should add a record to install.yaml of your module:
+     *
+     * For example:
+     *
+     * XLite\Model\ImageSettings:
+     *   - { model: XLite\Model\Image\Product\Image, code: Default, width: 123, height: 321 }
+     *   - { model: XLite\Model\Image\Category\Image, code: Default, width: 456, height: 654 }
+     *
      * @return void
      */
     public static function registerImageSizes()

@@ -28,8 +28,13 @@
       </li>
 
     </ul>
-
-    <widget class="\XLite\View\Button\Submit" label="{t(#Install updates#)}" style="center main-button" />
+    <div class="actions">
+      <div IF="isAdvancedMode()" class="additional-actions">
+          <span class="uncheck-all">{t(#Uncheck all#)}</span>
+          <span class="check-all">{t(#Check all#)}</span>
+      </div>
+      <widget class="\XLite\View\Button\Submit" label="{t(#Install updates#)}" style="center regular-main-button" />
+    </div>
 
   </div>
 

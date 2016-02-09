@@ -42,6 +42,25 @@ class Module extends \XLite\Controller\Admin\AAdmin
     protected $module;
 
     /**
+     * Define body classes
+     *
+     * @param array $classes Classes
+     *
+     * @return array
+     */
+    public function defineBodyClasses(array $classes)
+    {
+        $classes = parent::defineBodyClasses($classes);
+
+        $module = $this->getModule();
+        if ($module) {
+            $classes[] = strtolower('module-' . $module->getAuthor() . '-' . $module->getName());
+        }
+
+        return $classes;
+    }
+
+    /**
      * handleRequest
      *
      * @return void

@@ -55,6 +55,7 @@ class CoreVersionPlacer extends \XLite\View\AView
     {
         return parent::isVisible()
             && \XLite\Core\Auth::getInstance()->isLogged()
+            && \XLite\Core\Auth::getInstance()->isAdmin()
             && !$this->getWidget(array(), '\XLite\\View\\CoreVersion')->isVisible();
     }
 

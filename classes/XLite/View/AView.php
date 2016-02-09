@@ -115,6 +115,11 @@ abstract class AView extends \XLite\Core\Handler
     protected $currentLocale;
 
     /**
+     * Runtime cache for widgets initialization
+     */
+    protected static $initFlags = array();
+
+    /**
      * Return widget default template
      *
      * @return string
@@ -526,8 +531,12 @@ abstract class AView extends \XLite\Core\Handler
      */
     protected function initView()
     {
-        // Add widget resources to the static array
-        $this->registerResourcesForCurrentWidget();
+        $cachekey = get_class($this);
+        if (!isset(static::$initFlags[$cachekey])) {
+            // Add widget resources to the static array
+            $this->registerResourcesForCurrentWidget();
+            static::$initFlags[$cachekey] = true;
+        }
     }
 
     /**
@@ -2080,11 +2089,7 @@ abstract class AView extends \XLite\Core\Handler
      */
     public function getInvoiceLogo()
     {
-        return \XLite\Core\Layout::getInstance()->getResourceWebPath(
-            'images/invoice_logo.png',
-            \XLite\Core\Layout::WEB_PATH_OUTPUT_URL,
-            \XLite::CUSTOMER_INTERFACE
-        );
+        return $this->getLogo();
     }
 
     /**

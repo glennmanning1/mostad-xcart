@@ -23,6 +23,7 @@
   background: transparent url(../images/key.png) 0 7px no-repeat;
   padding: 0px 0px 0px 20px;
   display: inline-block;
+  vertical-align: middle;
 }
 
 .addon-key input {

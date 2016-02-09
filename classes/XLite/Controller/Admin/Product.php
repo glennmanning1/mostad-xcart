@@ -384,12 +384,6 @@ class Product extends \XLite\Controller\Admin\ACL\Catalog
         $newValue       = \XLite\Core\Request::getInstance()->newValue;
         $saveMode      = \XLite\Core\Request::getInstance()->save_mode;
 
-        foreach ($attributeValue as $k => $v) {
-            foreach ($v['value'] as $kk => $vv) {
-                $attributeValue[$k]['value'][$kk] = htmlspecialchars($vv);
-            }
-        }
-
         // Initialize non-filtered request data
         $nonFilteredData = \XLite\Core\Request::getInstance()->getNonFilteredData();
 

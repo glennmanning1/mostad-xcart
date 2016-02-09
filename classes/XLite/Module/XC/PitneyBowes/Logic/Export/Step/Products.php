@@ -770,7 +770,7 @@ OUT;
      */
     protected function getCOMMODITY_CONDITIONColumnValue(array $dataset, $name, $i)
     {
-       $condition = $this->getColumnValueByName($dataset['model'], 'condition');
+       $condition = $this->getColumnValueByName($dataset['model'], 'product_condition');
        switch ($condition) {
             case \XLite\Model\Product::CONDITION_NEW:
                 $result = 'New';
@@ -848,7 +848,7 @@ OUT;
      */
     protected function getPACKAGE_WEIGHTColumnValue(array $dataset, $name, $i)
     {
-        return $this->getColumnValueByName($dataset['model'], 'boxWeight') ?: '';
+        return $this->getColumnValueByName($dataset['model'], 'weight') ?: '';
     }
 
     /**

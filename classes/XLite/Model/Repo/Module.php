@@ -51,6 +51,7 @@ class Module extends \XLite\Model\Repo\ARepo
     const P_MODULEIDS        = 'moduleIds';
     const P_EDITION          = 'edition';
     const P_VENDOR           = 'vendor';
+    const P_IS_SKIN          = 'isSkin';
 
     /**
      * Price criteria
@@ -101,6 +102,9 @@ class Module extends \XLite\Model\Repo\ARepo
      * @var \XLite\Model\Module
      */
     protected $currentSkinModule;
+
+    protected $updateModulesCache;
+    protected $mutualModulesRegistry = array();
 
     // {{{ The Searchable interface
 
@@ -181,6 +185,7 @@ class Module extends \XLite\Model\Repo\ARepo
             static::P_MODULEIDS,
             static::P_EDITION,
             static::P_VENDOR,
+            static::P_IS_SKIN,
         );
     }
 
@@ -331,7 +336,7 @@ class Module extends \XLite\Model\Repo\ARepo
     protected function prepareCndEdition(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
         $queryBuilder->andWhere('m.editions LIKE :edition')
-            ->setParameter('edition', sprintf('%%"%s"%%', $value));
+            ->setParameter('edition', sprintf('%%_%s"%%', $value));
     }
 
     /**
@@ -463,6 +468,20 @@ class Module extends \XLite\Model\Repo\ARepo
      * Prepare certain search condition
      *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param boolean                    $value        Condition
+     *
+     * @return void
+     */
+    protected function prepareCndIsSkin(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
+    {
+        $queryBuilder->andWhere('m.isSkin = :isSkin')
+            ->setParameter('isSkin', $value);
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
      *
      * @return void
      */
@@ -565,6 +584,46 @@ class Module extends \XLite\Model\Repo\ARepo
 
     // {{{ Version-related routines
 
+    protected function getModules()
+    {
+        if (null === $this->updateModulesCache) {
+            $modules = $this->createQueryBuilder()
+                ->select('m.moduleID as id, reverse.moduleID as reverseModule, updated.moduleID as updateModule, upgrade.moduleID as upgradeModule')
+                ->leftJoin(
+                    'XLite\Model\Module',
+                    'reverse',
+                    \Doctrine\ORM\Query\Expr\Join::WITH,
+                    'reverse.author = m.author AND reverse.name = m.name AND m.moduleID != reverse.moduleID'
+                )
+                ->leftJoin(
+                    'XLite\Model\Module',
+                    'updated',
+                    \Doctrine\ORM\Query\Expr\Join::WITH,
+                    'updated.majorVersion = m.majorVersion AND updated.minorVersion > m.minorVersion AND updated.author = m.author AND updated.name = m.name'
+                )
+                ->leftJoin(
+                    'XLite\Model\Module',
+                    'upgrade',
+                    \Doctrine\ORM\Query\Expr\Join::WITH,
+                    'upgrade.majorVersion > m.majorVersion AND upgrade.author = m.author AND upgrade.name = m.name'
+                )
+                ->addGroupBy('id')
+                ->getQuery()
+                ->getResult();
+
+            $this->updateModulesCache = array();
+            foreach ($modules as $module) {
+                $this->updateModulesCache[$module['id']] = array(
+                    'reverse'   => $module['reverseModule'],
+                    'update'    => $module['updateModule'],
+                    'upgrade'   => $module['upgradeModule'],
+                );
+            }
+        }
+
+        return $this->updateModulesCache;
+    }
+
     /**
      * Search for modules having an elder version
      *
@@ -574,7 +633,13 @@ class Module extends \XLite\Model\Repo\ARepo
      */
     public function getModuleForUpdate(\XLite\Model\Module $module)
     {
-        return $this->defineModuleForUpdateQuery($module)->getSingleResult();
+        $modules = $this->getModules();
+
+        $update = $modules[$module->getModuleID()]['update'];
+
+        return $update
+            ? $this->find($update)
+            : null;
     }
 
     /**
@@ -586,7 +651,13 @@ class Module extends \XLite\Model\Repo\ARepo
      */
     public function getModuleFromMarketplace(\XLite\Model\Module $module)
     {
-        return $this->defineModuleFromMarketplaceQuery($module)->getSingleResult();
+        $modules = $this->getModules();
+
+        $reverse = $modules[$module->getModuleID()]['reverse'];
+
+        return $module->getFromMarketplace()
+            ? $module
+            : $this->find($reverse);
     }
 
     /**
@@ -598,7 +669,13 @@ class Module extends \XLite\Model\Repo\ARepo
      */
     public function getModuleInstalled(\XLite\Model\Module $module)
     {
-        return $this->defineModuleInstalledQuery($module)->getSingleResult();
+        $modules = $this->getModules();
+
+        $reverse = $modules[$module->getModuleID()]['reverse'];
+
+        return !$module->getFromMarketplace()
+            ? $module
+            : $this->find($reverse);
     }
 
     /**
@@ -610,104 +687,14 @@ class Module extends \XLite\Model\Repo\ARepo
      */
     public function getModuleForUpgrade(\XLite\Model\Module $module)
     {
-        return $this->defineModuleForUpgradeQuery($module)->getSingleResult();
+        $modules = $this->getModules();
+
+        $upgrade = $modules[$module->getModuleID()]['upgrade'];
+
+        return $upgrade
+            ? $this->find($upgrade)
+            : null;
     }
-
-    /**
-     * Query to search for modules having an elder version
-     *
-     * @param \XLite\Model\Module $module Module to get info from
-     *
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    protected function defineModuleForUpdateQuery(\XLite\Model\Module $module)
-    {
-        $queryBuilder = $this->createQueryBuilder();
-        $this->prepareCndSingleModuleSearch($queryBuilder, $module);
-
-        $queryBuilder->andWhere('m.majorVersion = :majorVersion')
-            ->andWhere('m.minorVersion > :minorVersion')
-            ->setParameter('majorVersion', $module->getMajorVersion())
-            ->setParameter('minorVersion', $module->getMinorVersion());
-
-        return $queryBuilder;
-    }
-
-    /**
-     * Query to search for modules having an elder version
-     *
-     * @param \XLite\Model\Module $module Module to get info from
-     *
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    protected function defineModuleFromMarketplaceQuery(\XLite\Model\Module $module)
-    {
-        $queryBuilder = $this->createQueryBuilder();
-        $this->prepareCndSingleModuleSearch($queryBuilder, $module);
-
-        $queryBuilder->addOrderBy('m.majorVersion', 'ASC')
-            ->addOrderBy('m.minorVersion', 'DESC');
-
-        $this->prepareCndFromMarketplace($queryBuilder, true);
-
-        return $queryBuilder;
-    }
-
-    /**
-     * Query to search for modules having an elder version
-     *
-     * @param \XLite\Model\Module $module Module to get info from
-     *
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    protected function defineModuleForUpgradeQuery(\XLite\Model\Module $module)
-    {
-        $queryBuilder = $this->createQueryBuilder();
-        $this->prepareCndSingleModuleSearch($queryBuilder, $module);
-
-        $queryBuilder->andWhere('m.majorVersion > :majorVersion')
-            ->setParameter('majorVersion', $module->getMajorVersion())
-            ->addOrderBy('m.minorVersion', 'DESC');
-
-        return $queryBuilder;
-    }
-
-    /**
-     * Query to search for installed modules
-     *
-     * @param \XLite\Model\Module $module Module to get info from
-     *
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    protected function defineModuleInstalledQuery(\XLite\Model\Module $module)
-    {
-        $queryBuilder = $this->createQueryBuilder();
-        $this->prepareCndSingleModuleSearch($queryBuilder, $module);
-        $this->prepareCndInstalled($queryBuilder, true);
-
-        return $queryBuilder;
-    }
-
-    /**
-     * Helper to search module with the same name and author
-     *
-     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
-     * @param \XLite\Model\Module        $module       Module to get info from
-     *
-     * @return \Doctrine\ORM\QueryBuilder
-     */
-    protected function prepareCndSingleModuleSearch(
-        \Doctrine\ORM\QueryBuilder $queryBuilder,
-        \XLite\Model\Module $module
-    ) {
-        $queryBuilder->andWhere('m.name = :name')
-            ->andWhere('m.author = :author')
-            ->setParameter('name', $module->getName())
-            ->setParameter('author', $module->getAuthor())
-            ->setMaxResults(1);
-    }
-
-    // }}}
 
     // {{{ Search for dependencies
 
@@ -806,6 +793,33 @@ class Module extends \XLite\Model\Repo\ARepo
         $module = $this->findBy(array('fromMarketplace' => true), array('downloads' => 'desc'), 1);
 
         return $module[0]->getDownloads();
+    }
+
+    /**
+     * Return marketplace url
+     *
+     * @param string  $author Author
+     * @param string  $module Module name
+     *
+     * @return string
+     */
+    public function getMarketplaceUrlByName($author, $module)
+    {
+        $moduleObject = \XLite\Core\Database::getRepo('XLite\Model\Module')->findOneBy(
+            array(
+                'author'          => $author,
+                'name'            => $module,
+                'fromMarketplace' => true,
+            )
+        );
+
+        $url = '';
+
+        if ($moduleObject) {
+            $url = $moduleObject->getMarketplaceURL();
+        }
+
+        return $url;
     }
 
     /**
@@ -1377,7 +1391,7 @@ class Module extends \XLite\Model\Repo\ARepo
             }
 
             if ($module->getModuleID()) {
-                $messages[] = \XLite\Core\Translation::getInstance()->translate('A DB error occured while uninstalling the module X', $params);
+                $messages[] = \XLite\Core\Translation::getInstance()->translate('A DB error occurred while uninstalling the module X', $params);
 
             } else {
                 if (!empty($yamlData)) {
@@ -1412,15 +1426,9 @@ class Module extends \XLite\Model\Repo\ARepo
         if (null === $this->skinModules) {
             $cnd = new \XLite\Core\CommonCell();
             $cnd->{\XLite\Model\Repo\Module::P_INSTALLED} = true;
+            $cnd->{\XLite\Model\Repo\Module::P_IS_SKIN} = true;
 
-            $this->skinModules = array_reduce($this->search($cnd), function ($carry, $item) {
-                /** @var \XLite\Model\Module $item */
-                if ($item->isSkinModule()) {
-                    $carry[] = $item;
-                }
-
-                return $carry;
-            }, array());
+            $this->skinModules = $this->search($cnd);
         }
 
         return $this->skinModules;
@@ -1443,4 +1451,153 @@ class Module extends \XLite\Model\Repo\ARepo
     }
 
     // }}}
+
+    /**
+     * Find the list of unallowed modules used in the store
+     *
+     * @return array
+     */
+    public function findUnallowedModules()
+    {
+        $result = array();
+
+        $modules = $this->defineUnallowedModules()->getResult();
+
+        if ($modules) {
+
+            $isTrialExpired = \XLite::isTrialPeriodExpired();
+
+            if (\XLite::getXCNLicense()) {
+                $keyData = \XLite::getXCNLicense()->getKeyData();
+                $keyEdition = !empty($keyData['editionName']) ? $keyData['editionName'] : null;
+
+            } elseif ($isTrialExpired) {
+                $keyEdition = 'Trial';
+
+            } else {
+                $keyEdition = null;
+            }
+
+            $allKeys = \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')->findAll();
+
+            $keys = array();
+
+            if ($allKeys) {
+                foreach ($allKeys as $key) {
+                    $keys[$key->getAuthor() . '\\' . $key->getName()] = $key;
+                }
+            }
+
+            foreach ($modules as $row) {
+
+                $module = $row[0];
+
+                $key = !empty($keys[$module->getActualName()]) ? $keys[$module->getActualName()] : null;
+
+                if ($row['editions']) {
+                    $moduleEditions = array_map(
+                        function ($v) { return preg_replace('/^\d*_(.+)/', '\\1', $v); },
+                        $row['editions']
+                    );
+
+                } else {
+                    $moduleEditions = array();
+                }
+
+                $addModule = (
+                    ($keyEdition || $isTrialExpired)
+                    && $moduleEditions
+                    && 2 == $row['editionState']
+                    && !in_array('Free', $moduleEditions)
+                    && !in_array($keyEdition, $moduleEditions)
+                )
+                || (
+                    !empty($row['xbProductId'])
+                    && $row['price'] > 0
+                    && (
+                        !$key
+                        || !$key->getActive()
+                    )
+                );
+
+                if ($addModule) {
+                    $result[] = array(
+                        $module,
+                        'key'          => $key ? $key->getKeyValue() : null,
+                        'editions'     => $moduleEditions,
+                        'editionState' => $row['editionState'],
+                        'price'        => $row['price'],
+                        'xbProductId'  => $row['xbProductId'],
+                    );
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get query builder for findUnallowedModules() method
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function defineUnallowedModules()
+    {
+        // Search for installed modules...
+        $qb = $this->createQueryBuilder('m')
+            ->andWhere('m.fromMarketplace = 0')
+            ->andWhere('m.installed = 1')
+            ->andWhere('m.enabled = 1');
+
+        // Inner join with modules from marketplace...
+        $qb->linkInner('\XLite\Model\Module', 'mm', 'WITH', 'mm.name = m.name AND mm.author = m.author AND mm.fromMarketplace = 1')
+            ->addSelect('mm.price price')
+            ->addSelect('mm.editions editions')
+            ->addSelect('mm.editionState editionState')
+            ->addSelect('mm.xbProductId xbProductId');
+
+        // Generate SQL part for modules from marketplace:
+        // ...AND (mm.price > 0 OR NOT (mm.editions = '' OR mm.editions = 'a:0:{}')) ...
+        $orCnd = $qb->expr()->orX();
+        $orCnd->add('mm.editions = :empty');
+        $orCnd->add('mm.editions = :emptyArray');
+
+        $orCnd2 = $qb->expr()->orX();
+        $orCnd2->add('mm.price > 0');
+        $orCnd2->add($qb->expr()->not($orCnd));
+
+        $qb->andWhere($orCnd2)
+            ->setParameter('empty', '')
+            ->setParameter('emptyArray', 'a:0:{}');
+
+        return $qb;
+    }
+
+    /**
+     * Get edition ID by its name
+     *
+     * @param string $name Edition name
+     *
+     * @return integer
+     */
+    public function getEditionIdByName($name)
+    {
+        $result = null;
+
+        $qb = $this->createQueryBuilder('m');
+        $this->prepareCndFromMarketplace($qb, 1);
+        $this->prepareCndEdition($qb, $name);
+        $this->prepareCndLimit($qb, array(0, 1));
+
+        $module = $qb->getSingleResult();
+
+        if ($module) {
+            $editionIds = $module->getEditionIds();
+            if (isset($editionIds[$name])) {
+                $result = $editionIds[$name];
+            }
+        }
+
+        return $result;
+    }
 }

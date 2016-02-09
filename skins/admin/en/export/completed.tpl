@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block export-box export-completed">
+<div class="export-box export-completed">
 
   <div class="header clearfix">
     <h2>{t(#Export completed#)}</h2>

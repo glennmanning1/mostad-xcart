@@ -160,6 +160,8 @@ class ShippingSettings extends \XLite\Controller\Admin\AAdmin
                 ? 'Shipping method is enabled'
                 : 'Shipping method is disabled';
 
+            \XLite\Core\Database::getEM()->flush($method);
+
             \XLite\Core\TopMessage::addInfo($message);
         }
 

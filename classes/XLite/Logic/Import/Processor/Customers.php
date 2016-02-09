@@ -431,46 +431,50 @@ class Customers extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function importAddressFieldColumn(\XLite\Model\Profile $model, array $value, array $column)
     {
-        $data = array();
-        foreach ($value as $name => $rows) {
-            $method = null;
-            if ($this->isColumnHeaderEqual('shippingAddress', $name)) {
-                $data['is_shipping'] = $rows;
+        if ($value && !$this->verifyValueAsNull($value)) {
+            $data = array();
+            foreach ($value as $name => $rows) {
+                $method = null;
+                if ($this->isColumnHeaderEqual('shippingAddress', $name)) {
+                    $data['is_shipping'] = $rows;
 
-            } elseif ($this->isColumnHeaderEqual('billingAddress', $name)) {
-                $data['is_billing'] = $rows;
+                } elseif ($this->isColumnHeaderEqual('billingAddress', $name)) {
+                    $data['is_billing'] = $rows;
 
-            } else {
-                $serviceName = $this->normalizeColumnHeader('(\w+)' . static::ADDRESS_FIELD_SUFFIX, $name);
-                if ($serviceName) {
-                    if ('state' == $serviceName) {
-                        $data['state'] = $rows;
+                } else {
+                    $serviceName = $this->normalizeColumnHeader('(\w+)' . static::ADDRESS_FIELD_SUFFIX, $name);
+                    if ($serviceName) {
+                        if ('state' == $serviceName) {
+                            $data['state'] = $rows;
 
-                    } else {
-                        foreach (\XLite\Core\Database::getRepo('XLite\Model\AddressField')->findAllEnabled() as $field) {
-                            $fname = lcfirst(\XLite\Core\Converter::convertToCamelCase($field->getServiceName()));
-                            if ($fname == $serviceName) {
-                                $data[$field->getServiceName()] = $rows;
+                        } else {
+                            foreach (\XLite\Core\Database::getRepo('XLite\Model\AddressField')->findAllEnabled() as $field) {
+                                $fname = lcfirst(\XLite\Core\Converter::convertToCamelCase($field->getServiceName()));
+                                if ($fname == $serviceName) {
+                                    $data[$field->getServiceName()] = $rows;
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        $addresses = $this->assembleSubmodelsData($data, $column);
+            $addresses = $this->assembleSubmodelsData($data, $column);
 
-        $i = 0;
-        foreach ($addresses as $address) {
-            $this->importAddress($model, $address, $i);
-            $i++;
-        }
+            $i = 0;
+            foreach ($addresses as $address) {
+                $this->importAddress($model, $address, $i);
+                $i++;
+            }
 
-        // Remove
-        while (count($model->getAddresses()) > count($addresses)) {
-            $address = $model->getAddresses()->last();
-            \XLite\Core\Database::getRepo('XLite\Model\Address')->delete($address, false);
-            $model->getAddresses()->removeElement($address);
+            // Remove
+            while (count($model->getAddresses()) > count($addresses)) {
+                $address = $model->getAddresses()->last();
+                \XLite\Core\Database::getRepo('XLite\Model\Address')->delete($address, false);
+                $model->getAddresses()->removeElement($address);
+            }
+        } elseif ($value && $this->verifyValueAsNull($value)) {
+            $model->getAddresses()->clear();
         }
     }
 
@@ -619,4 +623,39 @@ class Customers extends \XLite\Logic\Import\Processor\AProcessor
     }
 
     // }}}
+
+    /**
+     * Create model
+     *
+     * @param array $data Data
+     *
+     * @return \XLite\Model\AEntity
+     */
+    protected function createModel(array $data)
+    {
+        $entity = parent::createModel($data);
+
+        $entity->updateSearchFakeField();
+
+        return $entity;
+    }
+
+    /**
+     * Update model
+     *
+     * @param \XLite\Model\AEntity $model Model
+     * @param array                $data  Data
+     *
+     * @return boolean
+     */
+    protected function updateModel(\XLite\Model\AEntity $model, array $data)
+    {
+        $result = parent::updateModel($model, $data);
+
+        if ($result) {
+            $model->updateSearchFakeField();
+        }
+
+        return $result;
+    }
 }

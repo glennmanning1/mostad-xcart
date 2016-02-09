@@ -38,6 +38,12 @@ namespace XLite\Module\XC\ProductFilter\View;
 class Filter extends \XLite\View\SideBarBox
 {
     /**
+     * Widget parameter names
+     */
+    const PARAM_CATEGORY_ID = 'category_id';
+    const PARAM_AJAX_EVENTS = 'ajax_events';
+
+    /**
      * Return list of targets allowed for this widget
      *
      * @return array
@@ -167,6 +173,31 @@ class Filter extends \XLite\View\SideBarBox
         $list[] = $this->getCategoryId();
 
         return $list;
+    }
+
+    /**
+     * This data will be accessible using JS core.getCommentedData() method.
+     *
+     * @return array
+     */
+    protected function getCommentedData()
+    {
+        return array(
+            'widgetParams' => array(
+                static::PARAM_CATEGORY_ID => $this->getCategoryId(),
+                static::PARAM_AJAX_EVENTS => $this->isFilterTarget(),
+            )
+        );
+    }
+
+    /**
+     * Returns true if current target is category_filter
+     *
+     * @return string
+     */
+    protected function isFilterTarget()
+    {
+        return $this->getTarget() === 'category_filter';
     }
 
     /**

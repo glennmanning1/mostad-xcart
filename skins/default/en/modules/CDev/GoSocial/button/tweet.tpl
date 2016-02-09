@@ -11,6 +11,6 @@
 
 <iframe 
   src="https://platform.twitter.com/widgets/tweet_button.html#{getButtonAttributes():h}" 
-  style="width:110px; height:20px; border:0; overflow: hidden;"
+  style="width:110px; height:25px; border:0; overflow: hidden;"
   class="twitter-share-button twitter-count-horizontal">
 </iframe>

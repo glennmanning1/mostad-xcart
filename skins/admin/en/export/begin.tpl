@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block export-box export-begin">
+<div class="export-box export-begin">
 
   <div class="content">
     <widget class="XLite\View\Form\Export" name="exportform" />
@@ -19,9 +19,10 @@
       <div class="buttons">
         <list name="export.begin.buttons" />
       </div>
-    <widget name="exportform" />
+    <widget name="exportform" end />
   </div>
 
 </div>
-
-<widget class="XLite\View\Export\Download" />
+<div class="export-box export-download">
+  <widget class="XLite\View\Export\Download" />
+</div>

@@ -21,4 +21,11 @@
   {else:}
     {t(#n/a#)}<br />
   {end:}
+  {if:order.getPaymentTransactionId()}
+    {t(#Transaction ID#)}: {order.getPaymentTransactionId()}
+  {end:}
+  <div FOREACH="order.getPaymentTransactionData(1),item" class="sub-data">
+    <strong class="title">{t(item.title)}</strong>
+    <span class="value">{item.value}</span>
+  </div>
 </div>

@@ -42,6 +42,8 @@ abstract class AController extends \XLite\Core\Handler
 
     const PARAM_REDIRECT_CODE = 'redirectCode';
 
+    const TRIAL_NOTICE_DISPLAYED = 'trialNoticeDisplayed';
+
     /**
      * Request param to pass URLs to return
      */
@@ -305,7 +307,58 @@ abstract class AController extends \XLite\Core\Handler
 
         \XLite\Core\Session::getInstance()->set(\XLite::SHOW_TRIAL_NOTICE, null);
 
-        return \XLite::isAdminZone() ? $showTrialNotice : \XLite::isTrialPeriodExpired();
+        $result = \XLite::isAdminZone() ? $showTrialNotice : \XLite::isTrialPeriodExpired();
+
+        if ($result && \XLite::isAdminZone()) {
+            \XLite\Core\Session::getInstance()->set(static::TRIAL_NOTICE_DISPLAYED, true);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return true if block popup should be displayed
+     *
+     * @return boolean
+     */
+    public function isKeysNoticeAutoDisplay()
+    {
+        $result = $this->isRootAdmin()
+            && !\XLite\Core\Session::getInstance()->get(\XLite::SHOW_TRIAL_NOTICE)
+            && !\XLite\Core\Session::getInstance()->get(static::TRIAL_NOTICE_DISPLAYED)
+            && !$this->isDisplayBlockContent()
+            && \XLite\Core\Marketplace::getInstance()->hasUnallowedModules();
+
+        if (\XLite\Core\Session::getInstance()->get(static::TRIAL_NOTICE_DISPLAYED)) {
+            \XLite\Core\Session::getInstance()->set(static::TRIAL_NOTICE_DISPLAYED, null);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return true if block content should be displayed
+     *
+     * @return boolean
+     */
+    public function isDisplayBlockContent()
+    {
+        return $this->isRootAdmin()
+            && \XLite::getXCNLicense()
+            && !\XLite::isFreeLicense()
+            && \XLite\Core\Marketplace::getInstance()->hasInactiveLicenseKey();
+    }
+
+    /**
+     * Return true if current user - root admin
+     *
+     * @return boolean
+     */
+    protected function isRootAdmin()
+    {
+        return \XLite::isAdminZone()
+            && \XLite\Core\Auth::getInstance()->isLogged()
+            && \XLite\Core\Auth::getInstance()->isPermissionAllowed(\XLite\Model\Role\Permission::ROOT_ACCESS);
     }
 
     /**
@@ -514,6 +567,16 @@ abstract class AController extends \XLite\Core\Handler
     }
 
     /**
+     * isBlockContentAllowed
+     *
+     * @return boolean
+     */
+    public function isBlockContentAllowed()
+    {
+        return false;
+    }
+
+    /**
      * Alias: check for an AJAX request
      *
      * @return boolean
@@ -638,7 +701,7 @@ abstract class AController extends \XLite\Core\Handler
     }
 
     /**
-     * Check if an error occured
+     * Check if an error occurred
      *
      * @return boolean
      */
@@ -1071,6 +1134,21 @@ abstract class AController extends \XLite\Core\Handler
     public static function needFormId()
     {
         return false;
+    }
+
+    /**
+     * Return true if promo block with specified ID is visible
+     * (used in promo.tpl)
+     *
+     * @param string $blockId Promo block unique ID
+     *
+     * @return boolean
+     */
+    public function isPromoBlockVisible($blockId)
+    {
+        $cookie = \XLite\Core\Request::getInstance()->getCookieData();
+
+        return empty($cookie[$blockId . 'PromoBlock']);
     }
 
     /**

@@ -44,7 +44,7 @@ abstract class Image extends \XLite\Model\Base\Storage
      */
     protected static $types = array(
         'image/jpeg'            => 'jpeg',
-        'image/jpg'             => 'jpeg',
+        'image/jpg'             => 'jpg',
         'image/gif'             => 'gif',
         'image/xpm'             => 'xpm',
         'image/gd'              => 'gd',
@@ -176,6 +176,11 @@ abstract class Image extends \XLite\Model\Base\Storage
 
             $newExtension = $this->getExtensionByMIME();
             $pathinfo = pathinfo($path);
+
+            // HARDCODE for BUG-2520
+            if (strtolower($pathinfo['extension']) == 'jpg' && $newExtension == 'jpeg') {
+                $newExtension = 'jpg';
+            }
 
             if ($newExtension !== $pathinfo['extension']) {
                 $newPath = \Includes\Utils\FileManager::getUniquePath(

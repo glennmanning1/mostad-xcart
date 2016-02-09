@@ -103,7 +103,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
     {
         return array_merge(
             parent::defineFreeFormIdActions(),
-            array('calculate_price', 'updateStaffNote', 'recalculate_shipping')
+            array('calculate_price', 'recalculate_shipping')
         );
     }
 
@@ -319,6 +319,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
             'shippingId'      => 'Shipping method',
             'paymentMethod'   => 'Payment method',
             'adminNote'       => 'Staff note',
+            'customerNote'    => 'Customer note',
             'SHIPPING'        => 'Shipping cost',
             'firstname'       => 'First name',
             'lastname'        => 'Last name',
@@ -415,6 +416,19 @@ class Order extends \XLite\Controller\Admin\AAdmin
         } elseif ('XLite\View\SelectAddressOrder' === ltrim(\XLite\Core\Request::getInstance()->widget, '\\')) {
             $result = static::t('Pick address from address book');
 
+        } elseif ('XLite\View\PaymentMethodData' === ltrim(\XLite\Core\Request::getInstance()->widget, '\\')) {
+            $paymentMethod = null;
+            if (intval(\XLite\Core\Request::getInstance()->transaction_id)) {
+                $transaction = \XLite\Core\Database::getRepo('XLite\Model\Payment\Transaction')
+                    ->find(\XLite\Core\Request::getInstance()->transaction_id);
+                if ($transaction) {
+                    $paymentMethod = $transaction->getPaymentMethod()
+                        ? $transaction->getPaymentMethod()->getName()
+                        : $transaction->getMethodName();
+                }
+            }
+            $result = $paymentMethod ?: static::t('Payment method data');
+
         } else {
             $result = static::t('Order details');
         }
@@ -430,6 +444,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
     public function getOrder()
     {
         if (null === $this->order) {
+            $order = null;
             if (\XLite\Core\Request::getInstance()->order_id) {
                 $order = \XLite\Core\Database::getRepo('XLite\Model\Order')
                     ->find((int) \XLite\Core\Request::getInstance()->order_id);
@@ -588,7 +603,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
     {
         return \Includes\Utils\ArrayManager::filterByKeys(
             \XLite\Core\Request::getInstance()->getData(),
-            array('paymentStatus', 'shippingStatus', 'adminNotes')
+            array('paymentStatus', 'shippingStatus')
         );
     }
 
@@ -845,6 +860,12 @@ class Order extends \XLite\Controller\Admin\AAdmin
         // Process order tracking
         $this->updateTracking();
 
+        // Update staff note
+        $this->updateAdminNotes();
+
+        // Update customer note (visible on invoice)
+        $this->updateCustomerNotes();
+
         if ($this->getOrderChanges()) {
             // Register order changes
             \XLite\Core\OrderHistory::getInstance()
@@ -874,6 +895,20 @@ class Order extends \XLite\Controller\Admin\AAdmin
     {
         $data = $this->getRequestData();
         $order = $this->getOrder();
+
+        $updateRecent = false;
+        foreach (array('paymentStatus', 'shippingStatus') as $status) {
+            $method = 'get' . \XLite\Core\Converter::convertToCamelCase($status);
+            // Call assembled $method: getPaymentStatus() or getShippingStatus()
+            $oldStatus = $order->$method()->getId();
+            if (!empty($data[$status]) && $oldStatus != $data[$status]) {
+                $updateRecent = true;
+            }
+        }
+
+        if ($updateRecent) {
+            $data['recent'] = 0;
+        }
 
         \XLite\Core\Database::getRepo('\XLite\Model\Order')->updateById(
             $order->getOrderId(),
@@ -923,26 +958,67 @@ class Order extends \XLite\Controller\Admin\AAdmin
      *
      * @return void
      */
-    protected function doActionUpdateStaffNote()
+    protected function updateAdminNotes()
     {
         $notes = \XLite\Core\Request::getInstance()->adminNotes;
         if (is_array($notes)) {
             $notes = reset($notes);
         }
 
-        $changes = array(
-            'old' => $this->getOrder()->getAdminNotes(),
-            'new' => $notes,
-        );
+        if (!$notes) {
+            $notes = '';
+        }
 
-        \XLite\Core\OrderHistory::getInstance()
-            ->registerOrderChangeAdminNotes($this->getOrder()->getOrderId(), $changes);
+        $oldNotes = $this->getOrder()->getAdminNotes();
 
-        $this->getOrder()->setAdminNotes($notes);
+        if ($oldNotes != $notes) {
 
-        \XLite\Core\Database::getEM()->flush();
+            $changes = array(
+                'old' => $oldNotes,
+                'new' => $notes,
+            );
 
-        $this->restoreFormId();
+            \XLite\Core\OrderHistory::getInstance()
+                ->registerOrderChangeAdminNotes($this->getOrder()->getOrderId(), $changes);
+
+            $this->getOrder()->setAdminNotes($notes);
+
+            \XLite\Core\Database::getEM()->flush();
+        }
+    }
+
+    /**
+     * Update customer note
+     *
+     * @return void
+     */
+    protected function updateCustomerNotes()
+    {
+        $notes = \XLite\Core\Request::getInstance()->notes;
+        if (is_array($notes)) {
+            $notes = reset($notes);
+        }
+
+        if (!$notes) {
+            $notes = '';
+        }
+
+        $oldNotes = $this->getOrder()->getNotes();
+
+        if ($oldNotes != $notes) {
+
+            $changes = array(
+                'old' => $this->getOrder()->getNotes(),
+                'new' => $notes,
+            );
+
+            \XLite\Core\OrderHistory::getInstance()
+                ->registerOrderChangeCustomerNotes($this->getOrder()->getOrderId(), $changes);
+
+            $this->getOrder()->setNotes($notes);
+
+            \XLite\Core\Database::getEM()->flush();
+        }
     }
 
     /**
@@ -1082,6 +1158,8 @@ class Order extends \XLite\Controller\Admin\AAdmin
         if ($attributes) {
             $attributeValues = $item->getProduct()->prepareAttributeValues($attributes);
             $item->setAttributeValues($attributeValues);
+
+            \XLite\Core\Database::getEM()->persist($item);
         }
     }
 
@@ -1134,6 +1212,10 @@ class Order extends \XLite\Controller\Admin\AAdmin
             $result = 'common/print_invoice.tpl';
         }
 
+        if ('packing_slip' === \XLite\Core\Request::getInstance()->mode) {
+            $result = 'common/print_packing_slip.tpl';
+        }
+
         return $result;
     }
 
@@ -1183,6 +1265,20 @@ class Order extends \XLite\Controller\Admin\AAdmin
         }
 
         return $this->orderForm;
+    }
+
+    /**
+     * Service method: Get attributes for order status field widget.
+     *
+     * @param string $statusType Status type ('payment' or 'shipping')
+     *
+     * @return array
+     */
+    public function getOrderStatusAttributes($statusType)
+    {
+        return array(
+            'class' => 'not-affect-recalculate',
+        );
     }
 
     // }}}

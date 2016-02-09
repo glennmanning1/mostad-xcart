@@ -135,7 +135,7 @@ class Offline extends \XLite\View\Model\AModel
     {
         $data = parent::getFieldSchemaArgs($name, $data);
         if ('shippingZone' === $name) {
-            $data[\XLite\View\FormField\Select\ShippingZone::PARAM_USED_ZONES] = $this->getUsedZones();
+            $data[\XLite\View\FormField\Select\ShippingZone::PARAM_METHOD] = $this->getModelObject();
         }
 
         return $data;

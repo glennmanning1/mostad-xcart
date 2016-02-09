@@ -172,6 +172,15 @@ class Coupon extends \XLite\Model\AEntity
     protected $usesLimit = 0;
 
     /**
+     * Uses limit per user
+     *
+     * @var   integer
+     *
+     * @Column (type="integer", options={ "unsigned": true })
+     */
+    protected $usesLimitPerUser = 0;
+
+    /**
      * Flag: Can a coupon be used together with other coupons (false) or no (true)
      *
      * @var boolean
@@ -228,6 +237,8 @@ class Coupon extends \XLite\Model\AEntity
      */
     protected $categories;
 
+    protected static $runtimeCacheForUsedCouponsCount = array();
+
     /**
      * Constructor
      *
@@ -260,7 +271,7 @@ class Coupon extends \XLite\Model\AEntity
      */
     public function isStarted()
     {
-        return 0 === $this->getDateRangeBegin() || $this->getDateRangeBegin() > \XLite\Core\Converter::time();
+        return 0 === $this->getDateRangeBegin() || $this->getDateRangeBegin() < \XLite\Core\Converter::time();
     }
 
     /**
@@ -390,25 +401,22 @@ class Coupon extends \XLite\Model\AEntity
         if (!$this->getEnabled()) {
             $this->throwCompatibilityException(
                 '',
-                'There is no such a coupon, please check the spelling: X',
-                array('code' => $this->getCode())
+                'Sorry, the coupon you entered is invalid. Make sure the coupon code is spelled correctly'
             );
         }
 
         $this->checkDate();
-
         $this->checkUsage();
 
         if ($order) {
+            if ($order->getProfile()) {
+                $this->checkPerUserUsage($order->getProfile(), $order->containsCoupon($this));
+            }
             $this->checkConflictsWithCoupons($order);
-
-            $this->checkOrderTotal($order);
-
-            $this->checkCategory($order);
-
             $this->checkMembership($order);
-
+            $this->checkCategory($order);
             $this->checkProductClass($order);
+            $this->checkOrderTotal($order);
         }
 
         return true;
@@ -425,11 +433,16 @@ class Coupon extends \XLite\Model\AEntity
      */
     protected function checkDate()
     {
-        if (!$this->isStarted() || $this->isExpired()) {
+        if (!$this->isStarted()) {
             $this->throwCompatibilityException(
                 '',
-                'There is no such a coupon, please check the spelling: X',
-                array('code' => $this->getCode())
+                'Sorry, the coupon you entered is invalid. Make sure the coupon code is spelled correctly'
+            );
+        }
+        if ($this->isExpired()) {
+            $this->throwCompatibilityException(
+                '',
+                'Sorry, the coupon has expired'
             );
         }
     }
@@ -450,8 +463,56 @@ class Coupon extends \XLite\Model\AEntity
         if (0 < $this->getUsesLimit() && $this->getUsesLimit() <= $this->getUses()) {
             $this->throwCompatibilityException(
                 '',
-                'There is no such a coupon, please check the spelling: X',
-                array('code' => $this->getCode())
+                'Sorry, the coupon use limit has been reached'
+            );
+        }
+    }
+
+    /**
+     * Check coupon usages per user
+     *
+     * @throws \XLite\Module\CDev\Coupons\Core\CompatibilityException
+     *
+     * @return void
+     */
+    protected function checkPerUserUsage(\XLite\Model\Profile $profile, $inOrder)
+    {
+        if (0 >= $this->getUsesLimitPerUser()) {
+            return;
+        }
+
+        $this->profilesUsesCount();
+
+        $profileUsesCount = null;
+
+        if (array_key_exists($profile->getLogin(), static::$runtimeCacheForUsedCouponsCount)) {
+            $profileUsesCount = static::$runtimeCacheForUsedCouponsCount[$profile->getLogin()];
+        } else {
+            $profileUsesCount = $this->getUsedCoupons()->filter(
+                function($usedCoupon) use ($profile) {
+                    $orderProfileIdentificator = $usedCoupon->getOrder()->getProfile()
+                        ? $usedCoupon->getOrder()->getProfile()->getLogin()
+                        : null;
+
+                    $currentProfileIdentificator = $profile->getLogin();
+
+                    return $orderProfileIdentificator
+                        && $currentProfileIdentificator
+                        && $orderProfileIdentificator === $currentProfileIdentificator;
+                }
+            )->count();
+
+            static::$runtimeCacheForUsedCouponsCount[$profile->getLogin()] = $profileUsesCount;
+        }
+
+        if ($inOrder) {
+            $profileUsesCount -= 1;
+        }
+
+        if ($this->getUsesLimitPerUser() <= $profileUsesCount) {
+            $this->throwCompatibilityException(
+                '',
+                'Sorry, the coupon use limit has been reached'
             );
         }
     }
@@ -592,8 +653,7 @@ class Coupon extends \XLite\Model\AEntity
             if (!$found) {
                 $this->throwCompatibilityException(
                     '',
-                    'There is no such a coupon, please check the spelling: X',
-                    array('code' => $this->getCode())
+                    'Sorry, the coupon you entered cannot be applied to the items in your cart'
                 );
             }
         }
@@ -615,12 +675,12 @@ class Coupon extends \XLite\Model\AEntity
     protected function checkMembership(\XLite\Model\Order $order)
     {
         if ($this->getMemberships()->count()
+            && $order->getProfile()
             && !$this->getMemberships()->contains($order->getProfile()->getMembership())
         ) {
             $this->throwCompatibilityException(
                 '',
-                'There is no such a coupon, please check the spelling: X',
-                array('code' => $this->getCode())
+                'Sorry, the coupon you entered is not valid for your membership level. Contact the administrator'
             );
         }
     }
@@ -655,8 +715,7 @@ class Coupon extends \XLite\Model\AEntity
             if (!$found) {
                 $this->throwCompatibilityException(
                     '',
-                    'There is no such a coupon, please check the spelling: X',
-                    array('code' => $this->getCode())
+                    'Sorry, the coupon you entered cannot be applied to the items in your cart'
                 );
             }
         }

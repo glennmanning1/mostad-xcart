@@ -11,16 +11,16 @@
 <ul class="form clearfix">
 
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[number]" label="{t(#Purchase order number#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[po_number]" label="{t(#PO number#)}" required="true" />
   </li>
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[company]" label="{t(#Company name#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[po_company]" label="{t(#Company name#)}" required="true" />
   </li>
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[purchaser]" label="{t(#Name of purchaser#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[po_purchaser]" label="{t(#Name of purchaser#)}" required="true" />
   </li>
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[position]" label="{t(#Position#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[po_position]" label="{t(#Position#)}" required="true" />
   </li>
 
 </ul>

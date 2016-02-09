@@ -470,6 +470,22 @@ class Auth extends \XLite\Base
     }
 
     /**
+     * Get Operate as user payment method
+     *
+     * @return array
+     */
+    public function getOperateAsUserPaymentMethods()
+    {
+        $phoneOrdering = \XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->findOneBy(
+            array(
+                'service_name' => 'PhoneOrdering'
+            )
+        );
+
+        return array($phoneOrdering);
+    }
+
+    /**
      * Get profile registered in session
      *
      * @param integer $profileId Profile Id OPTIONAL

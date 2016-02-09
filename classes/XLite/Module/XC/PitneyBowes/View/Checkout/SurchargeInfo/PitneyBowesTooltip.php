@@ -73,17 +73,35 @@ class PitneyBowesTooltip extends \XLite\View\SurchargeInfo\ASurchargeInfo
         $order = $this->getOrderBySurcharge();
 
         return parent::isVisible()
+            && $this->isShippingSurcharge()
             && $order
             && $order->getPbOrder()
             && $order->getShippingProcessor() instanceof Processor\PitneyBowes;
     }
 
+    /**
+     * Check if it is right surcharge
+     *
+     * @return boolean
+     */
+    protected function isShippingSurcharge()
+    {
+        return $this->getSurcharge()
+            ? $this->getSurcharge()->getType() === \XLite\Model\Order\Surcharge::TYPE_SHIPPING
+            : false;
+    }
+
+    /**
+     * Getting order from surcharge if available
+     *
+     * @return \XLite\Model\Order
+     */
     protected function getOrderBySurcharge()
     {
         $order = null;
 
         if ($this->getSurcharge()) {
-            $order = $this->getSurcharge();
+            $order = $this->getSurcharge()->getOrder();
         }
 
         if (\XLite\Core\Request::getInstance()->order_id
@@ -97,6 +115,11 @@ class PitneyBowesTooltip extends \XLite\View\SurchargeInfo\ASurchargeInfo
 
     // {{{ Template methods
 
+    /**
+     * Splitting shipping cost: transportation part
+     *
+     * @return string
+     */
     protected function getTransportationPart()
     {
         $order = $this->getOrderBySurcharge();
@@ -109,6 +132,11 @@ class PitneyBowesTooltip extends \XLite\View\SurchargeInfo\ASurchargeInfo
         return static::formatPrice($value, $order->getCurrency(), true);
     }
 
+    /**
+     * Splitting shipping cost: transportation part
+     *
+     * @return string
+     */
     protected function getImportationPart()
     {
         $order = $this->getOrderBySurcharge();

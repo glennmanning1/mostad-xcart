@@ -125,7 +125,7 @@ class DbRestore extends \XLite\Controller\Admin\Base\BackupRestore
             \XLite::setCleanUpCacheFlag(true);
 
         } else {
-            // If an error occured while loading file into database
+            // If an error occurred while loading file into database
             $message = static::t('The database has not been restored because of the errors');
 
             $restore = true;

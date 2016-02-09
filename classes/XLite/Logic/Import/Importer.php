@@ -41,6 +41,8 @@ class Importer extends \XLite\Base
 
     const DEFAULT_CHARSET = 'UTF-8';
 
+    const PART_IDENTIFIER = '.part-';
+
     const MAX_FILE_SIZE = 500000;
 
     /**
@@ -96,6 +98,8 @@ class Importer extends \XLite\Base
             'warningsCount'    => isset($options['warningsCount']) ? $options['warningsCount'] : 0,
             'rowsCount'        => isset($options['rowsCount']) ? $options['rowsCount'] : 0,
             'warningsAccepted' => isset($options['warningsAccepted']) ? $options['warningsAccepted'] : false,
+            'target'           => isset($options['target']) ? $options['target'] : static::getDefaultTarget(),
+            'updateOnly'       => isset($options['updateOnly']) ? $options['updateOnly'] : false,
             // 'calculateAllQuickData' => isset($options['calculateAllQuickData']) ? $options['calculateAllQuickData'] : false,
         ) + $options;
 
@@ -105,9 +109,19 @@ class Importer extends \XLite\Base
 
         $this->options = new \ArrayObject($this->options, \ArrayObject::ARRAY_AS_PROPS);
 
-        if (0 == $this->getOptions()->step && 0 == $this->getOptions()->position) {
+        if (0 == $this->getOptions()->step && 0 == $this->getOptions()->position && !isset($this->getOptions()->initialized)) {
             $this->initialize();
         }
+    }
+
+    /**
+     * Get default target
+     *
+     * @return string
+     */
+    public static function getDefaultTarget()
+    {
+        return 'import';
     }
 
     /**
@@ -176,6 +190,25 @@ class Importer extends \XLite\Base
     }
 
     /**
+     * Get available entities keys
+     *
+     * @return array
+     */
+    public function getAvailableEntityKeys()
+    {
+        $result = array();
+
+        foreach ($this->getProcessors() as $processor) {
+            $keys = $processor->getAvailableEntityKeys();
+            if ($keys) {
+                $result[preg_replace('/\.[^\.]*$/USs', '', $processor->getFileNameFormat())] = $keys;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Finalize
      *
      * @return void
@@ -195,15 +228,8 @@ class Importer extends \XLite\Base
      */
     protected function initialize()
     {
-        $dir = \Includes\Utils\FileManager::getRealPath(LC_DIR_VAR . $this->getOptions()->dir);
-
-        // Unpack
-        foreach ($this->getOptions()->files as $path) {
-            if (\XLite\Core\Archive::getInstance()->isArchive($path)) {
-                \XLite\Core\Archive::getInstance()->unpack($path, $dir, true);
-                $this->getOptions()->linkedFiles[$path] = \XLite\Core\Archive::getInstance()->getList($path);
-            }
-        }
+        // Preprocess import files
+        $this->preprocessFiles();
 
         // Delete all logs
         \XLite\Core\Database::getRepo('XLite\Model\ImportLog')->clearAll();
@@ -221,12 +247,31 @@ class Importer extends \XLite\Base
         }
 
         // Preprocess import data
-        if ($this->preprocessImport()) {
-            // Save import options if they were changed
-            $record = \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->getEventState('import');
-            $record['state'] = \XLite\Core\EventTask::STATE_IN_PROGRESS;
-            $record['options'] = $this->getOptions()->getArrayCopy();
-            \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->setEventState('import', $record);
+        $this->preprocessImport();
+
+        // Save import options if they were changed
+        $record = \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->getEventState('import');
+        // $record['state'] = \XLite\Core\EventTask::STATE_IN_PROGRESS;
+        $record['options'] = $this->getOptions()->getArrayCopy();
+        $record['options']['initialized'] = true;
+        \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->setEventState('import', $record);
+    }
+
+    /**
+     * Preprocess import files
+     *
+     * @return void
+     */
+    protected function preprocessFiles()
+    {
+        $dir = \Includes\Utils\FileManager::getRealPath(LC_DIR_VAR . $this->getOptions()->dir);
+
+        // Unpack
+        foreach ($this->getOptions()->files as $path) {
+            if (\XLite\Core\Archive::getInstance()->isArchive($path)) {
+                \XLite\Core\Archive::getInstance()->unpack($path, $dir, true);
+                $this->getOptions()->linkedFiles[$path] = \XLite\Core\Archive::getInstance()->getList($path);
+            }
         }
     }
 
@@ -245,8 +290,9 @@ class Importer extends \XLite\Base
             $files = $processor->getFiles(true);
             foreach ($files as $file) {
                 $fileSize = $file->getSize();
+                $fileName = $file->getBasename();
 
-                if ($fileSize > static::MAX_FILE_SIZE) {
+                if (false === strpos($fileName, static::PART_IDENTIFIER) && $fileSize > static::MAX_FILE_SIZE) {
                     $newFiles[$file->getRealPath()] = $processor->divideCSVFile($file);
                 }
             }
@@ -377,6 +423,7 @@ class Importer extends \XLite\Base
             'ignoreFileChecking',
             'charset',
             'delimiter',
+            'updateOnly',
         );
     }
 
@@ -391,6 +438,7 @@ class Importer extends \XLite\Base
             'commonData'       => array(),
             'columnsMetaData'  => array(),
             'warningsAccepted' => false,
+            'target'           => 'import',
         );
     }
 
@@ -405,10 +453,12 @@ class Importer extends \XLite\Base
     {
         $result = array();
 
+        $importOptions = \XLite\Core\Config::getInstance()->Import;
+
         foreach (static::getImportOptionsList() as $key) {
             $result[$key] = isset($options[$key])
                 ? $options[$key]
-                : \XLite\Core\Config::getInstance()->Import->$key;
+                : ($importOptions ? $importOptions->$key : null);
         }
 
         return $result;

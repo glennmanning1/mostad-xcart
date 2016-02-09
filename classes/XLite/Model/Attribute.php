@@ -623,7 +623,9 @@ class Attribute extends \XLite\Model\Base\I18n
             }
 
         } else {
-            $attributeValue = $repo->findOneBy(array('product' => $product, 'attribute' => $this));
+            $attributeValue = $repo->findOneBy(
+                array('product' => $product, 'attribute' => $this)
+            );
             if ($attributeValue && $asString) {
                 $attributeValue = $attributeValue->getValue();
             }
@@ -916,8 +918,8 @@ class Attribute extends \XLite\Model\Base\I18n
      */
     protected function setAttributeValueDefault(\XLite\Model\Repo\ARepo $repo, \XLite\Model\Product $product, $data)
     {
-        $editable = is_array($data) && self::TYPE_TEXT === $this->getType()
-            ? !empty($data['editable'])
+        $editable = is_array($data) && self::TYPE_TEXT === $this->getType() && isset($data['editable'])
+            ? (bool) preg_match('/^1|yes|y|on$/iS', $data['editable'])
             : null;
         $value = is_array($data) ? $data['value'] : $data;
         if (is_array($value)) {

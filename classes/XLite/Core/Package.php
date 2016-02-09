@@ -39,6 +39,12 @@ class Package extends \XLite\Base\Singleton
      */
     const PACKAGE_DEBUG_ENABLED = 0;
 
+    /**
+     * Minimum item weight
+     *
+     * @var float
+     */
+    protected $minimumItemWeight = 0.01;
 
     /**
      * Get packages array
@@ -76,23 +82,26 @@ class Package extends \XLite\Base\Singleton
      * Initialize pendingItems array
      *
      * @param array $items Array of ordered products
+     *
+     * @return array
      */
     protected function initPendingItems($items)
     {
         $pendingItems = array();
 
         if (is_array($items)) {
-
             foreach ($items as $item) {
-
                 $product = $item->getProduct();
 
                 if ($product) {
+                    $weight = 0 === $item->getWeight()
+                        ? $this->getMinimumItemWeight()
+                        : $item->getWeight() / $item->getAmount();
 
                     $pendingItem = array(
                         'subtotal' => $item->getTotal(),
                         'price'    => $item->getItemNetPrice(),
-                        'weight'   => $item->getWeight() / $item->getAmount(),
+                        'weight'   => $weight,
                         'qty'      => $item->getAmount(),
                         'id'       => $item->getItemId(),
                         'name'     => $product->getName(),
@@ -586,4 +595,28 @@ class Package extends \XLite\Base\Singleton
     {
         return LOG_WARNING;
     }
+
+    // {{{ Minimum item weight
+
+    /**
+     * Returns minimum item weight
+     *
+     * @param float $weight Weight
+     */
+    public function setMinimumItemWeight($weight)
+    {
+        $this->minimumItemWeight = $weight;
+    }
+
+    /**
+     * Returns minimum item weight
+     *
+     * @return float
+     */
+    protected function getMinimumItemWeight()
+    {
+        return $this->minimumItemWeight;
+    }
+
+    // }}}
 }

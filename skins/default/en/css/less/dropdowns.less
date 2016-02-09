@@ -4,10 +4,9 @@
       padding: 0;
       margin: 0; // override default ul
       font-size: @font-size-base;
-      background-color: @navbar-inverse-bg;
-      border: 1px solid @navbar-inverse-bg; // IE8 fallback
-      border: 1px solid @navbar-inverse-bg;
-      border-radius: 0;
+      background-color: @mobile-menu-dropdowns-bg;
+      border: 1px solid @mobile-menu-dropdowns-bg; // IE8 fallback
+      border-radius: @mobile-menu-dropdowns-border-radius;
       background-clip: border-box;
       
       .divider {
@@ -17,29 +16,31 @@
       > li > a {
         padding: 8px 10px;
         clear: both;
-        font-weight: normal;
         line-height: @line-height-base;
-        color: #fffff;
+        color: @slidebar-links-color;
+        font-family: @slidebar-header-font-family;
+        font-weight: @slidebar-header-font-weight;
         display: block;
         white-space: nowrap; // prevent links from randomly breaking onto new lines
       }
       
       li {
-          a {
-            padding: 8px 10px;
-            clear: both;
-            font-weight: normal;
-            line-height: @line-height-base;
-            color: #ffffff;
-            display: block;
-            &:hover,
-            &:focus {
-                text-decoration: none;
-                color: #fff;
-                background-color: #363636;
-            }
-            
+        margin-left: 0px;
+        a {
+          padding: 13px 15px;
+          clear: both;
+          font-weight: normal;
+          line-height: @line-height-base;
+          color: @slidebar-links-color;
+          font-family: @slidebar-links-font-family;
+          font-weight: @slidebar-links-font-weight;
+          font-size: @slidebar-links-font-size;
+          display: block;
+          &:hover,
+          &:focus {
+              text-decoration: none;
           }
+        }
       }
     }
 

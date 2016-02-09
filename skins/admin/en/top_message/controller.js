@@ -133,6 +133,28 @@ TopMessages.prototype.hide = function(callback)
   this.container.slideUp(callback);
 }
 
+TopMessages.prototype.getSameRecord = function(ul, text)
+{
+  return ul.find('li').filter(function() {
+    var reg = new RegExp(text + " \\\((\\\d*?)\\\)", "i");
+    return $(this).text() === text || $(this).text().match(reg);
+  }).get(0);
+}
+
+TopMessages.prototype.updateRecord = function(li)
+{
+  var recordLi = jQuery(li);
+  var array = /(.*) \((\d*?)\)/i.exec(recordLi.text());
+  var oldText = array && array[1]
+    ? array[1]
+    : recordLi.text();
+  var oldIndex = array && array[2]
+    ? array[2]
+    : 0;
+
+  recordLi.text(oldText + ' (' + (intval(oldIndex)+1) + ')');
+}
+
 // Add record
 TopMessages.prototype.addRecord = function(text, type)
 {
@@ -143,16 +165,23 @@ TopMessages.prototype.addRecord = function(text, type)
     type = MESSAGE_INFO;
   }
 
-  var li = document.createElement('LI');
-  li.innerHTML = text;
-  li.className = type;
-  li.style.display = 'none';
-
   var ul = jQuery('ul', this.container).length
     ? jQuery('ul', this.container)
     : jQuery(document.createElement('UL')).appendTo(this.container);
 
-  ul.append(li);
+  var sameLi = this.getSameRecord(ul, text);
+
+  if (sameLi) {
+    this.updateRecord(sameLi);
+    li = sameLi;
+  } else {
+    var li = document.createElement('LI');
+    li.innerHTML = text;
+    li.className = type;
+    li.style.display = 'none';
+
+    ul.append(li);
+  };
 
   if (
     jQuery('li', this.container).length

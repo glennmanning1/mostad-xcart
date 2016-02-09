@@ -63,7 +63,7 @@ abstract class AProduct extends \XLite\View\AView
     {
         return $this->getProduct()->getInventory()->getEnabled()
             && !$this->getProduct()->getInventory()->isOutOfStock();
-    }   
+    }
 
     /**
      * Check if the product is out-of-stock
@@ -73,6 +73,26 @@ abstract class AProduct extends \XLite\View\AView
     protected function isOutOfStock()
     {
         return $this->getProduct()->isOutOfStock();
+    }
+
+    /**
+     * Check if the product is out-of-stock
+     *
+     * @return boolean
+     */
+    protected function isShowStockWarning()
+    {
+        return $this->getProduct()->isShowStockWarning();
+    }
+
+    /**
+     * Return product amount available to add to cart
+     *
+     * @return integer
+     */
+    protected function getAvailableAmount()
+    {
+        return $this->getProduct()->getAvailableAmount();
     }
 
     /**

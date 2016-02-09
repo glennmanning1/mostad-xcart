@@ -160,7 +160,6 @@ ul.account-links a:hover{
 
 .sidebar .catalog-categories > li > a {
   color: #ffffff;
-  font-size: 16px;
   font-weight: normal;
 }
 
@@ -543,12 +542,6 @@ blockquote,
   border-color: #3d3d3d;
 }
 
-.lc-minicart .items-list li:hover,
-.lc-minicart .items-list li.hover
-{
-  background-color: #000000;
-}
-
 .lc-minicart .items-list .item-price {
   color: #ffffff;
 }
@@ -671,6 +664,15 @@ button.add-coupon {
 .search-form .advanced-search-options,
 .search-form .advanced-search-options td {
   background-color: #222222;
+}
+
+
+.search-form .search-form-main-part .form-text,
+.search-form .search-form-main-part td .form-text,
+.search-form .advanced-search-options .form-text,
+.search-form .advanced-search-options td .form-text,
+#mobile_search .form-text {
+  color: #fff;
 }
 
 .advanced-search-options td.option-name {
@@ -1113,8 +1115,12 @@ ul.location-subnodes {
   background: #222222;
 }
 
-ul.breadcrumb li.location-node.expandable {
-  background: url(images/down_arrow.png) no-repeat right 1.1em;
+ul.location-subnodes li > a{
+  color: #a9a9a9;
+}
+
+ul.location-subnodes li > a:hover{
+  background-color: #393939;
 }
 
 .powered-by {
@@ -1640,4 +1646,8 @@ color: #999;
 .tags-list li a:hover,
 .product-tags-list li a:hover {
   color: #ffffff;
+}
+
+#themeTweaker_wrapper{
+  color: #333;
 }

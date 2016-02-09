@@ -35,15 +35,15 @@ namespace XLite\Core;
 class Iconv extends \XLite\Base\Singleton
 {
     /**
-     * Charsets 
-     * 
+     * Charsets
+     *
      * @var array
      */
     protected $charsets;
 
     /**
      * Check - iconv wrapper is valid
-     * 
+     *
      * @return boolean
      */
     public function isValid()
@@ -54,8 +54,8 @@ class Iconv extends \XLite\Base\Singleton
 
 
     /**
-     * Get charsets 
-     * 
+     * Get charsets
+     *
      * @return array
      */
     public function getCharsets()
@@ -69,7 +69,6 @@ class Iconv extends \XLite\Base\Singleton
                     exec($exec . ' -l', $output);
 
                     if (is_array($output)) {
-
                         $output = implode(' ', $output);
 
                         preg_match_all('/\S+/Ssm', $output, $match);
@@ -93,11 +92,11 @@ class Iconv extends \XLite\Base\Singleton
 
     /**
      * Convert charset
-     * 
+     *
      * @param string $from From charset
      * @param string $to   To charset
      * @param string $text Text
-     *  
+     *
      * @return string
      */
     public function convert($from, $to, $text)
@@ -120,6 +119,7 @@ class Iconv extends \XLite\Base\Singleton
         $result = false;
 
         $outputPath = $outputPath ?: $path;
+        $tmp = $path . '.tmp';
 
         $exec = func_find_executable('iconv');
         if ($exec) {
@@ -128,13 +128,17 @@ class Iconv extends \XLite\Base\Singleton
                 . ' -s'
                 . ' --from-code=' . $from
                 . ' --to-code=' . $to
-                . ' --output=' . escapeshellarg($outputPath)
-                . ' < ' . escapeshellarg($path)
+                . ' ' . escapeshellarg($path)
+                . ' > ' . escapeshellarg($tmp)
+            );
+            exec(
+                'mv'
+                . ' ' . escapeshellarg($tmp)
+                . ' ' . escapeshellarg($outputPath)
             );
             $result = true;
         }
 
         return $result;
     }
-
 }

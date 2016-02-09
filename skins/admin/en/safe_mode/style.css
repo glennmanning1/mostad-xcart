@@ -68,6 +68,10 @@
   width: auto;
   display: table-cell;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  -ms-text-overflow: ellipsis;
 }
 
 #safe_mode div .safe-mode-link .copy-link {

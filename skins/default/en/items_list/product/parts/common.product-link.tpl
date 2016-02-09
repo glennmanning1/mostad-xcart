@@ -16,3 +16,4 @@
   class="product-link">
   {product.name:h}
 </a>
+<span IF="product.isShowStockWarning()" class="product-items-available low-stock">{t(#Only X left in stock#,_ARRAY_(#X#^product.getAvailableAmount()))}</span>

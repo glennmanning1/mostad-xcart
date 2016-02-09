@@ -107,16 +107,27 @@ abstract class Address extends \XLite\Model\AEntity
      */
     public function getState()
     {
+        $state = null;
+
         if ($this->state) {
 
             // Real state object
             $state = $this->state;
 
         } else {
+            $stateField = $this->getFieldValue('state_id');
 
-            // Custom state
-            $state = new \XLite\Model\State;
-            $state->setState($this->getCustomState());
+            // Real state object from address fields
+            if ($stateField && $stateField->getValue()) {
+                $this->setStateId($stateField->getValue());
+                $state = $this->state;
+            }
+
+            if (!$state) {
+                // Custom state
+                $state = new \XLite\Model\State;
+                $state->setState($this->getCustomState());
+            }
         }
 
         return $state;
@@ -131,11 +142,26 @@ abstract class Address extends \XLite\Model\AEntity
      */
     public function setCountryCode($countryCode)
     {
-        $this->setterProperty('country_code', $countryCode);
-
         $this->setCountry(
             \XLite\Core\Database::getRepo('XLite\Model\Country')->findOneBy(array('code' => $countryCode))
         );
+    }
+
+    /**
+     * Set country
+     *
+     * @param XLite\Model\Country $country
+     * @return Address
+     */
+    public function setCountry(\XLite\Model\Country $country = null)
+    {
+        $this->country = $country;
+
+        if ($this->country) {
+            $this->setterProperty('country_code', $this->country->getCode());
+        }
+
+        return $this;
     }
 
     /**
@@ -147,8 +173,6 @@ abstract class Address extends \XLite\Model\AEntity
      */
     public function setStateId($stateId)
     {
-        $this->setterProperty('state_id', $stateId);
-
         $this->setState(\XLite\Core\Database::getRepo('XLite\Model\State')->find($stateId));
     }
 
@@ -163,17 +187,21 @@ abstract class Address extends \XLite\Model\AEntity
     public function setState($state)
     {
         if ($state instanceof \XLite\Model\State) {
+            if ($this->getCountry()
+                && $this->getCountry()->hasStates()
+            ) {
+                // Set by state object
+                if ($state->getStateId()) {
+                    if (!$this->state || $this->state->getStateId() != $state->getStateId()) {
+                        $this->state = $state;
+                        $this->setterProperty('state_id', $state->getStateId());
+                    }
+                    $this->setCustomState($this->state->getState());
 
-            // Set by state object
-            if ($state->getStateId()) {
-                if (!$this->state || $this->state->getStateId() != $state->getStateId()) {
-                    $this->state = $state;
+                } else {
+                    $this->state = null;
+                    $this->setCustomState($state->getState());
                 }
-                $this->setCustomState($this->state->getState());
-
-            } else {
-                $this->state = null;
-                $this->setCustomState($state->getState());
             }
 
         } elseif (is_string($state)) {

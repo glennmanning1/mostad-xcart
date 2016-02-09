@@ -90,6 +90,25 @@ class Generator extends \XLite\Base implements \SeekableIterator, \Countable
     protected $countCache;
 
     /**
+     * Flag: is export in progress (true) or no (false)
+     *
+     * @var boolean
+     */
+    protected static $inProgress = false;
+
+    /**
+     * Set inProgress flag value
+     *
+     * @param boolean $value Value
+     *
+     * @return void
+     */
+    public function setInProgress($value)
+    {
+        static::$inProgress = $value;
+    }
+
+    /**
      * Constructor
      *
      * @param array $options Options OPTIONAL
@@ -115,6 +134,8 @@ class Generator extends \XLite\Base implements \SeekableIterator, \Countable
             'copyResources' => isset($options['copyResources']) ? $options['copyResources'] : true,
             'attrs'     => isset($options['attrs']) ? $options['attrs'] : 'all',
             'time'      => isset($options['time']) ? intval($options['time']) : 0,
+            'selection'   => isset($options['selection']) ? $options['selection'] : array(),
+            'filter'      => isset($options['filter']) ? $options['filter'] : '',
             'isAttrHeaderBuilt' => isset($options['isAttrHeaderBuilt']) ? (bool)$options['isAttrHeaderBuilt'] : false,
         ) + $options;
 
@@ -136,8 +157,7 @@ class Generator extends \XLite\Base implements \SeekableIterator, \Countable
      */
     public static function getLanguageCode()
     {
-
-        return static::$languageCode;
+        return static::$inProgress ? static::$languageCode : null;
     }
 
     /**

@@ -138,21 +138,13 @@ CartView.prototype.openShippingEstimator = function(event, elm)
       UpdateStatesList();
       // Enable forceUpdateCartOnClose option
       this.forceUpdateCartOnClose = true;
-      jQuery('form.estimator .buttons button').click(
+      jQuery('form.estimator, .estimate-methods form.method-change').submit(
         function() {
-          // Disable forceUpdateCartOnClose option to prevent update cart page after address selection
-          this.forceUpdateCartOnClose = false;
+          core.bind('popup.close', _.once(function(){
+            core.trigger('updateCart', {items:[]});
+          }));
         }
       );
-    });
-
-    core.bind('popup.close', function(widget, box) {
-      console.log(this.forceUpdateCartOnClose);
-      if (this.forceUpdateCartOnClose) {
-        // Call updateCart event on close popup
-        core.trigger('updateCart', {items:[]});
-        this.forceUpdateCartOnClose = false;
-      }
     });
 
     // This need to remove previous ui-dialog. BUG-713

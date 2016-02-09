@@ -14,3 +14,4 @@
     label="{getUnitName()}"
     jsCode="self.location='{getActionURL()}'"
     style="{getCSSClass()}"/>
+<widget IF="hasWarning()" class="\XLite\View\Tooltip" text="{t(getWarningMessage())}" isImageTag=true className="help-icon" imageClass="fa fa-exclamation-triangle" />

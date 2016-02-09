@@ -91,6 +91,17 @@ class AmazonCheckout extends \XLite\View\AView
     }
 
     /**
+     * Check if order has only non-shippable products
+     *
+     * @return boolean
+     */
+    public function isOrderShippable()
+    {
+        $modifier = \XLite::getController()->getCart()->getModifier(\XLite\Model\Base\Surcharge::TYPE_SHIPPING, 'SHIPPING');
+        return $modifier && $modifier->canApply();
+    }
+
+    /**
      * Return widget default template
      *
      * @return string

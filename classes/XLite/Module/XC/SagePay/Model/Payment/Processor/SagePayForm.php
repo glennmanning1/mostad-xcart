@@ -37,6 +37,8 @@ namespace XLite\Module\XC\SagePay\Model\Payment\Processor;
  */
 class SagePayForm extends \XLite\Model\Payment\Base\WebBased
 {
+    const THOUSAND_DELIMITER = ',';
+    const DECIMAL_DELIMITER = '.';
     /**
      * Get operation types
      *
@@ -126,7 +128,17 @@ class SagePayForm extends \XLite\Model\Payment\Base\WebBased
             $this->setDetail('3DSecureStatus', $requestBody['3DSecureStatus'], '3DSecure checking status');
         }
 
-        if (!$this->checkTotal($requestBody['Amount'])) {
+        $total = $requestBody['Amount'];
+
+        if (!is_float($total)) {
+            $total = $this->parseMoneyFromString(
+                $total,
+                static::THOUSAND_DELIMITER,
+                static::DECIMAL_DELIMITER
+            );
+        }
+
+        if (!$this->checkTotal($total)) {
             $this->setDetail('StatusDetail', 'Invalid amount value was received', 'Status details');
             $status = $transaction::STATUS_FAILED;
         }

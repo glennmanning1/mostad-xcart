@@ -80,9 +80,6 @@ XLite\Model\Config:
     translations:
       - code: en
         option_name: Write profiling data to log file instead of printing it onto the screen
-  - { name: aggregate_css, category: Performance, type: checkbox, orderby: 20, value: N, translations: [{ code: en, option_name: 'Aggregate CSS files' }] }
-  - { name: aggregate_js, category: Performance, type: checkbox, orderby: 30, value: N, translations: [{ code: en, option_name: 'Aggregate JS files' }] }
-  - { name: use_view_cache, category: Performance, type: checkbox, orderby: 40, value: N, translations: [{ code: en, option_name: 'Use view cache' }] }
 
 XLite\Model\LanguageLabel:
   - { name: "Webmaster Kit module is recommended for use by advanced users only. It must not be used on production servers as it may significantly reduce the website performance.", translations: [{ code: en, label: 'This module is recommended for use by advanced users only. It must not be used on production servers as it may significantly reduce the website performance.' },{ code: ru, label: 'Модуль Webmaster kit рекомендован для использования только продвинутыми пользователями. Он не должен использоваться на серверах действующих магазинов, так как может значительно замедлять работу сайта.' }]}

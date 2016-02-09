@@ -101,49 +101,47 @@ class AdditionalDetails extends \XLite\View\Model\AModel
             self::SCHEMA_LABEL    => 'Battery type',
             self::SCHEMA_REQUIRED => false,
         ),
-        // 'non_spillable' => array(
-        //     self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
-        //     self::SCHEMA_LABEL    => 'Non-spillable battery',
-        //     self::SCHEMA_REQUIRED => false,
-        //     XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => false,
-        // ),
-        // 'hazmat' => array(
-        //     self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
-        //     self::SCHEMA_LABEL    => 'Hazardous materials',
-        //     self::SCHEMA_REQUIRED => false,
-        //     XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => false,
-        // ),
-        // 'chemicals' => array(
-        //     self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
-        //     self::SCHEMA_LABEL    => 'Chemicals',
-        //     self::SCHEMA_REQUIRED => false,
-        //     XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => false,
-        // ),
-        // 'pesticide' => array(
-        //     self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
-        //     self::SCHEMA_LABEL    => 'Pesticide',
-        //     self::SCHEMA_REQUIRED => false,
-        //     XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => false,
-        // ),
-        // 'rppc' => array(
-        //     self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
-        //     self::SCHEMA_LABEL    => 'Rigid plastic packaging container',
-        //     self::SCHEMA_REQUIRED => false,
-        //     XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => false,
-        // ),
-        // 'fuel' => array(
-        //     self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
-        //     self::SCHEMA_LABEL    => 'Can contain fuel',
-        //     self::SCHEMA_REQUIRED => false,
-        //     XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => false,
-        // ),
-        // 'ormd' => array(
-        //     self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Simple',
-        //     self::SCHEMA_LABEL    => 'Is ORM-D',
-        //     self::SCHEMA_REQUIRED => false,
-        //     XLite\View\FormField\Input\Checkbox::PARAM_IS_CHECKED => false,
-        //     self::SCHEMA_HELP     => 'ORM-D is a marking for mail or shipping in the United States that identifies other regulated materials for domestic transport only. Packages bearing this mark contain hazardous material in a limited quantity that presents a limited hazard during transportation, due to its form, quantity, and packaging.',
-        // ),
+        'non_spillable' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Non-spillable battery',
+            self::SCHEMA_REQUIRED => false,
+        ),
+        'hazmat' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Hazardous materials',
+            self::SCHEMA_REQUIRED => false,
+        ),
+        'chemicals' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Chemicals',
+            self::SCHEMA_REQUIRED => false,
+        ),
+        'pesticide' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Pesticide',
+            self::SCHEMA_REQUIRED => false,
+        ),
+        'aerosol' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Aerosol',
+            self::SCHEMA_REQUIRED => false,
+        ),
+        'rppc' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Rigid plastic packaging container',
+            self::SCHEMA_REQUIRED => false,
+        ),
+        'fuel' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Can contain fuel',
+            self::SCHEMA_REQUIRED => false,
+        ),
+        'ormd' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\YesNoEmpty',
+            self::SCHEMA_LABEL    => 'Is ORM-D',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_HELP     => 'ORM-D is a marking for mail or shipping in the United States that identifies other regulated materials for domestic transport only. Packages bearing this mark contain hazardous material in a limited quantity that presents a limited hazard during transportation, due to its form, quantity, and packaging.',
+        ),
     );
 
     /**
@@ -154,42 +152,6 @@ class AdditionalDetails extends \XLite\View\Model\AModel
     public function getModelId()
     {
         return \XLite\Core\Request::getInstance()->product_id;
-    }
-
-    /**
-     * Return list of form fields objects by schema
-     *
-     * @param array $schema Field descriptions
-     *
-     * @return array
-     */
-    protected function getFieldsBySchema(array $schema)
-    {
-        if (isset($schema['parent'])) {
-            $schema['parent'][\XLite\View\FormField\Select\Category::PARAM_EXCLUDE_CATEGORY] = $this->getModelId();
-            $schema['parent'][\XLite\View\FormField\Select\Category::PARAM_DISPLAY_ROOT_CATEGORY] = true;
-            $schema['parent'][\XLite\View\FormField\Select\Category::PARAM_VALUE]
-                = $this->getModelObject()->getParent()->getCategoryId();
-        }
-
-        return parent::getFieldsBySchema($schema);
-    }
-
-    /**
-     * getFieldBySchema
-     *
-     * @param string $name Field name
-     * @param array  $data Field description
-     *
-     * @return \XLite\View\FormField\AFormField
-     */
-    protected function getFieldBySchema($name, array $data)
-    {
-        if ('meta_title' === $name) {
-            $data[static::SCHEMA_PLACEHOLDER] = static::t('Default');
-        }
-
-        return parent::getFieldBySchema($name, $data);
     }
 
     /**
@@ -218,6 +180,34 @@ class AdditionalDetails extends \XLite\View\Model\AModel
         if (isset($data['country_of_origin'])) {
             $data['country_of_origin'] = \XLite\Core\Database::getRepo('XLite\Model\Country')
                 ->find($data['country_of_origin']);
+        }
+
+        // properly converts boolean columns
+        $boolColumns = array(
+            'non_spillable',
+            'hazmat',
+            'chemicals',
+            'pesticide',
+            'aerosol',
+            'rppc',
+            'fuel',
+            'ormd',
+        );
+        foreach ($boolColumns as $column) {
+            if (isset($data[$column])
+                && is_string($data[$column])
+            ) {
+                switch($data[$column]) {
+                    case 'Y':
+                        $data[$column] = 1;
+                        break;
+                    case 'N':
+                        $data[$column] = 0;
+                        break;
+                    default:
+                        $data[$column] = null;
+                }
+            }
         }
 
         parent::setModelProperties($data);

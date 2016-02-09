@@ -61,6 +61,16 @@ class SitemapGenerator extends \XLite\Base\Singleton
     protected $emptyFile = false;
 
     /**
+     * Get file prefix for generated sitemaps
+     *
+     * @return string
+     */
+    protected static function getPrefix()
+    {
+        return 'tmp_';
+    }
+
+    /**
      * Get sitemap index 
      * 
      * @return string
@@ -183,19 +193,23 @@ class SitemapGenerator extends \XLite\Base\Singleton
     public function generate()
     {
         $this->setGenerationStartedLock();
-        $this->clear();
+        $prefix = static::getPrefix();
+        $this->clear($prefix);
         $this->generateSitemaps();
+        $this->moveSitemaps($prefix);
         $this->unlockGeneration();
     }
 
     /**
      * Clear files directory
-     * 
+     *
+     * @param string $prefix Files prefix
+     *
      * @return void
      */
-    public function clear()
+    public function clear($prefix = '')
     {
-        $list = glob(LC_DIR_DATA . 'xmlsitemap.*.xml');
+        $list = glob(LC_DIR_DATA . $prefix . 'xmlsitemap.*.xml');
         if ($list) {
             foreach ($list as $path) {
                 \Includes\Utils\FileManager::deleteFile($path);
@@ -204,8 +218,27 @@ class SitemapGenerator extends \XLite\Base\Singleton
     }
 
     /**
+     * Move sitemaps files
+     *
+     * @param string $prefix Prefix of source files
+     *
+     * @return void
+     */
+    public function moveSitemaps($prefix = '')
+    {
+        $list = glob(LC_DIR_DATA . $prefix . 'xmlsitemap.*.xml');
+        if ($list) {
+            $sep = preg_quote(LC_DS, '/');
+            foreach ($list as $path) {
+                $to = preg_replace('/^(.+' . $sep . ')' . preg_quote($prefix, '/') . '(xmlsitemap\..*\.xml)$/', '\\1\\2', $path);
+                \Includes\Utils\FileManager::move($path, $to);
+            }
+        }
+    }
+
+    /**
      * Generate sitemap files
-     * 
+     *
      * @return void
      */
     protected function generateSitemaps()
@@ -309,7 +342,7 @@ class SitemapGenerator extends \XLite\Base\Singleton
         $target = $loc['target'];
         unset($loc['target']);
 
-        return \XLite\Core\Converter::buildURL($target, '', $loc, \XLite::getCustomerScript());
+        return \XLite\Core\Converter::buildURL($target, '', $loc, \XLite::getCustomerScript(), true);
     }
 
     /**
@@ -392,7 +425,7 @@ class SitemapGenerator extends \XLite\Base\Singleton
      */
     protected function getSitemapPath()
     {
-        return LC_DIR_DATA . 'xmlsitemap.' . $this->fileIndex . '.xml';
+        return LC_DIR_DATA . static::getPrefix() . 'xmlsitemap.' . $this->fileIndex . '.xml';
     }
 
     /**

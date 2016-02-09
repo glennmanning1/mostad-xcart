@@ -63,12 +63,12 @@ class Check extends \XLite\Model\Payment\Processor\Offline
     protected function getInputDataLabels()
     {
         return array(
-            'routing_number' => 'ABA routing number',
-            'acct_number'    => 'Bank Account Number',
-            'type'           => 'Type of Account',
-            'bank_name'      => 'Name of bank at which account is maintained',
-            'acct_name'      => 'Name under which the account is maintained at the bank',
-            'number'         => 'Check number',
+            'check_routing_number' => 'ABA routing number',
+            'check_acct_number'    => 'Bank Account Number',
+            'check_type'           => 'Type of Account',
+            'check_bank_name'      => 'Name of bank at which account is maintained',
+            'check_acct_name'      => 'Name under which the account is maintained at the bank',
+            'check_number'         => 'Check number',
         );
     }
 
@@ -80,12 +80,12 @@ class Check extends \XLite\Model\Payment\Processor\Offline
     protected function getInputDataAccessLevels()
     {
         return array(
-            'routing_number' => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
-            'acct_number'    => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
-            'type'           => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
-            'bank_name'      => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
-            'acct_name'      => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
-            'number'         => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'check_routing_number' => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'check_acct_number'    => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'check_type'           => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'check_bank_name'      => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'check_acct_name'      => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            'check_number'         => \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
         );
     }
 }

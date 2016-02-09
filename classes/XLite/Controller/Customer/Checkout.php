@@ -78,6 +78,18 @@ class Checkout extends \XLite\Controller\Customer\Cart
     }
 
     /**
+     * Call controller action
+     *
+     * @return void
+     */
+    protected function callAction()
+    {
+        if (!\XLite\Core\Request::getInstance()->isBot()) {
+            parent::callAction();
+        }
+    }
+
+    /**
      * Get substep number
      *
      * @param string $name Substep name

@@ -35,6 +35,16 @@ namespace XLite\Controller\Admin\Base;
 abstract class Addon extends \XLite\Controller\Admin\AAdmin
 {
     /**
+     * Return true if unallowed modules should be ignored on current page
+     *
+     * @return boolean
+     */
+    protected function isIgnoreUnallowedModules()
+    {
+        return true;
+    }
+
+    /**
      * Uninstall module action
      *
      * @param \XLite\Model\Module $module Module object to uninstall

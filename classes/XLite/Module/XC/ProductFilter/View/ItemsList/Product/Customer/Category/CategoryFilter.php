@@ -228,9 +228,9 @@ class CategoryFilter extends \XLite\View\ItemsList\Product\Customer\Category\ACa
      *
      * @return string
      */
-    protected function getSessionCell()
+    public function getSessionCell()
     {
-        return parent::getSessionCell() 
+        return parent::getSessionCell()
             . \XLite\Core\Request::getInstance()->{self::PARAM_CATEGORY_ID};
     }
 
@@ -285,5 +285,4 @@ class CategoryFilter extends \XLite\View\ItemsList\Product\Customer\Category\ACa
     }
 
     // }}}
-
 }

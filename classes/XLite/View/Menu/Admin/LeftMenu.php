@@ -173,7 +173,7 @@ class LeftMenu extends \XLite\View\Menu\Admin\AAdmin
                 static::ITEM_ICON_SVG    => 'images/orders.svg',
                 static::ITEM_WEIGHT      => 100,
                 static::ITEM_TARGET      => 'order_list',
-                static::ITEM_LABEL_LINK  => $this->buildURL('recent_orders'),
+                static::ITEM_LABEL_LINK  => $this->buildURL('order_list', 'search', array('filter_id' => 'recent')),
                 static::ITEM_LABEL_TITLE => static::t('Recent orders'),
                 static::ITEM_CHILDREN    => array(
                     'order_list' => array(
@@ -348,7 +348,7 @@ class LeftMenu extends \XLite\View\Menu\Admin\AAdmin
                 static::ITEM_TARGET     => 'db_backup',
                 static::ITEM_CHILDREN   => array(
                     'db_backup' => array(
-                        static::ITEM_TITLE      => static::t('Backup & Restore'),
+                        static::ITEM_TITLE      => static::t('Tools'),
                         static::ITEM_TARGET     => 'db_backup',
                         static::ITEM_WEIGHT     => 100,
                     ),
@@ -426,8 +426,8 @@ class LeftMenu extends \XLite\View\Menu\Admin\AAdmin
         }
 
         // Orders label
-        $list = new \XLite\View\ItemsList\Model\Order\Admin\Recent;
-        $count = $list->getItemsCountPublic();
+        $count = \XLite\Core\Database::getRepo('XLite\Model\Order')->searchRecentOrders(null, true);
+
         if ($count) {
             $items['sales'][static::ITEM_LABEL] = $count;
         }

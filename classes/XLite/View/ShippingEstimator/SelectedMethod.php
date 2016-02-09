@@ -131,4 +131,12 @@ class SelectedMethod extends \XLite\View\AView
     {
         return $this->getParam(static::PARAM_CART);
     }
+
+    protected function isVisible()
+    {
+        $hasMethod = $this->getModifier()
+            && $this->getModifier()->getMethod();
+
+        return parent::isVisible() && $hasMethod;
+    }
 }

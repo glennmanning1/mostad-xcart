@@ -43,4 +43,14 @@ abstract class AProduct extends \XLite\View\Pager\Customer\ACustomer
     {
         return (integer) \XLite\Core\Config::getInstance()->General->products_per_page;
     }
+
+    /**
+     * Return maximum possible items number per page
+     *
+     * @return integer
+     */
+    protected function getItemsPerPageMax()
+    {
+        return (integer) \XLite\Core\Config::getInstance()->General->products_per_page_max ?: parent::getItemsPerPageMax();
+    }
 }

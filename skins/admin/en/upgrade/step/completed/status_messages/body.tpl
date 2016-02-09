@@ -16,7 +16,7 @@
     <div FOREACH="getMessages(),entryName,messageList">
       {foreach:messageList,message}
       {* :NOTE: do not add t(##) here: messages are already translated *}
-      <div class="message-entry">{message}</div>
+      <div class="message-entry">{message:h}</div>
       {end:}
     </div>
   </div>

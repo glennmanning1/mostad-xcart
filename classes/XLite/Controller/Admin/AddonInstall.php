@@ -112,6 +112,8 @@ class AddonInstall extends \XLite\Controller\Admin\AAdmin
 
             $this->setPaymentMethodToInstall();
 
+            \XLite\Upgrade\Cell::getInstance()->clear();
+
             $result = array();
             $error = false;
             foreach ($this->getModuleIds() as $id) {
@@ -150,7 +152,7 @@ class AddonInstall extends \XLite\Controller\Admin\AAdmin
 
             } elseif (empty($result) && !$error && $this->isFreeSpaceCheckAvailable()) {
                 $this->setReturnURL(
-                    $this->hasCoreUpdate()
+                    ($this->hasCoreUpdate() && !$this->ignoreCoreUpdate())
                         ? $this->buildURL(
                             'addon_install',
                             'select_installation_type',
@@ -206,6 +208,16 @@ class AddonInstall extends \XLite\Controller\Admin\AAdmin
                 $update[\XLite\Core\Marketplace::FIELD_ARE_UPDATES_AVAILABLE]
                 && !$update[\XLite\Core\Marketplace::FIELD_IS_UPGRADE_AVAILABLE]
             );
+    }
+
+    /**
+     * Ignore core update
+     *
+     * @return boolean
+     */
+    protected function ignoreCoreUpdate()
+    {
+        return null !== \XLite\Core\Request::getInstance()->paymentMethodId;
     }
 
     // {{{ Short-name methods

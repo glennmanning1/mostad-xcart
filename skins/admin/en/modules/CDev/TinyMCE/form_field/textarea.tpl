@@ -12,7 +12,7 @@
 <div class="tinymce-widget">
 <div class="textarea">
 {displayCommentedData(getTinyMCEConfiguration())}
-<textarea class="tinymce" {getAttributesCode():h}>{getProcessedValue()}</textarea>
+<textarea {getAttributesCode():h}>{getProcessedValue()}</textarea>
 </div>
 </div>
 

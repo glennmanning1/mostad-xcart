@@ -162,12 +162,14 @@ class InputMapper extends API\Mapper\JsonPostProcessedMapper
      */
     protected function getReturnAddress()
     {
+        $sourceAddress = $this->pbParcel->getOrder()->getOrder()->getSourceAddress();
+
         return array(
-            'street1'           => \XLite\Core\Config::getInstance()->Company->location_country,
-            'city'              => \XLite\Core\Config::getInstance()->Company->location_city,
-            'provinceOrState'   => \XLite\Core\Config::getInstance()->Company->location_state,
-            'country'           => \XLite\Core\Config::getInstance()->Company->location_country,
-            'postalOrZipCode'   => \XLite\Core\Config::getInstance()->Company->location_zipcode,
+            'street1'           => $sourceAddress->getStreet(),
+            'city'              => $sourceAddress->getCity(),
+            'provinceOrState'   => $sourceAddress->getState() ? $sourceAddress->getState()->getCode() : '',
+            'country'           => $sourceAddress->getCountryCode(),
+            'postalOrZipCode'   => $sourceAddress->getZipcode(),
         );
     }
 
@@ -191,17 +193,29 @@ class InputMapper extends API\Mapper\JsonPostProcessedMapper
             return null;
         }
 
-        return array(
+        $consignee = array(
             'familyName'    => $address->getLastname(),
             'givenName'     => $address->getFirstname(),
             'email'         => $profile->getLogin(),
-            'phoneNumbers'  => array(
+        );
+
+        if ($address->getPhone()) {
+            $consignee['phoneNumbers']  = array(
                 array(
                     'number'    => $address->getPhone(),
-                    'type'      => 'other',
-                )
-            ),
-        );
+                    'type'      => 'other'
+                ),
+            );
+        } elseif (\XLite\Core\Config::getInstance()->Company->company_phone) {
+            $consignee['phoneNumbers']  = array(
+                array(
+                    'number'    => \XLite\Core\Config::getInstance()->Company->company_phone,
+                    'type'      => 'other'
+                ),
+            );
+        }
+
+        return $consignee;
     }
 
     /**

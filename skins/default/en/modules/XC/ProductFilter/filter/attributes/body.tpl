@@ -9,13 +9,13 @@
  * @link      http://www.x-cart.com/
  *}
 
-<widget IF="{getProductClasses()}" class="XLite\Module\XC\ProductFilter\View\Filter\AttributeList" classes="{getProductClasses()}" />
 <widget class="XLite\Module\XC\ProductFilter\View\Filter\AttributeList" />
+{foreach:getGlobalGroups(),group}
+  <widget class="XLite\Module\XC\ProductFilter\View\Filter\AttributeList" group="{group}" />
+{end:}
 {foreach:getProductClasses(),productClass}
   {foreach:productClass.getAttributeGroups(),group}
     <widget class="XLite\Module\XC\ProductFilter\View\Filter\AttributeList" group="{group}" />
   {end:}
 {end:}
-{foreach:getGlobalGroups(),group}
-  <widget class="XLite\Module\XC\ProductFilter\View\Filter\AttributeList" group="{group}" />
-{end:}
+<widget IF="{getProductClasses()}" class="XLite\Module\XC\ProductFilter\View\Filter\AttributeList" classes="{getProductClasses()}" />

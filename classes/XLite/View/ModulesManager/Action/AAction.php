@@ -107,4 +107,42 @@ abstract class AAction extends \XLite\View\AView
         return parent::isVisible()
             && $this->getModule();
     }
+
+    // {{{ Cache
+
+    /**
+     * Get cache parameters
+     *
+     * @return array
+     */
+    protected function getCacheParameters()
+    {
+        $list = parent::getCacheParameters();
+
+        $list[] = md5(serialize($this->getWidgetParams()));
+
+        return $list;
+    }
+
+    /**
+     * Cache availability
+     *
+     * @return boolean
+     */
+    protected function isCacheAvailable()
+    {
+        return true;
+    }
+
+    /**
+     * Get cache TTL (seconds)
+     *
+     * @return integer
+     */
+    protected function getCacheTTL()
+    {
+        return 3600;
+    }
+
+    // }}}
 }

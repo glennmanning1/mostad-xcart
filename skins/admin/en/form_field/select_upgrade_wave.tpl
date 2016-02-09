@@ -11,3 +11,6 @@
 
 <widget template="form_field/select.tpl" />
 <widget class="\XLite\View\Tooltip" text="{t(getHelpMessage())}" isImageTag=true className="help-icon" />
+<widget class="\XLite\View\Button\CheckForUpdates"
+        label="{t(#Check for updates#)}"
+        clear="{false}" />

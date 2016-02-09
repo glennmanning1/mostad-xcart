@@ -167,6 +167,7 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
                 static::COLUMN_IS_MULTIPLE     => true,
                 static::COLUMN_IS_MULTIROW     => true,
                 static::COLUMN_HEADER_DETECTOR => true,
+                static::COLUMN_IS_TAGS_ALLOWED => true,
             ),
             'cleanURL'                  => array(
                 static::COLUMN_LENGTH          => 255,
@@ -225,6 +226,8 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
                 'PRODUCT-ITEMS-PRE-BOX-FMT'     => 'Wrong items per box format',
                 'PRODUCT-CLEAN-URL-FMT'         => 'Wrong format of Clean URL value (allowed alpha-numeric, "_" and "-" chars)',
                 'PRODUCT-IMG-LOAD-FAILED'       => 'Error of image loading. Make sure the "images" directory has write permissions.',
+                'PRODUCT-IMG-URL-LOAD-FAILED'   => "Couldn't download the image {{value}} from URL",
+                'PRODUCT-IMG-NOT-VERIFIED'      => 'Error of verifying image. Make sure you have specified the right file.',
             );
     }
 
@@ -251,7 +254,8 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
     {
         if ($this->verifyValueAsEmpty($value)) {
             $this->addError('PRODUCT-SKU-FMT', array('column' => $column, 'value' => $value));
-        } else {
+
+        } elseif (!$this->isUpdateMode()) {
             $products = \XLite\Core\Session::getInstance()->importedProductSkus;
             $products[] = $value;
             \XLite\Core\Session::getInstance()->importedProductSkus = $products;
@@ -283,7 +287,7 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function verifyMemberships($value, array $column)
     {
-        if (!$this->verifyValueAsEmpty($value)) {
+        if (!$this->verifyValueAsEmpty($value) && !$this->verifyValueAsNull($value)) {
             foreach ($value as $membership) {
                 if (!$this->verifyValueAsEmpty($membership) && !$this->verifyValueAsMembership($membership)) {
                     $this->addWarning('GLOBAL-MEMBERSHIP-FMT', array('column' => $column, 'value' => $membership));
@@ -377,9 +381,11 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function verifyImages($value, array $column)
     {
-        if (!$this->verifyValueAsEmpty($value)) {
+        if (!$this->verifyValueAsEmpty($value) && !$this->verifyValueAsNull($value)) {
             foreach ($value as $image) {
-                if (!$this->verifyValueAsEmpty($image) && !$this->verifyValueAsFile($image)) {
+                if (!$this->verifyValueAsEmpty($value) && $this->verifyValueAsURL($value) && !$this->verifyValueAsFile($value)) {
+                    $this->addWarning('CATEGORY-IMG-URL-LOAD-FAILED', array('column' => $column, 'value' => $value));
+                } elseif (!$this->verifyValueAsEmpty($image) && !$this->verifyValueAsFile($image)) {
                     $this->addWarning('GLOBAL-IMAGE-FMT', array('column' => $column, 'value' => $image));
                 }
             }
@@ -453,7 +459,7 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function verifyCategories($value, array $column)
     {
-        if (!$this->verifyValueAsEmpty($value)) {
+        if (!$this->verifyValueAsEmpty($value) && !$this->verifyValueAsNull($value)) {
             foreach (array_unique($value) as $path) {
                 if (!$this->verifyValueAsEmpty($path) && !$this->getCategoryByPath($path)) {
                     $this->addWarning('GLOBAL-CATEGORY-FMT', array('column' => $column, 'value' => $path));
@@ -957,19 +963,20 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function importMembershipsColumn(\XLite\Model\Product $model, array $value, array $column)
     {
-        if ($model->getMemberships()) {
-            foreach ($model->getMemberships() as $membership) {
-                $membership->getProducts()->removeElement($model);
-            }
-            $model->getMemberships()->clear();
-        }
-
         if ($value) {
-            foreach ($value as $membership) {
-                $membership = $this->normalizeValueAsMembership($membership);
-                if ($membership) {
-                    $model->addMemberships($membership);
-                    $membership->addProduct($model);
+            if ($model->getMemberships()) {
+                foreach ($model->getMemberships() as $membership) {
+                    $membership->getProducts()->removeElement($model);
+                }
+                $model->getMemberships()->clear();
+            }
+            if (!$this->verifyValueAsNull($value)) {
+                foreach ($value as $membership) {
+                    $membership = $this->normalizeValueAsMembership($membership);
+                    if ($membership) {
+                        $model->addMemberships($membership);
+                        $membership->addProduct($model);
+                    }
                 }
             }
         }
@@ -986,34 +993,40 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function importCategoriesColumn(\XLite\Model\Product $model, $value, array $column)
     {
-        $position = array();
-        foreach ($model->getCategoryProducts() as $link) {
-            $position[$link->getCategory()->getCategoryId()] = $link->getOrderby();
-        }
-
-        \XLite\Core\Database::getRepo('\XLite\Model\CategoryProducts')->deleteInBatch(
-            $model->getCategoryProducts()->toArray()
-        );
-
-        $model->getCategoryProducts()->clear();
-
-        foreach (array_unique($value) as $path) {
-            $category = $this->addCategoryByPath($path);
-            $link  = \XLite\Core\Database::getRepo('\XLite\Model\CategoryProducts')->findOneBy(
-                array(
-                    'category' => $category,
-                    'product'  => $model,
-                )
-            );
-            if (!$link) {
-                $link = new \XLite\Model\CategoryProducts;
-                $link->setProduct($model);
-                $link->setCategory($category);
-                if (isset($position[$category->getCategoryId()])) {
-                    $link->setOrderby($position[$category->getCategoryId()]);
+        if ($value) {
+            if (!$this->verifyValueAsNull($value)) {
+                $position = array();
+                foreach ($model->getCategoryProducts() as $link) {
+                    $position[$link->getCategory()->getCategoryId()] = $link->getOrderby();
                 }
-                $model->addCategoryProducts($link);
-                \XLite\Core\Database::getEM()->persist($link);
+            }
+
+            \XLite\Core\Database::getRepo('\XLite\Model\CategoryProducts')->deleteInBatch(
+                $model->getCategoryProducts()->toArray()
+            );
+
+            $model->getCategoryProducts()->clear();
+
+            if (!$this->verifyValueAsNull($value)) {
+                foreach (array_unique($value) as $path) {
+                    $category = $this->addCategoryByPath($path);
+                    $link  = \XLite\Core\Database::getRepo('\XLite\Model\CategoryProducts')->findOneBy(
+                        array(
+                            'category' => $category,
+                            'product'  => $model,
+                        )
+                    );
+                    if (!$link) {
+                        $link = new \XLite\Model\CategoryProducts;
+                        $link->setProduct($model);
+                        $link->setCategory($category);
+                        if (isset($position[$category->getCategoryId()])) {
+                            $link->setOrderby($position[$category->getCategoryId()]);
+                        }
+                        $model->addCategoryProducts($link);
+                        \XLite\Core\Database::getEM()->persist($link);
+                    }
+                }
             }
         }
     }
@@ -1043,7 +1056,10 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function importStockLevelColumn(\XLite\Model\Product $model, $value, array $column)
     {
-        $model->getInventory()->setAmount(abs((int) $value));
+        if (!$this->verifyValueAsEmpty($value) && $this->verifyValueAsUinteger($value)) {
+            // Update quantity only if $value is non-empty integer value
+            $model->getInventory()->setAmount(abs((int) $value));
+        }
     }
 
     /**
@@ -1087,42 +1103,52 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
     {
         if ($value) {
             foreach ($value as $index => $path) {
-                if ($this->verifyValueAsFile($path)) {
-                    $image = $model->getImages() ? $model->getImages()->get($index) : null;
-                    $isNew = false;
-                    if (!$image) {
-                        $isNew = true;
+                $file = $this->verifyValueAsLocalURL($path) ? ltrim(parse_url($path, PHP_URL_PATH), '/') : $path;
+                if ($this->verifyValueAsFile($file)) {
+                    $image = null;
+
+                    if ($model->getImages()) {
+                        $filtered = $model->getImages()->filter($this->getImageFilter($file));
+                        $image = ! $filtered->isEmpty() ? $filtered->first() : null;
+                        $readable = \Includes\Utils\FileManager::isReadable(LC_DIR_ROOT . $file);
+                    }
+
+                    if (!$image || !$readable) {
                         $image = new \XLite\Model\Image\Product\Image();
-                    }
 
-                    if (1 < count(parse_url($path))) {
-                        $success = $image->loadFromURL($path, true);
+                        if ($this->verifyValueAsURL($file)) {
+                            $success = $image->loadFromURL($path, true);
 
-                    } else {
-                        $dir = \Includes\Utils\FileManager::getRealPath(
-                            LC_DIR_VAR . $this->importer->getOptions()->dir
-                        );
-                        $success = $image->loadFromLocalFile($dir . LC_DS . $path);
-                    }
+                        } else {
+                            $success = $image->loadFromLocalFile(LC_DIR_ROOT . $file);
+                        }
 
-                    if (!$success) {
-                        $this->addError('PRODUCT-IMG-LOAD-FAILED', array('column' => $column, 'value' => $path));
+                        if (!$success) {
+                            if ($image->getLoadError() === 'unwriteable') {
+                                $this->addError('PRODUCT-IMG-LOAD-FAILED', array('column' => $column, 'value' => $path));
+                            } elseif ($image->getLoadError()) {
+                                $this->addWarning('PRODUCT-IMG-URL-LOAD-FAILED', array('column' => $column, 'value' => $path));
+                            }
 
-                    } else {
-                        $image->setNeedProcess(1);
-                        if ($isNew) {
+                        } else {
+                            $image->setNeedProcess(1);
                             $image->setProduct($model);
                             $model->getImages()->add($image);
                             \XLite\Core\Database::getEM()->persist($image);
                         }
                     }
+                } elseif(!$this->verifyValueAsFile($file) && $this->verifyValueAsURL($file)) {
+                    $this->addWarning('PRODUCT-IMG-URL-LOAD-FAILED', array('column' => $column, 'value' => $path));
+                } else {
+                    $this->addWarning('PRODUCT-IMG-NOT-VERIFIED', array('column' => $column, 'value' => $path));
                 }
             }
-
-            while (count($model->getImages()) > count($value)) {
-                $image = $model->getImages()->last();
-                \XLite\Core\Database::getRepo('XLite\Model\Image\Product\Image')->delete($image, false);
+        }
+        if ($value || $this->verifyValueAsNull($value)) {
+            $remove = $model->getImages()->filter($this->getImageRejectFilter($value));
+            foreach ($remove as $image) {
                 $model->getImages()->removeElement($image);
+                \XLite\Core\Database::getEM()->remove($image);
             }
         }
     }
@@ -1144,6 +1170,11 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
                 if ($image) {
                     $image->setAlt($alt);
                 }
+            }
+        }
+        if ($this->verifyValueAsNull($value)) {
+            foreach ($model->getImages() as $image) {
+                $image->setAlt('');
             }
         }
     }
@@ -1180,6 +1211,7 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
                     $values = array_merge($values, $value);
                 }
                 $values = array_values(array_unique($values));
+                $shouldClear = $this->verifyValueAsNull($values);
                 $data = array(
                     'value'    => array(),
                     'default'  => array(),
@@ -1207,11 +1239,17 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
                 $data['multiple'] = 1 < count($data['value']);
 
                 $cnd = new \XLite\Core\CommonCell();
-                $cnd->product        = $product;
-                $cnd->productClass   = $productClass;
-                $cnd->attributeGroup = $attributeGroup;
-                $cnd->name           = $name;
+
+                if ($product && $product->getId()) {
+                    $cnd->{\XLite\Model\Repo\Attribute::SEARCH_PRODUCT}         = $product;
+                }
+
+                $cnd->{\XLite\Model\Repo\Attribute::SEARCH_PRODUCT_CLASS}   = $productClass;
+                $cnd->{\XLite\Model\Repo\Attribute::SEARCH_ATTRIBUTE_GROUP} = $attributeGroup;
+                $cnd->{\XLite\Model\Repo\Attribute::SEARCH_NAME}            = $name;
+
                 $attribute = \XLite\Core\Database::getRepo('XLite\Model\Attribute')->search($cnd);
+
                 if ($attribute) {
                     $attribute = $attribute[0];
 
@@ -1259,7 +1297,11 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
                         $data['value'][$k] = $this->normalizeValueAsBoolean($val);
                     }
                 }
-                $attribute->setAttributeValue($model, $data);
+                if ($shouldClear) {
+                    $attribute->setAttributeValue($model, null);
+                } else {
+                    $attribute->setAttributeValue($model, $data);
+                }
 
                 if ($lngCode) {
                     \XLite\Core\Database::getEM()->flush();

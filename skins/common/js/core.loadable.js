@@ -224,7 +224,7 @@ ALoadable.prototype.loadHandler = function(xhr, s, data)
 
   if (!this.isLoading && this.deferredLoad) {
     this.deferredLoad = false;
-    this.load();
+    this.load(this.lastLoadParams);
 
   } else if (processed) {
     if (typeof(this.postloadHandler) == 'function') {

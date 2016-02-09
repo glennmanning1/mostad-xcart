@@ -36,8 +36,13 @@ abstract class Address extends \XLite\View\FormField\Inline\Popup\APopup
 {
 
     /**
-     * Get JS files 
-     * 
+     * @var string|null State runtime cache is case that country without states changed to country with states and vice versa
+     */
+    protected $oldState = null;
+
+    /**
+     * Get JS files
+     *
      * @return array
      */
     public function getJSFiles()
@@ -88,7 +93,7 @@ abstract class Address extends \XLite\View\FormField\Inline\Popup\APopup
             );
         }
 
-        return $fields;        
+        return $fields;
     }
 
     /**
@@ -159,6 +164,56 @@ abstract class Address extends \XLite\View\FormField\Inline\Popup\APopup
     }
 
     /**
+     * Get old field entity value
+     *
+     * @param \XLite\Model\Address  $address    Address
+     * @param array                 $field      Field
+     * @param mixed                 $value      Value
+     *
+     * @return mixed
+     */
+    protected function getOldPropertyValue(\XLite\Model\Address $address, array $field, $value)
+    {
+        $oldValue = null;
+
+        $getterMethod = 'get' . \XLite\Core\Converter::convertToCamelCase($field['field'][static::FIELD_NAME]);
+
+        if (method_exists($address, $getterMethod)) {
+            // Get address property via specific method
+            $oldValue = $address->$getterMethod();
+
+        } else {
+            // Get address property via common setterProperty() method
+            $oldValue = $address->getterProperty($field['field'][static::FIELD_NAME], $value);
+        }
+
+        return $oldValue;
+    }
+
+    /**
+     * Set field entity value
+     *
+     * @param \XLite\Model\Address  $address    Address
+     * @param array                 $field      Field
+     * @param mixed                 $value      Value
+     *
+     * @return mixed
+     */
+    protected function setPropertyValue(\XLite\Model\Address $address, array $field, $value)
+    {
+        $setterMethod = $this->getAddressFieldMethodName($field);
+
+        if (method_exists($address, $setterMethod)) {
+            // Set address property via specific method
+            $address->$setterMethod($value);
+
+        } else {
+            // Set address property via common setterProperty() method
+            $address->setterProperty($field['field'][static::FIELD_NAME], $value);
+        }
+    }
+
+    /**
      * Save field value to entity
      *
      * @param array $field Field
@@ -172,88 +227,125 @@ abstract class Address extends \XLite\View\FormField\Inline\Popup\APopup
 
         if ($address) {
 
-            // Get property old value
-            $getterMethod = 'get' . \XLite\Core\Converter::convertToCamelCase($field['field'][static::FIELD_NAME]);
+            $oldValue = $this->getOldPropertyValue($address, $field, $value);
 
-            if (method_exists($address, $getterMethod)) {
-                // Set address property via specific method
-                $oldValue = $address->$getterMethod();
+            $this->setPropertyValue($address, $field, $value);
 
-            } else {
-                // Set address property via common setterProperty() method
-                $oldValue = $address->getterProperty($field['field'][static::FIELD_NAME], $value);
-            }
-
-            // Set address property
-            $setterMethod = $this->getAddressFieldMethodName($field);
-
-            if (method_exists($address, $setterMethod)) {
-                // Set address property via specific method
-                $address->$setterMethod($value);
-
-            } else {
-                // Set address property via common setterProperty() method
-                $address->setterProperty($field['field'][static::FIELD_NAME], $value);
-            }
-
+            // Register order changes
             if ($value != $oldValue) {
-
-                // Prepare data to register as an order changes
-
-                $ignoreChange = false;
-
-                $fieldName = $field['field'][static::FIELD_NAME];
-
-                switch ($fieldName) {
-
-                    case 'country_code': {
-                        $fieldName = 'Country';
-                        $oldCountry = \XLite\Core\Database::getRepo('XLite\Model\Country')->findOneBy(array('code' => $oldValue));
-                        $oldValue = $oldCountry ? $oldCountry->getCountry() : $oldValue;
-                        $newCountry = \XLite\Core\Database::getRepo('XLite\Model\Country')->findOneBy(array('code' => $value));
-                        $value = $newCountry ? $newCountry->getCountry() : $value;
-                        break;
-                    }
-
-                    case 'state_id': {
-                        if ($address->getCountry() && $address->getCountry()->hasStates()) {
-                            $fieldName = 'State';
-                            $oldState = \XLite\Core\Database::getRepo('XLite\Model\State')->find($oldValue);
-                            $oldValue = $oldState ? $oldState->getState() : $oldValue;
-                            $newState = \XLite\Core\Database::getRepo('XLite\Model\State')->find($value);
-                            $value = $newState ? $newState->getState() : $value;
-
-                        } else {
-                            $ignoreChange = true;
-                        }
-                        break;
-                    }
-
-                    case 'custom_state': {
-                        if ($address->getCountry() && $address->getCountry()->hasStates()) {
-                            $ignoreChange = true;
-
-                        } else {
-                            $fieldName = 'State';
-                        }
-                        break;
-                    }
-                }
-
-                if (!$ignoreChange) {
-                    \XLite\Controller\Admin\Order::setOrderChanges(
-                        $this->getParam(static::PARAM_FIELD_NAME) . ':' . $fieldName,
-                        $value,
-                        $oldValue
-                    );
-                }
+                $this->registerOrderChanges($address, $field, $value, $oldValue);
             }
         }
     }
 
     /**
-     * Get address model 
-     * 
+     * Set runtime cache for custom state to state object
+     *
+     * @param \XLite\Model\Address  $address    Address
+     * @param array                 $field      Field
+     *
+     * @return void
+     */
+    protected function setOldState(\XLite\Model\Address $address, $field)
+    {
+        $this->oldState = $this->getOldPropertyValue($address, $field, null);
+    }
+
+    /**
+     * Register address changes in order history
+     * Prepare data to register as an order changes
+     *
+     * @param array $field      Field
+     * @param mixed $value      Value
+     * @param mixed $oldValue   Old value
+     *
+     * @return void
+     */
+    protected function registerOrderChanges(\XLite\Model\Address $address, array $field, $value, $oldValue)
+    {
+        $ignoreChange = false;
+
+        $fieldName = $field['field'][static::FIELD_NAME];
+
+        switch ($fieldName) {
+
+            case 'country_code': {
+                $fieldName = 'Country';
+                $oldCountry = \XLite\Core\Database::getRepo('XLite\Model\Country')->findOneBy(array('code' => $oldValue));
+                $oldValue = $oldCountry ? $oldCountry->getCountry() : $oldValue;
+                $newCountry = \XLite\Core\Database::getRepo('XLite\Model\Country')->findOneBy(array('code' => $value));
+
+                $oldHasStates = $oldCountry && $oldCountry->hasStates();
+                $newHasStates = $newCountry && $newCountry->hasStates();
+
+                if ($newHasStates && !$oldHasStates) {
+                    $customStateField = array(
+                        'field' => array(
+                            static::FIELD_NAME => 'custom_state'
+                        )
+                    );
+                    $this->setOldState($address, $customStateField);
+                }
+                if ($oldHasStates && !$newHasStates) {
+                    $stateField = array(
+                        'field' => array(
+                            static::FIELD_NAME => 'state_id'
+                        )
+                    );
+                    $this->setOldState($address, $stateField);
+                }
+
+                $value = $newCountry ? $newCountry->getCountry() : $value;
+                break;
+            }
+
+            case 'state_id': {
+                if ($address->getCountry() && $address->getCountry()->hasStates()) {
+                    $fieldName = 'State';
+
+                    if (null === $this->oldState) {
+                        $oldState = \XLite\Core\Database::getRepo('XLite\Model\State')->find($oldValue);
+                        $oldValue = $oldState ? $oldState->getState() : $oldValue;
+                    } else {
+                        $oldValue = $this->oldState;
+                    }
+
+                    $newState = \XLite\Core\Database::getRepo('XLite\Model\State')->find($value);
+                    $value = $newState ? $newState->getState() : $value;
+
+                } else {
+                    $ignoreChange = true;
+                }
+                break;
+            }
+
+            case 'custom_state': {
+                if ($address->getCountry() && $address->getCountry()->hasStates()) {
+                    $ignoreChange = true;
+
+                } else {
+                    $fieldName = 'State';
+                    if (null !== $this->oldState) {
+                        $oldState = \XLite\Core\Database::getRepo('XLite\Model\State')->find($this->oldState);
+                        $oldValue = $oldState ? $oldState->getState() : $oldValue;
+                    }
+                }
+                break;
+            }
+        }
+
+        if (!$ignoreChange) {
+            \XLite\Controller\Admin\Order::setOrderChanges(
+                $this->getParam(static::PARAM_FIELD_NAME) . ':' . $fieldName,
+                $value,
+                $oldValue
+            );
+        }
+    }
+
+    /**
+     * Get address model
+     *
      * @return \XLite\Model\Address
      */
     protected function getAddressModel()
@@ -266,9 +358,9 @@ abstract class Address extends \XLite\View\FormField\Inline\Popup\APopup
 
     /**
      * Get address field method name 
-     * 
+     *
      * @param array $field Field
-     *  
+     *
      * @return string
      */
     protected function getAddressFieldMethodName(array $field)

@@ -198,23 +198,23 @@ class ProductsReturn extends \XLite\Model\Repo\ARepo
     /**
      * Prepare certain search condition
      *
-     * @param \Doctrine\ORM\QueryBuilder $qb        Query builder to prepare
-     * @param integer                    $value     Condition data
-     * @param boolean                    $countOnly "Count only" flag
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param integer                    $value        Condition data
      *
      * @return void
      */
-    protected function prepareCndDateRange(\Doctrine\ORM\QueryBuilder $qb, $value, $countOnly)
+    protected function prepareCndDateRange(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
-        if (!empty($value)) {
-            list($start, $end) = \XLite\View\FormField\Input\Text\DateRange::convertToArray($value);
+        if ($value && is_array($value)) {
+            list($start, $end) = $value;
+
             if ($start) {
-                $qb->andWhere('r.date >= :start')
+                $queryBuilder->andWhere('r.date >= :start')
                     ->setParameter('start', $start);
             }
 
             if ($end) {
-                $qb->andWhere('r.date <= :end')
+                $queryBuilder->andWhere('r.date <= :end')
                     ->setParameter('end', $end);
             }
         }

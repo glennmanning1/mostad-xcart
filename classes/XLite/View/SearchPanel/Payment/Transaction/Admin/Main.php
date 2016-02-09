@@ -62,9 +62,9 @@ class Main extends \XLite\View\SearchPanel\Payment\Transaction\Admin\AAdmin
     protected function defineConditions()
     {
         return parent::defineConditions() + array(
-            'order' => array(
+            'substring' => array(
                 static::CONDITION_CLASS => 'XLite\View\FormField\Input\Text',
-                \XLite\View\FormField\Input\Text::PARAM_PLACEHOLDER => static::t('Order number'),
+                \XLite\View\FormField\Input\Text::PARAM_PLACEHOLDER => static::t('Order number or email'),
                 \XLite\View\FormField\AFormField::PARAM_FIELD_ONLY => true,
             ),
             'public_id' => array(

@@ -117,4 +117,13 @@ class ModuleKey extends \XLite\Model\AEntity
      * @Column (type="array")
      */
     protected $keyData = array();
+
+    /**
+     * Flag of key availability: true - key is active; false - key is unavailable
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $active = true;
 }

@@ -78,7 +78,6 @@ class TrialNotice extends \XLite\View\ModulesManager\AModulesManager
         return \XLite::isTrialPeriodExpired()
             ? array(
                 'trial_notice', // the popup window target
-                'recent_orders',
                 'order',
                 'order_list',
             ) : array(

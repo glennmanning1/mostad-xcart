@@ -90,4 +90,20 @@ abstract class AAdmin extends \XLite\View\StickyPanel\Product\AProduct
 
         return $list;
     }
+
+
+    /**
+     * Define buttons widgets
+     *
+     * @return array
+     */
+    protected function defineButtons()
+    {
+        $list = parent::defineButtons();
+        $list['export'] = $this->getWidget(
+            array(),
+            'XLite\View\Button\ItemsExport\Product'
+        );
+        return $list;
+    }
 }

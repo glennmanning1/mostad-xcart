@@ -100,11 +100,12 @@ class EventListener extends \XLite\Base\Singleton
     protected function getListeners()
     {
         return array(
-            'probe'  => array('XLite\Core\EventListener\Probe'),
-            'export' => array('XLite\Core\EventListener\Export'),
-            'import' => array('XLite\Core\EventListener\Import'),
+            'probe'       => array('XLite\Core\EventListener\Probe'),
+            'export'      => array('XLite\Core\EventListener\Export'),
+            'import'      => array('XLite\Core\EventListener\Import'),
             'imageResize' => array('XLite\Core\EventListener\ImageResize'),
-            'quickData' => array('XLite\Core\EventListener\QuickData'),
+            'quickData'   => array('XLite\Core\EventListener\QuickData'),
+            'sales'       => array('XLite\Core\EventListener\Sales'),
         );
     }
 }

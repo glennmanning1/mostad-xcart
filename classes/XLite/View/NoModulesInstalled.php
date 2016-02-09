@@ -104,18 +104,8 @@ class NoModulesInstalled extends \XLite\View\Dialog
      */
     protected function getModuleURL($name, $author)
     {
-        if (is_null(static::$limit)) {
-            list(, static::$limit) = $this->getWidget(array(), '\XLite\View\Pager\Admin\Module\Install')->getLimitCondition()->limit;
-        }
-
-        return $this->buildURL(
-            'addons_list_marketplace',
-            '',
-            array(
-                'clearCnd'                                  => '1',
-                \XLite\View\Pager\APager::PARAM_PAGE_ID     => \XLite\Core\Database::getRepo('XLite\Model\Module')->getMarketplacePageId($author, $name, static::$limit),
-            )
-        ) . '#' . $name;
+        return \XLite\Core\Database::getRepo('XLite\Model\Module')
+            ->getMarketplaceUrlByName($author, $name);
     }
 
     /**

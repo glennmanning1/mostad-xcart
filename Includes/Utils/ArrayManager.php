@@ -63,6 +63,33 @@ abstract class ArrayManager extends \Includes\Utils\AUtils
     }
 
     /**
+     * Method to remove empty elements from multidimensional array
+     *
+     * @param array          $data  Data array
+     *
+     * @return array
+     */
+    public static function filterMultidimensional(array $data)
+    {
+        return array_reduce(
+            array_keys($data),
+            function ($acc, $key) use ($data) {
+                if ($data[$key] && is_array($data[$key])) {
+                    $subArray = static::filterMultidimensional($data[$key]);
+                    if ($subArray) {
+                        $acc[$key] = $subArray;
+                    }
+                } elseif ($data[$key]) {
+                    $acc[$key] = $data[$key];
+                }
+
+                return $acc;
+            },
+            array()
+        );
+    }
+
+    /**
      * Method to safely get array element (or a whole array)
      *
      * @param array          $data  Data array

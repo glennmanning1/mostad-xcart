@@ -34,7 +34,7 @@ namespace XLite\View\FormField\Select;
  */
 class ShippingZone extends \XLite\View\FormField\Select\Regular
 {
-    const PARAM_USED_ZONES = 'usedZones';
+    const PARAM_METHOD = 'usedZones';
     const SEPARATOR_ID = 'SEPARATOR';
     const SEPARATOR_SIGN = '&#x2500;';
 
@@ -71,29 +71,15 @@ class ShippingZone extends \XLite\View\FormField\Select\Regular
     protected function getOptions()
     {
         $list = parent::getOptions();
-        $usedZones = $this->getParam(static::PARAM_USED_ZONES);
 
-        if ($usedZones) {
-            $usedList = array();
-            $unUsedList = array();
+        $method = $this->getParam(static::PARAM_METHOD);
+        if ($method) {
+            $zones = \XLite\Core\Database::getRepo('XLite\Model\Zone')->getOfflineShippingZones($method);
 
-            foreach ($list as $zoneId => $zoneName) {
-                if (isset($usedZones[$zoneId])) {
-                    $usedList[$zoneId] = sprintf('%s (%d)', $zoneName, $usedZones[$zoneId]);
-
-                } else {
-                    $unUsedList[$zoneId] = sprintf('%s (%d)', $zoneName, 0);
-                }
-            }
-
-            if ($usedList) {
-                asort($usedList);
-                $list = $usedList;
-
+            if ($zones[0]) {
+                $list = $zones[0];
                 $list += array(static::SEPARATOR_ID => str_repeat(static::SEPARATOR_SIGN, 10));
-
-                asort($usedList);
-                $list += $unUsedList;
+                $list += $zones[1];
             }
         }
 
@@ -110,10 +96,11 @@ class ShippingZone extends \XLite\View\FormField\Select\Regular
         parent::defineWidgetParams();
 
         $this->widgetParams += array(
-            static::PARAM_USED_ZONES => new \XLite\Model\WidgetParam\Collection(
-                'Used zones',
-                array(),
-                false
+            static::PARAM_METHOD => new \XLite\Model\WidgetParam\Object(
+                'Shipping method',
+                null,
+                false,
+                'XLite\Model\Shipping\Method'
             ),
         );
     }

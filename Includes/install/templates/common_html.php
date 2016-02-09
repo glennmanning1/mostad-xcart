@@ -121,7 +121,7 @@ textarea,
 button
 {
   color: #333333;
-  font-size: 12px;
+  font-size: 14px;
   font-family: Helvetica, Arial, Sans-serif;
 }
 
@@ -421,7 +421,7 @@ div.content
   width: 938px;
 }
 
-.permissions-list {
+.status-report-box .permissions-list {
   border: 1px solid #999999;
   font-family: "Courier New", monospace;
   font-size: 11px;
@@ -435,21 +435,21 @@ div.content
   width: 320px;
 }
 
-.copy2clipboard {
+.status-report-box .copy2clipboard {
   cursor: pointer;
   float: right;
   margin-bottom: 5px;
 }
 
-.copy2clipboard.zeroclipboard-is-hover {
+.status-report-box .copy2clipboard.zeroclipboard-is-hover {
    color: #69a4c9;
 }
 
-.copy2clipboard.zeroclipboard-is-active {
+.status-report-box .copy2clipboard.zeroclipboard-is-active {
    color: #69a4f9;
 }
 
-.error-text.lc_file_permissions .alert {
+.error-text.lc_file_permissions .copy2clipboard-alert {
   position: absolute;
   padding: 6px;
   margin-top: 24px;
@@ -459,9 +459,9 @@ div.content
 
 .field-label {
   font-size: 14px;
+  font-weight: bold;
   text-align: left;
   margin-right: 10px;
-  color: #53769d;
   vertical-align: baseline;
 }
 
@@ -630,7 +630,8 @@ div.status-report-box-text {
 }
 
 div.status-report-box-text em,
-.fatal-error .note em {
+.fatal-error .note em,
+.fatal-error .additional-note em {
   text-decoration: none;
   font-style: normal;
   font-weight: bold;
@@ -824,8 +825,12 @@ div.steps-bar {
 
 a.final-link {
   font-size: 22px;
-  text-decoration: underline;
+  text-decoration: none;
   color: #144b9d;
+}
+
+a.final-link:hover {
+  text-decoration: underline;
 }
 
 .report-layer {
@@ -965,6 +970,10 @@ table tr.section {
     padding: 0 10px;
 }
 
+.buttons-bar td:first-child {
+  padding-left: 0;
+}
+
 .section-pdo-error {
   color: #999999;
   font-size: 12px;
@@ -980,6 +989,152 @@ table tr.section {
 
 .section.section-pdo-error {
   display: none;
+}
+
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+  opacity: 0.15;
+}
+
+.fatal-error.extended {
+  border: none;
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+  width: 530px;
+}
+
+.fatal-error .header {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.fatal-error.extended .cloud-box {
+  border: 1px solid #dbdfe2;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin-top: 30px;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.cloud-box .svg-icon {
+  display: none;
+}
+
+.cloud-box .svg-icon img {
+  width: 64px;
+  height: 64px;
+}
+
+.fatal-error.extended .cloud-box .svg-icon {
+  display: block;
+  margin-top: 0;
+}
+
+.fatal-error.extended .cloud-box .grey-line {
+  display: none;
+}
+
+.fatal-error.extended .cloud-box .cloud-header {
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.fatal-error.extended .cloud-box .cloud-text {
+  font-size: 15px;
+  padding-bottom: 15px;
+}
+
+table.display-help {
+ float: left;
+}
+
+.btn-lg {
+  font-size: 16px;
+}
+
+.install-help-box {
+  display: table;
+  position: absolute;
+  top: 99px;
+  right: 0;
+}
+
+.install-help-box img {
+  display: table-cell;
+  vertical-align: middle;
+  margin-top: 3px;
+  width: 32px;
+  height: 32px;
+}
+
+.install-help-box div {
+  display: table-cell;
+  vertical-align: middle;
+  padding-left: 8px;
+}
+
+.install_done ul.permissions-list {
+  border: none;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background-color: #f8f8f8;
+  font-size: 14px;
+  padding: 16px 24px;
+  margin: 0;
+  margin-top: 15px;
+  display: inline-block;
+}
+
+.install_done ul.permissions-list li:before {
+  content: "$";
+  padding-right: 6px;
+  color: #cccccc;
+}
+
+.install_done .clipbrd {
+  margin-top: 15px;
+  margin-bottom: 22px;
+}
+
+input[type="button"].copy2clipboard {
+  padding: 9px 17px;
+  color: #144b9d;
+}
+
+input[type="button"].copy2clipboard:hover {
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+
+.install_done .copy2clipboard-alert {
+  display: inline-block;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  padding: 6px;
+  width: 290px;
+  margin-left: 10px;
+}
+
+.install_done .second-title {
+  margin-bottom: 13px;
+}
+
+.install_done p {
+  padding-bottom: 17px;
+  padding-top: 0;
+}
+
+.install_done p.customer-link {
+  padding-bottom: 9px;
 }
 
 </style>

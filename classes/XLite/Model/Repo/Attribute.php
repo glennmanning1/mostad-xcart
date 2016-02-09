@@ -42,6 +42,7 @@ class Attribute extends \XLite\Model\Repo\Base\I18n
     const SEARCH_ATTRIBUTE_GROUP  = 'attributeGroup';
     const SEARCH_TYPE             = 'type';
     const SEARCH_NAME             = 'name';
+    const SEARCH_ORDERBY          = 'orderBy';
     const SEARCH_LIMIT            = 'limit';
 
     // {{{ Search
@@ -170,6 +171,7 @@ class Attribute extends \XLite\Model\Repo\Base\I18n
             static::SEARCH_ATTRIBUTE_GROUP,
             static::SEARCH_TYPE,
             static::SEARCH_NAME,
+            static::SEARCH_ORDERBY,
             static::SEARCH_LIMIT,
         );
     }
@@ -294,6 +296,23 @@ class Attribute extends \XLite\Model\Repo\Base\I18n
     protected function prepareCndLimit(\Doctrine\ORM\QueryBuilder $queryBuilder, array $value)
     {
         $queryBuilder->setFrameResults($value);
+    }
+
+    /**
+     * Prepare certain search condition
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param array                      $value        Condition data
+     * @param boolean                    $countOnly    "Count only" flag. Do not need to add "order by" clauses if only count is needed.
+     *
+     * @return void
+     */
+    protected function prepareCndOrderBy(\Doctrine\ORM\QueryBuilder $queryBuilder, array $value, $countOnly)
+    {
+        if (!$countOnly) {
+            list($sort, $order) = $this->getSortOrderValue($value);
+            $queryBuilder->addOrderBy($sort, $order);
+        }
     }
 
     // }}}

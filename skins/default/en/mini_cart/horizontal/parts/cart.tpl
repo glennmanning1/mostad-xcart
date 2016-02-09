@@ -10,4 +10,4 @@
  *
  * @ListChild (list="minicart.horizontal.buttons", weight="5")
  *}
-<widget class="\XLite\View\Button\Link" label="View cart" location="{buildURL(#cart#)}" style="cart" />
+<widget class="\XLite\View\Button\SimpleLink" label="View cart" location="{buildURL(#cart#)}" style="regular-button cart" />

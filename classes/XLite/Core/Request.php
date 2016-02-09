@@ -708,6 +708,12 @@ class Request extends \XLite\Base\Singleton
         'NetEase Inc' => array(
            'YodaoBot',
         ),
+        'MJ12bot' => array(
+           'MJ12bot',
+        ),
+        'AhrefsBot' => array(
+           'AhrefsBot',
+        ),
     );
 
     /**

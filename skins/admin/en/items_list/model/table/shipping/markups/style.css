@@ -42,7 +42,7 @@
 }
 
 .ui-dialog .items-list-table.shipping-markups table.list .lines .line {
-  display: none;
+  /*display: none;*/
 }
 
 .items-list-table.shipping-markups table.list tbody tr.line td {

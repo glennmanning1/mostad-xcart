@@ -306,7 +306,7 @@ class Session extends \XLite\Model\AEntity
                 }
                 $cell->map($this->prepareDataForExistingCell($value, $cell));
                 \XLite\Core\Database::getEM()->persist($cell);
-                \XLite\Core\Database::getEM()->flush();
+                \XLite\Core\Database::getEM()->flush($cell);
 
                 $this->cache[$name] = $cell;
             }
@@ -317,7 +317,7 @@ class Session extends \XLite\Model\AEntity
             if (!$cell->isDetached()) {
                 $this->getCells()->removeElement($cell);
                 \XLite\Core\Database::getEM()->remove($cell);
-                \XLite\Core\Database::getEM()->flush();
+                \XLite\Core\Database::getEM()->flush($cell);
             }
 
             unset($this->cache[$name]);

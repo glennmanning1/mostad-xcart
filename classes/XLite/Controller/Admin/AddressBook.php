@@ -199,8 +199,7 @@ class AddressBook extends \XLite\Controller\Admin\AAdmin
         $address = $this->getAddress();
 
         if (isset($address)) {
-            \XLite\Core\Database::getEM()->remove($address);
-            \XLite\Core\Database::getEM()->flush();
+            $address->delete();
 
             \XLite\Core\TopMessage::addInfo(
                 static::t('Address has been deleted')

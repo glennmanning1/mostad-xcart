@@ -103,6 +103,22 @@ class Advanced extends \XLite\View\FormField\Textarea\Advanced implements \XLite
     }
 
     /**
+     * Assemble classes
+     *
+     * @param array $classes Classes
+     *
+     * @return array
+     */
+    protected function assembleClasses(array $classes)
+    {
+        $classes = parent::assembleClasses($classes);
+
+        $classes[] = 'tinymce';
+
+        return $classes;
+    }
+
+    /**
      * Return structure of configuration for JS TinyMCE library
      *
      * @return array

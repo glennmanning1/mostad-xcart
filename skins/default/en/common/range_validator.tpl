@@ -8,4 +8,4 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  *}
-<font class="ValidateErrorMessage">&nbsp;&nbsp;&lt;&lt;&nbsp;The value must be in range {min}-{max}.</font>
+<span class="ValidateErrorMessage">&nbsp;&nbsp;&lt;&lt;&nbsp;The value must be in range {min}-{max}.</span>

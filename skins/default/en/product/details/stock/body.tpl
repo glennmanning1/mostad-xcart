@@ -13,7 +13,11 @@
   {if:isInStock()}
     <span class="stock-level product-in-stock">
       <span class="in-stock-label">{t(#In stock#)}</span>
-      <span class="product-items-available">({t(#X items available#,_ARRAY_(#count#^getAvailableAmount()))})</span>
+      {if:isShowStockWarning()}
+        <span class="product-items-available low-stock">({t(#Only X left in stock#,_ARRAY_(#X#^getAvailableAmount()))})</span>
+      {else:}
+        <span class="product-items-available">({t(#X items available#,_ARRAY_(#count#^getAvailableAmount()))})</span>
+      {end:}
     </span>
   {else:}
     {if:isOutOfStock()}

@@ -323,22 +323,4 @@ class Profile extends \XLite\Controller\Admin\AAdmin
             $this->setReturnURL($this->getShopURL(''));
         }
     }
-
-    /**
-     * Finish operate as user
-     * 
-     * @return void
-     */
-    protected function doActionFinishOperateAs()
-    {
-        $this->setReturnURL(
-            $this->buildURL('profile', '', array(
-                    'profile_id' => \XLite\Core\Auth::getInstance()->getOperatingAs()
-                )
-            )
-        );
-
-        \XLite\Core\Auth::getInstance()->finishOperatingAs();
-        \XLite\Core\TopMessage::addInfo('Finished operating as user');
-    }
 }

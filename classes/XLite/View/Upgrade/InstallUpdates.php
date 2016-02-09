@@ -50,6 +50,20 @@ class InstallUpdates extends \XLite\View\Upgrade\AUpgrade
     }
 
     /**
+     * Register JS files
+     *
+     * @return array
+     */
+    public function getJSFiles()
+    {
+        $list = parent::getJSFiles();
+
+        $list[] = $this->getDir() . '/controller.js';
+
+        return $list;
+    }
+
+    /**
      * Get directory where template is located (body.tpl)
      *
      * @return string

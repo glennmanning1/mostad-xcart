@@ -36,6 +36,7 @@ div.buttons {
 
 .items-list-table table.list tbody.lines td.cell a {
   text-decoration: underline;
+  vertical-align: baseline;
 }
 
 .items-list-table table.list tbody.no-items td {

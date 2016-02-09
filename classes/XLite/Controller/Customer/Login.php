@@ -152,7 +152,13 @@ class Login extends \XLite\Controller\Customer\ACustomer
         $data = \XLite\Core\Request::getInstance()->getData();
         $token = empty($data[self::SECURE_TOKEN]) ? null : $data[self::SECURE_TOKEN];
 
-        return \XLite\Core\Auth::getInstance()->login($data['login'], $data['password'], $token);
+        $profile = \XLite\Core\Database::getRepo('XLite\Model\Profile')->findByLogin($data['login']);
+
+        $isAdmin = $profile && $profile->isAdmin();
+
+        return $isAdmin
+            ? \XLite\Core\Auth::RESULT_ACCESS_DENIED
+            :\XLite\Core\Auth::getInstance()->login($data['login'], $data['password'], $token);
     }
 
     /**
@@ -253,16 +259,32 @@ class Login extends \XLite\Controller\Customer\ACustomer
      */
     protected function doActionLogoff()
     {
-        \XLite\Core\Auth::getInstance()->logoff();
+        if (\XLite\Core\Auth::getInstance()->isOperatingAsUserMode()) {
+            $this->setReturnURL(
+                \XLite\Core\Converter::buildURL(
+                    'profile',
+                    '',
+                    array(
+                        'profile_id' => \XLite\Core\Auth::getInstance()->getOperatingAs()
+                    ),
+                    \XLite::getAdminScript()
+                )
+            );
 
-        \Includes\Utils\Session::clearAdminCookie();
+            \XLite\Core\Auth::getInstance()->finishOperatingAs();
+            \XLite\Core\TopMessage::addInfo('Finished operating as user');
+        } else {
+            \XLite\Core\Auth::getInstance()->logoff();
 
-        $this->setReturnURL(\XLite\Core\Converter::buildURL());
+            \Includes\Utils\Session::clearAdminCookie();
 
-        $this->getCart()->logoff();
-        $this->updateCart();
+            $this->setReturnURL(\XLite\Core\Converter::buildURL());
 
-        \XLite\Core\Database::getEM()->flush();
+            $this->getCart()->logoff();
+            $this->updateCart();
+
+            \XLite\Core\Database::getEM()->flush();
+        }
     }
 
     /**

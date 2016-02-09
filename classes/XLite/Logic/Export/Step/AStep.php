@@ -86,6 +86,13 @@ abstract class AStep extends \XLite\Base implements \SeekableIterator, \Countabl
     public function __construct(\XLite\Logic\Export\Generator $generator = null)
     {
         $this->generator = $generator;
+        if ($generator) {
+            $this->getRepository()->setExportSelection($generator->getOptions()->selection);
+            if ($generator->getOptions()->filter) {
+                $conditionCell = $generator->getOptions()->filter;
+                $this->getRepository()->setExportFilter(\XLite\Core\Session::getInstance()->{$conditionCell});
+            }
+        }
     }
 
     /**
@@ -195,12 +202,16 @@ abstract class AStep extends \XLite\Base implements \SeekableIterator, \Countabl
     {
         $time = microtime(true);
 
+        $this->generator->setInProgress(true);
+
         if (0 == $this->position) {
             $this->buildHeader();
         }
 
         $row = $this->getItems()->current();
+
         $this->processModel($row[0]);
+        $this->generator->setInProgress(false);
 
         $this->generator->getOptions()->time += round(microtime(true) - $time, 3);
 
@@ -534,15 +545,7 @@ abstract class AStep extends \XLite\Base implements \SeekableIterator, \Countabl
      */
     protected function formatImageModel(\XLite\Model\Base\Image $image = null)
     {
-        $result = '';
-
-        if ($image) {
-            $result = $this->generator->getOptions()->copyResources
-                ? $this->copyResource($image, 'images')
-                : $image->getFrontURL();
-        }
-
-        return $result;
+        return $this->formatStorageModel($image);
     }
 
     /**
@@ -556,13 +559,12 @@ abstract class AStep extends \XLite\Base implements \SeekableIterator, \Countabl
     protected function formatStorageModel(\XLite\Model\Base\Storage $storage = null, $copyResources = null)
     {
         $result = '';
+        $copyResources = $copyResources ?: $this->generator->getOptions()->copyResources;
 
         if ($storage) {
-            if (!isset($copyResources)) {
-                $copyResources = $this->generator->getOptions()->copyResources;
-            }
+
             $result = $copyResources
-                ? $this->copyResource($storage, 'resources')
+                ? \Includes\Utils\FileManager::getRelativePath($storage->getStoragePath(), LC_DIR_ROOT)
                 : $storage->getFrontURL();
         }
 

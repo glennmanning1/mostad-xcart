@@ -218,11 +218,20 @@ class ModifierInputMapper extends API\Mapper\JsonPostProcessedMapper
                     'familyName'    => $address->getLastname(),
                     'givenName'     => $address->getFirstname(),
                     'email'         => $profile->getLogin(),
-                    'phoneNumbers'  => array(
-                        array(
-                            'number' => $address->getPhone(),
-                            'type' => 'other'
-                        ),
+                );
+            }
+            if ($address->getPhone()) {
+                $consignee['phoneNumbers']  = array(
+                    array(
+                        'number'    => $address->getPhone(),
+                        'type'      => 'other'
+                    ),
+                );
+            } elseif (\XLite\Core\Config::getInstance()->Company->company_phone) {
+                $consignee['phoneNumbers']  = array(
+                    array(
+                        'number'    => \XLite\Core\Config::getInstance()->Company->company_phone,
+                        'type'      => 'other'
                     ),
                 );
             }

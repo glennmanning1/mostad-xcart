@@ -30,9 +30,12 @@ $(document).ready(function() {
 
   // detect checkout page
   if ($('#addressBookWidgetDiv').length > 0 && AMAZON_PA_CONST.SID) {
+    core.bind('checkout.common.anyChange', function() {
+        $('div.step-shipping-methods form').attr('onsubmit','javascript: return false;');
+        func_amazon_pa_check_checkout_button();
+    });
     func_amazon_pa_init_checkout();
   }
-
 });
 
 function func_amazon_pa_lock_checkout(lock) {
@@ -65,10 +68,48 @@ function func_amazon_pa_block_elm(elm_sel, block) {
   }
 }
 
+function amazonUpdateShippingList() {
+  var ship_block = 'div.step-shipping-methods';
+
+  func_amazon_pa_block_elm('div.shipping-step', true);
+
+  $.get('cart.php?target=checkout&widget=\\XLite\\View\\Checkout\\ShippingMethodsList&_='+Math.random(), function(data) {
+
+    $(ship_block).html($(data).html());
+    core.autoload(ShippingMethodsView);
+
+    window['ShippingMethodsView'].prototype.handleMethodChange = function(){};
+    $(ship_block).find('form').submit(function( event ) {
+      return false;
+    });
+    $(ship_block).find('form').onsubmit = function() {
+        return false;
+    }
+
+    // see checkout/steps/shipping/parts/shippingMethods.js
+    if ($(ship_block).find("input[name='methodId']").length > 0 || $(ship_block).find("select[name='methodId']").length > 0) {
+
+      $(ship_block).find("input[name='methodId']").live('change', function() {
+        func_amazon_pa_on_change_shipping();
+      });
+      $(ship_block).find("select[name='methodId']").live('change', function() {
+        func_amazon_pa_on_change_shipping();
+      });
+
+      amazon_pa_address_selected = true;
+    } else {
+      amazon_pa_address_selected = false;
+    }
+
+    func_amazon_pa_check_checkout_button();
+    func_amazon_pa_block_elm('div.shipping-step', false);
+
+  });
+}
+
 function func_amazon_pa_check_address(orefid) {
 
   func_amazon_pa_lock_checkout(true);
-  func_amazon_pa_block_elm('div.shipping-step', true);
 
   $.post('cart.php?target=amazon_checkout', {'mode': 'check_address', 'orefid': orefid}, function(data) {
 
@@ -76,32 +117,11 @@ function func_amazon_pa_check_address(orefid) {
       alert('ERROR: Amazon server communication error. Please check module configuration (see logs for details)');
     }
 
-    // update shippings list
-    var ship_block = 'div.step-shipping-methods';
-    $.get('cart.php?target=checkout&widget=\\XLite\\View\\Checkout\\ShippingMethodsList&_='+Math.random(), function(data) {
+    if (amazon_pa_order_shippable) {
+      amazonUpdateShippingList();
+    };
 
-      $(ship_block).html($(data).html());
-      core.autoload(ShippingMethodsView);
-      // see checkout/steps/shipping/parts/shippingMethods.js
-      if ($(ship_block).find("input[name='methodId']").length > 0 || $(ship_block).find("select[name='methodId']").length > 0) {
-
-        $(ship_block).find("input[name='methodId']").change(function() {
-          func_amazon_pa_on_change_shipping();
-        });
-        $(ship_block).find("select[name='methodId']").change(function() {
-          func_amazon_pa_on_change_shipping();
-        });
-
-        amazon_pa_address_selected = true;
-      } else {
-        amazon_pa_address_selected = false;
-      }
-
-      func_amazon_pa_check_checkout_button();
-
-      func_amazon_pa_block_elm('div.shipping-step', false);
-
-    });
+    func_amazon_pa_check_checkout_button();
 
     // update totals and place order button
     func_amazon_pa_refresh_totals();
@@ -110,15 +130,18 @@ function func_amazon_pa_check_address(orefid) {
 }
 
 function func_amazon_pa_refresh_totals() {
-
     func_amazon_pa_block_elm('div.review-step', true);
 
     // update cart totals section
     $.get('cart.php?target=checkout&widget=\\XLite\\View\\Checkout\\CartItems&_='+Math.random(), function(data) {
 
       $('div.cart-items').html($(data).find('div').eq(0).html());
-      core.autoload(CartItemsView);
-
+      // core.autoload(CartItemsView);
+      if (typeof DiscountCouponsView == 'function') {
+        view = new DiscountCouponsView(jQuery('.coupons'));
+        view.base = jQuery('.coupons');
+        view.assignItemsHandlers(event, {isSuccess: true});
+      };
       func_amazon_pa_block_elm('div.review-step', false);
 
       $('div.cart-items div.items-row a').click(function() {
@@ -126,6 +149,7 @@ function func_amazon_pa_refresh_totals() {
         return false;
       });
 
+      func_amazon_pa_check_checkout_button();
     });
 
     // update place order button
@@ -148,7 +172,10 @@ function func_amazon_pa_check_payment(orefid) {
 }
 
 function func_amazon_pa_check_checkout_button() {
-  if (amazon_pa_payment_selected && amazon_pa_address_selected) {
+  if (typeof amazon_pa_payment_selected !== 'undefined'
+    && amazon_pa_payment_selected
+    && (amazon_pa_address_selected || !amazon_pa_order_shippable)
+  ) {
     // enable place order button
     func_amazon_pa_lock_checkout(false);
     amazon_pa_place_order_enabled = true;
@@ -196,6 +223,14 @@ function func_amazon_pa_place_order() {
 }
 
 function func_amazon_pa_init_checkout() {
+
+  // Load
+  core.bind(
+    'updateCart',
+    function () {
+      func_amazon_pa_refresh_totals();
+    }
+  );
 
   if ($.blockUI) {
     $.blockUI.defaults.baseZ = 200000;

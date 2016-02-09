@@ -11,5 +11,5 @@
 
 <div>
   <span class="value">{getViewValue(singleField)}</span>
+  <span IF="entity.getId()" class="products">({entity.getProductsCount()} {t(#products#)})</span>
 </div>
-<span IF="entity.getId()" class="products">({entity.getProductsCount()} {t(#products#)})</span>

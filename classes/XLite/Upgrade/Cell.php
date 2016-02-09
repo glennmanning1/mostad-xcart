@@ -115,7 +115,7 @@ class Cell extends \XLite\Base\Singleton
      *
      * @var array
      */
-    protected $errorEntries;
+    protected $errorEntries = array();
 
     /**
      * Flag to determine if upgrade is already performed
@@ -337,6 +337,8 @@ class Cell extends \XLite\Base\Singleton
         if ($collectEntries) {
             $this->collectEntries();
         }
+
+        $this->errorMessages = null;
     }
 
     /**

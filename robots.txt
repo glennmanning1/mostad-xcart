@@ -3,7 +3,9 @@
 #
 
 User-agent: *
-Crawl-delay: 10
+# Sitemap example
+# Sitemap: http://example.com/sitemap.xml
+
 # Directories
 Disallow: /Includes/
 Disallow: /classes/
@@ -34,3 +36,4 @@ Disallow: /public/error.html
 Disallow: /public/error_image.png
 Disallow: /top.inc.PHP53.php
 Disallow: /top.inc.php
+Crawl-delay: 10

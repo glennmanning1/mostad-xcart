@@ -81,7 +81,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getMinorVersion()
     {
-        return '6';
+        return '7';
     }
 
     /**
@@ -138,5 +138,15 @@ abstract class Main extends \XLite\Module\AModule
     public static function isStrictMode()
     {
         return false;
+    }
+
+    /**
+     * Log message
+     *
+     * @param mixed $message Message to log
+     */
+    public static function addLog($message)
+    {
+        \XLite\Logger::logCustom('ups', $message);
     }
 }

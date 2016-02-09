@@ -117,21 +117,9 @@ class Banner extends \XLite\View\ModulesManager\AModulesManager
     protected function getBannerModuleURL($banner)
     {
         list($author, $module) = explode('-', $banner['banner_module']);
-        list(, $limit) = $this->getWidget(array(), '\XLite\View\Pager\Admin\Module\Install')
-            ->getLimitCondition()->limit;
 
-        $pageId = \XLite\Core\Database::getRepo('XLite\Model\Module')->getMarketplacePageId($author, $module, $limit);
-
-        return $this->buildURL(
-            'addons_list_marketplace',
-            '',
-            array(
-                'clearCnd'                                      => 1,
-                'clearSearch'                                   => 1,
-                \XLite\View\Pager\APager::PARAM_PAGE_ID         => $pageId,
-                \XLite\View\ItemsList\AItemsList::PARAM_SORT_BY => \XLite\View\ItemsList\Module\AModule::SORT_OPT_ALPHA,
-            )
-        ) . '#' . $module;
+        return \XLite\Core\Database::getRepo('XLite\Model\Module')
+            ->getMarketplaceUrlByName($author, $module);
     }
 
     /**

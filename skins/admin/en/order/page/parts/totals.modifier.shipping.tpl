@@ -19,7 +19,7 @@
     <div class="method">
       {orderForm.displayComplexField(#shippingMethod#)}
     </div>
-    <div class="separator">&ndash;</div>
+    <div class="separator">:</div>
     {surcharge.formField.display():h}
     <widget template="order/page/parts/restore.tpl" surcharge="{surcharge}" />
   {else:}

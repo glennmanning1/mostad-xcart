@@ -10,6 +10,7 @@
  *}
 
 <div class="product-filter">
+  {displayCommentedData(getCommentedData())}
   <div class="{getBlockClasses()}">
     <div class="head-h2">{t(getHead())}</div>
     <div class="content">
@@ -21,7 +22,7 @@
             <div class="arrow"> </div>
           </div>
           <widget class="\XLite\View\Button\Submit" label="Show products" style="filter" />
-          <a href="#" class="reset-filter">{t(#Reset filter#)}</a>
+          <a IF="{isFilterTarget()}" href="#" class="reset-filter">{t(#Reset filter#)}</a>
         </div>
       <widget name="filter_form" end />
     </div>

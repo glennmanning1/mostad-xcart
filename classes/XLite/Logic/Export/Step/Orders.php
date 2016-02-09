@@ -162,7 +162,6 @@ class Orders extends \XLite\Logic\Export\Step\AStep
             static::PAYMENT_TRANSACTION_PREFIX . 'Note'   => array(static::COLUMN_MULTIPLE => true),
             static::PAYMENT_TRANSACTION_PREFIX . 'Type'   => array(static::COLUMN_MULTIPLE => true),
             static::PAYMENT_TRANSACTION_PREFIX . 'Id'     => array(static::COLUMN_MULTIPLE => true),
-            static::PAYMENT_TRANSACTION_PREFIX . 'Data'   => array(static::COLUMN_MULTIPLE => true),
             'date'                                  => array(),
             'paymentStatus'                         => array(),
             'shippingStatus'                        => array(),
@@ -822,28 +821,6 @@ class Orders extends \XLite\Logic\Export\Step\AStep
         return empty($dataset['paymentTransaction'])
             ? ''
             : $this->getColumnValueByName($dataset['paymentTransaction'], 'public_id');
-    }
-
-    /**
-     * Get column value for 'paymentTransactionData' column
-     *
-     * @param array   $dataset Dataset
-     * @param string  $name    Column name
-     * @param integer $i       Subcolumn index
-     *
-     * @return array
-     */
-    protected function getPaymentTransactionDataColumnValue(array $dataset, $name, $i)
-    {
-        $result = array();
-
-        if (!empty($dataset['paymentTransaction'])) {
-            foreach ($dataset['paymentTransaction']->getData() as $data) {
-                $result[] = $data->getName() . ': ' . $data->getValue();
-            }
-        }
-
-        return $result;
     }
 
     // }}}

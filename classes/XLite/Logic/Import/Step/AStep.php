@@ -171,7 +171,7 @@ abstract class AStep extends \XLite\Base implements \SeekableIterator, \Countabl
             && !empty($state['options'])
             && (
                 (isset($state['options']['step']) && $state['options']['step'] > $this->index)
-                || $state['state'] == \XLite\Core\EventTask::STATE_FINISHED
+                || isset($state['state']) && $state['state'] == \XLite\Core\EventTask::STATE_FINISHED
             );
     }
 
@@ -282,6 +282,7 @@ abstract class AStep extends \XLite\Base implements \SeekableIterator, \Countabl
      */
     public function finalize()
     {
+        \XLite\Core\TmpVars::getInstance()->lastImportStep = get_class($this);
         \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->setVar(
             $this->getImportTickDurationVarName(),
             $this->count() ? round($this->getOptions()->time / $this->count(), 3) : 0

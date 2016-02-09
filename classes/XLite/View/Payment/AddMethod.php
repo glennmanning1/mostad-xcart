@@ -37,15 +37,6 @@ namespace XLite\View\Payment;
 class AddMethod extends \XLite\View\SimpleDialog
 {
     /**
-     * Cache flag for hasAllAllInOneMethods helper
-     *
-     * @see self::hasAllAllInOneMethods
-     *
-     * @var boolean|null
-     */
-    protected $allAllInOneMethods = null;
-
-    /**
      * Return list of allowed targets
      *
      * @return array
@@ -65,7 +56,9 @@ class AddMethod extends \XLite\View\SimpleDialog
      */
     protected function getBody()
     {
-        return 'payment/add_method/body.tpl';
+        return \XLite\Model\Payment\Method::TYPE_OFFLINE === $this->getPaymentType()
+            ? 'payment/add_method/offline.tpl'
+            : 'payment/add_method/body.tpl';
     }
 
     /**
@@ -76,23 +69,5 @@ class AddMethod extends \XLite\View\SimpleDialog
     protected function getPaymentType()
     {
         return \XLite\Core\Request::getInstance()->{\XLite\View\Button\Payment\AddMethod::PARAM_PAYMENT_METHOD_TYPE};
-    }
-
-    /**
-     * Defines if all ALLINONE methods are already added
-     *
-     * @return boolean
-     */
-    protected function hasAllAllInOneMethods()
-    {
-        if (is_null($this->allAllInOneMethods)) {
-            // Defines if there is not added ALLINONE method
-            $this->allAllInOneMethods = !(bool)\XLite\Core\Database::getRepo('XLite\Model\Payment\Method')->findOneBy(array(
-                'type'    => \XLite\Model\Payment\Method::TYPE_ALLINONE,
-                'added'   => false,
-            ));
-        }
-
-        return $this->allAllInOneMethods;
     }
 }

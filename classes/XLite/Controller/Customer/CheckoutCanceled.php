@@ -41,7 +41,7 @@ class CheckoutCanceled extends \XLite\Controller\Customer\Cart
      */
     protected function doNoAction()
     {
-        $this->restoreOrder();
+        $this->setReturnURL($this->buildURL('checkout'));
 
         \XLite\Core\TopMessage::addError('Sorry, your order payment is canceled.');
     }

@@ -8,14 +8,25 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  *}
-<div class="payment-status">
+<div class="payment-status" data-method="{getMethodId()}">
   <div class="{getClass()}" role="alert">
     <span class="status-message-before">
       <list name="{getBeforeListName()}" />
     </span>
 
-    <span IF="{isEnabled()}" class="status-message">{t(#This payment method is Active.#):h}</span>
-    <span IF="{isDisabled()}" class="status-message">{t(#This payment method is Inactive.#):h}</span>
+    {if:isSwitchable()}
+    <widget
+      class="XLite\View\FormField\Input\Checkbox\OnOff"
+      label="This payment method is"
+      fieldName="payment_method_status"
+      onLabel="{t(#shippingStatus.Active#)}"
+      offLabel="{t(#shippingStatus.Inactive#)}"
+      value="{isEnabled()}" />
+    {else:}
+    <div class="table-label">
+      <label>{t(#This payment method is not configured.#):h}</label>
+    </div>
+    {end:}
 
     <span class="status-message-after">
       <list name="{getAfterListName()}" />

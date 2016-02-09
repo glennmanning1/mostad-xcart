@@ -101,7 +101,7 @@ class ChangeTemplate extends \XLite\View\Model\AModel
 
                 $currentModule = \XLite\Core\Database::getRepo('XLite\Model\Module')->getCurrentSkinModule();
                 if ($currentModule) {
-                    $currentColor = \XLite\Core\Layout::getInstance()->getLayoutColorName();
+                    $currentColor = \XLite\Core\Layout::getInstance()->getLayoutColor();
 
                     $result = $currentModule->getModuleId()
                         . ($currentColor ? ('_' . $currentColor) : '');

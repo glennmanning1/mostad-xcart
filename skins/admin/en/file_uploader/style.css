@@ -30,8 +30,8 @@ div.file-uploader .preview {
   text-align: center;
   padding: 1px;
   max-width: 123px;
-  margin-left: -1px;
-  margin-top: -1px;
+  margin-left: -2px;
+  margin-top: -2px;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   border-radius: 6px;
@@ -43,8 +43,8 @@ div.file-uploader .preview {
 .items-list-table div.file-loading,
 .items-list-table div.file-uploader .preview,
 .items-list-table div.file-uploader {
-  width: 42px;
-  height: 42px;
+  width: 60px;
+  height: 60px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
@@ -52,15 +52,13 @@ div.file-uploader .preview {
 
 .items-list-table div.file-uploader,
 .items-list-table div.file-loading {
-  position: absolute;
-  top: -22px;
-  left: -12px;
 }
 
 div.multiple-files .ui-state-highlight,
 div.multiple-files div.file-loading,
 div.multiple-files div.file-uploader {
   float: left;
+  padding: 1px;
   margin-right: 10px;
   margin-bottom: 10px;
   background: #fff;
@@ -80,8 +78,8 @@ div.file-uploader.remove-mark.solid:hover
 
 .items-list-table table.list tbody td div.file-uploader div.icon,
 div.file-uploader div.icon {
-  left: 95px;
-  top: 95px;
+  right: 0;
+  bottom: 0;
   position: absolute;
   font-size: 14px;
   background: #fff;
@@ -96,8 +94,6 @@ div.file-uploader div.icon {
 }
 
 .items-list-table table.list tbody td div.file-uploader div.icon {
-  left: 27px;
-  top: 25px;
   width: 14px;
   height: 16px;
   -moz-border-radius: 3px 0;
@@ -131,8 +127,12 @@ div.file-uploader .dropdown-menu {
 }
 
 .items-list-table div.file-uploader .dropdown-menu {
-  left: 27px;
-  top: 44px;
+  left: 58px;
+  top: 73px;
+}
+
+.items-list-table div.file-uploader .dropdown-menu > li{
+  text-align: left;
 }
 
 div.file-uploader .dropdown-menu li a.from-computer:hover .button-icon.fa-sign-out,
@@ -157,6 +157,21 @@ div.file-uploader .dropdown-menu .message i.fa {
 
 .items-list-table table.list div.file-uploader a {
   text-decoration: none;
+}
+
+.items-list-table table.list div.file-uploader a.link{
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+          align-items: center;
 }
 
 div.file-uploader i.icon {

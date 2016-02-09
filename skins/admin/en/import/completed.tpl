@@ -9,9 +9,11 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block import-box import-completed">
+<div class="import-box import-completed">
 
-  <widget class="XLite\View\Import\Titles" />
+  <div class="header clearfix">
+    <h2>{t(#Import results#)}</h2>
+  </div>
 
   <div class="content">
     <div class="subcontent clearfix">

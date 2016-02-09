@@ -221,7 +221,7 @@ ItemsList.prototype.process = function(paramName, paramValue)
 };
 
 // Load (reload) widget
-ItemsList.prototype.loadWidget = function()
+ItemsList.prototype.loadWidget = function(callback)
 {
   if (hasAJAXSupport()) {
 
@@ -231,8 +231,9 @@ ItemsList.prototype.loadWidget = function()
       type:     'get',
       url:      this.buildURL(true),
       timeout:  15000,
-      complete: _.bind(this.loadHandler, this)
+      complete: _.bind(this.loadHandler, this),
     }
+    this.loadCallback = callback;
     this.triggerVent('preload', {'widget': this, 'data': data});
 
     jQuery.ajax(data);
@@ -276,6 +277,9 @@ ItemsList.prototype.loadHandler = function(xhr, s)
   var flag = xhr.status == 200 && xhr.responseText;
 
   if (flag) {
+    if (this.loadCallback) {
+      this.loadCallback(xhr.responseText);
+    };
     this.placeNewContent(xhr.responseText);
     processed = true;
   }

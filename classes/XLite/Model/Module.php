@@ -399,6 +399,15 @@ class Module extends \XLite\Model\AEntity
      */
     protected $imageURLCached = array();
 
+    /**
+     * Flag (true if module is 'skin module')
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $isSkin = false;
+
     // {{{ Routines to access methods of (non)installed modules
 
     /**
@@ -707,16 +716,26 @@ class Module extends \XLite\Model\AEntity
     {
         $list = array();
 
-        $modules = \Includes\Utils\ModulesManager::getActiveModules();
+        $cacheKey = \Includes\Utils\ModulesManager::getActiveModulesHash() . $this->getActualName() . 'MutualModules';
+        $cacheDriver = \XLite\Core\Database::getCacheDriver();
 
-        foreach ($modules as $m => $data) {
+        if ($cacheDriver->contains($cacheKey)) {
+            $cached = $cacheDriver->fetch($cacheKey);
+            $list = is_array($cached)
+                ? $cached
+                : array();
 
-            $mutualModules = \Includes\Utils\ModulesManager::callModuleMethod($m, 'getMutualModulesList');
+        } else {
+            $modules = \Includes\Utils\ModulesManager::getActiveModules();
+            foreach ($modules as $m => $data) {
+                $mutualModules = \Includes\Utils\ModulesManager::callModuleMethod($m, 'getMutualModulesList');
 
-            if (in_array($this->getActualName(), $mutualModules) && !isset($list[$m])) {
-                $list[$m] = \XLite\Core\Database::getRepo('XLite\Model\Module')
-                    ->findOneBy(array_combine(array('author', 'name'), explode('\\', $m)));
+                if (in_array($this->getActualName(), $mutualModules) && !isset($list[$m])) {
+                    $list[$m] = \XLite\Core\Database::getRepo('XLite\Model\Module')
+                        ->findOneBy(array_combine(array('author', 'name'), explode('\\', $m)));
+                }
             }
+            $cacheDriver->save($cacheKey, $list ?: 'EMPTY');
         }
 
         return $list;
@@ -790,6 +809,23 @@ class Module extends \XLite\Model\AEntity
 
         foreach ($result as $k => $v) {
             $result[$k] = preg_replace('/^(\d+)_(.+)$/', '\2', $v);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get hash array of edition names IDs
+     *
+     * @return array
+     */
+    public function getEditionIds()
+    {
+        $result = $this->getEditions();
+
+        foreach ($result as $k => $v) {
+            preg_match('/^(\d+)_(.+)$/', $v, $match);
+            $result[$match[2]] = $match[1];
         }
 
         return $result;
@@ -910,19 +946,14 @@ class Module extends \XLite\Model\AEntity
      */
     public function isSkinModule()
     {
-        if ('XC' === $this->getAuthor() && 'CustomSkin' === $this->getName()) {
-            $result = false;
-
-        } else {
-            // Check module type from classes/XLite/Modules/** for disabled modules
-            if (!defined('LC_MODULE_CONTROL')) {
-                define('LC_MODULE_CONTROL', true);
-            }
-            $type = $this->callModuleMethod('getModuleType');
-
-            $result = (\XLite\Module\AModule::MODULE_TYPE_SKIN & (int)$type)
-                === \XLite\Module\AModule::MODULE_TYPE_SKIN;
+        // Check module type from classes/XLite/Modules/** for disabled modules
+        if (!defined('LC_MODULE_CONTROL')) {
+            define('LC_MODULE_CONTROL', true);
         }
+        $type = $this->callModuleMethod('getModuleType');
+
+        $result = (\XLite\Module\AModule::MODULE_TYPE_SKIN & (int)$type)
+            === \XLite\Module\AModule::MODULE_TYPE_SKIN;
 
         return $result;
     }
@@ -1018,23 +1049,17 @@ class Module extends \XLite\Model\AEntity
      */
     public function getMarketplaceURL()
     {
-        $pager = new \XLite\View\Pager\Admin\Module\Install();
-        list(, $limit) = $pager->getLimitCondition()->limit;
-        $pageId = $this->getRepository()->getMarketplacePageId(
-            $this->getAuthor(),
-            $this->getName(),
-            $limit
-        );
+        $moduleFormMarket = $this->getRepository()->getModuleFromMarketplace($this);
 
-        $params = array(
-            'clearCnd'                                      => 1,
-            'clearSearch'                                   => 1,
-            \XLite\View\Pager\APager::PARAM_PAGE_ID         => $pageId,
-            \XLite\View\ItemsList\AItemsList::PARAM_SORT_BY => \XLite\View\ItemsList\Module\AModule::SORT_OPT_ALPHA,
-        );
+        $params = array();
+        if ($moduleFormMarket) {
+            $params = array(
+                'moduleID'      => $moduleFormMarket->getModuleID(),
+            );
+        }
 
         return \XLite::getInstance()->getShopURL(
-            sprintf('%s#%s', \XLite\Core\Converter::buildURL('addons_list_marketplace', '', $params), $this->getName())
+            \XLite\Core\Converter::buildURL('addons_list_marketplace', '', $params)
         );
     }
 

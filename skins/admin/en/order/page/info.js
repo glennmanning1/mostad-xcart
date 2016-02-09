@@ -124,7 +124,15 @@ OrderInfoForm.prototype.isChangedAfterLastRecalculate = function()
     )
     .length;
 
+  if (this.getCreatedOrderItemsCount() != this.recalculatedCreatedOrderItemsCount) {
+    changedCount++;
+  };
+
   return changedCount > 0;
+}
+
+OrderInfoForm.prototype.getCreatedOrderItemsCount = function(){
+  return jQuery(this.base).find('.items-list-table.order-items .list .create .create-line').length;
 }
 
 OrderInfoForm.prototype.isElementChangedAfterLastRecalculate = function(element)
@@ -144,6 +152,7 @@ OrderInfoForm.prototype.handleRecalculate = function(event)
   action.value = old;
 
   if (result) {
+    this.recalculatedCreatedOrderItemsCount = this.getCreatedOrderItemsCount();
     this.shade();
   }
 
@@ -179,11 +188,11 @@ OrderInfoForm.prototype.setRecalculatedValues = function()
 
 OrderInfoForm.prototype.isElementAffectRecalculate = function(element)
 {
-  return -1 == element.name.search(/^(?:shippingStatus|paymentStatus|sendNotification)$/)
+  return !jQuery(element).hasClass('not-affect-recalculate')
     && jQuery(element).parents('.tracking-number').length == 0
     && (-1 == element.name.search(/auto.surcharges./) || element.value == '1')
-    && !jQuery(element).hasClass('not-affect-recalculate')
-    && jQuery(element).parents('.popover-content').length == 0;
+    && jQuery(element).parents('.popover-content').length == 0
+    && jQuery(element).parents('.payment-method-data').length == 0;
 }
 
 OrderInfoForm.prototype.setRecalculatedValue = function(index, element)
@@ -334,6 +343,15 @@ OrderInfoForm.prototype.aggregateElementsState = function()
         this
       )
     );
+
+    if (this.recalculatedCreatedOrderItemsCount
+      && this.getCreatedOrderItemsCount() != this.recalculatedCreatedOrderItemsCount
+    ) {
+      if (!state.needRecalculate) {
+        state.needRecalculate = true;
+        state.needSave = false;
+      }
+    };
 
     if (!state.needRecalculate && !state.needSave && this.recalculated && !this.forbidden && this.base.get(0).commonController.isChanged()) {
       state.needSave = true;

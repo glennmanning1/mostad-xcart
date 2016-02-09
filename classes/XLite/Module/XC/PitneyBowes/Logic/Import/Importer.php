@@ -63,8 +63,8 @@ class Importer extends \XLite\Logic\Import\Importer implements \XLite\Base\IDeco
 
             $state = \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->getEventState($event);
 
-            if ($state['state'] == \XLite\Core\EventTask::STATE_FINISHED
-                || $state['state'] == \XLite\Core\EventTask::STATE_ABORTED) {
+            if (isset($state['state']) && ($state['state'] == \XLite\Core\EventTask::STATE_FINISHED
+                || $state['state'] == \XLite\Core\EventTask::STATE_ABORTED)) {
                 $result = false;
             }
 

@@ -65,19 +65,27 @@ class CategoryFilter extends \XLite\Controller\Customer\Category
 
         $data['filter'] = \XLite\Core\Request::getInstance()->filter;
 
+        $filters = \Includes\Utils\ArrayManager::filterMultidimensional($data['filter']);
+
         if (!$this->isAJAX()) {
             $sessionCell = \XLite\Module\XC\ProductFilter\View\ItemsList\Product\Customer\Category\CategoryFilter::getSessionCellName();
         }
 
         \XLite\Core\Session::getInstance()->$sessionCell = $data;
 
-        $this->setReturnURL(
-            $this->buildURL(
-                'category_filter',
-                '',
-                array('category_id' => \XLite\Core\Request::getInstance()->category_id)
-            )
+        $returnUrl = $this->buildURL(
+            'category_filter',
+            '',
+            array('category_id' => \XLite\Core\Request::getInstance()->category_id)
         );
+
+        if ($filters) {
+            $returnUrl .= '#' . urldecode(http_build_query(
+                array('filter' => $filters)
+            ));
+        }
+
+        $this->setReturnURL($returnUrl);
     }
 
     /**

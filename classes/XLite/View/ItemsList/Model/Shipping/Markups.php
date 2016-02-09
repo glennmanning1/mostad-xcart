@@ -78,6 +78,16 @@ class Markups extends \XLite\View\ItemsList\Model\Table
     }
 
     /**
+     * Get JS handler class name (used for pagination)
+     *
+     * @return string
+     */
+    protected function getJSHandlerClassName()
+    {
+        return 'ShippingMarkupItemsList';
+    }
+
+    /**
      * Define columns structure
      *
      * @return array
@@ -284,7 +294,7 @@ class Markups extends \XLite\View\ItemsList\Model\Table
     protected function getCurrentShippingZone()
     {
         if (null === $this->currentShippingZone) {
-            $zoneId = \XLite\Core\Request::getInstance()->shippingZone;
+            $zoneId = \XLite\Core\Request::getInstance()->shippingZone ?: $this->getShippingZone();
             $this->currentShippingZone = \XLite\Core\Database::getRepo('XLite\Model\Zone')->find($zoneId);
         }
 
@@ -320,6 +330,7 @@ class Markups extends \XLite\View\ItemsList\Model\Table
     {
         $result = parent::getSearchCondition();
         $result->methodId = \XLite\Core\Request::getInstance()->methodId;
+        $result->shippingZone = \XLite\Core\Request::getInstance()->shippingZone ?: $this->getShippingZone();
 
         return $result;
     }
@@ -327,13 +338,13 @@ class Markups extends \XLite\View\ItemsList\Model\Table
     // }}}
 
     /**
-     * Check - pager box is visible or not
+     * Return class name for the list pager
      *
-     * @return boolean
+     * @return string
      */
-    protected function isPagerVisible()
+    protected function getPagerClass()
     {
-        return false;
+        return 'XLite\View\Pager\Admin\Model\Shipping\Markup';
     }
 
     /**
@@ -364,5 +375,36 @@ class Markups extends \XLite\View\ItemsList\Model\Table
     protected function isPanelVisible()
     {
         return false;
+    }
+
+    /**
+     * Get URL common parameters
+     *
+     * @return array
+     */
+    protected function getCommonParams()
+    {
+        $this->commonParams = parent::getCommonParams();
+        $this->commonParams['methodId'] = \XLite\Core\Request::getInstance()->methodId;
+        $this->commonParams['shippingZone'] = \XLite\Core\Request::getInstance()->shippingZone ?: $this->getShippingZone();
+
+        return $this->commonParams;
+    }
+
+    /**
+     * @return integer
+     */
+    protected function getShippingZone()
+    {
+        if ($this->getModelForm()) {
+            $method = $this->getModelForm()->getModelObject();
+
+            $zones = \XLite\Core\Database::getRepo('XLite\Model\Zone')->getOfflineShippingZones($method);
+            $list = array_keys($zones[0] ? $zones[0] : ($zones[1] ? $zones[1] : array(1)));
+
+            return $list[0];
+        }
+
+        return 1;
     }
 }

@@ -58,7 +58,7 @@ OrderShippingMethod.prototype.handleRecalculateShipping = function(event, data)
   var select = this.base.find('select');
 
   // Clean
-  jQuery(select.get(0).options)
+  jQuery('option', select.get(0))
     .filter(
       function() {
         return this.value > 0 && this.value != 'deleted';
@@ -67,21 +67,21 @@ OrderShippingMethod.prototype.handleRecalculateShipping = function(event, data)
     .remove();
 
   // Add
-  var options = select.get(0).options;
+  var selector = select.get(0);
 
   _.each(
     data.options,
     function(value, idx) {
       var option = new Option(value.name, idx);
       jQuery(option).data('value', value.fullName);
-      options[options.length] = option;
+      selector.add(option);
     }
   );
 
   var value = select.data('value');
   var isSelected = false;
   _.each(
-    select.get(0).options,
+    jQuery('option', select.get(0)),
     function(option, idx) {
       if (option.value == value) {
         option.selected = true;

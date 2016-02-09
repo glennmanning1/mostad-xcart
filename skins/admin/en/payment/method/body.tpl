@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<widget class="\XLite\View\Payment\MethodStatus" />
+<widget class="\XLite\View\Payment\MethodStatus" method="{getPaymentMethod()}" />
 
 <widget class="\XLite\View\Form\Payment\Method\Admin\Settings" name="payment_settings_form" />
 

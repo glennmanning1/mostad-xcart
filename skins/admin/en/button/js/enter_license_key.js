@@ -22,5 +22,18 @@ PopupButtonEnterLicenseKey.prototype.pattern = '.enter-license-key';
 
 PopupButtonEnterLicenseKey.prototype.enableBackgroundSubmit = false;
 
+PopupButtonEnterLicenseKey.prototype.callback = function (selector, link)
+{
+  PopupButton.prototype.callback.apply(this, arguments);
+};
+
 // Autoloading new POPUP widget
 core.autoload(PopupButtonEnterLicenseKey);
+
+core.microhandlers.add(
+  'PopupButtonEnterLicenseKey',
+  PopupButtonEnterLicenseKey.prototype.pattern,
+  function (event) {
+    core.autoload(PopupButtonEnterLicenseKey);
+  }
+);

@@ -29,6 +29,10 @@
 
 namespace XLite\View\ItemsList\Model\Product\Admin;
 
+use XLite\Core;
+use XLite\Model;
+use XLite\Model\WidgetParam;
+
 /**
  * Top selling products list (for dashboard page)
  */
@@ -95,8 +99,8 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
         parent::defineWidgetParams();
 
         $this->widgetParams += array(
-            static::PARAM_PERIOD         => new \XLite\Model\WidgetParam\String('Period', self::P_PERIOD_LIFETIME),
-            static::PARAM_PRODUCTS_LIMIT => new \XLite\Model\WidgetParam\Int('Number of products', 5),
+            static::PARAM_PERIOD         => new WidgetParam\String('Period', self::P_PERIOD_LIFETIME),
+            static::PARAM_PRODUCTS_LIMIT => new WidgetParam\Int('Number of products', 5),
         );
     }
 
@@ -116,13 +120,13 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
         $columns = parent::defineColumns();
 
         $columns['sold'] = array(
-            static::COLUMN_NAME  => \XLite\Core\Translation::lbl('Sold'),
+            static::COLUMN_NAME  => Core\Translation::lbl('Sold'),
             static::COLUMN_ORDERBY  => 10000,
         );
 
         // Remove redundant columns
         foreach ($columns as $k => $v) {
-            if (!in_array($k, $allowedColumns)) {
+            if (!in_array($k, $allowedColumns, true)) {
                 unset($columns[$k]);
             }
         }
@@ -147,7 +151,7 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
      */
     protected function getSearchCondition()
     {
-        $cnd = new \XLite\Core\CommonCell();
+        $cnd = new Core\CommonCell();
 
         $cnd->date = array($this->getStartDate(), 0);
 
@@ -165,7 +169,7 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
      */
     protected function getStartDate()
     {
-        $now = \XLite\Core\Converter::time();
+        $now = Core\Converter::time();
 
         switch ($this->getParam(self::PARAM_PERIOD)) {
             case self::P_PERIOD_DAY:
@@ -197,10 +201,18 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
      *
      * @return array
      */
-    protected function getData(\XLite\Core\CommonCell $cnd, $countOnly = false)
+    protected function getData(Core\CommonCell $cnd, $countOnly = false)
     {
-        $data = \XLite\Core\Database::getRepo('\XLite\Model\OrderItem')
-            ->getTopSellers($this->getSearchCondition(), $countOnly);
+        list($start,) = $cnd->date;
+
+        if (0 === (int) $start) {
+            $data = Core\Database::getRepo('XLite\Model\Product')
+                ->getTopSellers($this->getSearchCondition(), $countOnly);
+
+        } else {
+            $data = Core\Database::getRepo('XLite\Model\OrderItem')
+                ->getTopSellers($this->getSearchCondition(), $countOnly);
+        }
 
         return $countOnly
             // $data is a quantity of collection
@@ -221,7 +233,7 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
      */
     public function extractProductData($item)
     {
-        $product = $item[0]->getProduct();
+        $product = $item[0] instanceof Model\Product ? $item[0] : $item[0]->getProduct();
         $product->setSold($item['cnt']);
 
         return $product;
@@ -236,7 +248,7 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
      *
      * @return string
      */
-    protected function preprocessName($value, array $column, \XLite\Model\Product $entity)
+    protected function preprocessName($value, array $column, Model\Product $entity)
     {
         return $entity->isPersistent() ? $value : ($value . ' <span class="removed">(removed)</span>');
     }
@@ -250,11 +262,10 @@ class TopSellers extends \XLite\View\ItemsList\Model\Product\Admin\LowInventoryB
      *
      * @return boolean
      */
-    protected function isLink(array $column, \XLite\Model\AEntity $entity)
+    protected function isLink(array $column, Model\AEntity $entity)
     {
         return parent::isLink($column, $entity)
             // Deleted product entity must not be displayed as a link
             && $entity->isPersistent();
     }
 }
-

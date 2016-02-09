@@ -32,6 +32,9 @@ if(isset($_POST['submit'])) {
     $cur_thumbs_url = "/".$cur_thumbs_url;
   }
 
+  $cur_upload_url = str_replace(DIRECTORY_SEPARATOR, '/', $cur_upload_url);
+  $cur_thumbs_url = str_replace(DIRECTORY_SEPARATOR, '/', $cur_thumbs_url);
+
   //Include Language definitions
   if (isset($_GET['lang']) && $_GET['lang'] != 'undefined' 
       && is_readable(joinPaths('lang',$_GET['lang'].'.php'))
@@ -338,7 +341,7 @@ if(isset($_POST['submit'])) {
                      ) { ?>
                     <li class="ff-item-type-<?=$class_ext; ?>">
                       <figure>
-                        <a href="javascript:void('');" title="<?= lang_Select ?>" onclick="<?=$apply."('".urlencode($file)."',".$_GET['type'].",'".$_GET['field_id']."');"; ?>">
+                        <a href="javascript:void('');" title="<?= lang_Select ?>" onclick="<?=$apply."('".rawurlencode($file)."',".$_GET['type'].",'".$_GET['field_id']."');"; ?>">
                           <div class="img-precontainer">
                             <div class="img-container"><span></span>
                               <?='<img data-src="holder.js/'.$thumbnail_width.'x'.$thumbnail_height.'" alt="image"'. ($show_original ? 'class="original"' : '') .' src="'.$src_thumb.'">'?>

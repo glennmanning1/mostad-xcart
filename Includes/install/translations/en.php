@@ -94,6 +94,8 @@ $translation = array (
   'Updating primary administrator profile...' => 'Updating primary administrator profile...',
   'Registering primary administrator profile...' => 'Registering primary administrator profile...',
   'ERROR' => 'ERROR',
+  'ERRORS:' => 'ERRORS:',
+  'The rest report data:' => 'The rest of the test results:',
   'cannot_connect_mysql_server' => 'Cannot connect to the MySQL server or select a required database :pdoerr.<br />Click the \'BACK\' button and review the MySQL server settings provided.',
   'script_renamed_text' => '
 To ensure safety of your X-Cart installation, file "install.php" has been renamed to ":newname".
@@ -102,16 +104,11 @@ Should you decide to re-install X-Cart, remember to rename  file ":newname" back
      http://:host:webdir/install.php
 ',
   'script_renamed_text_html' => '
-<p>To ensure safety of your X-Cart installation, file "install.php" has been renamed to ":newname".</p>
-
-<p>Should you decide to re-install X-Cart, remember to rename file ":newname" back to "install.php"</p>
+To ensure safety of your X-Cart installation, file "install.php" has been renamed to ":newname".<br />
+Should you decide to re-install X-Cart, remember to rename file ":newname" back to "install.php"
 ',
-  'script_cannot_be_renamed_text' => '<p><font color="red"><b>WARNING!</b> The install.php script could not be renamed! To ensure safety of your X-Cart installation and prevent unauthorized use of this script, rename or delete the script manually.</font></p>',
-  'correct_permissions_text' => '
-Before you start using your X-Cart shopping system, please set the following secure file permissions:<br /><br />
-
-<code>:perms</code>
-',
+  'script_cannot_be_renamed_text' => '<span style="color: red;"><b>WARNING!</b> The install.php script could not be renamed! To ensure safety of your X-Cart installation and prevent unauthorized use of this script, rename or delete the script manually.</span>',
+  'correct_permissions_text' => 'Before you start using your X-Cart shopping system, please set the following secure file permissions:',
   'congratulations_text' => '
 Congratulations!
 
@@ -156,8 +153,8 @@ X-Cart Installation Wizard
   'Failed' => 'Failed',
   'Skipped' => 'Skipped',
   'Fatal error' => 'Fatal error',
-  'Please correct the error(s) before proceeding to the next step.' => 'Please correct the error(s) before proceeding to the next step.',
-  'Please correct the error(s) before proceeding to the next step or get help.' => 'Please correct the error(s) before proceeding to the next step. If you are not sure how to handle this problem, contact your <em>hosting provider</em> for help or send us an installation <em>error report</em>, and X-Cart experts will help you to find a solution.',
+  'Please correct the error(s) before proceeding to the next step.' => 'Please correct the error(s) before you proceed to the next step.',
+  'Please correct the error(s) before proceeding to the next step or get help.' => 'Please correct the error(s) before you proceed to the next step. If you are not sure how to handle this problem, request assistance from your <em>hosting provider</em>, or send us an installation <em>error report</em> so our experts can help you to find a solution.',
   'Warning' => 'Warning',
   'Installation script renamed to :filename' => 'Installation script renamed to :filename',
   'Warning! Installation script renaming failed' => 'Warning! Installation script renaming failed',
@@ -200,11 +197,11 @@ X-Cart Installation Wizard
   'The web server name and/or web drectory is invalid! Press \'BACK\' button and review web server settings you provided' => 'The web server name and/or web directory is invalid! Click the \'BACK\' button and review the web server settings provided',
   'Cannot open file \':filename\' for writing. To install the software, please correct the problem and start the installation again...' => 'Cannot open file \':filename\' for writing. To install the software, please correct the problem and start the installation again...',
   'Installation Wizard has detected X-Cart tables' => 'Installation Wizard has detected that the specified database has existing X-Cart tables. If you continue the installation, the tables will be purged.<br /><br />Click the \'Back\' button to specify a different database or click the \'Next\' button to proceed and overwrite the existing database.',
-  'pdo-error-2005' => 'Cannot connect to MySQL server. Please make sure you provided a correct host value.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button and review the MySQL server settings.',
-  'pdo-error-1044' => 'User <i>:dbuser</i> cannot access database <i>:dbname</i>. Please make sure you provided correct value of database name.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button and review the MySQL server settings.',
-  'pdo-error-1045' => 'Cannot connect to MySQL server. Please make sure you provided correct user and password values.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button and review the MySQL server settings.',
-  'pdo-error-common' => 'Cannot connect to MySQL server.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button and review the MySQL server settings.',
-  'kb_note_mysql_issue' => 'Check our <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=524295#InstallationGuide-1.Problemswithconnectiontodatabase" target="_blank">Knowledge Base</a> in order to find out how to solve the problem with MySQL connection.',
+  'pdo-error-2005' => 'Cannot connect to MySQL server. Make sure you specified a correct host value.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button to review the MySQL server settings.',
+  'pdo-error-1044' => 'The user <i>:dbuser</i> cannot access the database <i>:dbname</i>. Make sure you specified the database name correctly.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button to review the MySQL server settings.',
+  'pdo-error-1045' => 'Cannot connect to MySQL server. Make sure you specified correct user and password values.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button to review the MySQL server settings.',
+  'pdo-error-common' => 'Cannot connect to MySQL server.<span class="pdo-details" onclick="javascript: toggleSection(\'pdo-error\');">See details</span><div class="section section-pdo-error">:pdoerr</div><br />Click the \'BACK\' button to review the MySQL server settings.',
+  'kb_note_mysql_issue' => 'More information on ways to resolve problems with MySQL connection is available in our <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=524295#InstallationGuide-1.Problemswithconnectiontodatabase" target="_blank">Knowledge Base</a>.',
   'The database <i>:dbname</i> cannot be created automatically:pdoerr.<br /> Please go back, create it manually and then proceed with the installation process again.' => 'The database <i>:dbname</i> cannot be created automatically:pdoerr.<br /> Please go back, create it manually and then proceed with the installation process again.',
   'You must provide web server name' => 'You must provide a web server name',
   'You must provide MySQL server name' => 'You must provide a MySQL server name',
@@ -217,9 +214,10 @@ X-Cart Installation Wizard
   'E-mail and password that you provide on this screen will be used to create primary administrator profile. Use them as credentials to access the Administrator Zone of your online store.' => 'The e-mail address and password you provide on this screen will be used for primary administrator profile creating. Use them as credentials for accessing the Administrator Zone of your online store.',
   'Please, enter non-empty password' => 'Please enter any password',
   'Please, specify a valid e-mail address!' => 'Please specify a valid e-mail address!',
-  'Permissions checking failed. Please make sure that the following files have writable permissions<br /><br /><i>:perms</i>' => 'Permissions check failed. Please make sure the following files are writable' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
-  'Permissions checking failed. Please make sure that the following file permissions are assigned (UNIX only):<br /><br /><i>:perms</i>' => 'Permissions check failed. Please make sure the following file permissions are set (UNIX only)' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
+  'Permissions checking failed. Please make sure that the following files have writable permissions<br /><br /><i>:perms</i>' => 'Permissions check failed. Please make sure the following files are writable' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="copy2clipboard-alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
+  'Permissions checking failed. Please make sure that the following file permissions are assigned (UNIX only):<br /><br /><i>:perms</i>' => 'Permissions check failed. Please make sure the following file permissions are set (UNIX only)' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="copy2clipboard-alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
   'Copied to clipboard' => 'Copied to clipboard',
+  'Copy to clipboard' => 'Copy to clipboard',
   'Cache building procedure failed: :message' => "Cache building procedure failed:<br />\n:message",
   'License agreement' => 'License agreement',
   'Configuring X-Cart' => 'Configuring X-Cart',
@@ -243,14 +241,15 @@ X-Cart Installation Wizard
   'Status' => 'Status',
   'Non-critical dependency failed' => 'Non-critical dependency failed',
   'requirements_failed_text' => 'Alternatively, you can send us an installation <em>error report</em> and our experts will help you to find a solution.',
-  'Send a report' => 'Send a report',
+  'Send a report' => 'Get help',
+  'Send report and get help' => 'Send report and get help',
+
   'requirement_warning_text' => 'Your server configuration is not optimal. This can make your X-Cart-based store partially or fully inoperable.<br />Continue the installation anyway?',
   'Yes, I want to continue the installation.' => 'Yes, I want to continue the installation.',
   '[original report]' => '[original report]',
   '[replicated report]' => '[replicated report]',
   'Report generation failed.' => 'Report generation failed.',
   'Technical problems report' => 'Technical problems report',
-  'ask_send_report_text' => 'Our testing has detected some problems. The report with the test results will be sent to our support HelpDesk, so that we could analyze and fix the problems. To monitor this issue, please specify your email in the field below, then use this email to login to your <a href="https://secure.x-cart.com/" target="_blank">HelpDesk</a>. If you do not have a HelpDesk account, you can <a href="https://secure.x-cart.com/customer.php?area=login&amp;target=register" target="_blank">create one here</a>.',
   'See details' => 'See details',
   'Hide details' => 'Hide details',
   'Additional comments' => 'Additional comments',
@@ -259,7 +258,7 @@ X-Cart Installation Wizard
   'Prevents unauthorized use of installation script' => 'Prevents unauthorized use<br />of the installation script',
   'I accept the License Agreement' => 'I accept the License Agreement and the <a href="http://www.x-cart.com/privacy-policy.html?utm_source=XC5Install&utm_medium=acceptLA&utm_campaign=XC5Install" target="_blank">Privacy policy</a>',
   'Could not find license agreement file.<br />Aborting installation.' => 'Could not find the license agreement file.<br />Aborting installation.',
-  'lc_php_version_description' => 'PHP versions <b>5.3.0+</b> are currently supported.',
+  'lc_php_version_description' => 'PHP versions <b>5.3.10+</b> are currently supported.',
   'lc_php_disable_functions_description' => 'Some functions, used by X-Cart, are found disabled. Make sure that these functions are not listed in "disable_functions" option and all php extensions required for these functions availability are enabled inthe  php.ini file. Please correct this and try again.',
   'lc_php_memory_limit_description' => 'PHP memory_limit option must be at least :minval.',
   'lc_php_pdo_mysql_description' => 'PDO extension with enabled MySQL support is used by X-Cart for connecting to the database. Please make sure this extension is loaded in your php.ini file and try again.',
@@ -302,5 +301,8 @@ X-Cart Installation Wizard
   'Strong' => 'Strong',
   'Uploading dump.sql into database...' => 'Uploading SQL dump into database...',
   'Redirecting to the next step...' => 'Redirecting to the next step...',
-  'Add an online store for free' => 'Add an online store for free',
+  'Create an online store for free' => 'Create an online store for free',
+  'Consider hosting your X-Cart with us' => 'Consider hosting your X-Cart with us',
+  'VPS hosting for X-Cart. No installation hassle. Fully customizable.' => 'VPS hosting for X-Cart. No installation hassle.<br />Fully customizable.',
+  'Having trouble installing X-Cart? Check out our installation guide' => 'Having trouble installing X-Cart?<br />Check out our <a href="http://kb.x-cart.com/display/XDD/Installation%2BGuide" target="_blank">installation guide</a>',
 );

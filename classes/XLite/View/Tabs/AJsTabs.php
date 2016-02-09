@@ -231,18 +231,6 @@ abstract class AJsTabs extends \XLite\View\AView
     }
 
     /**
-     * Checks whether a tab is selected
-     *
-     * @param string $target Tab target
-     *
-     * @return boolean
-     */
-    protected function isSelectedTab($target)
-    {
-        return ($target === $this->getCurrentTarget());
-    }
-
-    /**
      * Returns default values for a tab description
      *
      * @return array
@@ -301,12 +289,19 @@ abstract class AJsTabs extends \XLite\View\AView
     {
         // Process tabs only once
         if (null === $this->processedTabs) {
+            $selected = false;
             $this->processedTabs = array();
             $defaultValues = $this->getDefaultTabValues();
 
             foreach ($this->prepareTabs() as $target => $tab) {
-                $tab['selected'] = $this->isSelectedTab($target);
                 $tab['url'] = $this->buildTabURL($target);
+
+                if (isset($tab['selected']) && $tab['selected']) {
+                    if ($selected) {
+                        $tabs[$target]['selected'] = false;
+                    }
+                    $selected = true;
+                }
 
                 // Set default values for missing tab parameters
                 $tab += $defaultValues;
@@ -314,6 +309,10 @@ abstract class AJsTabs extends \XLite\View\AView
                 $this->processedTabs[$target] = $tab;
             }
 
+            if (!$selected) {
+                $targets = array_keys($this->processedTabs);
+                $this->processedTabs[$targets[0]]['selected'] = true;
+            }
         }
 
         return $this->processedTabs;

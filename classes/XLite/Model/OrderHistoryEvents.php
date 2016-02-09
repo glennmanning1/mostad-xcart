@@ -168,4 +168,25 @@ class OrderHistoryEvents extends \XLite\Model\AEntity
             $data->setEvent($this);
         }
     }
+
+    /**
+     * Clone order and all related data
+     *
+     * @return \XLite\Model\OrderHistoryEvents
+     */
+    public function cloneEntity()
+    {
+        $entity = parent::cloneEntity();
+
+        // Clone order details
+        if ($this->getDetails()) {
+            foreach ($this->getDetails() as $detail) {
+                $cloned = $detail->cloneEntity();
+                $entity->addDetails($cloned);
+                $cloned->setEvent($entity);
+            }
+        }
+
+        return $entity;
+    }
 }

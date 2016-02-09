@@ -47,6 +47,7 @@ class FileUploader extends \XLite\View\AView
     const PARAM_NAME         = 'fieldName';
     const PARAM_MULTIPLE     = 'multiple';
     const PARAM_POSITION     = 'position';
+    const PARAM_IS_VIA_URL_ALLOWED  = 'isViaUrlAllowed';
 
     /**
      * Get a list of JS files required to display the widget properly
@@ -134,7 +135,7 @@ class FileUploader extends \XLite\View\AView
     {
         return $this->getParam(static::PARAM_POSITION) || !$this->hasFile()
             ? $this->getParam(static::PARAM_POSITION)
-            : $this->getObject()->getOrderby();
+            : 0;
     }
 
     /**
@@ -233,6 +234,7 @@ class FileUploader extends \XLite\View\AView
             static::PARAM_IS_TEMPORARY => new \XLite\Model\WidgetParam\Bool('Is temporary', false),
             static::PARAM_MULTIPLE     => new \XLite\Model\WidgetParam\Bool('Multiple', false),
             static::PARAM_POSITION     => new \XLite\Model\WidgetParam\Int('Position', 0),
+            static::PARAM_IS_VIA_URL_ALLOWED  => new \XLite\Model\WidgetParam\Int('Is ViaUrl allowed', true),
         );
     }
 
@@ -293,6 +295,16 @@ class FileUploader extends \XLite\View\AView
     protected function getLink()
     {
         return $this->hasView() ? $this->getObject()->getFrontURL() : '#';
+    }
+
+    /**
+     * Is ia url allowed
+     *
+     * @return boolean
+     */
+    protected function isViaUrlAllowed()
+    {
+        return $this->getParam(static::PARAM_IS_VIA_URL_ALLOWED);
     }
 
     /**

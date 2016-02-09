@@ -50,13 +50,28 @@ class PrimaryMenu extends \XLite\View\Menu\Customer\Top implements \XLite\Base\I
             (\XLite\Core\Auth::getInstance()->isLogged() ? 'L' : 'A'),
         );
 
-        foreach (\XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->search($cnd) as $v) {
-            $menu[] = $this->defineItem($v);
+        $menus = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->getMenusPlainList($cnd);
+        foreach ($menus as $menuItem) {
+            $menu[] = array(
+                'id'          => $menuItem->getId(),
+                'label'       => $menuItem->getName(),
+                'depth'       => $menuItem->getDepth(),
+                'controller'  => $menuItem->getLinkController(),
+                'url'         => $menuItem->getUrl(),
+                'hasSubmenus' => $menuItem->getSubmenusCount() > 0,
+            );
         }
 
-        return \XLite\Core\Config::getInstance()->CDev->SimpleCMS->show_default_menu
-            ? array_merge(parent::defineItems(), $menu)
-            : ($menu ?: parent::defineItems());
+        if (!$menu) {
+            foreach (\XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->search($cnd) as $v) {
+                $menu[] = $this->defineItem($v);
+            }
+            $menu = \XLite\Core\Config::getInstance()->CDev->SimpleCMS->show_default_menu
+                ? array_merge(parent::defineItems(), $menu)
+                : ($menu ?: parent::defineItems());
+        }
+
+        return $menu;
     }
 
     /**
@@ -73,5 +88,128 @@ class PrimaryMenu extends \XLite\View\Menu\Customer\Top implements \XLite\Base\I
             'label'         => $menuItem->getName(),
             'controller'    => $menuItem->getLinkController(),
         );
+    }
+
+    /**
+     * Previous menu depth
+     *
+     * @var integer
+     */
+    protected $prevMenuDepth = 0;
+
+    /**
+     * Is first element
+     *
+     * @var integer
+     */
+    protected $isFirst = true;
+
+    /**
+     * Return the CSS files for the menu
+     *
+     * @return array
+     */
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+        $list[] = 'modules/CDev/SimpleCMS/css/primary_menu.css';
+
+        return $list;
+    }
+
+    /**
+     * Return widget default template
+     *
+     * @return string
+     */
+    protected function getDefaultTemplate()
+    {
+        return 'modules/CDev/SimpleCMS/primary_menu.tpl';
+    }
+
+    /**
+     * Return next menu level or not
+     *
+     * @param integer $menuDepth Level depth
+     *
+     * @return boolean
+     */
+    protected function isLevelUp($menuDepth)
+    {
+        $result = false;
+        if ($menuDepth > $this->prevMenuDepth) {
+            $result = true; 
+            $this->prevMenuDepth = $menuDepth;
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return previous menu level or not
+     *
+     * @param integer $menuDepth Level depth
+     *
+     * @return boolean
+     */
+    protected function isLevelBelow($menuDepth)
+    {
+        $result = false;
+        if ($menuDepth < $this->prevMenuDepth) {
+            $result = true; 
+            $this->prevMenuDepth = $menuDepth;
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return is level changed
+     *
+     * @return boolean
+     */
+    protected function closeMenuList($menuDepth = 0)
+    {
+        $result = '';
+        for ($i = $menuDepth;$i<$this->prevMenuDepth;$i++) {
+            $result .= '</ul></li>';
+        }
+        $this->prevMenuDepth = $menuDepth;
+
+        return $result;
+    }
+
+    /**
+     * Return is first element
+     *
+     * @return boolean
+     */
+    protected function isFirstElement()
+    {
+        $result = $this->isFirst;
+        $this->isFirst = false;
+
+        return $result;
+    }
+
+    /**
+     * Display item class as tag attribute
+     *
+     * @param integer $index Item index
+     * @param mixed   $item  Item element
+     *
+     * @return string
+     */
+    protected function displayItemClass($index, $item)
+    {
+        $class = parent::displayItemClass($index, $item);
+
+        return $item['hasSubmenus'] && $item['depth'] > 0
+            ?  preg_replace('/"$/', ' has-sub"', $class)
+            :  $class;
     }
 }

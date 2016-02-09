@@ -11,6 +11,6 @@
  * @ListChild (list="invoice.base.totals", weight="300")
  *}
 <li style="list-style: none;color: #000000;padding-top: 10px;">
-  <div style="font-weight: bold;font-size: 20px;display: inline-block;">{t(#Grand total#)}:</div>
-  <div style="font-weight: bold;font-size: 20px;display: inline-block;">{getOrderTotal():h}</div>
+  <div style="font-weight: bold;font-size: 20px;display: inline;">{t(#Grand total#)}:</div>
+  <div style="font-weight: bold;font-size: 20px;display: inline;padding-left: 6px;">{getOrderTotal():h}</div>
 </li>

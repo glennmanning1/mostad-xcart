@@ -8,7 +8,6 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  */
-
 jQuery().ready(
   function() {
     jQuery('.quick-data-progress .bar')
@@ -47,6 +46,5 @@ jQuery().ready(
     var diff = bracket.outerHeight() - bracket.innerHeight();
 
     bracket.height(height - diff);
-
   }
 );

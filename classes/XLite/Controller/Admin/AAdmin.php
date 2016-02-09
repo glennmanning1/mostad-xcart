@@ -35,6 +35,11 @@ namespace XLite\Controller\Admin;
 abstract class AAdmin extends \XLite\Controller\AController
 {
     /**
+     * Parameter name
+     */
+    const PARAM_SEARCH_FILTER_ID = 'searchFilterId';
+
+    /**
      * List of recently logged in administrators
      *
      * @var array
@@ -61,6 +66,19 @@ abstract class AAdmin extends \XLite\Controller\AController
     public static function needFormId()
     {
         return true;
+    }
+
+    /**
+     * Define the actions with no secure token
+     *
+     * @return array
+     */
+    public static function defineFreeFormIdActions()
+    {
+        return array_merge(
+            parent::defineFreeFormIdActions(),
+            array('save_search_filter', 'search')
+        );
     }
 
     /**
@@ -137,8 +155,24 @@ abstract class AAdmin extends \XLite\Controller\AController
                 \XLite\Core\Session::getInstance()->no_https = true;
             }
 
+            if ($this->isLogged()) {
+                \XLite::getInstance()->updateModuleRegistry();
+            }
+
+            $this->disableUnallowedModules();
+
             parent::handleRequest();
         }
+    }
+
+    /**
+     * isBlockContentAllowed
+     *
+     * @return boolean
+     */
+    public function isBlockContentAllowed()
+    {
+        return !$this->isPublicZone();
     }
 
     /**
@@ -235,7 +269,6 @@ abstract class AAdmin extends \XLite\Controller\AController
         parent::callAction();
 
         if ($this->isLogged()) {
-            \XLite::getInstance()->updateModuleRegistry();
             \XLite\Core\WidgetCache::getInstance()->deleteAll();
         }
     }
@@ -263,6 +296,33 @@ abstract class AAdmin extends \XLite\Controller\AController
         } else {
             $this->redirect($this->buildURL('login'));
         }
+    }
+
+    /**
+     * Disable unallowed modules routine
+     *
+     * @return void
+     */
+    protected function disableUnallowedModules()
+    {
+        if (\XLite\Core\Session::getInstance()->fraudWarningDisplayed) {
+
+            \XLite\Core\Session::getInstance()->fraudWarningDisplayed = null;
+
+            if (!$this->isIgnoreUnallowedModules()) {
+                $this->redirect($this->buildURL('addons_list_installed', 'disable_unallowed'));
+            }
+        }
+    }
+
+    /**
+     * Return true if unallowed modules should be ignored on current page
+     *
+     * @return boolean
+     */
+    protected function isIgnoreUnallowedModules()
+    {
+        return false;
     }
 
     /**
@@ -462,4 +522,212 @@ OUT;
     {
         return 'http://kb.x-cart.com/pages/viewpage.action?pageId=7504187';
     }
+
+    // {{{ Search filter methods
+
+    /**
+     * Get current search filter
+     *
+     * @return \XLite\Model\SearchFilter
+     */
+    public function getSearchFilter()
+    {
+        $result = null;
+
+        $key = $this->getSearchFilterKeyCell();
+
+        if ($key) {
+
+            if (!empty(\XLite\Core\Request::getInstance()->filter_id)) {
+                $id = intval(\XLite\Core\Request::getInstance()->filter_id);
+            }
+
+            if (!empty($id)) {
+                $result = $this->getSearchFilterByParams(
+                    array(
+                        'id'        => $id,
+                        'filterKey' => $key,
+                    )
+                );
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get search filter object by specific parameters
+     *
+     * @param array $params Filter search parameters
+     *
+     * @return \XLite\Model\SearchFilter
+     */
+    protected function getSearchFilterByParams($params)
+    {
+        return \XLite\Core\Database::getRepo('XLite\Model\SearchFilter')->findOneBy($params);
+    }
+
+    /**
+     * Get search filters key
+     *
+     * @return string
+     */
+    public function getSearchFilterKeyCell()
+    {
+        return 'search-filter-' . $this->getTarget();
+    }
+
+    /**
+     * Do common action 'save_search_filter'
+     *
+     * @return void
+     */
+    protected function doActionSaveSearchFilter()
+    {
+        if (method_exists($this, 'getSessionCellName') && \XLite\Core\Request::getInstance()->filterName) {
+
+            $cellName = $this->getSessionCellName();
+            $searchParams = \XLite\Core\Session::getInstance()->$cellName;
+
+            if (!empty($searchParams)) {
+
+                $key = $this->getSearchFilterKeyCell();
+
+                if (\XLite\Core\Request::getInstance()->search_filter_id) {
+                    $params = array();
+                    $params['id'] = \XLite\Core\Request::getInstance()->search_filter_id;
+                    $params['filterKey'] = $key;
+
+                    // Search for filter
+                    $filter = $this->getSearchFilterByParams($params);
+                }
+
+                if (empty($filter)) {
+                    // Filter not found - create it
+                    $filter = new \XLite\Model\SearchFilter();
+                    $filter->setFilterKey($key);
+                    $filter = \XLite\Core\Database::getRepo('XLite\Model\SearchFilter')->insert($filter);
+                }
+
+                // Set the filter name
+                $filter->setName(\XLite\Core\Request::getInstance()->filterName);
+
+                // Set search parameters
+                $searchParams[static::PARAM_SEARCH_FILTER_ID] = $filter->getId();
+                $filter->setParameters($searchParams);
+
+                \XLite\Core\Session::getInstance()->$cellName = $searchParams;
+
+                \XLite\Core\TopMessage::addInfo('Filter has been successfully saved');
+
+                \XLite\Core\Database::getEM()->flush();
+            }
+        }
+
+        $this->setReturnURL($this->buildURL($this->getTarget()));
+    }
+
+    /**
+     * Do common action 'save_search_filter'
+     *
+     * @return void
+     */
+    protected function doActionDeleteSearchFilter()
+    {
+        if (method_exists($this, 'getSessionCellName') && 0 < intval(\XLite\Core\Request::getInstance()->filter_id)) {
+            $params = array();
+            $params['id'] = intval(\XLite\Core\Request::getInstance()->filter_id);
+            $params['filterKey'] = $this->getSearchFilterKeyCell();
+
+            // Search for filter
+            $filter = $this->getSearchFilterByParams($params);
+
+            if ($filter) {
+                $filter->delete();
+                \XLite\Core\TopMessage::addInfo('Filter has been removed');
+            }
+        }
+
+        $this->setReturnURL($this->buildURL($this->getTarget()));
+    }
+
+    /**
+     * Get parameters of the requested filter
+     *
+     * @return array
+     */
+    protected function getSearchFilterParams()
+    {
+        $result = array();
+
+        $filter = $this->getSearchFilter();
+
+        // Reset search filter
+        if ($filter) {
+            $result = $filter->getParameters();
+
+            if (
+                $filter->getId()
+                && (
+                    empty($result[static::PARAM_SEARCH_FILTER_ID])
+                    || $filter->getId() != $result[static::PARAM_SEARCH_FILTER_ID]
+                )
+            ) {
+                // Correct saved in the parameters value of searchFilterId
+                $result[static::PARAM_SEARCH_FILTER_ID] = $filter->getId();
+                $filter->setParameters($result);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get current search filter from items list's parameters saved in session cell
+     *
+     * @return \XLite\Model\SearchFilter
+     */
+    public function getCurrentSearchFilter()
+    {
+        $result = null;
+
+        if (method_exists($this, 'getSessionCellName')) {
+            $cellName = $this->getSessionCellName();
+            $searchParams = \XLite\Core\Session::getInstance()->$cellName;
+            if (isset($searchParams[static::PARAM_SEARCH_FILTER_ID])) {
+                $result = $this->getSearchFilterByParams(
+                    array(
+                        'id' => $searchParams[static::PARAM_SEARCH_FILTER_ID],
+                        'filterKey' => $this->getSearchFilterKeyCell(),
+                    )
+                );
+            }
+        }
+
+        return $result;
+
+    }
+
+    /**
+     * Return true if currently used filter is the same as secified
+     *
+     * @param mixed $fid Filter ID (may be integer or string)
+     *
+     * @return boolean
+     */
+    public function isSelectedFilter($fid)
+    {
+        $result = false;
+
+        if (method_exists($this, 'getSessionCellName')) {
+            $cellName = $this->getSessionCellName();
+            $searchParams = \XLite\Core\Session::getInstance()->$cellName;
+            $result = isset($searchParams[static::PARAM_SEARCH_FILTER_ID])
+                && $searchParams[static::PARAM_SEARCH_FILTER_ID] == $fid;
+        }
+
+        return $result;
+    }
+
+    // }}}
 }

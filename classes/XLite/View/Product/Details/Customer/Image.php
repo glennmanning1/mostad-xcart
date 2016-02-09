@@ -269,7 +269,12 @@ class Image extends \XLite\View\Product\Details\Customer\ACustomer
     protected function getJSData()
     {
         return array(
-            'kZoom' => $this->getParam(self::PARAM_K_ZOOM),
+            'kZoom'     => $this->getParam(self::PARAM_K_ZOOM),
+            'imageUrl'   => \XLite\Core\Layout::getInstance()->getResourceWebPath(
+                'cloud-zoom/blank.png',
+                \XLite\Core\Layout::WEB_PATH_OUTPUT_SHORT,
+                \XLite::COMMON_INTERFACE
+            ),
         );
     }
 }

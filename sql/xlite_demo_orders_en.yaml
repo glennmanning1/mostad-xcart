@@ -70,14 +70,24 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 611.38
     subtotal: 662.5900
-    date: 1362469540
+    date: 1394005540
     currency: { code: USD }
     paymentStatus: { code: P }
     shippingStatus: { code: D }
     orderNumber: 1
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: MoneyOrdering }, method_name: MoneyOrdering, method_local_name: 'Money Ordering', status: S, value: 110.65, type: sale, note: '', publicTxnId: 'GOMGYpDJhchZgvDC' }]
+    recent: 0
+    payment_transactions:
+      - method_name: MoneyOrdering
+        method_local_name: 'Money Ordering'
+        date: 1394005540
+        status: S
+        value: 110.65
+        type: sale
+        note: ''
+        publicTxnId: '000001-KGSP'
+        public_id: 'demostore-000001-KGSP'
     items:
       - object: { sku: '10004' }
         name: 'Nanotechnology is Huge'
@@ -191,15 +201,15 @@ XLite\Model\Order:
         name: Discount
         value: -66.2590
     events:
-      - date: 1362469540
+      - date: 1394005540
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1362469540
+      - date: 1394005540
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 611.38, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1362469540
+      - date: 1394005540
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 1 }
@@ -238,14 +248,23 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 255.6200
     subtotal: 274.8500
-    date: 1362469895
+    date: 1394005895
     currency: { code: USD }
     paymentStatus: { code: P }
     shippingStatus: { code: D }
     orderNumber: 2
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: MoneyOrdering }, method_name: MoneyOrdering, method_local_name: 'Money Ordering', status: S, value: 110.65, type: sale, note: '', publicTxnId: 'Xd166c1a8YXqLo30' }]
+    payment_transactions:
+      - method_name: MoneyOrdering
+        method_local_name: 'Money Ordering'
+        date: 1394005895
+        status: S
+        value: 110.65
+        type: sale
+        note: ''
+        publicTxnId: '000002-FX7B'
+        public_id: 'demostore-000002-FX7B'
     items:
       - object: { sku: '10045' }
         name: 'Rubik''s Cube'
@@ -289,15 +308,15 @@ XLite\Model\Order:
         name: Discount
         value: -27.4850
     events:
-      - date: 1362469895
+      - date: 1394005895
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1362469895
+      - date: 1394005895
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 255.62, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1362469895
+      - date: 1394005895
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 2 }
@@ -336,14 +355,24 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 41.0700
     subtotal: 36.9700
-    date: 1362469999
+    date: 1394005999
     currency: { code: USD }
     paymentStatus: { code: D }
     shippingStatus: { code: WND }
     orderNumber: 3
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: MoneyOrdering }, method_name: MoneyOrdering, method_local_name: 'Money Ordering', status: S, value: 110.65, type: sale, note: '', publicTxnId: 'NfbrJmOKvhqKNBRI' }]
+    recent: 0
+    payment_transactions:
+      - method_name: MoneyOrdering
+        method_local_name: 'Money Ordering'
+        date: 1394005999
+        status: S
+        value: 110.65
+        type: sale
+        note: ''
+        publicTxnId: '000003-PA24'
+        public_id: 'demostore-000003-PA24'
     items:
       - object: { sku: '10010' }
         name: 'Collector''s Edition Slinky'
@@ -382,15 +411,15 @@ XLite\Model\Order:
         name: Shipping cost
         value: 4.10
     events:
-      - date: 1362469999
+      - date: 1394005999
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1362469999
+      - date: 1394005999
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 41.07, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1362469999
+      - date: 1394005999
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 3 }
@@ -429,14 +458,23 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 206.4800
     subtotal: 222.9900
-    date: 1394109873
+    date: 1425645873
     currency: { code: USD }
     paymentStatus: { code: R }
     shippingStatus: { code: R }
     orderNumber: 4
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: PhoneOrdering }, method_name: PhoneOrdering, method_local_name: 'Phone Ordering', status: W, value: 206.4800, type: sale, note: '', publicTxnId: '02OyEgSwWSeNoOj0' }]
+    payment_transactions:
+      - method_name: PhoneOrdering
+        method_local_name: 'Phone Ordering'
+        date: 1425645873
+        status: W
+        value: 206.4800
+        type: sale
+        note: ''
+        publicTxnId: '000004-82FS'
+        public_id: 'demostore-000004-82FS'
     items:
       - object: { sku: '10054' }
         name: 'Palmsize Battle Tanks'
@@ -480,15 +518,15 @@ XLite\Model\Order:
         name: Discount
         value: -22.2990
     events:
-      - date: 1394109873
+      - date: 1425645873
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1394109873
+      - date: 1425645873
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 206.48, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1394109873
+      - date: 1425645873
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 4 }
@@ -527,14 +565,23 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 264.0900
     subtotal: 285.9500
-    date: 1394110001
+    date: 1425646001
     currency: { code: USD }
     paymentStatus: { code: P }
     shippingStatus: { code: D }
     orderNumber: 5
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: PhoneOrdering }, method_name: PhoneOrdering, method_local_name: 'Phone Ordering', status: W, value: 264.0900, type: sale, note: '', publicTxnId: 'aX5osORHkkWlLtCV' }]
+    payment_transactions:
+      - method_name: PhoneOrdering
+        method_local_name: 'Phone Ordering'
+        date: 1425646001
+        status: W
+        value: 264.0900
+        type: sale
+        note: ''
+        publicTxnId: '000005-POWR'
+        public_id: 'demostore-000005-POWR'
     items:
       - object: { sku: '10043' }
         name: 'Pyramid Brain Twist'
@@ -618,15 +665,15 @@ XLite\Model\Order:
         name: Discount
         value: -28.5950
     events:
-      - date: 1394110001
+      - date: 1425646001
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1394110001
+      - date: 1425646001
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 264.09, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1394110001
+      - date: 1425646001
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 5 }
@@ -665,14 +712,23 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 264.0900
     subtotal: 285.9500
-    date: 1394110061
+    date: 1425646061
     currency: { code: USD }
     paymentStatus: { code: P }
     shippingStatus: { code: S }
     orderNumber: 6
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: PhoneOrdering }, method_name: PhoneOrdering, method_local_name: 'Phone Ordering', status: W, value: 264.0900, type: sale, note: '', publicTxnId: 'd1pUWQmVgGlb_0jp' }]
+    payment_transactions:
+      - method_name: PhoneOrdering
+        method_local_name: 'Phone Ordering'
+        date: 1425646061
+        status: W
+        value: 264.0900
+        type: sale
+        note: ''
+        publicTxnId: '000006-JU8S'
+        public_id: 'demostore-000006-JU8S'
     items:
       - object: { sku: '10043' }
         name: 'Pyramid Brain Twist'
@@ -756,15 +812,15 @@ XLite\Model\Order:
         name: Discount
         value: -28.5950
     events:
-      - date: 1394110061
+      - date: 1425646061
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1394110061
+      - date: 1425646061
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 264.09, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1394110061
+      - date: 1425646061
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 6 }
@@ -803,14 +859,23 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 264.0900
     subtotal: 285.9500
-    date: 1394110112
+    date: 1438606112
     currency: { code: USD }
     paymentStatus: { code: Q }
     shippingStatus: { code: N }
     orderNumber: 7
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: PhoneOrdering }, method_name: PhoneOrdering, method_local_name: 'Phone Ordering', status: W, value: 264.0900, type: sale, note: '', publicTxnId: '9dywnLdALy1pH1kY' }]
+    payment_transactions:
+      - method_name: PhoneOrdering
+        method_local_name: 'Phone Ordering'
+        date: 1438606112
+        status: W
+        value: 264.0900
+        type: sale
+        note: ''
+        publicTxnId: '000007-C7HH'
+        public_id: 'demostore-000007-C7HH'
     items:
       - object: { sku: '10043' }
         name: 'Pyramid Brain Twist'
@@ -894,15 +959,15 @@ XLite\Model\Order:
         name: Discount
         value: -28.5950
     events:
-      - date: 1394110112
+      - date: 1438606112
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1394110112
+      - date: 1438606112
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 264.09, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1394110112
+      - date: 1438606112
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 7 }
@@ -941,14 +1006,23 @@ XLite\Model\Order:
     orig_profile: { login: bit-bucket@example.com }
     total: 1754.7100
     subtotal: 1915.0300
-    date: 1394110182
+    date: 1438606182
     currency: { code: USD }
     paymentStatus: { code: Q }
     shippingStatus: { code: N }
     orderNumber: 8
     shipping_method_name: Courier
     shipping_id: 1
-    payment_transactions: [{ payment_method: { service_name: PhoneOrdering }, method_name: PhoneOrdering, method_local_name: 'Phone Ordering', status: W, value: 264.0900, type: sale, note: '', publicTxnId: '9TPcD9UBru018C83' }]
+    payment_transactions:
+      - method_name: PhoneOrdering
+        method_local_name: 'Phone Ordering'
+        date: 1438606182
+        status: W
+        value: 264.0900
+        type: sale
+        note: ''
+        publicTxnId: '000008-1POS'
+        public_id: 'demostore-000008-1POS'
     items:
       - object: { sku: '10040' }
         name: 'Mini Solar-Powered Car'
@@ -1032,18 +1106,176 @@ XLite\Model\Order:
         name: Discount
         value: -191.5030
     events:
-      - date: 1394110182
+      - date: 1438606182
         code: PLACE ORDER
         description: Order placed
         author: { login: bit-bucket@example.com }
-      - date: 1394110182
+      - date: 1438606182
         code: TRANSACTION
         description: 'Payment transaction [method: Phone Ordering, type: sale, amount: 1754.71, status: Pending]'
         author: { login: bit-bucket@example.com }
-      - date: 1394110182
+      - date: 1438606182
         code: EMAIL ADMIN SENT
         description: Email sent to the admin
         data: { orderId: 8 }
         comment: Order is initially created
         author: { login: bit-bucket@example.com }
 
+  - profile:
+      login: bit-bucket@example.com
+      password: 084e0343a0486ff05530df6c705c8bb4
+      anonymous: 1
+      cms_profile_id: 0
+      addresses:
+        - is_billing: true
+          is_shipping: true
+          state: { country_code: US, code: OK }
+          country: { code: US }
+          addressFields :
+            - addressField: { serviceName: title }
+              value : 'Mr.'
+            - addressField: { serviceName: firstname }
+              value: Guest
+            - addressField: { serviceName: lastname }
+              value: Guest
+            - addressField: { serviceName: phone }
+              value: '0123456789'
+            - addressField: { serviceName: street }
+              value: '51 apt, 87 street'
+            - addressField: { serviceName: city }
+              value: Edmond
+            - addressField: { serviceName: state_id }
+              value: 595
+            - addressField: { serviceName: country_code }
+              value: US
+            - addressField: { serviceName: zipcode }
+              value: '73003'
+    orig_profile: { login: bit-bucket@example.com }
+    total: 38.0100
+    subtotal: 34.9900
+    date: 1452604503
+    currency: { code: USD }
+    paymentStatus: { code: D }
+    shippingStatus: { code: WND }
+    orderNumber: 9
+    shipping_method_name: Courier
+    shipping_id: 1
+    payment_transactions:
+      - method_name: SimplifyCommerceHP
+        method_local_name: 'Simplify Commerce Hosted Payments'
+        currency_id: 840
+        date: 1452604411
+        status: F
+        value: 38.0100
+        type: sale
+        note: "Simplify_BadRequestException: \"Request data is invalid\" (status: 400, error code: validation, reference: c5a0b8b8-92ac-4908-9506-88b843ecd399)\nField error: card.number\"Card bin Country rejected by acquirer\" (country.bin.not.accepted)"
+        publicTxnId: '000012-AS2T'
+        public_id: 'demostore-000012-AS2T'
+        data:
+          - name: 'test_mode'
+            label: 'Test mode'
+            access_level: A
+            value: 1
+          - name: 'error_field_name_card.number'
+            label: 'Error: field name'
+            access_level: A
+            value: 'card.number'
+          - name: 'error_field_code_card.number'
+            label: 'Error: field code'
+            access_level: A
+            value: 'country.bin.not.accepted'
+          - name: 'error_field_message_card.number'
+            label: 'Error: field message'
+            access_level: A
+            value: 'Card bin Country rejected by acquirer'
+          - name: 'cart_items'
+            label: 'Cart items'
+            access_level: A
+            value: 'a:1:{i:0;a:5:{s:4:"name";s:19:"Yoda Plush Backpack";s:3:"sku";s:5:"10022";s:5:"price";d:34.990000000000002;s:6:"amount";i:1;s:5:"attrs";a:0:{}}}'
+
+      - method_name: SimplifyCommerceHP
+        method_local_name: 'Simplify Commerce Hosted Payments'
+        currency_id: 840
+        date: 1452604437
+        status: F
+        value: 38.0100
+        type: sale
+        note: "Simplify_BadRequestException: \"Request data is invalid\" (status: 400, error code: validation, reference: 195c1b1a-44c8-46d4-8e48-ee4e65f271af)\nField error: card.number\"Card has expired.\" (card.expired)"
+        publicTxnId: '000013-3I22'
+        public_id: 'demostore-000013-3I22'
+        data:
+          - name: 'test_mode'
+            label: 'Test mode'
+            access_level: A
+            value: 1
+          - name: 'error_field_name_card.number'
+            label: 'Error: field name'
+            access_level: A
+            value: 'card.number'
+          - name: 'error_field_code_card.number'
+            label: 'Error: field code'
+            access_level: A
+            value: 'card.expired'
+          - name: 'error_field_message_card.number'
+            label: 'Error: field message'
+            access_level: A
+            value: 'Card has expired.'
+          - name: 'cart_items'
+            label: 'Cart items'
+            access_level: A
+            value: 'a:1:{i:0;a:5:{s:4:"name";s:19:"Yoda Plush Backpack";s:3:"sku";s:5:"10022";s:5:"price";d:34.990000000000002;s:6:"amount";i:1;s:5:"attrs";a:0:{}}}'
+
+    items:
+      - object: { sku: '10022' }
+        name: 'Yoda Plush Backpack'
+        sku: '10022'
+        price: 34.9900
+        itemNetPrice: 34.9900
+        discountedSubtotal: 34.9900
+        amount: 1
+        subtotal: 34.9900
+        total: 34.9900
+        object_type: product
+    surcharges:
+      - type: shipping
+        code: SHIPPING
+        class: '\XLite\Logic\Order\Modifier\Shipping'
+        name: Shipping cost
+        value: 3.0200
+    events:
+      - date: 1452604435
+        code: PLACE ORDER
+        description: Order placed
+        data: { orderId: 9 }
+        author: { login: bit-bucket@example.com }
+      - date: 1452604436
+        code: TRANSACTION
+        description: 'Back end payment transaction [method: Simplify Commerce Hosted Payments, type: sale, amount: 38.01, status: Failed] [initial request]'
+        author: { login: bit-bucket@example.com }
+      - date: 1452604436
+        code: TRANSACTION
+        description: 'Payment transaction [method: Simplify Commerce Hosted Payments, type: sale, amount: 38.01, status: Failed]'
+        author: { login: bit-bucket@example.com }
+      - date: 1452604437
+        code: CHANGE PAYMENT STATUS ORDER
+        description: "Order payment status changed from {{oldStatus}} to {{newStatus}}"
+        data: { orderId: 9, newStatus: "Declined", oldStatus: "Awaiting payment" }
+        author: { login: bit-bucket@example.com }
+      - date: 1452604501
+        code: CHANGE PAYMENT STATUS ORDER
+        description: "Order payment status changed from {{oldStatus}} to {{newStatus}}"
+        data: { orderId: 9, newStatus: "Awaiting payment", oldStatus: "Declined" }
+        author: { login: bit-bucket@example.com }
+      - date: 1452604502
+        code: TRANSACTION
+        description: 'Back end payment transaction [method: Simplify Commerce Hosted Payments, type: sale, amount: 38.01, status: Failed] [initial request]'
+        author: { login: bit-bucket@example.com }
+      - date: 1452604502
+        code: TRANSACTION
+        description: 'Payment transaction [method: Simplify Commerce Hosted Payments, type: sale, amount: 38.01, status: Failed]'
+        author: { login: bit-bucket@example.com }
+      - date: 1452604502
+        code: CHANGE PAYMENT STATUS ORDER
+        description: "Order payment status changed from {{oldStatus}} to {{newStatus}}"
+        data: { orderId: 9, newStatus: "Declined", oldStatus: "Awaiting payment" }
+        author: { login: bit-bucket@example.com }

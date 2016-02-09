@@ -154,8 +154,8 @@ shared_secret_key = ""
 ;
 [performance]
 developer_mode = Off
+cache_namespace_hash = On
 skins_cache = off
-compress_php_core = off
 
 ;
 ; Decorator options
@@ -249,7 +249,7 @@ HTML.SafeIframe = On
 
 [storefront_options]
 ; Do not close target=callback for payments if storefront is closed
-callback_opened = Off
+callback_opened = On
 
 ;
 ; Other options

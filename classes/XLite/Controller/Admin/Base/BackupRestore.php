@@ -49,7 +49,7 @@ abstract class BackupRestore extends \XLite\Controller\Admin\AAdmin
      */
     public function getTitle()
     {
-        return static::t('Backup & Restore');
+        return static::t('Tools');
     }
 
     /**

@@ -48,6 +48,12 @@ class Upgrade extends \XLite\Controller\Admin\Base\Addon
      */
     protected $allKeysPurchaseURL = null;
 
+    /**
+     * Flag: Are there expired license keys which will block upgrade routine
+     *
+     * @var boolean
+     */
+    protected $hasBlockedExpiredKeys = false;
 
     // {{{ Common methods
 
@@ -184,7 +190,8 @@ class Upgrade extends \XLite\Controller\Admin\Base\Addon
     public function isNextStepAvailable()
     {
         return \XLite\Upgrade\Cell::getInstance()->isValid()
-            && (!\XLite\Upgrade\Cell::getInstance()->hasCoreUpdate() || $this->isValidXCNLicense());
+            && (!\XLite\Upgrade\Cell::getInstance()->hasCoreUpdate() || $this->isValidXCNLicense())
+            && !$this->hasBlockedExpiredKeys;
     }
 
     /**
@@ -978,12 +985,28 @@ class Upgrade extends \XLite\Controller\Admin\Base\Addon
 
                 $keyData = $key->getKeyData();
 
-                if (!empty($keyData['message']) && in_array($entityID, array_keys($entries))) {
+                if (
+                    !empty($keyData['message'])
+                    && (
+                        \XLite\Upgrade\Cell::CORE_IDENTIFIER == $entityID
+                        || in_array($entityID, array_keys($entries))
+                    )
+                ) {
                     $urlParamsAggregated[] = $this->getKeyURLParams($i++, $key);
 
-                    $title = isset($entries[$entityID])
-                        ? sprintf('%s (%s)', $entries[$entityID]->getName(), $entries[$entityID]->getAuthor())
-                        : sprintf('%s (%s)', $key->getName(), $key->getAuthor());
+                    if (isset($entries[$entityID])) {
+                        // License key is related to upgrade entry - set blocking flag
+                        $this->hasBlockedExpiredKeys = true;
+                    }
+
+                    if (\XLite\Upgrade\Cell::CORE_IDENTIFIER == $entityID) {
+                        $title = 'X-Cart ' . $keyData['editionName'];
+
+                    } else {
+                        $title = isset($entries[$entityID])
+                            ? sprintf('%s (%s)', $entries[$entityID]->getName(), $entries[$entityID]->getAuthor())
+                            : sprintf('%s (%s)', $key->getName(), $key->getAuthor());
+                    }
 
                     $this->expiredKeys[] = array(
                         'title'       => $title,
@@ -1022,7 +1045,7 @@ class Upgrade extends \XLite\Controller\Admin\Base\Addon
             $this->getExpiredKeys();
         }
 
-        return 1 < count($this->getExpiredKeys()) ? $this->allKeysPurchaseURL : null;
+        return 0 < count($this->getExpiredKeys()) ? $this->allKeysPurchaseURL : null;
     }
 
     /**

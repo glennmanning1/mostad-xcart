@@ -9,9 +9,13 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="download-box {if:isCompletedSection()} completed-download{else:}begin-download{end:}">
-  <div class="subcontent clearfix">
-    <list name="export.completed.content" />
+<div class="download-box {if:isCompletedSection()} completed-download{else:}begin-download{end:} {if:isPopupContext()}popup-download{end:}">
+  <div class="subcontent clearfix" >
+  	{if:isPopupContext()}
+    	<list name="export.popup.completed.content" />
+  	{else:}
+    	<list name="export.completed.content" />
+  	{end:}
   </div>
   <div class="buttons" IF="isCompletedSection()">
     <list name="export.completed.buttons" />

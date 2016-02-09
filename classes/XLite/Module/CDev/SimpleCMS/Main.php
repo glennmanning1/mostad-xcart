@@ -75,7 +75,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getMinorVersion()
     {
-        return '7';
+        return '10';
     }
 
     /**
@@ -121,6 +121,7 @@ abstract class Main extends \XLite\Module\AModule
         $list = parent::getMutualModulesList();
         $list[] = 'CDev\DrupalConnector';
         $list[] = 'SpurIT\SEConnector';
+        $list[] = 'QSL\ExtendedSimpleCMS';
 
         return $list;
     }
@@ -136,5 +137,17 @@ abstract class Main extends \XLite\Module\AModule
             static::SIMPLECMS_PERMISSION_MANAGE_CUSTOM_PAGES    => 'Manage custom pages',
             static::SIMPLECMS_PERMISSION_MANAGE_MENUS           => 'Manage menus',
         );
+    }
+
+    /**
+     * Method to call just before the module is disabled via core
+     *
+     * @return void
+     */
+    public static function callDisableEvent()
+    {
+        parent::callDisableEvent();
+
+        \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->deleteRootMenu();
     }
 }

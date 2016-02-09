@@ -100,8 +100,6 @@ class Address extends \XLite\Model\Base\PersonalAddress
      * Constructor
      *
      * @param array $data Entity properties OPTIONAL
-     *
-     * @return void
      */
     public function __construct(array $data = array())
     {
@@ -122,23 +120,22 @@ class Address extends \XLite\Model\Base\PersonalAddress
     {
         $result = parent::setterProperty($property, $value);
 
-        if (!isset($result)) {
-
+        if (null === $result) {
             $addressField = \XLite\Core\Database::getRepo('XLite\Model\AddressField')
                 ->findOneBy(array('serviceName' => $property));
 
             if ($addressField) {
-
                 $repo = \XLite\Core\Database::getRepo('XLite\Model\AddressFieldValue');
 
                 $addressFieldValue = $this->getFieldValue($property);
 
                 if ($addressFieldValue) {
                     $addressFieldValue->setValue($value);
-                    $repo->update($addressFieldValue);
+                    if ($this->isPersistent()) {
+                        $repo->update($addressFieldValue);
+                    }
 
                 } else {
-
                     $addressFieldValue = new \XLite\Model\AddressFieldValue();
                     $addressFieldValue->map(
                         array(
@@ -148,7 +145,9 @@ class Address extends \XLite\Model\Base\PersonalAddress
                         )
                     );
                     $this->addAddressFields($addressFieldValue);
-                    $repo->insert($addressFieldValue);
+                    if ($this->isPersistent()) {
+                        $repo->insert($addressFieldValue);
+                    }
                 }
 
                 $result = true;
@@ -157,6 +156,62 @@ class Address extends \XLite\Model\Base\PersonalAddress
                 // Log wrong access to property
                 $this->logWrongAddressPropertyAccess($property, false);
             }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Update searchFakeField of profile
+     *
+     * @return boolean
+     */
+    public function update()
+    {
+        $result = parent::update();
+
+        if ($this->getProfile()) {
+            \XLite\Core\Database::getEM()->refresh($this->getProfile());
+            $this->getProfile()->updateSearchFakeField();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Update searchFakeField of profile
+     *
+     * @return boolean
+     */
+    public function delete()
+    {
+        // We are using id because we can't user em->refresh or em->merge
+        $profileId = $this->getProfile()
+            ? $this->getProfile()->getProfileId()
+            : null;
+
+        $result = parent::delete();
+        if ($profileId) {
+            $profile = \XLite\Core\Database::getRepo('XLite\Model\Profile')->find($profileId);
+
+            $profile->updateSearchFakeField();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Update searchFakeField of profile
+     *
+     * @return boolean
+     */
+    public function create()
+    {
+        $result = parent::create();
+
+        if ($this->getProfile()) {
+            \XLite\Core\Database::getEM()->refresh($this->getProfile());
+            $this->getProfile()->updateSearchFakeField();
         }
 
         return $result;
@@ -173,12 +228,10 @@ class Address extends \XLite\Model\Base\PersonalAddress
     {
         $result = parent::getterProperty($property);
 
-        if (!isset($result)) {
-
+        if (null === $result) {
             $addressField = static::getAddressFieldByServiceName($property);
 
             if ($addressField) {
-
                 $addressFieldValue = $this->getFieldValue($property);
 
                 $result = $addressFieldValue
@@ -207,7 +260,7 @@ class Address extends \XLite\Model\Base\PersonalAddress
     }
 
     /**
-     * Log access to unknow address property
+     * Log access to unknown address property
      *
      * @param string  $property Property name
      * @param boolean $isGetter Flag: is called property getter (true) or setter (false) OPTIONAL
@@ -247,9 +300,8 @@ class Address extends \XLite\Model\Base\PersonalAddress
 
         if ($addressField) {
             foreach ($this->getAddressFields() as $field) {
-                if (
-                    $field->getAddressField()
-                    && $field->getAddressField()->getId() == $addressField->getId()
+                if ($field->getAddressField()
+                    && (int) $field->getAddressField()->getId() === (int) $addressField->getId()
                 ) {
                     $addressFieldValue = $field;
                     break;
@@ -258,6 +310,24 @@ class Address extends \XLite\Model\Base\PersonalAddress
         }
 
         return $addressFieldValue;
+    }
+
+    public static function createDefaultShippingAddress()
+    {
+        $address = new \XLite\Model\Address();
+
+        $requiredFields = array('country', 'state', 'custom_state', 'zipcode', 'city');
+
+        $data = array();
+        foreach ($requiredFields as $fieldName) {
+            if (!isset($data[$fieldName]) && \XLite\Model\Address::getDefaultFieldValue($fieldName)) {
+                $data[$fieldName] = \XLite\Model\Address::getDefaultFieldValue($fieldName);
+            }
+        }
+
+        $address->map($data);
+
+        return $address;
     }
 
     /**
@@ -350,34 +420,20 @@ class Address extends \XLite\Model\Base\PersonalAddress
     /**
      * Get country
      *
-     * @return XLite\Model\Country
+     * @return \XLite\Model\Country
      */
     public function getCountry()
     {
         $result = $this->country;
 
         if (!$result) {
-            $countryField = \XLite\Core\Database::getRepo('XLite\Model\AddressField')->findOneBy(array('serviceName' => 'country_code', 'enabled' => false));
+            $countryField = \XLite\Core\Database::getRepo('XLite\Model\AddressField')
+                ->findOneBy(array('serviceName' => 'country_code', 'enabled' => false));
             if ($countryField) {
                 $result = \XLite\Model\Address::getDefaultFieldValue('country');
             }
         }
 
         return $result;
-    }
-
-    /**
-     * Copy state name to custom_state field to preserve data when state is removed
-     *
-     * @return void
-     *
-     * @PrePersist
-     * @PreUpdate
-     */
-    public function duplicateStateName()
-    {
-        if (!\Includes\Decorator\Utils\CacheManager::isRebuildBlock() && $this->getState() && $this->getCustomState() !== $this->getStateName()) {
-            $this->setCustomState($this->getStateName());
-        }
     }
 }

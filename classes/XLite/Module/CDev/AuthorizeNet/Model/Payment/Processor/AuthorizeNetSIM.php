@@ -235,6 +235,39 @@ class AuthorizeNetSIM extends \XLite\Model\Payment\Base\WebBased
     }
 
     /**
+     * Get status of order based on x_response_code from response
+     *
+     * @param integer $xResponseCode x_response_code from response
+     *
+     * @return string Transaction/Order status
+     */
+    protected function getStatusBasedOnXResponseCode($xResponseCode)
+    {
+        $status = null;
+
+        switch ($xResponseCode) {
+            case 1:
+                $status = \XLite\Model\Payment\Transaction::STATUS_SUCCESS;
+                break;
+
+            case 2:
+            case 3:
+                $status = \XLite\Model\Payment\Transaction::STATUS_FAILED;
+                break;
+
+            case 4:
+                $status = \XLite\Model\Payment\Transaction::STATUS_PENDING;
+                break;
+
+            default:
+                $status = \XLite\Model\Payment\Transaction::STATUS_INITIALIZED;
+                break;
+        }
+
+        return $status;
+    }
+
+    /**
      * Process return
      *
      * @param \XLite\Model\Payment\Transaction $transaction Return-owner transaction
@@ -247,9 +280,7 @@ class AuthorizeNetSIM extends \XLite\Model\Payment\Base\WebBased
 
         $request = \XLite\Core\Request::getInstance();
 
-        $status = (1 == $request->x_response_code)
-            ? $transaction::STATUS_SUCCESS
-            : $transaction::STATUS_FAILED;
+        $status = $this->getStatusBasedOnXResponseCode($request->x_response_code);
 
         if (isset($request->x_response_reason_text)) {
             $this->setDetail('response', $request->x_response_reason_text, 'Response');
@@ -375,7 +406,7 @@ class AuthorizeNetSIM extends \XLite\Model\Payment\Base\WebBased
      */
     public function generateTransactionId(\XLite\Model\Payment\Transaction $transaction, $prefix = null)
     {
-        return substr(preg_replace('/\W/Ss', '', parent::generateTransactionId($transaction, $prefix)), 0, 20);
+        return substr(parent::generateTransactionId($transaction, $prefix), 0, 20);
     }
 
     /**

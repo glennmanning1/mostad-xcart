@@ -85,7 +85,6 @@ class ProductClass extends \XLite\Model\Base\I18n
      */
     public function __construct(array $data = array())
     {
-        $this->shipping_methods = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attributes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->attribute_groups = new \Doctrine\Common\Collections\ArrayCollection();
 

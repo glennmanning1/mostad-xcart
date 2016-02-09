@@ -15,9 +15,32 @@
   margin-top: 20px;
 }
 
+.update-module-list-frame .actions{
+  margin-top: 10px;
+}
+
+.update-module-list-frame .actions > div{
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.update-module-list-frame .actions .additional-actions span{
+  font-size: 13px;
+  border-bottom: 1px dashed;
+  color: #1A509A;
+  cursor: pointer;
+}
+
+.update-module-list-frame .actions .additional-actions span:not(:last-of-type){
+  margin-right: 16px;
+}
+
 .update-module-list-frame button.center {
   margin-left: 38%;
-  margin-top: 10px;
+}
+
+.update-module-list-frame .additional-actions + button.center {
+  margin-left: 23%;
 }
 
 ul.update-module-list {
@@ -42,7 +65,6 @@ li.update-module-info .module-icon {
 
 li.update-module-info ul.module-info {
   float: left;
-  margin: 6px 0px 0px 0px;
 }
 
 ul.module-info {
@@ -97,13 +119,12 @@ ul.module-info {
   background-color: #eff8fe;
   border: 1px solid #ffffff;
   vertical-align: middle;
-  padding: 6px 16px 6px 9px;
+  padding: 6px 16px 6px 16px;
   height: 32px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  width: 180px;
-  clear: both;
+  display: inline-block;
 }
 .update-module-info .advanced-checkbox.core {
   top: 22px;
@@ -158,6 +179,5 @@ ul.module-info {
 
 .advanced-checkbox.not-selectable {
   height: auto;
-  width: 95%;
   background-color: #f3f3f3;
 }

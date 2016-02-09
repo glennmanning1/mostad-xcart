@@ -123,13 +123,13 @@ abstract class AItemsList extends \XLite\View\Container
     abstract protected function getData(\XLite\Core\CommonCell $cnd, $countOnly = false);
 
     /**
-     * Get session cell name for the certain list items widget
+     * Get processed session cell name for the certain list items widget
      *
      * @return string
      */
-    public static function getSessionCellName()
+    public static function getConditionCellName()
     {
-        return str_replace('\\', '', get_called_class());
+        return static::getSessionCellName() . '_processed';
     }
 
     /**
@@ -404,12 +404,23 @@ abstract class AItemsList extends \XLite\View\Container
     }
 
     /**
+     * Return params list to use for export
+     *
+     * @return \XLite\Core\CommonCell
+     */
+    protected function getExportSearchCondition()
+    {
+        return $this->getSearchCondition();
+    }
+
+    /**
      * Get page data
      *
      * @return array
      */
     protected function getPageData()
     {
+        \XLite\Core\Session::getInstance()->{$this->getConditionCellName()} = $this->getExportSearchCondition();
         return $this->getData($this->getLimitCondition());
     }
 

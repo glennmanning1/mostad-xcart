@@ -16,10 +16,6 @@ function OrderEventDetails(base)
 
 extend(OrderEventDetails, ALoadable);
 
-OrderEventDetails.prototype.widgetTarget = 'order';
-
-OrderEventDetails.prototype.widgetClass = '\\XLite\\View\\Minicart';
-
 OrderEventDetails.prototype.base = '.order-history';
 
 OrderEventDetails.autoload = function()
@@ -54,21 +50,14 @@ OrderEventDetails.prototype.handleSwitch = function(event)
 {
   if (this.base.hasClass('in')) {
     this.base.collapse('hide');
+    jQuery('.order-info .title-box .history a').html(core.t('View order history'));
 
   } else {
     this.base.collapse('show');
+    jQuery('.order-info .title-box .history a').html(core.t('Hide order history'));
   }
 
   return false;
-}
-
-OrderEventDetails.prototype.getParams = function(params)
-{
-  params = ALoadable.prototype.getParams.apply(this, arguments);
-
-  params['orderNumber'] = this.base.data('orderNumber');
-
-  return params;
 }
 
 core.autoload('OrderEventDetails');

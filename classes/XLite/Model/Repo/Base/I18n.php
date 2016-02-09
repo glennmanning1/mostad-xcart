@@ -159,18 +159,4 @@ abstract class I18n extends \XLite\Model\Repo\ARepo
 
         return $code;
     }
-
-    /**
-     * Define export iterator query builder
-     *
-     * @param integer $position Position
-     *
-     * @return \XLite\Model\QueryBuilder\AQueryBuilder
-     */
-    protected function defineExportIteratorQueryBuilder($position)
-    {
-        return $this->createPureQueryBuilder()
-            ->setFirstResult($position)
-            ->setMaxResults(1000000000);
-    }
 }

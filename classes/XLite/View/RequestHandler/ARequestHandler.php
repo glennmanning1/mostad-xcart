@@ -115,15 +115,24 @@ abstract class ARequestHandler extends \XLite\View\AView
         parent::setWidgetParams($params);
     }
 
-
     /**
      * Return name of the session cell identifier
      *
      * @return string
      */
-    protected function getSessionCell()
+    public function getSessionCell()
     {
-        return \XLite\Core\Converter::getPlainClassName($this);
+        return static::getSessionCellName();
+    }
+
+    /**
+     * Get session cell name for the certain list items widget
+     *
+     * @return string
+     */
+    public static function getSessionCellName()
+    {
+        return str_replace('\\', '', get_called_class());
     }
 
     /**
@@ -326,7 +335,7 @@ abstract class ARequestHandler extends \XLite\View\AView
 
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
-                    $value[$k] = $this->prepareRequestParamValue($name, $v);
+                    $value[$k] = $this->prepareRequestParamValue($k, $v);
                 }
 
             } elseif (!$this->isParamTrusted($name)) {

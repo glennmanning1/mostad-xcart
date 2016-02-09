@@ -86,6 +86,7 @@ if (!defined('XLITE_INSTALL_MODE')) {
 
 // So called "developer" mode. Set it to "false" in production mode!
 define('LC_DEVELOPER_MODE', (bool) \Includes\Utils\ConfigParser::getOptions(array('performance', 'developer_mode')));
+define('LC_CACHE_NAMESPACE_HASH', (bool) \Includes\Utils\ConfigParser::getOptions(array('performance', 'cache_namespace_hash')));
 
 // Correct error handling mode
 ini_set('display_errors', LC_DEVELOPER_MODE);

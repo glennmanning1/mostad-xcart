@@ -36,6 +36,7 @@ abstract class AProcessor extends \XLite\Base\SuperClass
 {
     const STATE_ALL = 'all';
     const STATE_ENABLED_ONLY = 'enabled_only';
+    const MINIMUM_ITEM_WEIGHT = 0.01;
 
     /**
      * Processor's shipping methods (runtime cache)
@@ -507,6 +508,8 @@ abstract class AProcessor extends \XLite\Base\SuperClass
      */
     public function getPackages($modifier)
     {
+        \XLite\Core\Package::getInstance()->setMinimumItemWeight($this->getMinimumItemWeight());
+
         return \XLite\Core\Package::getInstance()->getPackages($modifier->getItems(), $this->getPackageLimits());
     }
 
@@ -518,6 +521,16 @@ abstract class AProcessor extends \XLite\Base\SuperClass
     protected function getPackageLimits()
     {
         return array();
+    }
+
+    /**
+     * Returns minimum it item weight
+     *
+     * @return float
+     */
+    protected function getMinimumItemWeight()
+    {
+        return static::MINIMUM_ITEM_WEIGHT;
     }
 
     // }}}

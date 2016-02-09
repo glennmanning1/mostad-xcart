@@ -11,7 +11,7 @@
 
 <div class="back-from-payment">
   <div class="head-h3">{t(#Please choose the appropriate action#)}</div>
-  <widget class="\XLite\View\Button\Link" label="Checkout" jsCode="popup.close()" style="regular-main-button" />
+  <widget class="\XLite\View\Button\SimpleLink" label="Checkout" jsCode="popup.close()" style="regular-main-button" />
   <span class="or">{t(#or#)}</span>
-  <widget class="\XLite\View\Button\Link" label="View cart" location="{buildURL(#cart#)}" />
+  <widget class="\XLite\View\Button\SimpleLink" label="View cart" location="{buildURL(#cart#)}" style="regular-button"/>
 </div>

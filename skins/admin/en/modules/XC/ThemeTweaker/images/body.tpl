@@ -26,9 +26,11 @@
         <td>images/{image}</td>
         <td>{getImageUrl(image)}</td>
         <td class="actions right">
-          <div class="separator"></div>
-          <div class="action">
-            <widget class="XLite\View\Button\Remove" buttonName="delete[{image}]" />
+          <div class="cell">
+            <div class="separator"></div>
+            <div class="action">
+              <widget class="XLite\Module\XC\ThemeTweaker\View\Button\Remove" buttonName="delete[]" value="{image}" />
+            </div>
           </div>
         </td>
       </tr>

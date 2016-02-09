@@ -44,6 +44,7 @@ class Mailer extends \XLite\Base\Singleton
     const TYPE_PROFILE_UPDATED_CUSTOMER         = 'siteAdmin';
     const TYPE_PROFILE_DELETED_ADMIN            = 'siteAdmin';
     const TYPE_FAILED_ADMIN_LOGIN_ADMIN         = 'siteAdmin';
+    const TYPE_FAILED_TRANSACTION_ADMIN         = 'siteAdmin';
     const TYPE_ORDER_CREATED_ADMIN              = 'siteAdmin'; // todo: check
     const TYPE_ORDER_PROCESSED_ADMIN            = 'siteAdmin'; // todo: check
     const TYPE_ORDER_PROCESSED_CUSTOMER         = 'siteAdmin'; // todo: check
@@ -1098,6 +1099,39 @@ class Mailer extends \XLite\Base\Singleton
             static::getOrdersDepartmentMail(),
             static::getSiteAdministratorMail(),
             'low_limit_warning',
+            array(),
+            true,
+            \XLite::ADMIN_INTERFACE,
+            static::getMailer()->getLanguageCode(\XLite::ADMIN_INTERFACE)
+        );
+    }
+
+    /**
+     * Send created order mail to admin
+     *
+     * @param \XLite\Model\Order $order Order model
+     *
+     * @return void
+     */
+    public static function sendFailedTransactionAdmin(\XLite\Model\Payment\Transaction $transaction)
+    {
+        $transactionSearchURL = \XLite\Core\Converter::buildFullURL(
+            'payment_transactions',
+            '',
+            array(
+                'public_id' => $transaction->getPublicId()
+            ),
+            \XLite::getAdminScript()
+        );
+        static::register('transactionSearchURL', $transactionSearchURL);
+        static::register('order', $transaction->getOrder());
+
+
+        $result = static::compose(
+            static::TYPE_FAILED_TRANSACTION_ADMIN,
+            static::getOrdersDepartmentMail(),
+            static::getOrdersDepartmentMail(),
+            'failed_transaction',
             array(),
             true,
             \XLite::ADMIN_INTERFACE,

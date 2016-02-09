@@ -127,6 +127,13 @@ class XLite extends \XLite\Base
     protected $currentCurrency;
 
     /**
+     * License runtime cache
+     *
+     * @var \XLite\Model\ModuleKey|null|false
+     */
+    protected static $license = null;
+
+    /**
      * Check is admin interface
      *
      * @return boolean
@@ -244,6 +251,17 @@ class XLite extends \XLite\Base
             }
 
             static::$controller = new $class(\XLite\Core\Request::getInstance()->getData());
+
+            if (
+                static::isAdminZone()
+                && 'keys_notice' != \XLite\Core\Request::getInstance()->target
+                && static::$controller->isDisplayBlockContent()
+                && static::$controller->isBlockContentAllowed()
+            ) {
+                \XLite\Core\Request::getInstance()->target = 'keys_notice';
+                static::$controller = new \XLite\Controller\Admin\KeysNotice(\XLite\Core\Request::getInstance()->getData());
+            }
+
             static::$controller->init();
         }
 
@@ -278,27 +296,38 @@ class XLite extends \XLite\Base
     /**
      * Return X-Cart 5 license of the core
      *
+     * @param boolean $force Flag: true - ignore runtime cache
+     *
      * @return \XLite\Model\ModuleKey
      */
-    public static function getXCNLicense()
+    public static function getXCNLicense($force = false)
     {
-        $result = null;
+        if (!isset(static::$license) || $force) {
 
-        // Get list of all registered X-Cart 5 license keys
-        $licenseKeys = \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')
-            ->findBy(array('keyType' => \XLite\Model\ModuleKey::KEY_TYPE_XCN));
+            if ($force) {
+                static::$license = null;
+            }
 
-        // Select only the license key with non empty 'XCN plan'
-        if ($licenseKeys) {
-            foreach ($licenseKeys as $key) {
-                if (0 !== (int) $key->getXcnPlan()) {
-                    $result = $key;
-                    break;
+            // Get list of all registered X-Cart 5 license keys
+            $licenseKeys = \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')
+                ->findBy(array('keyType' => \XLite\Model\ModuleKey::KEY_TYPE_XCN));
+
+            // Select only the license key with non empty 'XCN plan'
+            if ($licenseKeys) {
+                foreach ($licenseKeys as $key) {
+                    if (0 !== (int) $key->getXcnPlan()) {
+                        static::$license = $key;
+                        break;
+                    }
                 }
+            }
+
+            if (!isset(static::$license)) {
+                static::$license = false;
             }
         }
 
-        return $result;
+        return static::$license ?: null;
     }
 
     /**
@@ -715,6 +744,20 @@ class XLite extends \XLite\Base
         $tmp = \XLite\Core\Request::getInstance();
         list($target, $params) = \XLite\Core\Converter::parseCleanUrl($tmp->url, $tmp->last, $tmp->rest, $tmp->ext);
 
+        if ($target && $params) {
+            $redirectUrl = \XLite\Core\Database::getRepo('XLite\Model\CleanURL')->buildURL($target, $params);
+            $web_dir = rtrim(\XLite::getInstance()->getOptions(array('host_details', 'web_dir')), '/');
+
+            if (($web_dir . '/' . $redirectUrl) !== \Includes\Utils\URLManager::getSelfURI()) {
+
+                \XLite\Core\Operator::redirect(
+                    \XLite\Core\URLManager::getShopURL($redirectUrl),
+                    false,
+                    301
+                );
+            }
+        }
+
         if (!empty($target)) {
             $tmp->mapRequest($params);
 
@@ -784,7 +827,7 @@ class XLite extends \XLite\Base
      */
     final public function getMinorVersion()
     {
-        return '10';
+        return '12';
     }
 
     /**

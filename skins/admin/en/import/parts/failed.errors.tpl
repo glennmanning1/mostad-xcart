@@ -11,22 +11,10 @@
  * @ListChild (list="import.failed.content", weight="100")
  *}
 
-<h3>{getTitle()}</h3>
-<ul FOREACH="getFiles(),file" class="errors">
-  <li class="title">
-    <i class="icon-file-alt"></i> 
-    {file.file}
-    <span IF="file.countW" class="count-w">{file.countW}</span>
-    <span IF="file.countE" class="count-e">{file.countE}</span>
-  </li>
-  <li FOREACH="getErrorsGroups(file.file),errorGroup" class="clearfix type-{errorGroup.type}">
-    <div class="message">
-      <div class="message-text">{getGroupErrorMessage(errorGroup)}</div>
-      <hr>
-      <div class="rows">{getGroupErrorRows(errorGroup)}</div>
-    </div>
-    <div class="text">{getErrorText(errorGroup)}</div>
-  </li>
-</ul>
+<list name="import.failed.content.errors" />
+
 <div IF="hasErrors()" class="much-errors">{t(#Critical errors have been detected in the files you are trying to import. Please correct the errors and try again.#)}</div>
 <div IF="isBroken()" class="much-errors">{t(#Import has been cancelled.#)}</div>
+<div IF="hasErrorsOrWarnings()" class="download-errors">
+    <a href="{buildURL(#import#,#getErrorsFile#)}">{t(#Download error file#)}</a>
+</div>

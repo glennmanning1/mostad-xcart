@@ -41,7 +41,7 @@ class LowStock extends \XLite\View\Menu\Admin\LeftMenu\ANodeNotification
      */
     public function isUpdated()
     {
-        return $this->getLastReedTimestamp() < $this->getLastUpdateTimestamp();
+        return $this->getLastReadTimestamp() < $this->getLastUpdateTimestamp();
     }
 
     /**

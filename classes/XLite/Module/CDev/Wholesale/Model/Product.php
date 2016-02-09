@@ -42,6 +42,13 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
     protected $wholesaleQuantity = 0;
 
     /**
+     * Min quantities
+     *
+     * @var array()
+     */
+    protected $minQuantities = array();
+
+    /**
      * Wholesale membership
      *
      * @var   \XLite\Model\Memberhsip
@@ -101,13 +108,20 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
      */
     public function getMinQuantity($membership = null)
     {
-        $minQuantity = \XLite\Core\Database::getRepo('XLite\Module\CDev\Wholesale\Model\MinQuantity')
-            ->getMinQuantity(
-                $this,
-                $membership
-            );
+        $id = $membership ? $membership->getMembershipId() : 0;
 
-        return isset($minQuantity) ? $minQuantity->getQuantity() : 1;
+        if (!isset($this->minQuantities[$id])) {
+            $minQuantity = \XLite\Core\Database::getRepo('XLite\Module\CDev\Wholesale\Model\MinQuantity')
+                ->getMinQuantity(
+                    $this,
+                    $membership
+                );
+
+            $this->minQuantities[$id] = isset($minQuantity) ? $minQuantity->getQuantity() : 1;
+
+        }
+
+        return $this->minQuantities[$id];
     }
 
     /**

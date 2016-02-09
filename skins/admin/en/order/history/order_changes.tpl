@@ -16,11 +16,11 @@
     <ul>
       <li FOREACH="data,subname,value">
         <div IF="isDisplaySubname(subname)" class="subname">{t(subname)}:</div>
-        <div class="value">{if:value.old}<span class="old">{value.old}</span><i class="fa fa-long-arrow-right"></i>{end:}<span class="new">{value.new}</span></div>
+        <div class="value">{if:value.old}<span class="old">{value.old:b}</span><i class="fa fa-long-arrow-right"></i>{end:}<span class="new">{value.new:b}</span></div>
       </li>
     </ul>
     {else:}
-    <div class="value">{if:data.old}<span class="old">{data.old}</span><i class="fa fa-long-arrow-right"></i>{end:}<span class="new">{data.new}</span></div>
+    <div class="value">{if:data.old}<span class="old">{data.old:b}</span><i class="fa fa-long-arrow-right"></i>{end:}<span class="new">{data.new:b}</span></div>
     {end:}
   </li>
 </ul>

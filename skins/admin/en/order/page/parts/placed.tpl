@@ -8,14 +8,17 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  *
- * @ListChild (list="order", weight="200")
+ * @ListChild (list="order.operations", weight="30")
  *}
 
-<p class="title">
+<div class="title">
+  <div class="placed-date">{t(#Placed on DATE#,_ARRAY_(#date#^getOrderDate())):h}</div>
+  <div class="placed-customer">
   {if:hasProfilePage()}
-    {t(#Placed on DATE by _NAME_ EMAIL#,_ARRAY_(#date#^getOrderDate(),#name#^getProfileName(),#url#^getProfileURL(),#email#^getProfileEmail())):h}
+    {t(#Placed by _NAME_ EMAIL#,_ARRAY_(#name#^getProfileName(),#url#^getProfileURL(),#email#^getProfileEmail())):h}
   {else:}
-    {t(#Placed on DATE by NAME EMAIL#,_ARRAY_(#date#^getOrderDate(),#name#^getProfileName(),#email#^getProfileEmail())):h}
+    {t(#Placed by NAME EMAIL#,_ARRAY_(#name#^getProfileName(),#email#^getProfileEmail())):h}
   {end:}
   <span IF="getMembership()" class="membership">({membership.getName()})</span>
-</p>
+  </div>
+</div>

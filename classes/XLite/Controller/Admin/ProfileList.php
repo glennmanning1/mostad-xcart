@@ -172,6 +172,16 @@ class ProfileList extends \XLite\Controller\Admin\AAdmin
             // Country value is empty: make state and custom state values are empty as well
             $params[\XLite\View\ItemsList\Model\Profile::PARAM_STATE] = '';
             $params[\XLite\View\ItemsList\Model\Profile::PARAM_CUSTOM_STATE] = '';
+        } else {
+            $country = \XLite\Core\Database::getRepo('XLite\Model\Country')->find(
+                $params[\XLite\View\ItemsList\Model\Profile::PARAM_COUNTRY]
+            );
+            if (!$country || !$country->hasStates()) {
+                $params[\XLite\View\ItemsList\Model\Profile::PARAM_STATE] = '';
+            }
+            if (!$country || $country->hasStates()) {
+                $params[\XLite\View\ItemsList\Model\Profile::PARAM_CUSTOM_STATE] = '';
+            }
         }
 
         return $params;

@@ -140,15 +140,26 @@ class Main extends \XLite\Controller\Admin\AAdmin
         $menuType = \XLite\Core\Request::getInstance()->menuType;
 
         if (in_array($menuType, $types, true)) {
-            \XLite\Core\TmpVars::getInstance()->{$menuType} = LC_START_TIME;
+            $this->updateMenuReadTimestamp($menuType);
         }
-        if ($menuType == 'toplinksMenuReadHash') {            
+
+        if ($menuType === 'toplinksMenuReadHash') {
             \XLite\Core\TmpVars::getInstance()->{$menuType} = \XLite\Core\Marketplace::getInstance()->unseenUpdatesHash();
         }
 
         print ('OK');
 
         $this->setSuppressOutput(true);
+    }
+
+    /**
+     * Update menu read timestamp
+     *
+     * @param string $type Menu type
+     */
+    protected function updateMenuReadTimestamp($type)
+    {
+        \XLite\Core\TmpVars::getInstance()->{$type} = LC_START_TIME;
     }
 
     /**

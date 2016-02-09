@@ -74,7 +74,7 @@ class Layout extends \XLite\Controller\Admin\AAdmin
      */
     public function getFreeQuoteURL()
     {
-        return \XLite::getXCartURL('http://www.x-cart.com/contact-us.html?subj=extras_quote&type=design');
+        return \XLite::getXCartURL('http://www.x-cart.com/contact-us.html?reason=subj_2');
     }
 
     /**

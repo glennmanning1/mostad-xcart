@@ -188,7 +188,7 @@ class CartPromo extends \XLite\View\AView
 
         $discount = $this->getNextDiscount();
         if (null !== $discount) {
-            $result = static::formatPrice($discount->getSubtotalRangeBegin(), $this->getCart()->getCurrency());
+            $result = static::formatPrice($discount->getSubtotalRangeBegin(), $this->getCart()->getCurrency(), true);
         }
 
         return $result;
@@ -206,7 +206,7 @@ class CartPromo extends \XLite\View\AView
         $discount = $this->getNextDiscount();
         if (null !== $discount) {
             if ($discount->isAbsolute()) {
-                $result = static::formatPrice($discount->getValue(), $this->getCart()->getCurrency());
+                $result = static::formatPrice($discount->getValue(), $this->getCart()->getCurrency(), true);
 
             } else {
                 $str = sprintf('%0.f', $discount->getValue());

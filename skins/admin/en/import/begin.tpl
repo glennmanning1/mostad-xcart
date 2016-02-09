@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block import-box import-begin">
+<div class="import-box import-begin">
 
   <div class="content">
     <widget class="XLite\View\Form\Import" name="importform" />

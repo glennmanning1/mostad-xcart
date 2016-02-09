@@ -14,6 +14,7 @@
 @import "less/dropdowns.less";
 @import "less/forms.less";
 @import "less/pagination.less";
+@import "less/elements.less";
 
 
 body {
@@ -227,8 +228,17 @@ ul.account-links li {
 }
 
 .lc-minicart {
-  padding-left: @grid-gutter-width;
-  background: url("@{customer-skin}/items_list/product/images/bag/small.png") 5px 7px no-repeat;
+  padding-left: 30px;
+
+  svg{
+    fill: @mobile-menu-minicart-color;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -12px;
+  }
 }
 
 .lc-minicart .minicart-items-number{
@@ -383,12 +393,31 @@ div.page-tabs ul
 
 .mobile_header {
   ul.nav-pills {
-    background: #eef7fd;
-    height: 40px;
+    background: @mobile-menu-bg;
+    height: @mobile-menu-height;
     width: 100%;
     position: fixed;
     left: 0;
     z-index: 70;
+    .box-shadow(@mobile-menu-shadow);
+
+    li.dropdown{
+      > a{
+        svg{
+          path {
+            fill: @mobile-menu-icons-color;
+          }
+        }
+
+        &:hover{
+          svg{
+            path {
+              fill: @mobile-menu-icons-color;
+            }
+          }
+        }
+      }
+    }
   }
 
   a {
@@ -405,51 +434,70 @@ div.page-tabs ul
     font-size: 17px;
   }
 
+  #language_box{
+    min-width: 0;
+  }
+
   ul {
     li {
       background: none;
       padding-left: 0;
 
       ul.language_list {
-        .make-xs-column(12; 0);
-        min-height: 0;
-        background: #363636;
-
         li.language_label{
-          padding: 8px 10px;
-          display: block !important;
+          display: none !important;
         }
 
         li {
           .make-xs-column(12; 0);
-          color: #fff;
-          padding: 0;
           margin: 0;
+
+          &.language-selector{
+            padding: 7px 0;
+
+            li {
+              &:hover{
+                background-color: @light-accent-color;
+              }
+            }
+          }
 
           ul {
             .make-xs-column(12; 0);
 
             li {
-              .make-xs-column(3; 0);
-              border: 1px solid @navbar-inverse-bg;
-
               a {
-                padding: 0;
                 display: block;
-                text-align: center;
+                white-space: nowrap;
+
+                img{
+                  display: inline-block;
+                  width: 19px;
+                  margin-right: 6px;
+                }
               }
 
               span {
-                display: block;
-                text-align: center;
+                display: inline-block;
+
+                img{
+                  display: inline-block;
+                  width: 19px;
+                  margin-right: 6px;
+                }
 
                 span {
-                  display: block;
-                  text-align: center;
+                  display: inline-block;
                 }
               }
 
               &.current {
+                padding: 13px 15px;
+
+                &:hover{
+                  background-color: inherit;
+                }
+
                 span {
                   span {
                     color: @brand-primary;
@@ -463,13 +511,22 @@ div.page-tabs ul
 
       ul.account-links{
         height: auto;
+        padding: 7px 0;
 
         li {
           display: block;
           font-size: @font-size-base;
 
-          span.email{
+          span.email {
             display: none;
+          }
+
+          &:hover{
+            background-color: @light-accent-color;
+          }
+
+          a {
+            border-bottom: none;
           }
 
         }
@@ -479,11 +536,12 @@ div.page-tabs ul
     }
 
     &#search_box {
-      width: 100%;
       position: fixed;
-      left: 0;
-      top: 40px;
-      height: 52px;
+      left: 1.5%;
+      top: (@mobile-menu-height - @mobile-menu-height*0.8)/2;
+      height: @mobile-menu-height*0.8;
+      width: 97%;
+
 
       #mobile_search{
 
@@ -492,14 +550,20 @@ div.page-tabs ul
         float: none;
 
         .simple-search-box {
-          background: #fff;
+          border: none;
+          height: 100%;
+          margin: 8px 0;
+          padding-left: 30px;
 
           button.submit-button {
-            top: -27px;
+            top: 8px;
+            left: 4px;
             background: none;
             text-indent: 0;
             overflow: hidden;
             width: 17px;
+            position: absolute;
+            color: @mobile-menu-search-button-color;
 
             span {
               .glyphicon;
@@ -509,11 +573,14 @@ div.page-tabs ul
           }
 
           input.form-text{
-            width: 95%;
+            width: 100%;
             float: none;
             border: none;
             box-shadow: none;
-            padding: 4px;
+            padding: 0;
+            background: transparent;
+            line-height: 28px;
+            font-size: 16px;
           }
         }
       }
@@ -523,7 +590,8 @@ div.page-tabs ul
 
 
 .target-checkout .mobile_header a#main_menu,
-  .target-checkout .mobile_header a#search_menu
+.target-checkout .mobile_header a#search_menu,
+.target-checkout .mobile_header a#language_menu
 {
   display: none;
 }

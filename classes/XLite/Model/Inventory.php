@@ -79,7 +79,16 @@ class Inventory extends \XLite\Model\AEntity
     protected $amount = self::AMOUNT_DEFAULT_INV_TRACK;
 
     /**
-     * Is low limit notification enabled or not
+     * Is low limit notification enabled for customer or not
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $lowLimitEnabledCustomer = false;
+
+    /**
+     * Is low limit notification enabled for admin or not
      *
      * @var boolean
      *
@@ -189,12 +198,16 @@ class Inventory extends \XLite\Model\AEntity
     /**
      * Check if product amount is less than its low limit
      *
+     * @param boolean $forCustomer Check enabled for customer
+     *
      * @return boolean
      */
-    public function isLowLimitReached()
+    public function isLowLimitReached($forCustomer = false)
     {
+        $enabledForCustomer = $forCustomer && $this->getLowLimitEnabledCustomer();
+
         return $this->getEnabled()
-            && $this->getLowLimitEnabled()
+            && ($this->getLowLimitEnabled() || $enabledForCustomer)
             && $this->getPublicAmount() <= $this->getLowLimitAmount();
     }
 

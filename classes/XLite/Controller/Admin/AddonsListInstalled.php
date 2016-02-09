@@ -35,6 +35,14 @@ namespace XLite\Controller\Admin;
 class AddonsListInstalled extends \XLite\Controller\Admin\Base\AddonsList
 {
     /**
+     * Internal array of data (modules modification settings)
+     *
+     * @var array
+     */
+    protected $switch = null;
+
+
+    /**
      * Define and set handler attributes; initialize handler
      *
      * @param array $params Handler params OPTIONAL
@@ -109,15 +117,15 @@ class AddonsListInstalled extends \XLite\Controller\Admin\Base\AddonsList
     /**
      * Search for modules
      *
-     * @param string $cellName Request cell name
+     * @param array $data Modules data
      *
      * @return array
      */
-    protected function getModules($cellName)
+    protected function getModules($data)
     {
         $modules = array();
 
-        foreach (((array) \XLite\Core\Request::getInstance()->$cellName) as $id => $value) {
+        foreach ((array) $data as $id => $value) {
             $modules[] = \XLite\Core\Database::getRepo('XLite\Model\Module')->find((int) $id);
         }
 
@@ -158,7 +166,7 @@ class AddonsListInstalled extends \XLite\Controller\Admin\Base\AddonsList
      */
     public static function defineFreeFormIdActions()
     {
-        return array_merge(parent::defineFreeFormIdActions(), array('pack'));
+        return array_merge(parent::defineFreeFormIdActions(), array('pack', 'uninstall_unallowed', 'disable_unallowed'));
     }
 
     /**
@@ -221,6 +229,102 @@ class AddonsListInstalled extends \XLite\Controller\Admin\Base\AddonsList
     }
 
     /**
+     * Disable unallowed modules action
+     *
+     * @return void
+     */
+    public function doActionDisableUnallowed()
+    {
+        $switch = array();
+
+        $list = \XLite\Core\Marketplace::getInstance()->getInactiveContentData(false);
+
+        if ($list) {
+            // Generate list of module IDs to delete
+            foreach ($list as $k => $data) {
+                $module = \XLite\Core\Database::getRepo('XLite\Model\Module')->findOneBy(
+                    array(
+                        'name'            => $data['name'],
+                        'author'          => $data['author'],
+                        'fromMarketplace' => 0,
+                        'installed'       => 1,
+                        'enabled'         => 1,
+                    )
+                );
+
+                if ($module) {
+                    $switch[$module->getModuleID()] = array(
+                        'old' => 1,
+                        'new' => 0,
+                    );
+                }
+            }
+        }
+
+        if ($switch) {
+            $this->switch = $switch;
+            $this->doActionSwitch();
+
+            \XLite\Core\Marketplace::getInstance()->clearActionCache(
+                array(
+                    \XLite\Core\Marketplace::ACTION_CHECK_FOR_UPDATES,
+                    \XLite\Core\Marketplace::INACTIVE_KEYS,
+                )
+            );
+        }
+    }
+
+    /**
+     * Uninstall unallowed modules action
+     *
+     * @return void
+     */
+    public function doActionUninstallUnallowed()
+    {
+        $switch = array();
+
+        $list = \XLite\Core\Marketplace::getInstance()->getInactiveContentData(false);
+
+        if ($list) {
+            // Generate list of module IDs to delete
+            foreach ($list as $k => $data) {
+                $module = \XLite\Core\Database::getRepo('XLite\Model\Module')->findOneBy(
+                    array(
+                        'name'            => $data['name'],
+                        'author'          => $data['author'],
+                        'fromMarketplace' => 0,
+                        'installed'       => 1,
+                        'enabled'         => 1,
+                    )
+                );
+
+                if ($module) {
+                    $switch[$module->getModuleID()] = array('delete' => true);
+                }
+            }
+        }
+
+        if ($switch) {
+            $this->switch = $switch;
+            $this->doActionSwitch();
+
+            \XLite\Core\Marketplace::getInstance()->clearActionCache(
+                array(
+                    \XLite\Core\Marketplace::ACTION_CHECK_FOR_UPDATES,
+                    \XLite\Core\Marketplace::INACTIVE_KEYS
+                )
+            );
+        }
+
+        // Search for inactive license keys
+        $keys = \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')->findBy(array('active' => 0));
+        if ($keys) {
+            // Delete inactive license keys
+            \XLite\Core\Database::getRepo('XLite\Model\ModuleKey')->deleteInBatch($keys);
+        }
+    }
+
+    /**
      * Switch module
      *
      * @return void
@@ -229,11 +333,11 @@ class AddonsListInstalled extends \XLite\Controller\Admin\Base\AddonsList
     {
         $changed = false;
         $deleted = false;
-        $data    = (array) \XLite\Core\Request::getInstance()->switch;
+        $data    = $this->switch ?: (array) \XLite\Core\Request::getInstance()->switch;
         $modules = array();
         $firstModule = null;
 
-        $switchModules = $this->getModules('switch');
+        $switchModules = $this->getModules($data);
         $switchModulesKeys = array();
 
         $excludedModules = array();
@@ -375,8 +479,14 @@ class AddonsListInstalled extends \XLite\Controller\Admin\Base\AddonsList
                 }
 
                 if ($this->uninstallModule($module)) {
+                    // Module has been successfully removed
                     $deleted = true;
                     $restorePoint['deleted'][] = $module->getActualName();
+
+                } else {
+                    // If module could not be removed...
+                    $modules[] = $module;
+                    $changed = true;
                 }
 
             } elseif ($old !== $new) {
@@ -423,6 +533,13 @@ class AddonsListInstalled extends \XLite\Controller\Admin\Base\AddonsList
         if ($changed || $deleted) {
             // Flag to rebuild classes cache
             \XLite::setCleanUpCacheFlag(true);
+
+            \XLite\Core\Marketplace::getInstance()->clearActionCache(
+                array(
+                    \XLite\Core\Marketplace::ACTION_CHECK_FOR_UPDATES,
+                    \XLite\Core\Marketplace::INACTIVE_KEYS
+                )
+            );
         }
 
         \Includes\Utils\ModulesManager::updateModuleMigrationLog($restorePoint);

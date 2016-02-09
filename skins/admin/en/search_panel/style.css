@@ -189,3 +189,52 @@
 .search-conditions-box .search-conditions-hr hr.line2 {
   background-color: #f7fcff;
 }
+
+h1.title {
+  display: inline-block;
+}
+
+ul.saved-filter-options {
+  display: inline-block;
+  margin-left: 20px;
+  line-height: 27px;
+}
+
+ul.saved-filter-options li.filter-option {
+  display: inline;
+  margin-right: 10px;
+}
+
+ul.saved-filter-options li.filter-option .filter-title {
+  font-size: 13px;
+  text-decoration: none;
+}
+
+ul.saved-filter-options li.filter-option a.filter-title {
+  font-size: 13px;
+  text-decoration: none;
+  border-bottom: 1px dashed;
+}
+
+ul.saved-filter-options li.filter-option .filter-title.first {
+  margin-right: 16px;
+}
+
+ul.saved-filter-options li.filter-option .delete-filter {
+  margin-left: 1px;
+  color: #999999;
+  visibility: hidden;
+}
+
+ul.saved-filter-options li.filter-option .delete-filter:hover {
+  cursor: pointer;
+}
+
+ul.saved-filter-options li.filter-option:hover .delete-filter {
+  visibility: visible;
+}
+
+.title-margin {
+  margin-bottom: 20px;
+}
+

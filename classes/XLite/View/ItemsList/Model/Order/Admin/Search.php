@@ -49,6 +49,8 @@ class Search extends \XLite\View\ItemsList\Model\Order\Admin\AAdmin
     const PARAM_ZIPCODE         = 'zipcode';
     const PARAM_CUSTOMER_NAME   = 'customerName';
     const PARAM_TRANS_ID        = 'transactionID';
+    const PARAM_RECENT          = 'recent';
+    const PARAM_SKU             = 'sku';
 
     /**
      * Allowed sort criterions
@@ -233,6 +235,8 @@ class Search extends \XLite\View\ItemsList\Model\Order\Admin\AAdmin
             \XLite\Model\Repo\Order::SEARCH_ZIPCODE      => static::PARAM_ZIPCODE,
             \XLite\Model\Repo\Order::SEARCH_CUSTOMER_NAME => static::PARAM_CUSTOMER_NAME,
             \XLite\Model\Repo\Order::SEARCH_TRANS_ID     => static::PARAM_TRANS_ID,
+            \XLite\Model\Repo\Order::P_RECENT            => static::PARAM_RECENT,
+            \XLite\Model\Repo\Order::SEARCH_SKU          => static::PARAM_SKU,
         );
     }
 
@@ -258,6 +262,9 @@ class Search extends \XLite\View\ItemsList\Model\Order\Admin\AAdmin
             static::PARAM_ZIPCODE         => new \XLite\Model\WidgetParam\String('Customer zip/postal code', ''),
             static::PARAM_CUSTOMER_NAME   => new \XLite\Model\WidgetParam\String('Customer name', ''),
             static::PARAM_TRANS_ID        => new \XLite\Model\WidgetParam\String('Payment transaction ID', ''),
+            static::PARAM_RECENT          => new \XLite\Model\WidgetParam\Bool('Recent', false),
+            static::PARAM_SKU             => new \XLite\Model\WidgetParam\String('SKU', ''),
+            \XLite\Controller\Admin\AAdmin::PARAM_SEARCH_FILTER_ID => new \XLite\Model\WidgetParam\String('Search filter ID', null),
         );
     }
 
@@ -270,7 +277,11 @@ class Search extends \XLite\View\ItemsList\Model\Order\Admin\AAdmin
     {
         parent::defineRequestParams();
 
-        $this->requestParams = array_merge($this->requestParams, static::getSearchParams());
+        $this->requestParams = array_merge(
+            $this->requestParams,
+            static::getSearchParams(),
+            array(\XLite\Controller\Admin\AAdmin::PARAM_SEARCH_FILTER_ID)
+        );
     }
 
     /**
@@ -296,10 +307,15 @@ class Search extends \XLite\View\ItemsList\Model\Order\Admin\AAdmin
 
             } elseif (is_string($value)) {
                 $value = trim($value);
+                if (static::PARAM_DATE_RANGE === $requestParam && $value) {
+                    $value = \XLite\View\FormField\Input\Text\DateRange::convertToArray($value);
+                }
             }
 
             $result->$modelParam = $value;
         }
+
+        $result = \XLite\Core\Database::getRepo('XLite\Model\Order')->correctSearchConditions($result);
 
         return $result;
     }
@@ -348,7 +364,9 @@ class Search extends \XLite\View\ItemsList\Model\Order\Admin\AAdmin
      */
     protected function getHead()
     {
-        return 'Orders';
+        $filter = $this->getCurrentSearchFilter();
+
+        return 'Orders' . ($filter ? ' - ' . $filter->getName() : '');
     }
 
     /**

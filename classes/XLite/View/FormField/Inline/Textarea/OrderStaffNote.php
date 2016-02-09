@@ -34,7 +34,6 @@ namespace XLite\View\FormField\Inline\Textarea;
  */
 class OrderStaffNote extends \XLite\View\FormField\Inline\Textarea\Simple
 {
-
     /**
      * Register JS files
      *
@@ -91,7 +90,7 @@ class OrderStaffNote extends \XLite\View\FormField\Inline\Textarea\Simple
     protected function getContainerClass()
     {
         $class = parent::getContainerClass()
-            . ' ' . ($this->getEntityValue() ? 'filled' : 'empty')
+            . ' ' . ($this->getEntityValue() ? 'in-progress filled' : 'empty')
             . ' inline-order-staff-note';
 
         return trim($class);
@@ -116,27 +115,64 @@ class OrderStaffNote extends \XLite\View\FormField\Inline\Textarea\Simple
      */
     protected function getCommonEmptyValue()
     {
-        return static::t('no comments');
+        return static::t('Add comment here');
     }
 
     /**
-     * Save field value to entity
+     * Check - escape value or not
      *
-     * @param array $field Field
-     * @param mixed $value Value
-     *
-     * @return void
+     * @return boolean
      */
-    protected function saveFieldEntityValue(array $field, $value)
+    protected function isEscapeValue()
     {
-        if ($this->getEntityValue() != $value) {
-            \XLite\Controller\Admin\Order::setOrderChanges(
-                $this->getParam(static::PARAM_FIELD_NAME),
-                $value,
-                $this->getEntityValue()
-            );
-        }
+        return false;
+    }
 
-        parent::saveFieldEntityValue($field, $value);
+    /**
+     * Get container attributes
+     *
+     * @return array
+     */
+    protected function getContainerAttributes()
+    {
+        $list = parent::getContainerAttributes();
+        $list['data-max-length'] = $this->getMaxLength();
+        $list['data-max-row-length'] = $this->getMaxRowLength();
+
+        return $list;
+    }
+
+    /**
+     * Get additional CSS classes for the field widget
+     *
+     * @param array $field Field data
+     *
+     * @return string
+     */
+    protected function getAdditionalFieldStyle($field)
+    {
+        $style = parent::getAdditionalFieldStyle($field);
+
+        return ($style ? $style . ' ' : '') . 'not-affect-recalculate';
+    }
+
+    /**
+     * Get maximum length of truncated text (for view part)
+     *
+     * @return integer
+     */
+    protected function getMaxLength()
+    {
+        return 165;
+    }
+
+    /**
+     * Get maximum row length of truncated text (for view part)
+     *
+     * @return integer
+     */
+    protected function getMaxRowLength()
+    {
+        return 45;
     }
 }

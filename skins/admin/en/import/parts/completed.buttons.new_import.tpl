@@ -11,4 +11,4 @@
  * @ListChild (list="import.completed.buttons", weight="100")
  *}
 
-<widget class="XLite\View\Button\Link" location="{buildURL(#import#)}" label="{t(#New import#)}" style="main-button" />
+<widget class="XLite\View\Button\Link" location="{buildURL(getImportTarget())}" label="{t(#New import#)}" style="main-button" />

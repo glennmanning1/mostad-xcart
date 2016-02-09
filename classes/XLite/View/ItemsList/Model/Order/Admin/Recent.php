@@ -90,10 +90,8 @@ class Recent extends \XLite\View\ItemsList\Model\Order\Admin\Search
      */
     protected function getSearchCondition()
     {
-        $cnd = new \XLite\Core\CommonCell();
-
+        $cnd = \XLite\Core\Database::getRepo('XLite\Model\Order')->getRecentOrdersCondition();
         $cnd->{\XLite\Model\Repo\Order::P_ORDER_BY} = array(array('o.date', 'o.order_id'), array('DESC', 'DESC'));
-        $cnd->{\XLite\Model\Repo\Order::P_PAYMENT_STATUS} = \XLite\Model\Order\Status\Payment::getOpenStatuses();
 
         return $cnd;
     }

@@ -722,8 +722,6 @@ class Database extends \XLite\Base\Singleton
                 $postprocessMethod = '';
         }
 
-        $result[] = 'SET UNIQUE_CHECKS=0, FOREIGN_KEY_CHECKS=0';
-
         if ($postprocessMethod && method_exists($this, $postprocessMethod)) {
             foreach ($schemas as $schema) {
                 $schema = $this->{$postprocessMethod}($schema);
@@ -739,10 +737,13 @@ class Database extends \XLite\Base\Singleton
 
         $result = $this->postprocessSchemaByRepo($result);
 
-        $result[] = 'SET UNIQUE_CHECKS=1, FOREIGN_KEY_CHECKS=1';
-
         $result = array_map('trim', $result);
         $result = preg_grep('/^.+$/Ss', $result);
+
+        if ($result) {
+            array_unshift($result, 'SET UNIQUE_CHECKS=0, FOREIGN_KEY_CHECKS=0');
+            array_push($result, 'SET UNIQUE_CHECKS=1, FOREIGN_KEY_CHECKS=1');
+        }
 
         return $result;
     }

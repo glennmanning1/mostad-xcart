@@ -89,7 +89,8 @@ abstract class ASearchPanel extends \XLite\View\AView
     protected function getSearchPanelParams()
     {
         return array(
-            'linked' => $this->getLinkedItemsList(),
+            'linked'               => $this->getLinkedItemsList(),
+            'hideAdditionalFields' => (bool) $this->getCurrentSearchFilter(),
         );
     }
 
@@ -329,5 +330,92 @@ abstract class ASearchPanel extends \XLite\View\AView
 
     // }}}
 
-}
+    // {{{ Filter
 
+    /**
+     * Return true if search panel should use filters
+     *
+     * @return boolean
+     */
+    protected function isUseFilter()
+    {
+        return false;
+    }
+
+    /**
+     * Get list of available filters for search panel
+     *
+     * @return array
+     */
+    protected function getSavedFilterOptions()
+    {
+        $result = array();
+
+        $filters = $this->defineFilterOptions();
+
+        if ($filters) {
+            $resetFilterName = $this->getClearFilterName();
+
+            if ($resetFilterName) {
+                $resetFilter = new \XLite\Model\SearchFilter();
+                $resetFilter->setName($resetFilterName);
+                $result[0] = $resetFilter;
+            }
+
+            foreach($filters as $filter) {
+                $result[$filter->getId()] = $filter;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Define search filters options
+     *
+     * @return array
+     */
+    protected function defineFilterOptions()
+    {
+        $result = array();
+
+        $key = $this->getSearchFilterKeyCell();
+
+        if ($key) {
+
+            $filters = \XLite\Core\Database::getRepo('XLite\Model\SearchFilter')->findByFilterKey($key);
+
+            if ($filters) {
+                foreach($filters as $filter) {
+                    $result[$filter->getId()] = $filter;
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get name of the 'Reset filter' option
+     *
+     * @return string
+     */
+    protected function getClearFilterName()
+    {
+        return static::t('All items');
+    }
+
+    /**
+     * Return true if filter may be removed
+     *
+     * @param \XLite\Model\SearchFilter $filter Search filter model object
+     *
+     * @return boolean
+     */
+    protected function isFilterRemovable($filter)
+    {
+        return $filter && 0 < intval($filter->getId());
+    }
+
+    // }}}
+}

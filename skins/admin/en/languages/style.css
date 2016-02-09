@@ -617,7 +617,6 @@ ul.added-languages li span.selected {
   display: inline-block;
   margin: 0px 8px 0px 0px;
   position: relative;
-  top: 1px;
 }
 
 .languages .language-buttons-panel {
@@ -702,6 +701,8 @@ ul.languages-list li span.active {
 
 .items-list.labels ul.lng-marks {
   float: right;
+  line-height: 19px;
+  vertical-align: middle;
 }
 
 .items-list.labels ul.lng-marks,
@@ -822,6 +823,7 @@ ul.languages-list li span.active {
 
 .items-list.languages .cell.name .flag {
   margin-right: 6px;
+  display: inline-block;
 }
 
 .items-list.languages .cell.name .flag img {
@@ -886,6 +888,10 @@ form.searchpanel-label-main .search-conditions li.actions button[type="submit"] 
   margin-left: 0px;
 }
 
+.items-list-table.languages table.list tbody.lines tr{
+  height: 56px;
+}
+
 .items-list.labels table tr.line.just-added,
 .items-list.labels table tr.line.just-added td {
   background-color: #FCFCD4 !important;
@@ -894,9 +900,17 @@ form.searchpanel-label-main .search-conditions li.actions button[type="submit"] 
 .items-list-table.languages table.list tbody.lines tr.line.lock .field .subfield .table-value.defaultcustomer-value,
 .items-list-table.languages table.list tbody.lines tr.line.lock .field .subfield .table-value.defaultadmin-value {
   background: transparent url(../images/icon_lock.png) no-repeat left center;
+  background-position-x: -2px;
   width: 16px;
-  height: 36px;
+  height: 30px;
   display: inline-block;
+  vertical-align: middle;
+}
+
+.items-list-table.languages table.list tbody.lines tr.line .field .subfield .table-value.defaultcustomer-value input,
+.items-list-table.languages table.list tbody.lines tr.line .field .subfield .table-value.defaultadmin-value input{
+    vertical-align: middle;
+    margin: 0;
 }
 
 .items-list-table.languages table.list tbody.lines tr.line.lock .field .subfield .table-value.defaultcustomer-value input[type="radio"],
@@ -928,6 +942,8 @@ form.searchpanel-label-main .search-conditions li.actions button[type="submit"] 
   width: 500px;
   display: inline-block;
   overflow: hidden;
+  vertical-align: middle;
+  line-height: 21px;
 }
 
 .language-labels .label-name:hover .name {

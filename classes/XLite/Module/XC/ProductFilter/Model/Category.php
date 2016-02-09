@@ -158,6 +158,9 @@ class Category extends \XLite\Model\Category implements \XLite\Base\IDecorator
                     ->setParameter('category', $this)
                     ->setParameter('attribute', $attribute)
                     ->groupBy('av.attribute_option')
+                    ->linkInner('av.attribute_option')
+                    ->linkInner('attribute_option.translations', 'option_translations')
+                    ->addOrderBy('option_translations.name')
                     ->getResult();
 
                 foreach ($options as $option) {
@@ -172,7 +175,16 @@ class Category extends \XLite\Model\Category implements \XLite\Base\IDecorator
 
         } else {
             $list = array();
-            foreach ($attribute->getAttributeOptions() as $option) {
+
+            $values = $attribute->getAttributeOptions()->getValues();
+            uasort(
+                $values,
+                function ($a, $b) {
+                    return strcasecmp($a->getName(), $b->getName());
+                }
+            );
+
+            foreach ($values as $option) {
                 $list[$option->getId()] = $option->getName();
             }
         }

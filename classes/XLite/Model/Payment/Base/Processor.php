@@ -103,7 +103,7 @@ abstract class Processor extends \XLite\Base
             $methodName = 'is' . \XLite\Core\Converter::convertToCamelCase($transactionType) . 'TransactionAllowed';
 
             if (method_exists($transaction, $methodName)) {
-                // Call transaction tyoe specific method
+                // Call transaction type specific method
                 $result = $transaction->$methodName();
             }
 
@@ -113,6 +113,34 @@ abstract class Processor extends \XLite\Base
         }
 
         return $result;
+    }
+
+    /**
+     * Get transaction message
+     *
+     * @param \XLite\Model\Payment\Transaction $transaction     Payment transaction (or backend transaction)
+     * @param string                           $transactionType Type of transaction
+     *
+     * @return string
+     */
+    public function getTransactionMessage($transaction, $transactionType)
+    {
+        return null;
+    }
+
+    /**
+     * Get transaction value
+     *
+     * @param \XLite\Model\Payment\Transaction $transaction     Payment transaction
+     * @param string                           $transactionType Type of transaction
+     *
+     * @return float
+     */
+    public function getTransactionValue($transaction, $transactionType)
+    {
+        $method = 'get' . \XLite\Core\Converter::convertToCamelCase($transactionType) . 'TransactionValue';
+
+        return method_exists($this, $method) ? $this->$method($transaction) : $transaction->getValue();
     }
 
     /**
@@ -136,8 +164,11 @@ abstract class Processor extends \XLite\Base
 
                 \XLite\Core\DatabasE::getEM()->flush();
 
-                $transaction->getOrder()->renewPaymentStatus();
-                \XLite\Core\DatabasE::getEM()->flush();
+                if ($transaction->getOrder()->renewPaymentStatus()) {
+                    // Reset 'recent' property of order if payment status has been changed
+                    $transaction->getOrder()->setRecent(0);
+                    \XLite\Core\DatabasE::getEM()->flush();
+                }
                 
                 $txn->registerTransactionInOrderHistory();
             }
@@ -377,6 +408,30 @@ abstract class Processor extends \XLite\Base
     }
 
     /**
+     * Get input fields list
+     *
+     * @return array
+     */
+    public function getInputDataFields()
+    {
+        $result = array();
+
+        $labels = $this->getInputDataLabels();
+        $accessLevels = $this->getInputDataAccessLevels();
+
+        foreach ($labels as $key => $value) {
+            $result[$key] = array(
+                'label'       => $value,
+                'accessLevel' => isset($accessLevels[$key])
+                    ? $accessLevels[$key]
+                    : \XLite\Model\Payment\TransactionData::ACCESS_ADMIN,
+            );
+        }
+
+        return $result;
+    }
+
+    /**
      * Get current transaction order
      *
      * @return \XLite\Model\Order
@@ -451,7 +506,8 @@ abstract class Processor extends \XLite\Base
                     $name,
                     $value,
                     isset($labels[$name]) ? $labels[$name] : null,
-                    isset($backendTransaction) ? $backendTransaction : null
+                    isset($backendTransaction) ? $backendTransaction : null,
+                    $accessLevels[$name]
                 );
             }
         }
@@ -467,11 +523,11 @@ abstract class Processor extends \XLite\Base
      *
      * @return void
      */
-    protected function setDetail($name, $value, $label = null, $backendTransaction = null)
+    protected function setDetail($name, $value, $label = null, $backendTransaction = null, $accessLevel = null)
     {
         $transaction = isset($backendTransaction) ? $backendTransaction : $this->transaction;
 
-        $transaction->setDataCell($name, $value, $label);
+        $transaction->setDataCell($name, $value, $label, $accessLevel);
     }
 
     /**
@@ -577,7 +633,7 @@ abstract class Processor extends \XLite\Base
      */
     public function canEnable(\XLite\Model\Payment\Method $method)
     {
-        return true;
+        return $this->isConfigured($method);
     }
 
     /**
@@ -656,6 +712,61 @@ abstract class Processor extends \XLite\Base
     public function isCheckoutUpdateActionRequired(\XLite\Model\Payment\Method $method)
     {
         return $this->getInputTemplate();
+    }
+
+    // }}}
+
+    // {{{ Primary data fields
+
+    /**
+     * Get list of primary transaction data fields with values
+     * These data are displayed on the order page, invoice and packing slip
+     *
+     * @param \XLite\Model\Payment\Transaction $transaction Payment transaction
+     * @param boolean                          $onlyPrimary Flag: true - return only primary fields OPTIONAL
+     *
+     * @return array
+     */
+    public function getTransactionData($transaction, $onlyPrimary = false)
+    {
+        $result = array();
+
+        $primaryDataFields = $this->getPrimaryInputDataFields();
+
+        if (!$onlyPrimary || $primaryDataFields) {
+
+            $labels = $this->getInputDataLabels();
+
+            foreach ($transaction->getTransactionData(true) as $data) {
+
+                if (
+                    $data->isAvailable()
+                    && isset($labels[$data->getName()])
+                    && (
+                        !$onlyPrimary
+                        || in_array($data->getName(), $primaryDataFields)
+                    )
+                ) {
+                    $result[] = array(
+                        'name'  => $data->getName(),
+                        'title' => !empty($labels[$data->getName()]) ? $labels[$data->getName()] : $data->getName(),
+                        'value' => $data->getValue(),
+                    );
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get list of primary input fields
+     *
+     * @return array
+     */
+    protected function getPrimaryInputDataFields()
+    {
+        return array();
     }
 
     // }}}

@@ -132,7 +132,7 @@ class CountryState extends \XLite\Core\Validator\Pair\APair
             'country'             => $country,
             'state'               => $state,
             static::FIELD_COUNTRY => $data[static::FIELD_COUNTRY],
-            static::FIELD_STATE   => $state ? $data[static::FIELD_STATE] : null,
+            static::FIELD_STATE   => ($state && $country->hasStates()) ? $data[static::FIELD_STATE] : null,
         );
     }
 

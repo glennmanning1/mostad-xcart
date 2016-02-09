@@ -61,11 +61,6 @@ if (!empty($requirements) && is_array($requirements)) {
 
 <br />
 
-<?php echo xtr('ask_send_report_text'); ?>
-
-<br />
-<br />
-
 <textarea name="report" class="report-details form-control" rows="5" cols="70" readonly="readonly"><?php echo $report; ?></textarea>
 
 <br />
@@ -87,7 +82,7 @@ if (!empty($requirements) && is_array($requirements)) {
 <br />
 
 <div style="text-align: center;">
-    <input type="submit" class="btn btn-warning" value="<?php echo xtr('Send a report'); ?>" onclick="javascript: ga('send', 'event', 'button', 'click', 'send-report');" />
+    <input type="submit" class="btn btn-warning" value="<?php echo xtr('Send report and get a help'); ?>" onclick="javascript: ga('send', 'event', 'button', 'click', 'send-report');" />
 </div>
 
 </form>

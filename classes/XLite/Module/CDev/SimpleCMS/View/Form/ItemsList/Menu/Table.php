@@ -63,8 +63,8 @@ class Table extends \XLite\View\Form\ItemsList\AItemsList
     protected function getDefaultParams()
     {
         return array(
-            'page' => $this->getPage(),
+            'page'  => $this->getPage(),
+            'id'    => \XLite\Core\Request::getInstance()->id
         );
     }
-
 }

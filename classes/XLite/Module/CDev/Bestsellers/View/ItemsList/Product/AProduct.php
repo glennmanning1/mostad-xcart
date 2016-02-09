@@ -32,7 +32,7 @@ namespace XLite\Module\CDev\Bestsellers\View\ItemsList\Product;
 /**
  * Product list
  */
-class AProduct extends \XLite\View\ItemsList\Product\AProduct implements \XLite\Base\IDecorator
+abstract class AProduct extends \XLite\View\ItemsList\Product\AProduct implements \XLite\Base\IDecorator
 {
     /**
      * Allowed sort criterions

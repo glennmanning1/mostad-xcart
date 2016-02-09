@@ -248,18 +248,9 @@ foreach ($steps as $stepData) {
 
 </div>
 
-<div id="suppose-cloud" class="cloud-box" style="display: none;">
-
-    <div class="grey-line">
-        <div class="or-cloud"><span>OR</span></div>
-    </div>
-
-    <div class="cloud-header"><?php echo xtr('Consider X-Cart hosted with us'); ?></div>
-    <div class="cloud-text"><?php echo xtr('VPS hosting tuned for X-Cart.<br />Without installation hassle. Fully customizable.'); ?></div>
-    <a href="http://www.x-cart.com/create-online-store.html?<?php echo !empty($params['login']) ? 'email=' . urlencode($params['login']) . '&amp;' : ''; ?>utm_source=XC5Install&amp;utm_medium=reqsFailure&amp;utm_campaign=XC5Install" target="_blank"><?php echo xtr('Add an online store for free'); ?></a>
-</div>
-
 <?php
+
+x_display_help_block();
 
 foreach ($reqsNotes as $reqNote) {
 

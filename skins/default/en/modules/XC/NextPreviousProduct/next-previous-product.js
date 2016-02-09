@@ -19,24 +19,29 @@ var nextPreviousLinkUnhoverHandler = function()
     $(this).find('.next-previous-dropdown').fadeOut(200);
 }
 
-$(document).ready(function(){
-    $('.next-previous-link').hover(nextPreviousLinkHoverHandler, nextPreviousLinkUnhoverHandler);
+core.microhandlers.add(
+  'NextPreviousLinkHandler',
+  '.next-previous-link',
+  function (event) {
+    $(this).hover(nextPreviousLinkHoverHandler, nextPreviousLinkUnhoverHandler);
 
-    $('.next-previous-link a').click(function(){
-        var date = new Date();
-        date.setTime(date.getTime()+30*60*1000);
-        var expires = "; expires="+date.toUTCString();
-        var path = '';
+    $(this).find('a').click(function(){
+      var date = new Date();
+      date.setTime(date.getTime()+30*60*1000);
+      var expires = "; expires="+date.toUTCString();
+      var path = '';
 
-        var box = $(this).parents('.next-previous-link').find('.next-previous-cookie-data').eq(0);
+      var box = $(this).parents('.next-previous-link').find('.next-previous-cookie-data').eq(0);
 
-        var productId = box.data('xcProductId');
-        var dataString = box.data('xcNextPrevious');
+      var productId = box.data('xcProductId');
+      var dataString = box.data('xcNextPrevious');
+      dataString['created'] = date.getTime();
 
-        if (box.data('xcCookiePath')) {
-            path = '; path=' + box.data('xcCookiePath');
-        }
+      if (box.data('xcCookiePath')) {
+          path = '; path=' + box.data('xcCookiePath');
+      }
 
-        document.cookie = 'xc_np_product_' + productId + '=' + JSON.stringify(dataString) + path + expires;
+      document.cookie = 'xc_np_product_' + productId + '=' + JSON.stringify(dataString) + path + expires;
     });
-});
+  }
+);

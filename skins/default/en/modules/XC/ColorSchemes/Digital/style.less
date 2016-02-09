@@ -72,6 +72,13 @@
 @navtab-bgcolor-normal: @base-gradient-end-color;
 @navtab-bgcolor-normal-hover: @base-gradient-start-color;
 
+@mobile-menu-bg: #0091ea;
+@mobile-menu-shadow: none;
+@mobile-menu-dropdowns-bg: #2c2c2c;
+@slidebar-bg: #424242;
+@slidebar-arrow-color: #a8a8a8;
+@slidebar-links-color: #a6a6a6;
+
 /* Digital specific styles */
 
 #content .products div.product-photo {
@@ -247,39 +254,6 @@
 }
 
 .mobile_header {
-  ul.nav-pills {
-    background: @navbar-inverse-bg;
-    height: 41px;
-  }
-
-
-  .nav {
-    // Open dropdowns
-    .open > span,
-    .open > a {
-      &,
-      &:hover,
-        &:focus {
-        color: @brand-primary;
-        background-color: @navbar-inverse-link-active-bg;
-        text-decoration: none !important;
-      }
-    }
-  }
-
-  .dropdown-menu {
-    background-color: @navbar-inverse-link-active-bg;
-
-    li {
-      a {
-        color: @navbar-inverse-link-color;
-
-        &:hover {
-          color: @brand-primary !important;
-        }
-      }
-    }
-  }
 
   a {
     color: @navbar-inverse-link-color;
@@ -295,9 +269,8 @@
       #mobile_search{
 
         .simple-search-box {
-          background: @input-bg;
-          border: 1px solid @input-border;
-          box-shadow: none !important;
+         background: @mobile-menu-dropdowns-bg;
+         box-shadow: none;
         }
       }
     }
@@ -306,11 +279,6 @@
 
 .lc-minicart {
   color: #aaaaaa;
-  background-image: url("@{customer-skin}/modules/XC/ColorSchemes/Digital/images/small_bag.png");
-}
-
-.lc-minicart .minicart-items-number {
-  color: @brand-primary !important;
 }
 
 #header .block:first-child .content {
@@ -353,18 +321,6 @@
   }
 }
 
-
-@media (min-width: @screen-xs-min) {
-  #header .block .content {
-    height: 40px;
-  }
-
-  .lc-minicart.expanded,
-  .lc-minicart:hover,
-  .lc-minicart.empty:hover{
-    background-color: @navbar-inverse-link-active-bg !important;
-  }
-}
 @media (min-width: @screen-md-min) {
   #header {
     padding-top:15px;

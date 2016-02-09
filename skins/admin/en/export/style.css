@@ -12,9 +12,29 @@
 /**
  * Export
  */
-div.dialog-block.export-box {
-  min-width: 100%;
-  display: block;
+div.export-box {
+  display: inline-block;
+  border-radius: 5px;
+  max-width: 900px;
+  margin-bottom: 20px;
+}
+
+.ui-dialog div.export-box {
+  margin-bottom: 0px;
+}
+
+.export-box .header .title,
+  .export-box .header h2
+{
+  display: inline;
+  width: auto;
+  padding: 0px;
+  font-size: 22px;
+  float: left;
+  color: #333;
+  margin: 10px 0px 20px 0px;
+  line-height: normal;
+  max-width: 845px;
 }
 
 .export-box h3 {
@@ -26,18 +46,17 @@ div.dialog-block.export-box {
   font-weight: normal;
 }
 
-div.dialog-block.export-box .subcontent {
+/*div.dialog-block.export-box .subcontent {
   padding: 20px;
-}
+}*/
 
 .export-box .buttons {
-  text-align: center;
-  padding-top: 12px;
+  margin: 0;
+  padding: 10px 10px;
 }
 
 .export-box .buttons .main-button {
-  padding-left: 75px;
-  padding-right: 75px;
+  min-width: 150px;
 }
 
 .export-box .buttons .export-button-container .export-blocked {
@@ -48,20 +67,10 @@ div.dialog-block.export-box .subcontent {
 /**
  * Export (begin)
  */
-div.dialog-block.export-begin {
-  margin-bottom: 0px;
-}
-
-div.dialog-block.export-begin .subcontent {
-  padding: 0px;
-  min-width: 900px;
-}
 
 .export-begin .subcontent .parts {
   float: left;
   width: 50%;
-  padding: 10px 19px;
-  border-right: 1px solid #d8d8d8;
 }
 
 .export-begin .subcontent .parts ul {
@@ -81,10 +90,10 @@ div.dialog-block.export-begin .subcontent {
 }
 
 .export-begin .subcontent .options {
-  padding: 10px 10px 10px 30px;
+  padding: 0px 10px 0px 30px;
   float: left;
   margin-left: -1px;
-  border-left: 1px solid #d8d8d8;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
   width: 50%;
 }
 
@@ -121,13 +130,19 @@ div.dialog-block.export-begin .subcontent {
  * Export (progress)
  */
 
-div.dialog-block.export-progress .subcontent {
-  padding: 40px;
+div.export-box.export-progress .subcontent {
+  padding: 20px 0;
   padding-bottom: 12px;
 }
 
-div.dialog-block.export-progress div.content {
-  width: 900px;
+
+.ui-dialog div.export-box.export-progress .subcontent {
+  padding: 20px 20px;
+  padding-bottom: 12px;
+}
+
+div.export-box.export-progress div.content {
+  width: 650px;
 }
 
 .export-progress .subcontent .progress-bar {
@@ -136,7 +151,13 @@ div.dialog-block.export-progress div.content {
 }
 
 .export-progress .subcontent .bar {
-  width: 650px;
+  width: 540px;
+  height: 30px;
+}
+
+
+.ui-dialog .export-progress .subcontent .bar  {
+  width: 500px;
 }
 
 .export-progress .subcontent button {
@@ -154,35 +175,54 @@ div.dialog-block.export-progress div.content {
 }
 
 .export-progress .help {
-  padding-left: 49px;
-  padding-top: 6px;
-  min-height: 38px;
+  padding: 20px 0px;
   line-height: 20px;
+  -webkit-display: flex;
+  display: flex;
+  -webkit-align-items:center;
+  -align-items:center;
+}
+
+.ui-dialog .export-progress .help{
+  padding: 20px 20px;
+
 }
 
 .export-progress .help i {
   color: #b9b9b9;
   font-size: 36px;
-  float: left;
+  margin-top: 6px;
 }
 
 .export-progress .help p {
   font-size: 14px;
-  margin-left: 51px;
+  margin-left:20px;
 }
 
 /**
  * Export (completed)
  */
-div.dialog-block.export-completed .subcontent {
-  padding-bottom: 49px;
+
+div.export-box.export-completed-popup {
+  width: 470px;
+}
+
+.export-completed-popup .download-box .subcontent .files {
+  width: inherit;
 }
 
 .download-box .subcontent .files {
-  padding: 22px 10px 10px 39px;
+  width: 900px;
+  margin-bottom: 30px;
+  padding: 0px 40px 10px 10px;
+}
+
+.download-box .subcontent .help {
+  padding: 0px 40px;
 }
 
 .download-box .subcontent .files h3 {
+  display: inline-block;
   color: #44769d;
   font-size: 18px;
   margin-bottom: 9px;
@@ -302,25 +342,8 @@ div.dialog-block.export-completed .subcontent {
 }
 
 .download-box.begin-download {
-  background: -moz-linear-gradient(top, #f2f2f2 0px, #fff 4px);
-  background: -webkit-linear-gradient(top, #f2f2f2 0px, #fff 4px);
-  background: -o-linear-gradient(top, #f2f2f2 0px, #fff 4px);
-  background: -ms-linear-gradient(top, #f2f2f2 0px, #fff 4px);
-  background: linear-gradient(to bottom, #f2f2f2 0px, #fff 4px);
-  width: 898px;
   position: relative;
-  border-left: 1px solid #dfe5e8;
-  border-right: 1px solid #dfe5e8;
-  border-bottom: 1px solid #dfe5e8;
   padding: 0px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  padding-top: 30px;
-  -moz-border-radius: 0px 0px 3px 3px;
-  -webkit-border-radius: 0px 0px 3px 3px;
-  border-radius: 0px 0px 3px 3px;
 }
 
 .download-box.begin-download .subcontent .files h3 {
@@ -328,9 +351,8 @@ div.dialog-block.export-completed .subcontent {
 }
 
 .begin-download .delete-all {
-  position: absolute;
-  top: 26px;
-  right: 19px;
+  display: inline-block;
+  margin-left: 80px;
 }
 
 .begin-download .delete-all a {
@@ -348,16 +370,28 @@ div.dialog-block.export-completed .subcontent {
   font-size: 14px;
 }
 
-.begin-download.download-box .subcontent .files {
-  padding-top: 10px;
-  padding-bottom: 33px;
+.pop.begin-download.download-box .subcontent .files {
+  padding-top: 20px;
+  padding-bottom: 40px;
+}
+
+.popup-download.download-box .subcontent .files {
+  padding: 0px 20px 20px 20px;
+}
+
+.popup-download.download-box .subcontent .files .file {
+  width: 430px;
+}
+
+.popup-download.download-box .subcontent .help {
+  padding: 0px 20px;
 }
 
 /**
  * Export failed
  */
 
-div.dialog-block.export-failed .header h2,
+div.export-failed .header h2,
 .export-failed h3
 {
   color: #b94a48;

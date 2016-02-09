@@ -370,6 +370,24 @@ class Product extends \XLite\Model\Base\Catalog implements \XLite\Model\Base\IOr
     protected $metaDescType = 'A';
 
     /**
+     * Sales
+     *
+     * @var integer
+     *
+     * @Column (type="integer", options={ "unsigned": true })
+     */
+    protected $sales = 0;
+
+    /**
+     * Flag to exporting entities
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $xcPendingExport = false;
+
+    /**
      * Clone
      *
      * @return \XLite\Model\AEntity
@@ -392,6 +410,13 @@ class Product extends \XLite\Model\Base\Catalog implements \XLite\Model\Base\IOr
         $this->cloneEntityInventory($newProduct);
 
         $newProduct->update();
+
+        foreach ($newProduct->getCleanURLs() as $url) {
+            $newProduct->getCleanURLs()->removeElement($url);
+            \XLite\Core\Database::getEM()->remove($url);
+        }
+
+        $newProduct->setSales(0);
 
         return $newProduct;
     }
@@ -805,11 +830,17 @@ class Product extends \XLite\Model\Base\Catalog implements \XLite\Model\Base\IOr
     /**
      * Return list of product categories
      *
-     * @return \Doctrine\ORM\PersistentCollection
+     * @return array
      */
     public function getCategories()
     {
-        return \XLite\Core\Database::getRepo('\XLite\Model\Category')->findAllByProductId($this->getProductId());
+        $result = array();
+
+        foreach ($this->getCategoryProducts() as $cp) {
+            $result[] = $cp->getCategory();
+        }
+
+        return $result;
     }
 
     /**
@@ -928,6 +959,18 @@ class Product extends \XLite\Model\Base\Catalog implements \XLite\Model\Base\IOr
     public function isOutOfStock()
     {
         return $this->getInventory()->isOutOfStock();
+    }
+
+    /**
+     * Check if the product is out-of-stock
+     *
+     * @return boolean
+     */
+    public function isShowStockWarning()
+    {
+        return $this->getInventory()->getEnabled()
+            && $this->getInventory()->getLowLimitEnabledCustomer()
+            && $this->getInventory()->isLowLimitReached(true);
     }
 
     /**
@@ -1375,4 +1418,38 @@ class Product extends \XLite\Model\Base\Catalog implements \XLite\Model\Base\IOr
 
         return $result;
     }
+
+    // {{{ Sales statistics
+
+    /**
+     * Set sales
+     *
+     * @param integer $sales Sales
+     */
+    public function setSales($sales)
+    {
+        $this->sales = max(0, $sales);
+    }
+
+    /**
+     * Return sales
+     *
+     * @return integer
+     */
+    public function getSales()
+    {
+        return $this->sales;
+    }
+
+    /**
+     * Update sales
+     */
+    public function updateSales()
+    {
+        $this->setSales(
+            $this->getRepository()->findSalesByProduct($this)
+        );
+    }
+
+    // }}}
 }

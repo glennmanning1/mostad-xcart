@@ -55,6 +55,25 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping implements \XLite\Ba
     }
 
     /**
+     * Get shipped items for check condition
+     *
+     * @return array
+     */
+    public function getItemsCondition()
+    {
+        $items = parent::getItemsCondition();
+        $result = array();
+
+        foreach ($items as $item) {
+            if (!$this->isIgnoreShippingCalculation($item)) {
+                $result[] = $item;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
      * Get shipping rates
      *
      * @return array(\XLite\Model\Shipping\Rate)
@@ -84,13 +103,19 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping implements \XLite\Ba
                 }
 
             } else {
+                // There are no items with fixed fee, remove method 'Freight fixed fee'
+                foreach ($rates as $k => $rate) {
+                    if ($this->isFixedFeeMethod($rate->getMethod())) {
+                        unset($rates[$k]);
+                    }
+                }
                 // Are all items marked as Free shipping?
                 $unsetFree = false;
                 foreach ($rates as $rate) {
                     $rate->setBaseRate(0);
                     $rate->setMarkupRate(0);
                     if (!$rate->getMethod()->getFree()) {
-                        // Non free shipping item found
+                        // Non free shipping method found
                         $unsetFree = true;
                     }
                 }

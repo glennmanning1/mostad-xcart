@@ -22,7 +22,8 @@ hr {
 }
 
 #page-wrapper {
-  padding: 20px 0 0;
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 #breadcrumb{
@@ -30,6 +31,10 @@ hr {
   margin: 0;
   padding: 60px 0 13px 20px;
   margin-top: -50px;
+}
+
+ul.breadcrumb {
+  margin-bottom: 0px;
 }
 
 ul.breadcrumb li.location-node span.location-text{
@@ -146,6 +151,10 @@ h1, .head-h2, h3, fieldset legend, .form-required, .head-h2, .head-h3 {
   padding: 20px;
 }
 
+.sidebar div.block.block-vendors a {
+  color: inherit;
+}
+
 .sidebar div.block.block-top-categories .head-h2 {
   color: #bb8484;
   padding: 0;
@@ -156,10 +165,6 @@ h1, .head-h2, h3, fieldset legend, .form-required, .head-h2, .head-h3 {
   padding: 0;
   border: 0 none;
   background-color: transparent;
-}
-
-.sidebar .catalog-categories > li > a {
-  font-size: 16px;
 }
 
 .products-grid .product-cell .product:hover,
@@ -262,11 +267,12 @@ body.target-checkout #header-bar {
 }
 
 #breadcrumb .home-link {
-  background: url(images/home.png) no-repeat scroll 0 1px transparent;
-  line-height: 26px;
+  background: url(images/home.png) no-repeat scroll 0 0px transparent;
+  background-size: contain;
+  line-height: 20px;
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
 }
 
 #breadcrumb .home-link img {
@@ -275,10 +281,6 @@ body.target-checkout #header-bar {
 
 ul.breadcrumb li:first-child {
   margin: 0 0 -5px;
-}
-
-ul.breadcrumb li.location-node.expandable {
-  background: url(images/down_arrow.png) no-repeat scroll right 1.1em transparent;
 }
 
 /**
@@ -307,10 +309,6 @@ ul.products-sidebar ul.labels li.label-orange .label-main-box .content {
 
 .powered-by {
   border: none;
-}
-
-#secondary-menu {
-  margin: 0;
 }
 
 .product-details .product-in-stock, .product-quicklook .product-in-stock {
@@ -367,7 +365,9 @@ button,
 .review-step button.disabled,
 button span,
 button span,
-.review-step button.disabled span
+.review-step button.disabled span,
+.lc-minicart .cart,
+.lc-minicart .checkout
 {
   font-family: 'Oswald', sans-serif;
   font-weight: 400;
@@ -520,6 +520,11 @@ div.address-box {
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   border-radius: 5px;
+}
+
+div.address-box button{
+    max-width: 100%;
+    white-space: normal;
 }
 
 .ui-corner-all {

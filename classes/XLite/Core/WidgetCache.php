@@ -65,15 +65,18 @@ class WidgetCache extends \XLite\Base\Singleton
     /**
      * Delete all
      *
-     * @return void
+     * @return boolean
      */
     public function deleteAll()
     {
+        $result = true;
         foreach (array_keys($this->fetchRegistry()) as $key) {
-            \XLite\Core\Database::getCacheDriver()->delete($key);
+            $result = $result && \XLite\Core\Database::getCacheDriver()->delete($key);
         }
 
         $this->saveRegistry(array());
+
+        return $result;
     }
 
     /**

@@ -54,7 +54,7 @@ XLite\Model\Category:
     translations:
       - code: en
         name: 'Catalog'
-        description: '<div style="margin: 0 0 1em;"><img src="{{WEB_LC_ROOT}}public/store-index-banner.jpg" alt="X-Cart Based Store" /></div><p style="text-align: justify;">This demo online store is powered by X-Cart shopping cart software. With X-Cart you can setup a web store having all of the features this demo has.</p><p style="text-align: justify;"><strong>This service is for demo purposes only.</strong> No real products. No real prices. No real charges. This is a demonstration. Please do not submit real credit card information.</p>'
+        description: '<p style="text-align: justify;">This demo online store is powered by X-Cart shopping cart software. With X-Cart you can setup a web store having all of the features this demo has.</p><p style="text-align: justify;"><strong>This service is for demo purposes only.</strong> No real products. No real prices. No real charges. This is a demonstration. Please do not submit real credit card information.</p>'
         meta_tags: ''
         meta_desc: ''
         meta_title: ''
@@ -158,20 +158,21 @@ XLite\Model\Config:
   - { name: shop_closed, category: Internal, translations: [{ code: en, option_name: 'Close the shop temporarily (not available in Demo store)' }] }
   - { name: customer_security, category: Security, value: N }
   - { name: location_address, category: Company, value: '*Your company address*' }
-  - { name: location_state, category: Company, value: '591' }
+  - { name: location_state, category: Company, value: 591 }
   - { name: location_city, category: Company, value: 'New York' }
   - { name: location_zipcode, category: Company, value: '10001' }
   - { name: company_name, category: Company, value: '*Your company name*' }
   - { name: company_phone, category: Company, value: '(555) 555-5555' }
   - { name: company_fax, category: Company, value: '(555) 555-5555' }
-  - { name: anonymous_state, category: Shipping, value: '562' }
+  - { name: anonymous_state, category: Shipping, value: 562 }
   - { name: anonymous_zipcode, category: Shipping, value: '90001' }
   - { name: anonymous_city, category: Shipping, value: 'Los Angeles' }
   - { name: time_zone, category: General, value: Europe/Moscow }
-  - { name: order_number_counter, category: General, value: 9 }
+  - { name: order_number_counter, category: General, value: 10 }
   - { name: doSearch, category: QSL\CloudSearch, value: N}
 
 XLite\Module\CDev\SimpleCMS\Model\Menu:
+  - { link: '{bestsellers}', visibleFor: AL, type: P, position: 290, enabled: 1, translations: [{ code: en, name: Bestsellers },{ code: ru, name: Лидеры продаж }] }
   - { link: '{sale}', visibleFor: AL, type: P, position: 300, enabled: 1, translations: [{ code: en, name: Sale },{ code: ru, name: Распродажа }] }
   - { link: '{new arrivals}', visibleFor: AL, type: P, position: 400, enabled: 1, translations: [{ code: en, name: New arrivals },{ code: ru, name: Новинки }] }
   - { link: '{coming soon}', visibleFor: AL, type: P, position: 500, enabled: 1, translations: [{ code: en, name: Coming soon },{ code: ru, name: 'Скоро в продаже' }] }
@@ -186,3 +187,12 @@ XLite\Model\Shipping\Method:
   - { processor: offline, added: true, enabled: true, tableType: S, position: 10, translations: [{ code: en, name: Courier, deliveryTime: 2 - 4 days }, { code: ru, name: Доставка курьером, deliveryTime: 2 - 4 дня }], shipping_markups: [{ zone: { zone_name: United States }, min_weight: 0, max_weight: 999999999, min_total: 0, max_total: 999999999, min_items: 0, max_items: 999999999, markup_flat: 2.45, markup_percent: 1.5, markup_per_item: 0, markup_per_weight: 0 }, { zone: { zone_name: United States & Canada }, min_weight: 0, max_weight: 999999999, min_total: 0, max_total: 999999999, min_items: 0, max_items: 999999999, markup_flat: 2.5, markup_percent: 1.5, markup_per_item: 0, markup_per_weight: 0 }, { zone: { zone_name: All Addresses (default zone) }, min_weight: 0, max_weight: 999999999, min_total: 0, max_total: 999999999, min_items: 0, max_items: 999999999, markup_flat: 5.5, markup_percent: 1.75, markup_per_item: 0, markup_per_weight: 0 }] }
   - { processor: offline, added: true, enabled: true, tableType: S, position: 20, translations: [{ code: en, name: Local shipping, deliveryTime: up to one week }, { code: ru, name: Местная доставка, deliveryTime: до одной недели }], shipping_markups: [{ zone: { zone_name: United States }, min_weight: 0, max_weight: 999999999, min_total: 0, max_total: 999999999, min_items: 0, max_items: 999999999, markup_flat: 3.45, markup_percent: 1.75, markup_per_item: 0, markup_per_weight: 0 }, { zone: { zone_name: United States & Canada }, min_weight: 0, max_weight: 999999999, min_total: 0, max_total: 999999999, min_items: 0, max_items: 999999999, markup_flat: 3.5, markup_percent: 1.75, markup_per_item: 0, markup_per_weight: 0 }, { zone: { zone_name: All Addresses (default zone) }, min_weight: 0, max_weight: 999999999, min_total: 0, max_total: 999999999, min_items: 0, max_items: 999999999, markup_flat: 6.5, markup_percent: 1.85, markup_per_item: 0, markup_per_weight: 0 }] }
 
+XLite\Model\BannerRotationSlide:
+  - enabled: true
+    link: 'cart.php?target=category&category_id=3'
+    position: 0
+    image: { path: demo_banner_1.jpg, mime: image/jpeg, width: 1710, height: 590, alt: 'Apparel' }
+  - enabled: true
+    link: 'cart.php?target=category&category_id=2'
+    position: 0
+    image: { path: demo_banner_3.jpg, mime: image/jpeg, width: 1710, height: 590, alt: 'Toys' }

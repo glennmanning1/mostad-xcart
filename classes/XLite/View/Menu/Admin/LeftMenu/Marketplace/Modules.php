@@ -58,7 +58,7 @@ class Modules extends \XLite\View\Menu\Admin\LeftMenu\ANodeNotification
      */
     public function isUpdated()
     {
-        return $this->getLastReedTimestamp() < $this->getLastUpdateTimestamp();
+        return $this->getLastReadTimestamp() < $this->getLastUpdateTimestamp();
     }
 
     /**
@@ -180,21 +180,9 @@ class Modules extends \XLite\View\Menu\Admin\LeftMenu\ANodeNotification
     protected function getModuleURL($moduleName)
     {
         list($author, $module) = explode('-', $moduleName);
-        list(, $limit) = $this->getWidget(array(), '\XLite\View\Pager\Admin\Module\Install')
-            ->getLimitCondition()->limit;
 
-        $pageId = \XLite\Core\Database::getRepo('XLite\Model\Module')->getMarketplacePageId($author, $module, $limit);
-
-        return $this->buildURL(
-            'addons_list_marketplace',
-            '',
-            array(
-                'clearCnd'                                      => 1,
-                'clearSearch'                                   => 1,
-                \XLite\View\Pager\APager::PARAM_PAGE_ID         => $pageId,
-                \XLite\View\ItemsList\AItemsList::PARAM_SORT_BY => \XLite\View\ItemsList\Module\AModule::SORT_OPT_ALPHA,
-            )
-        ) . '#' . $module;
+        return \XLite\Core\Database::getRepo('XLite\Model\Module')
+            ->getMarketplaceUrlByName($author, $module);
     }
 
     /**
@@ -222,7 +210,7 @@ class Modules extends \XLite\View\Menu\Admin\LeftMenu\ANodeNotification
      */
     protected function countMessages($carry, $item)
     {
-        if ($item['date'] >= $this->getLastReedTimestamp()) {
+        if ($item['date'] >= $this->getLastReadTimestamp()) {
             $carry += 1;
         }
 

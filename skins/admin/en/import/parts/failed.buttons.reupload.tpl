@@ -11,4 +11,4 @@
  * @ListChild (list="import.failed.buttons", weight="100")
  *}
 
-<widget class="XLite\View\Button\Link" location="{buildURL(#import#,#reset#)}" label="{t(#Reupload files#)}" style="main-button" />
+<widget class="XLite\View\Button\Link" location="{buildURL(getImportTarget(),#reset#)}" label="{t(#Reupload files#)}" style="main-button" />

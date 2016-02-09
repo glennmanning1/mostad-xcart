@@ -11,6 +11,6 @@
  * @ListChild (list="invoice.base.totals", weight="100")
  *}
 <li style="list-style: none;color: #000000;padding: 0;">
-  <div style="display: inline-block;color: #5a5a5a;">{t(#Subtotal#)}:</div>
-  <div style="display: inline-block;color: #5a5a5a;">{getOrderSubtotal():h}</div>
+  <div style="display: inline;color: #5a5a5a;">{t(#Subtotal#)}:</div>
+  <div style="display: inline;color: #5a5a5a;padding-left: 6px;">{getOrderSubtotal():h}</div>
 </li>

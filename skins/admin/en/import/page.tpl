@@ -10,5 +10,6 @@
  *}
 
 <div class="import-page">
+  {displayCommentedData(getImportCommentedData())}
   <widget class="{getInnerWidget()}" />
 </div>

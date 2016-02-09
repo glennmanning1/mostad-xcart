@@ -232,7 +232,23 @@ class NewsMessage extends \XLite\Model\Repo\Base\I18n
         }
     }
 
-   /**
+    /**
+    * Prepare next and previous news query
+    *
+    * @param \XLite\Module\XC\News\Model\NewsMessage $model Model to prepare
+    *
+    * @return \Doctrine\ORM\QueryBuilder
+    */
+    protected function defineSiblingsByNews($model)
+    {
+        return $this->createQueryBuilder()
+            ->andWhere('n.id != :current')
+            ->setParameter('date', $model->getDate())
+            ->setParameter('current', $model->getId())
+            ->setMaxResults(1);
+    }
+
+    /**
     * Prepare next and previous news
     *
     * @param \XLite\Module\XC\News\Model\NewsMessage $model Model to prepare
@@ -241,9 +257,28 @@ class NewsMessage extends \XLite\Model\Repo\Base\I18n
     */
     public function findSiblingsByNews(\XLite\Module\XC\News\Model\NewsMessage $model)
     {
+        $or = new \Doctrine\ORM\Query\Expr\Orx();
+        $or->add('n.date < :date');
+        $or->add('n.id < :current AND n.date = :date');
+        $previous = $this->defineSiblingsByNews($model)
+            ->orderBy('n.id', 'desc')
+            ->addOrderBy('n.date', 'asc')
+            ->andWhere($or)
+            ->getSingleResult();
+
+        $or = new \Doctrine\ORM\Query\Expr\Orx();
+        $or->add('n.date > :date');
+        $or->add('n.id > :current AND n.date = :date');
+
+        $next = $this->defineSiblingsByNews($model)
+            ->orderBy('n.id', 'asc')
+            ->addOrderBy('n.date', 'desc')
+            ->andWhere($or)
+            ->getSingleResult();
+
         return array(
-            $this->createQueryBuilder()->andWhere('n.date < :date')->setParameter('date', $model->getDate())->setMaxResults(1)->getSingleResult(),
-            $this->createQueryBuilder()->andWhere('n.date > :date')->setParameter('date', $model->getDate())->setMaxResults(1)->getSingleResult()
+            $previous,
+            $next
         );
     }
 

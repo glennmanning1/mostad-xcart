@@ -11,27 +11,27 @@
 <ul class="form clearfix">
 
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[routing_number]" label="{t(#ABA routing number#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[check_routing_number]" label="{t(#ABA routing number#)}" required="true" />
   </li>
 
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[acct_number]" label="{t(#Bank Account Number#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[check_acct_number]" label="{t(#Bank Account Number#)}" required="true" />
   </li>
 
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Select\EcheckType" fieldName="payment[type]" label="{t(#Type of Account#)}" required="true" value="{cart.details.ch_type}" />
+    <widget class="XLite\View\FormField\Select\EcheckType" fieldName="payment[check_type]" label="{t(#Type of Account#)}" required="true" value="{cart.details.ch_type}" />
   </li>
 
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[bank_name]" label="{t(#Name of bank at which account is maintained#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[check_bank_name]" label="{t(#Name of bank at which account is maintained#)}" required="true" />
   </li>
 
   <li class="clearfix">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[acct_name]" label="{t(#Name under which the account is maintained at the bank#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[check_acct_name]" label="{t(#Name under which the account is maintained at the bank#)}" required="true" />
   </li>
 
   <li class="clearfix" IF="processor.isDisplayNumber()">
-    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[number]" label="{t(#Check number#)}" required="true" />
+    <widget class="XLite\View\FormField\Input\Text" fieldName="payment[check_number]" label="{t(#Check number#)}" required="true" />
   </li>
 
 </ul>

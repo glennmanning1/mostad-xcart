@@ -73,7 +73,9 @@ class AddonsListMarketplace extends \XLite\Controller\Admin\Base\AddonsList
      */
     public function getTitle()
     {
-        return static::t('Modules Marketplace');
+        return $this->getModuleId()
+            ? $this->getModuleName($this->getModuleId())
+            : static::t('Modules Marketplace');
     }
 
     /**
@@ -107,7 +109,7 @@ class AddonsListMarketplace extends \XLite\Controller\Admin\Base\AddonsList
      */
     public function getModulesToInstall()
     {
-        \XLite\Core\Session::getInstance()->modulesToInstall = (!\XLite\Core\Session::getInstance()->modulesToInstall)
+        \XLite\Core\Session::getInstance()->modulesToInstall = (!\XLite\Core\Session::getInstance()->modulesToInstall) || $this->getModuleId()
             ? array()
             : array_filter(
                 \XLite\Core\Session::getInstance()->modulesToInstall,
@@ -172,6 +174,27 @@ class AddonsListMarketplace extends \XLite\Controller\Admin\Base\AddonsList
     public function getTagValue()
     {
         return '';
+    }
+
+    /**
+     * Get module id from request
+     *
+     * @return integer
+     */
+    public function getModuleId()
+    {
+        $moduleID = \XLite\Core\Request::getInstance()->moduleID;
+        $moduleName = \XLite\Core\Request::getInstance()->moduleName;
+
+        $repo = \XLite\Core\Database::getRepo('XLite\Model\Module');
+        if (!$moduleID && $moduleName && strpos($moduleName, '\\')) {
+            $module = $repo->findOneByModuleName($moduleName, true);
+            $moduleID = $module ? $module->getModuleId() : null;
+        }
+
+        return $moduleID && $repo->find($moduleID)
+            ? $moduleID
+            : null;
     }
 
     /**

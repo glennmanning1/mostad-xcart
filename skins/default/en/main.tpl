@@ -10,7 +10,10 @@
  *}
 
 <div IF="isDeveloperMode()" id="profiler-messages"></div>
-<widget class="XLite\View\OperateAsUserNotification"/>
+
+{*<widget template="slidebar.tpl" />*}
+<list name="layout.slidebar" />
+
 
 <div id="page-wrapper">
   <div id="page" class="{if:isForceChangePassword()}force-change-password-page{end:}">

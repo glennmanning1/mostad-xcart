@@ -11,16 +11,77 @@
 
 var configTinyMCE;
 
-jQuery(function() {
+function TinyMCE(base)
+{
+  this.callSupermethod('constructor', arguments);
+  var self = this;
+  jQuery('textarea.tinymce').each(function() {
+    var id = $(this).attr('id');
+    if (id) {
+      self.initialization('#' + id);
+      this.commonController.bind(
+        'local.validate',
+        _.bind(self.specialValidate, self, id)
+      );
+    } else {
+      self.initialization('textarea.tinymce');
+    }
+  });
+}
 
+extend(TinyMCE, CommonElement);
+
+TinyMCE.prototype.isRequired = function (field)
+{
+  var rulesParsing = field.attr('class');
+  var getRules = /validate\[(.*)\]/.exec(rulesParsing);
+
+  if (!getRules) {
+    return false;
+  }
+
+  var str = getRules[1];
+  var rules = str.split(/\[|,|\]/);
+  console.log(rules.indexOf('required'));
+  return -1 !== rules.indexOf('required');
+}
+
+TinyMCE.prototype.specialValidate = function(id, event, state)
+{
+  if (!this.isRequired(jQuery('#' + id))) {
+    return;
+  };
+  var elem = tinymce ? tinymce.get(id) : null;
+
+  if (elem && elem.getContent() === '') {
+    var name = '';
+    var label = jQuery('label[for=' + id + ']');
+    if (label && label.length > 0) {
+      name = label.attr('title');
+    } else {
+      name = id;
+    }
+    core.trigger(
+      'message',
+      {
+        type: 'error',
+        message: core.t('The X field is empty', {name: name})
+      }
+    );
+    state.result = false;
+  }
+};
+
+TinyMCE.prototype.initialization = function(selector)
+{
   // Retrive configuration for the tinyMCE object from the PHP settings
-  configTinyMCE = core.getCommentedData(jQuery('textarea.tinymce').eq(0).parent().eq(0));
+  configTinyMCE = core.getCommentedData(jQuery(selector).eq(0).parent().eq(0));
 
   tinymce.suffix = '.min';
   tinymce.base = 'skins/admin/en/modules/CDev/TinyMCE/js/tinymce';
 
   tinymce.init({
-    selector: "textarea.tinymce",
+    selector: selector,
     content_css: configTinyMCE.contentCSS,
     body_class: configTinyMCE.bodyClass,
     resize: "both",
@@ -44,4 +105,6 @@ jQuery(function() {
       });
     }
   });
-});
+};
+
+core.autoload('TinyMCE');

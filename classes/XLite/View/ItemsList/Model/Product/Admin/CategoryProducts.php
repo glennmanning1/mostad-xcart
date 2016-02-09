@@ -132,4 +132,14 @@ class CategoryProducts extends \XLite\View\ItemsList\Model\Product\Admin\Search
 
         return $this->commonParams;
     }
+
+    /**
+     * Get panel class
+     *
+     * @return \XLite\View\Base\FormStickyPanel
+     */
+    protected function getPanelClass()
+    {
+        return 'XLite\View\StickyPanel\Product\Admin\CategoryProducts';
+    }
 }

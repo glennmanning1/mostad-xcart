@@ -42,6 +42,16 @@ class ModelOrderItemSelector extends \XLite\Controller\Admin\ModelProductSelecto
     protected $orderItem;
 
     /**
+     * Check ACL permissions
+     *
+     * @return boolean
+     */
+    public function checkACL()
+    {
+        return parent::checkACL() || \XLite\Core\Auth::getInstance()->isPermissionAllowed('manage orders');
+    }
+
+    /**
      * Define specific data structure which will be sent in the triggering event (model.selected)
      *
      * @param mixed $item Model item

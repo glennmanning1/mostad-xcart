@@ -226,6 +226,22 @@ class ProductsReturn extends \XLite\View\ItemsList\Model\Table
 
             $value = $this->getParam($requestParam);
 
+            if (static::PARAM_DATE_RANGE === $requestParam && is_array($value)) {
+                foreach ($value as $i => $date) {
+                    if (is_string($date) && false !== strtotime($date)) {
+                        $value[$i] = strtotime($date);
+                    }
+                }
+
+            } elseif (is_string($value)) {
+                $value = trim($value);
+                if (static::PARAM_DATE_RANGE === $requestParam && $value) {
+                    $value = \XLite\View\FormField\Input\Text\DateRange::convertToArray($value);
+                }
+            }
+
+            $result->$modelParam = $value;
+
             if (
                 isset($value)
                 && '' !== $value

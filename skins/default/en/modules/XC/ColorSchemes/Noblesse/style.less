@@ -63,6 +63,12 @@
 @navtab-bgcolor-normal: @base-gradient-end-color;
 @navtab-bgcolor-normal-hover: @base-gradient-start-color;
 
+@mobile-menu-bg: #f5f5f5;
+@mobile-menu-icons-color: #707070;
+@mobile-menu-minicart-color: #d80611;
+@slidebar-header-color: #707070;
+@slidebar-back-arrow-color: #707070;
+
 /* Noblesse styles */
 
 #main-wrapper {
@@ -86,7 +92,7 @@ h6 {
   font-family: @font-family-sans-serif;
 }
 
-#header-area .desktop-header a {
+#header-area .desktop-header a:not(.cart):not(.checkout) {
   color: #8aa1b3;
 }
 
@@ -195,11 +201,6 @@ h6 {
 }
 
 .mobile_header {
-  ul.nav-pills {
-    background: @navbar-inverse-bg;
-    height: 41px;
-  }
-
   a {
     color: @navbar-inverse-link-color;
     &:hover{
@@ -214,11 +215,10 @@ h6 {
 
 .lc-minicart {
   color: #ffffff;
-  background-image: url("@{customer-skin}/modules/XC/ColorSchemes/Noblesse/images/small_bag.png");
 }
 
 .lc-minicart .minicart-items-number {
-  color: @brand-primary !important;
+  color: @mobile-menu-minicart-color !important;
 }
 
 #header .block .content,
@@ -291,7 +291,7 @@ h6 {
   }
 
   body #logo {
-    padding: 30px 0 0 0;
+    padding: 55px 0 0 0;
     margin-bottom: 10px;
     img {
       margin: 0;

@@ -42,6 +42,19 @@ class UpgradeWave extends \XLite\View\FormField\Select\Regular
     protected static $waves = null;
 
     /**
+     * Return CSS files list
+     *
+     * @return array
+     */
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+        $list[] = 'form_field/select_upgrade_wave.css';
+
+        return $list;
+    }
+
+    /**
      * Get current wave value
      *
      * @return string

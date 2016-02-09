@@ -68,18 +68,33 @@ class Country extends \XLite\Model\Repo\Base\I18n
     protected function defineCacheCells()
     {
         $list = parent::defineCacheCells();
+        $languages = \XLite\Core\Database::getRepo('XLite\Model\Language')->findAllLanguages();
 
-        $list['all'] = array(
-            self::RELATION_CACHE_CELL => array(
-                '\XLite\Model\State',
-            ),
+        $codes = array_map(
+            function($lng) {
+                return $lng->getCode();
+            },
+            $languages
         );
-        $list['enabled'] = array(
-            self::RELATION_CACHE_CELL => array(
-                '\XLite\Model\State',
-            ),
-        );
+        foreach ($codes as $code) {
+            $list['all_'.$code] = array(
+                self::RELATION_CACHE_CELL => array(
+                    '\XLite\Model\State',
+                ),
+            );
+            $list['enabled_'.$code] = array(
+                self::RELATION_CACHE_CELL => array(
+                    '\XLite\Model\State',
+                ),
+            );
+        }
+
         $list['states'] = array(
+            self::RELATION_CACHE_CELL => array(
+                '\XLite\Model\State',
+            ),
+        );
+        $list['statesGrouped'] = array(
             self::RELATION_CACHE_CELL => array(
                 '\XLite\Model\State',
             ),

@@ -124,7 +124,7 @@ $modules = array (
                 'images_to_fs'
             )
         ),
-	array( // 5
+	array( // 4
 			"name"          => 'install_dirs',
 			"comment"       => 'Setting up directories',
             "auth_required" => true,
@@ -132,7 +132,7 @@ $modules = array (
 			"js_next"       => 0,
             "remove_params" => array()
         ),
-	array( // 6
+	array( // 5
 			"name"          => 'install_cache',
 			"comment"       => 'Building cache',
             "auth_required" => true,
@@ -140,7 +140,7 @@ $modules = array (
 			"js_next"       => 0,
             "remove_params" => array()
 		),
-	array( // 7
+	array( // 6
 			"name"          => 'install_done',
 			"comment"       => 'Installation complete',
             "auth_required" => true,
@@ -177,7 +177,7 @@ if (isset($_GET['target']) && $_GET['target'] == 'install') {
     setTimeout('refresh()', 1000);
 </script>
 
-<body>
+<body style="padding-top: 20px;">
 
 <?php
 
@@ -408,17 +408,33 @@ function processCacheRebuildFailure(stepData)
     }
 }
 
+</script>
+
+<!-- GA -->
+<script type="text/javascript">
+
+var gaIsCalled = false;
+
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+ga('set', 'dimension1', '<?php print phpversion(); ?>');
+ga('set', 'dimension2', '<?php print LC_VERSION; ?>');
+ga('set', 'dimension3', '<?php print XLITE_EDITION_LNG; ?>');
+
 ga('create', '<?php print constant('XC_INSTALL_GA'); ?>', 'auto');
+
 ga('send', 'pageview', {
-    'title': '<?php printf ('X-Cart v.%s Installation Wizard', LC_VERSION); ?>'
+    'title': '<?php printf ('X-Cart v.%s Installation Wizard', LC_VERSION); ?>',
+    'hitCallback': function() {
+        gaIsCalled = true;
+    }
 });
 
 </script>
+<!-- GA -->
 
 <?php
 
@@ -435,16 +451,24 @@ if ('cfg_install_db' == $modules[$current]['name'] && isset($_POST['cfg_install_
     $stepGASuffix = '';
 }
 
-// Get GA event category name
-$stepGA = in_array($gaStepNumber, $repeatedSteps) ? 'step-repeat' : 'step';
+// GA event category name
+$stepGA = 'step';
 
+// GA event action
+$stepGAAction = sprintf('step-%d-%s%s', $current + 1, $modules[$current]['name'], $stepGASuffix);
+
+// GA event label
+$stepGALabel = sprintf('Step %d: %s%s', $current + 1, $modules[$current]['comment'], $stepGASuffix);
+
+// GA event value
 $gaValue = in_array($modules[$current]['name'], array('default', 'install_done')) ? 1 : 0;
 
-ga_event(
-    $stepGA,
-    sprintf('step-%d-%s%s', $current + 1, $modules[$current]['name'], $stepGASuffix),
-    sprintf('Step %d: %s%s', $current + 1, $modules[$current]['comment'], $stepGASuffix),
-    $gaValue
+$stepGAdata = array(
+    'hitType' => 'event',
+    'eventCategory' => $stepGA,
+    'eventAction' => $stepGAAction,
+    'eventLabel' => $stepGALabel,
+    'eventValue' => $gaValue,
 );
 
 // Update passed steps list
@@ -455,6 +479,7 @@ $passedSteps = implode(',', $repeatedSteps);
 ?>
 
 <script type="text/javascript">
+   ga('send', <?php print json_encode($stepGAdata); ?>);
    document.cookie = 'passed_steps=<?php echo $passedSteps; ?>';
 </script>
 
@@ -462,7 +487,7 @@ $passedSteps = implode(',', $repeatedSteps);
 
 <body>
 
-<div id="page-container" class="install-page">
+<div id="page-container" class="install-page <?php echo $modules[$current]['name']; ?>">
 
   <div id="header">
 
@@ -494,6 +519,13 @@ foreach ($rows as $row) {
 
     </ul>
 
+  </div>
+
+  <div class="install-help-box">
+    <img src="skins/admin/en/images/icon-install-help.svg" />
+    <div>
+      <?php echo xtr('Having trouble installing X-Cart? Check out our installation guide'); ?>
+    </div>
   </div>
 
 <noscript>
@@ -573,16 +605,26 @@ if (isset($autoPost)) {
     <div><?php echo xtr('Redirecting to the next step...'); ?></div>
 
     <script type="text/javascript">
-    document.ifrm.submit();
+        setTimeout(autoSubmitPageForm, 500);
+        var autoSubmitTTL = 5000;
+        function autoSubmitPageForm() {
+            if (gaIsCalled || 0 >= autoSubmitTTL) {
+                document.ifrm.submit();
+            } else {
+                autoSubmitTTL = autoSubmitTTL - 500;
+                setTimeout(autoSubmitPageForm, 500);
+            }
+        }
     </script>
 
 <?php
 
 } else {
 
+    $displayHelpButtonclass = (isset($displayHelpButton) && true == $displayHelpButton) ? 'display-help' : '';
 ?>
 
-<table class="buttons-bar" align="center" cellspacing="20">
+<table class="buttons-bar <?php echo $displayHelpButtonclass; ?>" align="center" cellspacing="20">
 
 <tr>
 
@@ -614,11 +656,20 @@ if (isset($autoPost)) {
 
     }
 
+    if (isset($displayHelpButton) && true == $displayHelpButton) {
 ?>
+
+<td>
+  <input type="button" class="btn btn-warning btn-lg" value="<?php echo xtr('Send a report'); ?>" onclick="javascript: document.getElementById('report-layer').style.display = 'block'; ga('send', 'event', 'button', 'click', 'send report popup');" />
+</td>
+
+<?php } else { ?>
 
 <td>
   <input id="next-button" name="next_button" type="submit" class="btn btn-warning btn-lg" value="<?php echo xtr('Next'); ?>"<?php echo ($error || $current == 1 ? ' disabled="disabled"' : ''); ?> onclick="javascript: if (step_next()) { ifrm.submit(); return true; } else { return false; }" />
 </td>
+
+<?php } ?>
 
 </tr>
 
@@ -650,7 +701,7 @@ if (isset($autoPost)) {
 
 <?php
 
-if (!in_array($modules[$current]['name'], array('default', 'install_done'))) {
+if (!empty($modules[$current]) && !in_array($modules[$current]['name'], array('default', 'install_done'))) {
     include_once LC_DIR . '/Includes/install/templates/step1_report.tpl.php';
 }
 

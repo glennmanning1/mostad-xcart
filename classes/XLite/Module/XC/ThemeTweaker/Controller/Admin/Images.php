@@ -66,7 +66,22 @@ class Images extends \XLite\Controller\Admin\Images implements \XLite\Base\IDeco
 
             if (\Includes\Utils\FileManager::isDirWriteable($dir)) {
                 foreach ($_FILES['new_images']['name'] as $i => $data) {
-                    \Includes\Utils\FileManager::moveUploadedFileByMultiple('new_images', $i, $dir);
+                    $tmpPath = $_FILES['new_images']['tmp_name'][$i];
+
+                    if (!$tmpPath) {
+                        continue;
+                    }
+
+                    if (\Includes\Utils\FileManager::isImage($tmpPath)
+                        && \Includes\Utils\FileManager::isImageExtension($data)
+                    ) {
+                        \Includes\Utils\FileManager::moveUploadedFileByMultiple('new_images', $i, $dir);
+                    } else {
+                        \XLite\Core\TopMessage::addError(
+                            'The "{{file}}" file was not uploaded',
+                            array('file' => $data)
+                        );
+                    }
                 }
 
             } else {
@@ -85,8 +100,8 @@ class Images extends \XLite\Controller\Admin\Images implements \XLite\Base\IDeco
             $delete
             && is_array($delete)
         ) {
-            foreach ($delete as $file => $del) {
-                if ($del) {
+            foreach ($delete as $key => $file) {
+                if ($file) {
                     \Includes\Utils\FileManager::deleteFile($dir . $file);
                 }
             }

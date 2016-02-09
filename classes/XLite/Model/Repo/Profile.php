@@ -46,6 +46,7 @@ class Profile extends \XLite\Model\Repo\ARepo
     const SEARCH_LANGUAGE       = 'language';
     const SEARCH_PATTERN        = 'pattern';
     const SEARCH_LOGIN          = 'login';
+    const SEARCH_AND_LOGIN      = 'andLogin';
     const SEARCH_PHONE          = 'phone';
     const SEARCH_COUNTRY        = 'country';
     const SEARCH_STATE          = 'state';
@@ -102,6 +103,24 @@ class Profile extends \XLite\Model\Repo\ARepo
     protected $currentSearchCnd;
 
     /**
+     * Create a new QueryBuilder instance that is prepopulated for this entity name
+     *
+     * @param string $alias   Table alias OPTIONAL
+     * @param string $indexBy The index for the from. OPTIONAL
+     * @param string $code    Language code OPTIONAL
+     *
+     * @return \XLite\Model\QueryBuilder\AQueryBuilder
+     */
+    public function createQueryBuilder($alias = null, $indexBy = null, $code = null)
+    {
+        $queryBuilder = parent::createQueryBuilder($alias, $indexBy, $code);
+
+        $queryBuilder->linkLeft('p.addresses');
+
+        return $queryBuilder;
+    }
+
+    /**
      * Common search
      *
      * @param \XLite\Core\CommonCell $cnd       Search condition
@@ -111,10 +130,7 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     public function search(\XLite\Core\CommonCell $cnd, $countOnly = false)
     {
-        $queryBuilder = $this->createQueryBuilder('p')
-            ->leftJoin('p.addresses', 'addresses')
-            ->leftJoin('addresses.country', 'country')
-            ->leftJoin('addresses.state', 'state');
+        $queryBuilder = $this->createQueryBuilder('p');
 
         $this->currentSearchCnd = $this->preprocessCnd($cnd);
 
@@ -333,6 +349,7 @@ class Profile extends \XLite\Model\Repo\ARepo
             static::SEARCH_LANGUAGE,
             static::SEARCH_PATTERN,
             static::SEARCH_LOGIN,
+            static::SEARCH_AND_LOGIN,
             static::SEARCH_PHONE,
             static::SEARCH_COUNTRY,
             static::SEARCH_STATE,
@@ -517,7 +534,24 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function prepareCndLogin(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
-        $queryBuilder->bindOrCondition('p.login', '%' . $value . '%', 'LIKE');
+        if ($value) {
+            $queryBuilder->bindOrCondition('p.login', '%' . $value . '%', 'LIKE');
+        }
+    }
+
+    /**
+     * prepareCndLogin
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder QueryBuilder instance
+     * @param mixed                      $value        Searchable value
+     *
+     * @return void
+     */
+    protected function prepareCndAndLogin(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
+    {
+        if ($value) {
+            $queryBuilder->bindAndCondition('p.login', '%' . $value . '%', 'LIKE');
+        }
     }
 
     /**
@@ -530,7 +564,9 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function prepareCndCountry(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
-        $queryBuilder->bindAndCondition('country.code', $value);
+        $queryBuilder
+            ->leftJoin('addresses.country', 'country')
+            ->bindAndCondition('country.code', $value);
     }
 
     /**
@@ -543,8 +579,10 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function prepareCndState(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
-        if (!empty($this->currentSearchCnd->{static::SEARCH_COUNTRY})) {
-            $queryBuilder->bindAndCondition('state.state_id', $value);
+        if (!empty($this->currentSearchCnd->{static::SEARCH_COUNTRY}) && $value) {
+            $queryBuilder
+                ->leftJoin('addresses.state', 'state')
+                ->bindAndCondition('state.state_id', $value);
         }
     }
 
@@ -558,7 +596,7 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function prepareCndCustomState(\Doctrine\ORM\QueryBuilder $queryBuilder, $value)
     {
-        if (!empty($this->currentSearchCnd->{static::SEARCH_COUNTRY})) {
+        if (!empty($this->currentSearchCnd->{static::SEARCH_COUNTRY}) && $value) {
             $queryBuilder->bindFieldAndCondition('custom_state', $value);
         }
     }
@@ -738,7 +776,8 @@ class Profile extends \XLite\Model\Repo\ARepo
         $addressField = \XLite\Core\Database::getRepo('XLite\Model\AddressField')
             ->findOneBy(array('serviceName' => $fieldName));
 
-        $queryBuilder->leftJoin(
+        $queryBuilder
+            ->leftJoin(
             'addresses.addressFields',
             'orderby_field_value_' . $fieldName,
             \Doctrine\ORM\Query\Expr\Join::WITH,
@@ -758,7 +797,8 @@ class Profile extends \XLite\Model\Repo\ARepo
         $this->prepareOrderByAddressField($queryBuilder, 'firstname');
         $this->prepareOrderByAddressField($queryBuilder, 'lastname');
 
-        $queryBuilder->addSelect(
+        $queryBuilder
+            ->addSelect(
             'CONCAT(CONCAT(orderby_field_value_firstname.value, \' \'),
             orderby_field_value_lastname.value) as fullname'
         );
@@ -1073,7 +1113,7 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function defineIterateByCustomersQuery()
     {
-        return $this->createQueryBuilder()
+        return $this->createPureQueryBuilder()
             ->bindCustomer();
     }
 
@@ -1086,8 +1126,14 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function defineCountForExportQuery()
     {
-        return parent::defineCountForExportQuery()
-            ->bindCustomer();
+        $result = parent::defineCountForExportQuery()
+                        ->bindVisible();
+
+        if (!isset($this->currentSearchCnd)) {
+            $result->bindCustomer();
+        }
+
+        return $result;
     }
 
     /**
@@ -1099,8 +1145,14 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function defineExportIteratorQueryBuilder($position)
     {
-        return parent::defineExportIteratorQueryBuilder($position)
-            ->bindCustomer();
+        $result = parent::defineExportIteratorQueryBuilder($position)
+                        ->bindVisible();
+
+        if (!isset($this->currentSearchCnd)) {
+            $result->bindCustomer();
+        }
+
+        return $result;
     }
 
     // }}}
@@ -1149,8 +1201,7 @@ class Profile extends \XLite\Model\Repo\ARepo
      */
     protected function defineFindProfilesByTerm($term, $limit = null)
     {
-        $queryBuilder = $this->createQueryBuilder('p')
-            ->leftJoin('p.addresses', 'addresses');
+        $queryBuilder = $this->createQueryBuilder('p');
 
         $queryBuilder->bindVisible();
 

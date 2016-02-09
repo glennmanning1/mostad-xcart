@@ -157,6 +157,26 @@ class Config extends \XLite\Model\Repo\Base\I18n
     }
 
     /**
+     * Find origin address options
+     *
+     * @return array
+     */
+    public function findOriginOptions()
+    {
+        $result = $this->getByCategory('Company', true, true);
+
+        if ($result) {
+            foreach ($result as $k => $v) {
+                if (false === strpos($v->getName(), 'origin_')) {
+                    unset($result[$k]);
+                }
+            }
+        }
+
+        return $result ?: array();
+    }
+
+    /**
      * Return true if option is visible
      *
      * @param \XLite\Model\Config $option Option object
@@ -173,7 +193,9 @@ class Config extends \XLite\Model\Repo\Base\I18n
             $result = $this->$method();
         }
 
-        return $result;
+        $notOrigin = (false === strpos($option->getName(), 'origin_'));
+
+        return $result && $notOrigin;
     }
 
     /**

@@ -108,7 +108,9 @@ class Completed extends \XLite\View\AView
     {
         $result = array();
 
-        $processors = \XLite\Logic\Import\Importer::getInstance()->getProcessors();
+        $processors = $this->getImporter()
+            ? $this->getImporter()->getProcessors()
+            : \XLite\Logic\Import\Importer::getInstance()->getProcessors();
 
         foreach ($processors as $p) {
             $result[] = $p->getFileNameFormat();
@@ -128,7 +130,9 @@ class Completed extends \XLite\View\AView
     {
         $result = false;
 
-        $processors = \XLite\Logic\Import\Importer::getInstance()->getProcessors();
+        $processors = $this->getImporter()
+            ? $this->getImporter()->getProcessors()
+            : \XLite\Logic\Import\Importer::getInstance()->getProcessors();
 
         foreach ($processors as $p) {
             if ($p->getFiles()) {

@@ -45,8 +45,7 @@ class PickupType extends \XLite\View\FormField\Select\Regular
             '01' => static::t('Daily Pickup'),
             '03' => static::t('Customer counter'),
             '06' => static::t('One time pickup'),
-            '07' => static::t('On call air'),
-            '11' => static::t('Suggested retail rates'),
+            '07' => static::t('On call air'), // Will be ignored when negotiated rates are requested
             '19' => static::t('Letter center'),
             '20' => static::t('Air service center'),
         );

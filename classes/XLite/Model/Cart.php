@@ -72,23 +72,7 @@ class Cart extends \XLite\Model\Order
         if (!isset(static::$instances[$className])) {
             $auth = \XLite\Core\Auth::getInstance();
 
-            if ($auth->isLogged()) {
-                // Try to find cart of logged in user
-                $cart = \XLite\Core\Database::getRepo('XLite\Model\Cart')->findOneByProfile($auth->getProfile());
-            }
-
-            if (empty($cart)) {
-                // Try to get cart from session
-                $orderId = \XLite\Core\Session::getInstance()->order_id;
-                if ($orderId) {
-                    $cart = \XLite\Core\Database::getRepo('XLite\Model\Cart')->findOneForCustomer($orderId);
-
-                    // Forget cart if cart is order
-                    if ($cart && !$cart->hasCartStatus()) {
-                        unset(\XLite\Core\Session::getInstance()->order_id, $cart);
-                    }
-                }
-            }
+            $cart = static::tryRetrieveCart();
 
             if (!isset($cart)) {
                 // Cart not found - create a new instance
@@ -158,6 +142,37 @@ class Cart extends \XLite\Model\Order
         $className = get_called_class();
         static::$instances[$className] = $object;
         \XLite\Core\Session::getInstance()->order_id = $object->getOrderId();
+    }
+
+    /**
+     * Method to retrieve cart from either profile or session
+     *
+     * @return \XLite\Model\Cart
+     */
+    public static function tryRetrieveCart()
+    {
+        $auth = \XLite\Core\Auth::getInstance();
+        $cart = null;
+
+        if ($auth->isLogged()) {
+            // Try to find cart of logged in user
+            $cart = \XLite\Core\Database::getRepo('XLite\Model\Cart')->findOneByProfile($auth->getProfile());
+        }
+
+        if (empty($cart)) {
+            // Try to get cart from session
+            $orderId = \XLite\Core\Session::getInstance()->order_id;
+            if ($orderId) {
+                $cart = \XLite\Core\Database::getRepo('XLite\Model\Cart')->findOneForCustomer($orderId);
+
+                // Forget cart if cart is order
+                if ($cart && !$cart->hasCartStatus()) {
+                    unset(\XLite\Core\Session::getInstance()->order_id, $cart);
+                }
+            }
+        }
+
+        return $cart;
     }
 
     /**

@@ -21,7 +21,7 @@
     <div class="dropped-here tray-status">{t(#Product has been added to cart#)}</div>
 
     <div class="product-added tray-status">
-      <widget class="\XLite\View\Button\Link" label="Checkout" location="{buildURL(#checkout#)}" />
+      <widget class="\XLite\View\Button\SimpleLink" label="Checkout" location="{buildURL(#checkout#)}" style="regular-button"/>
     </div>
 
     <div class="progress-bar">

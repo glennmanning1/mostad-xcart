@@ -72,7 +72,7 @@ class Ups extends \XLite\Controller\Admin\ShippingSettings
     /**
      * Class name for the \XLite\View\Model\ form (optional)
      *
-     * @return string|void
+     * @return string|null
      */
     protected function getModelFormClass()
     {

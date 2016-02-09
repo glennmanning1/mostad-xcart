@@ -188,15 +188,25 @@ class QuantityBox extends \XLite\View\Product\AProduct
      */
     protected function getClass()
     {
-        $max = $this->getProduct()->getInventory()->getEnabled() ? ',max[' . $this->getMaxQuantity() . ']' : '';
-
         return trim(
             'quantity'
             . ' wheel-ctrl'
             . ($this->isCartPage() ? ' watcher' : '')
             . ' ' . $this->getParam(self::PARAM_STYLE)
-            . ' validate[required,custom[integer],min[' . $this->getMinQuantity() . ']' . $max . ']'
+            . ' validate[required,custom[integer],min[' . $this->getMinQuantity() . ']'
+            . $this->getAdditionalValidate()
+            . ']'
         );
+    }
+
+    /**
+     * Return additional validate
+     *
+     * @return string
+     */
+    protected function getAdditionalValidate()
+    {
+        return $this->getProduct()->getInventory()->getEnabled() ? ',max[' . $this->getMaxQuantity() . ']' : '';
     }
 
     /**

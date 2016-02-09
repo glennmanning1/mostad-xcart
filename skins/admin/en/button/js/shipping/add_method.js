@@ -23,9 +23,11 @@ decorate(
   'eachClick',
   function (elem)
   {
-    if (!elem.linkedDialog && jQuery('.ajax-container-loadable.widget-shipping-addmethod').length) {
+    if (jQuery('.ajax-container-loadable.widget-shipping-addmethod').length) {
       jQuery('.ajax-container-loadable.widget-shipping-addmethod').closest('.ui-widget-content').remove();
     }
+
+    jQuery(elem).toggleClass('always-reload', elem.linkedDialog && jQuery(elem.linkedDialog).length === 0);
 
     arguments.callee.previousMethod.apply(this, arguments);
   }
@@ -36,7 +38,6 @@ decorate(
   'callback',
   function ()
   {
-    $('.add-shipping .tab:first a').tab('show');
     core.microhandlers.add(
       'ItemsListMarkups',
       '.offline-shipping-create',

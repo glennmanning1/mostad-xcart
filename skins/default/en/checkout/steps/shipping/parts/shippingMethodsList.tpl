@@ -16,13 +16,13 @@
     <widget class="\XLite\View\ShippingList" />
 
   {else:}
-
+    <div class="shipping-methods-not-available-wrapper" {if:isAddressCompleted()}data-error-msg="{getErrorMessage()}"{end:}>
     {if:isAddressCompleted()}
-      <p class="shipping-methods-not-avail">{t(#There are no shipping methods available#)}</p>
+      <p class="shipping-methods-not-avail">{getShippingNotAvailableNotification()}</p>
     {else:}
       <p class="address-not-defined">{t(#Enter the shipping address to see delivery methods available to you#)}</p>
     {end:}
-
+    </div>
   {end:}
 
 <widget name="shippingMethod" end />

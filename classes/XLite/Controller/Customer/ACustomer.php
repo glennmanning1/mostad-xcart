@@ -778,7 +778,7 @@ abstract class ACustomer extends \XLite\Controller\AController
      *
      * @return integer
      */
-    protected function getProductId()
+    public function getProductId()
     {
         return \XLite\Core\Request::getInstance()->product_id;
     }

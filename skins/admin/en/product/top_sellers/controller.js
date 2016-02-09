@@ -12,6 +12,44 @@
 /**
  * Controller
  */
+function TopSellersList(base)
+{
+    TopSellersList.superclass.constructor.apply(this, arguments);
+
+    this.bind('local.loaded', _.bind(this.setHandler, this));
+    this.setHandler();
+}
+
+extend(TopSellersList, ALoadable);
+
+TopSellersList.autoload = function()
+{
+    jQuery('div.top-sellers').each(
+        function() {
+            new TopSellersList(this);
+        }
+    );
+};
+
+TopSellersList.initialRequested = false;
+
+TopSellersList.prototype.shadeWidget = true;
+
+TopSellersList.prototype.widgetTarget = 'main';
+
+TopSellersList.prototype.widgetClass = 'XLite\\View\\Product\\TopSellersBlock';
+
+TopSellersList.prototype.setHandler = function () {
+    var self = this;
+    jQuery('.period-box .field select', 'div.top-sellers').change(function () {
+        var id = jQuery('option:selected', this).val();
+        self.load({period: id});
+    })
+};
+
+core.autoload(TopSellersList);
+
+/*
 
 jQuery().ready(
   function() {
@@ -31,3 +69,5 @@ jQuery().ready(
     );
   }
 );
+
+    */

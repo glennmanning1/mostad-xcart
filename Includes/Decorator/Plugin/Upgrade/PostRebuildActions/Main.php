@@ -39,6 +39,8 @@ class Main extends \Includes\Decorator\Plugin\APlugin
     /**
      * Execute certain hook handle
      *
+     * @throws \Doctrine\ORM\OptimisticLockException
+     *
      * @return void
      */
     public function executeHookHandler()
@@ -52,6 +54,7 @@ class Main extends \Includes\Decorator\Plugin\APlugin
                 foreach ($entries as $entry) {
                     if (!$entry->isPostUpgradeActionsCalled()) {
                         $message = '...Invoke actions for ' . $entry->getActualName();
+                        \Includes\Utils\Operator::showMessage(str_replace('\\', '\\\\', $message), true, true);
                         \Includes\Decorator\Utils\CacheManager::logMessage(PHP_EOL);
                         \Includes\Decorator\Utils\CacheManager::logMessage($message);
 

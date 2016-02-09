@@ -373,6 +373,10 @@ div .safe-mode-link {
   color: #8f8f8f;
   max-width: 100%;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  -ms-text-overflow: ellipsis;
 }
 
 div .safe-mode-link .copy-link {

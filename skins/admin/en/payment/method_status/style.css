@@ -16,12 +16,23 @@
 
 .payment-status .alert {
   display: inline-block;
+  padding-top: 5px;
+  padding-bottom: 7px;
+  margin-bottom: 10px;
 }
 
-.payment-status .alert.alert-warning span {
+.payment-status .alert div.table-label {
+  color: inherit;
+  width: auto;
+}
+
+.payment-status .alert .onoffswitch input[type=checkbox]:not(:checked) + label .off-label {
   color: #8a6d3b;
 }
-
-.payment-status .alert.alert-success span {
+.payment-status .alert .onoffswitch input[type=checkbox]:checked + label .on-label {
   color: #3c763d;
+}
+
+.payment-status .sign-up {
+  margin-bottom: 10px;
 }

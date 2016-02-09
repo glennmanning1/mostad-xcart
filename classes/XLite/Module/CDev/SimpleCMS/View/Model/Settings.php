@@ -49,6 +49,20 @@ abstract class Settings extends \XLite\View\Model\Settings implements \XLite\Bas
     protected $logoFaviconValidation = true;
 
     /**
+     * Get a list of CSS files required to display the widget properly
+     *
+     * @return array
+     */
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+
+        $list[] = 'modules/CDev/SimpleCMS/settings.css';
+
+        return $list;
+    }
+
+    /**
      * Defines the subdirectory where images (logo, favicon) will be stored
      *
      * @return string
@@ -246,7 +260,9 @@ abstract class Settings extends \XLite\View\Model\Settings implements \XLite\Bas
      */
     protected function isImage($path, $name)
     {
-        return $this->hasImageName($name) && $this->isImageExtension($name) && $this->isImageMimeType($path);
+        return $this->hasImageName($name)
+            && \Includes\Utils\FileManager::isImageExtension($name)
+            && \Includes\Utils\FileManager::isImage($path);
     }
 
     /**
@@ -262,18 +278,6 @@ abstract class Settings extends \XLite\View\Model\Settings implements \XLite\Bas
     }
 
     /**
-     * Return true if file has image extension
-     *
-     * @param string $path File path
-     *
-     * @return boolean
-     */
-    protected function isImageExtension($path)
-    {
-        return in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), $this->getImageExtensions());
-    }
-
-    /**
      * Get list of allowed image extensions
      *
      * @return array
@@ -281,32 +285,5 @@ abstract class Settings extends \XLite\View\Model\Settings implements \XLite\Bas
     protected function getImageExtensions()
     {
         return array('gif', 'jpg', 'jpeg', 'png', 'ico');
-    }
-
-    /**
-     * Return true if file has image mime type
-     *
-     * @param string $path File path
-     *
-     * @return boolean
-     */
-    protected function isImageMimeType($path)
-    {
-        $result = false;
-
-        if (function_exists('exif_imagetype')) {
-            $result = 0 < (int)@exif_imagetype($path);
-
-        } elseif (function_exists('finfo_open')) {
-            $finfo = finfo_open(FILEINFO_MIME);
-            $result = preg_match('/^image\/.*/', finfo_file($finfo, $path));
-            finfo_close($finfo);
-
-        } else {
-            $data = @getimagesize($path);
-            $result = is_array($data) && $data[0];
-        }
-
-        return $result;
     }
 }

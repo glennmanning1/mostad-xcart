@@ -58,51 +58,6 @@ class OrderItem extends \XLite\Model\Repo\ARepo
     }
 
     /**
-     * Returns the top sellers count (used on the dashboard)
-     *
-     * @param integer $currencyId Currency Id
-     *
-     * @return integer
-     */
-    public function getTopSellersCount($currencyId)
-    {
-        return $this->getTopSellers($this->prepareTopSellersCountCnd($currencyId), true);
-    }
-
-    /**
-     * Has top sellers
-     *
-     * @param integer $currencyId Currency Id OPTIONAL
-     *
-     * @return boolean
-     */
-    public function hasTopSellers($currencyId = null)
-    {
-        $cnd = $this->prepareTopSellersCountCnd($currencyId);
-        $cnd->limit = 1;
-
-        return 0 < $this->getTopSellers($cnd, true);
-    }
-
-    /**
-     * Prepare the top sellers count condition
-     *
-     * @param integer $currencyId Currency Id OPTIONAL
-     *
-     * @return \XLite\Core\CommonCell
-     */
-    protected function prepareTopSellersCountCnd($currencyId = null)
-    {
-        $cnd = new \XLite\Core\CommonCell();
-
-        if (isset($currencyId)) {
-            $cnd->currency = $currencyId;
-        }
-
-        return $cnd;
-    }
-
-    /**
      * Prepare top sellers search condition
      *
      * @param \XLite\Core\CommonCell $cnd Conditions
@@ -116,6 +71,7 @@ class OrderItem extends \XLite\Model\Repo\ARepo
         $qb = $this->createQueryBuilder();
 
         $qb->addSelect('SUM(o.amount) as cnt')
+            ->andWhere($qb->expr()->isNotNull('o.object'))
             ->innerJoin('o.order', 'o1')
             ->innerJoin('o1.paymentStatus', 'ps')
             ->addSelect('o1.date')
@@ -214,7 +170,7 @@ class OrderItem extends \XLite\Model\Repo\ARepo
      */
     protected function isSearchParamHasHandler($param)
     {
-        return in_array($param, $this->getHandlingSearchParams());
+        return in_array($param, $this->getHandlingSearchParams(), true);
     }
 
     /**

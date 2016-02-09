@@ -95,18 +95,6 @@ abstract class AView extends \XLite\View\AView implements \XLite\Base\IDecorator
         }
     }
 
-    public function isPaymentMethodsPage() {
-
-        return \XLite::getController() instanceof \XLite\Controller\Admin\PaymentSettings || \XLite::getController() instanceof \XLite\Controller\Admin\PaymentAppearance;
-    }
-
-    public function getModuleSettingsURL() {
-
-        $modId = \XLite\Core\Database::getRepo('XLite\Model\Module')->findOneBy(array('name' => 'PayWithAmazon', 'fromMarketplace' => false, 'enabled' => 1))->getModuleId();
-
-        return $this->buildURL('module', '', array('moduleId' => $modId));
-    }
-
     public function isAmazonControlsVisible() {
         $order = $this->get('order');
         return (

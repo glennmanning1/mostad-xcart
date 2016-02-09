@@ -339,6 +339,24 @@ class Profile extends \XLite\Model\AEntity
     protected $countOfLoginAttempts = 0;
 
     /**
+     * Fake field for search
+     *
+     * @var string
+     * 
+     * @Column (type="text", nullable=true)
+     */
+    protected $searchFakeField;
+
+    /**
+     * Flag to exporting entities
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $xcPendingExport = false;
+
+    /**
      * Set referer
      *
      * @param string $value Value
@@ -399,13 +417,13 @@ class Profile extends \XLite\Model\AEntity
      *
      * @return string
      */
-    public function getName()
+    public function getName($useDefault = true)
     {
         $address = $this->getBillingAddress() ?: $this->getShippingAddress();
 
-        return $address
+        return $address && ($address->getFirstname() || $address->getLastname())
             ? trim($address->getFirstname() . ' ' . $address->getLastname())
-            : static::t('n/a');
+            : ($useDefault ? static::t('na_customer') : '');
     }
 
     /**
@@ -543,6 +561,8 @@ class Profile extends \XLite\Model\AEntity
             $result = false;
 
         } else {
+
+            $this->updateSearchFakeField();
             // Do an entity update
             $result = parent::update();
         }
@@ -830,6 +850,8 @@ class Profile extends \XLite\Model\AEntity
             }
         }
 
+        $this->updateSearchFakeField();
+
         // Assign status 'Enabled' if not defined
         if (empty($this->status)) {
             $this->enable();
@@ -857,6 +879,24 @@ class Profile extends \XLite\Model\AEntity
         if ($this->getPendingMembershipId() && $this->getPendingMembershipId() === $this->getMembershipId()) {
             $this->setPendingMembership(null);
         }
+
+        $this->updateSearchFakeField();
+    }
+
+    /**
+     * Update field for search optimization
+     *
+     * @return void
+     */
+    public function updateSearchFakeField()
+    {
+        $searchFakeFieldParts = array();
+        foreach ($this->getAddresses() as $address) {
+            $searchFakeFieldParts[] = trim($address->getFirstname() . ' ' . $address->getLastname() . ' ' . $address->getFirstname());
+        }
+        $searchFakeFieldParts[] = $this->getLogin();
+
+        $this->setSearchFakeField(implode(';', $searchFakeFieldParts));
     }
 
     /**

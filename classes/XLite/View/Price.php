@@ -35,13 +35,60 @@ namespace XLite\View;
 class Price extends \XLite\View\Product\Details\Customer\Widget
 {
     /**
+     * Widget parameters
+     */
+    const PARAM_DISPLAY_ONLY_PRICE          = 'displayOnlyPrice';
+
+    /**
+     * @var array $labels  List labels runtime cache
+     */
+    protected static $labels = array();
+
+    /**
+     * @var array $listPrices List prices runtime cache
+     */
+    protected static $listPrices = array();
+
+    /**
      * Return widget default template
      *
      * @return string
      */
     protected function getDefaultTemplate()
     {
-        return 'common/price_plain.tpl';
+        return 'common/price_plain_body.tpl';
+    }
+
+    /**
+     * init
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+
+        if ($this->getProduct()) {
+            // Warmup cache
+            $id = $this->getProduct()->getProductId();
+            if (!isset(static::$labels[$id])) {
+                static::$labels[$id] = $this->getLabels();
+            }
+        }
+    }
+
+    /**
+     * Define widget parameters
+     *
+     * @return void
+     */
+    protected function defineWidgetParams()
+    {
+        parent::defineWidgetParams();
+
+        $this->widgetParams += array(
+            static::PARAM_DISPLAY_ONLY_PRICE => new \XLite\Model\WidgetParam\Bool('Display only price', false)
+        );
     }
 
     /**
@@ -51,9 +98,14 @@ class Price extends \XLite\View\Product\Details\Customer\Widget
      */
     protected function getListPrice($value = null)
     {
-        $this->product->setAttrValues($this->getAttributeValues());
+        $id = $this->getProduct()->getProductId();
 
-        return $this->getNetPrice($value);
+        if (!isset(static::$listPrices[$id])) {
+            $this->product->setAttrValues($this->getAttributeValues());
+            static::$listPrices[$id] = $this->getNetPrice($value);
+        }
+
+        return static::$listPrices[$id];
     }
 
     /**
@@ -83,7 +135,15 @@ class Price extends \XLite\View\Product\Details\Customer\Widget
      */
     protected function getLabels()
     {
-        return array();
+        $id = -1;
+
+        if ($this->getProduct()) {
+            $id = $this->getProduct()->getProductId();
+        }
+
+        return isset(static::$labels[$id])
+            ? static::$labels[$id]
+            : array();
     }
 
     /**

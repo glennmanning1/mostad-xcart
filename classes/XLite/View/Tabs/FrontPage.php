@@ -46,6 +46,10 @@ class FrontPage extends \XLite\View\Tabs\ATabs
             'title'    => 'Front page',
             'template' => 'front_page/body.tpl',
         ),
+        'banner_rotation' => array(
+            'title'    => 'Banner rotation',
+            'template' => 'banner_rotation/body.tpl',
+        ),
     );
 
     /**
@@ -58,6 +62,7 @@ class FrontPage extends \XLite\View\Tabs\ATabs
         $list = parent::getAllowedTargets();
 
         $list[] = 'front_page';
+        $list[] = 'banner_rotation';
 
         return $list;
     }

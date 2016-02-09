@@ -107,7 +107,13 @@ class ProductPageCollection extends \XLite\View\ProductPageCollection implements
         foreach (array($additional, $additionalVariants, $wholesale) as $modifierTypes) {
 
             if (isset($modifierTypes)) {
-                $result += $modifierTypes;
+
+                foreach ($modifierTypes as $key => $value) {
+                    $result[$key] = isset($result[$key])
+                        ? $result[$key] || $value
+                        : $value;
+                }
+
                 if (!$result['price'] && $modifierTypes['price']) {
                     $result['price'] = true;
                 }

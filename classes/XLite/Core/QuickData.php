@@ -181,6 +181,7 @@ class QuickData extends \XLite\Base\Singleton implements \Countable
                 $this->updateData($product, $membership);
             }
         }
+        $product->updateSales();
         $product->setNeedProcess(false);
     }
 

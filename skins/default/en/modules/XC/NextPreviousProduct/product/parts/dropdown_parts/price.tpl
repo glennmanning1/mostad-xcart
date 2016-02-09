@@ -11,4 +11,6 @@
  * @ListChild (list="next_previous.product.body.dropdown", weight="300")
  *}
 
-<p class="next-previous-price">{formatPrice(item.getDisplayPrice(),null,1)}</p>
+<div class="next-previous-price">
+    <widget class="\XLite\View\Price" product="{item}" displayOnlyPrice="1" />
+</div>

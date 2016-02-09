@@ -45,6 +45,28 @@ class Failed extends \XLite\View\AView
     }
 
     /**
+     * Get default header for page
+     *
+     * @return string
+     */
+    protected function getDefaultFailedHeader()
+    {
+        return static::t('Verification results');
+    }
+
+    /**
+     * Get header for page
+     *
+     * @return string
+     */
+    protected function getFailedHeader()
+    {
+        return \XLite\Core\TmpVars::getInstance()->lastImportStep === 'XLite\Logic\Import\Step\Import'
+            ? static::t('Import results')
+            : $this->getDefaultFailedHeader();
+    }
+
+    /**
      * Return true if import process has errors
      *
      * @return boolean
@@ -52,6 +74,16 @@ class Failed extends \XLite\View\AView
     protected function hasErrors()
     {
         return \XLite\Logic\Import\Importer::hasErrors();
+    }
+
+    /**
+     * Return true if import process has errors
+     *
+     * @return boolean
+     */
+    protected function hasErrorsOrWarnings()
+    {
+        return \XLite\Logic\Import\Importer::hasErrors() || \XLite\Logic\Import\Importer::hasWarnings();
     }
 
     /**
@@ -198,10 +230,18 @@ class Failed extends \XLite\View\AView
         $rows = array_map(function($error){
             return $error['row'];
         }, $errorGroup['errors']);
-        return static::t(
-            'Row(s) {{numbers}}',
-            array('numbers' => implode(', ', array_unique($rows)))
-        );
+
+        $rows = array_unique($rows);
+
+        return 1 < count($rows)
+            ? static::t(
+                'Row(s) {{numbers}}',
+                array('numbers' => implode(', ', array_unique($rows)))
+            )
+            : static::t(
+                'Row {{number}}',
+                array('number' => array_pop($rows))
+            );
     }
 
     /**

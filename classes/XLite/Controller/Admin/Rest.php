@@ -100,6 +100,54 @@ class Rest extends \XLite\Controller\Admin\AAdmin
     }
 
     /**
+     * Check ACL permissions
+     *
+     * @return boolean
+     */
+    public function checkACL()
+    {
+        $result = parent::checkACL();
+
+        if (!$result) {
+
+            $repoName = \XLite\Core\Request::getInstance()->name;
+
+            if ('translation' == $repoName) {
+                $result = true;
+
+            } else {
+
+                $permissions = $this->getRepoPermissions();
+
+                if (!empty($permissions[$repoName])) {
+                    foreach ($permissions[$repoName] as $p) {
+                        if (\XLite\Core\Auth::getInstance()->isPermissionAllowed($p)) {
+                            $result = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get list of possible repo permissions
+     *
+     * @return array
+     */
+    protected function getRepoPermissions()
+    {
+        return array(
+            'product' => array(
+                'manage catalog',
+            ),
+        );
+    }
+
+    /**
      * Perform some actions before redirect
      *
      * FIXME: check. Action should not be an optional param

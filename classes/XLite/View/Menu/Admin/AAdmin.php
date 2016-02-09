@@ -171,9 +171,10 @@ abstract class AAdmin extends \XLite\View\Menu\AMenu
      */
     protected function sortItems($item1, $item2)
     {
-        return isset($item1[static::ITEM_WEIGHT])
-            && isset($item2[static::ITEM_WEIGHT])
-            && $item1[static::ITEM_WEIGHT] > $item2[static::ITEM_WEIGHT];
+        $weight1 = isset($item1[static::ITEM_WEIGHT]) ? intval($item1[static::ITEM_WEIGHT]) : 0;
+        $weight2 = isset($item2[static::ITEM_WEIGHT]) ? intval($item2[static::ITEM_WEIGHT]) : 0;
+
+        return $weight1 > $weight2;
     }
 
     /**

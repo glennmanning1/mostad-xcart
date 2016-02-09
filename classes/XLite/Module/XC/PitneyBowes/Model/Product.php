@@ -129,6 +129,16 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
      */
     protected $pesticide;
 
+
+    /**
+     * Does contain aerosol?
+     *
+     * @var string
+     *
+     * @Column (type="boolean", nullable=true)
+     */
+    protected $aerosol;
+
     /**
      * Does contain plastic container?
      *

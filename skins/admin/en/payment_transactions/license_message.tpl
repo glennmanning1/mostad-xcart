@@ -23,6 +23,9 @@
         <li><i class="fa fa-check"></i>{t(#Find transactions by ID#):h}</li>
         <li><i class="fa fa-check"></i>{t(#Search for transactions by date#):h}</li>
         <li><i class="fa fa-check"></i>{t(#Filter transactions by status#):h}</li>
+        <li><i class="fa fa-check"></i>
+          <widget class="XLite\View\ModuleLink" label="{t(#Convert failed transactions into real orders#)}" moduleName="XC\NotFinishedOrders" showIcon="false" />
+        </li>
       </ul>
     </div>
 
@@ -32,6 +35,5 @@
       <widget class="\XLite\View\Button\Regular" label="Buy Business Edition" style="regular-main-button" jsCode="window.open('{getPurchaseLicenseURL()}', '_blank');" />
     </div>
   </div>
-
   <widget class="XLite\View\ModuleBanner" moduleName="QSL\AbandonedCartReminder" canClose="false"/>
 </div>

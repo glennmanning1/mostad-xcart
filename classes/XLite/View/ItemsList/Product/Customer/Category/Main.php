@@ -41,7 +41,7 @@ class Main extends \XLite\View\ItemsList\Product\Customer\Category\ACategory
      *
      * @return string
      */
-    protected function getSessionCell()
+    public function getSessionCell()
     {
         return parent::getSessionCell() . \XLite\Core\Request::getInstance()->category_id;
     }
@@ -79,27 +79,6 @@ class Main extends \XLite\View\ItemsList\Product\Customer\Category\ACategory
     protected function getCacheTTL()
     {
         return 3600;
-    }
-
-    /**
-     * Defines if the widget is listening to #hash changes
-     * 
-     * @return boolean
-     */
-    protected function getListenToHash()
-    {
-        return true;
-    }
-    
-    /**
-     * Defines the #hash prefix of the data for the widget
-     * @TODO implement!
-     * 
-     * @return string
-     */
-    protected function getListenToHashPrefix()
-    {
-        return 'product.category';
     }
 
 }

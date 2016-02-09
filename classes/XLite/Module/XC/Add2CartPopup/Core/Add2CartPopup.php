@@ -159,11 +159,12 @@ class Add2CartPopup extends \XLite\Base\Singleton
 
                 $entity = new \XLite\Module\XC\Add2CartPopup\Model\Source;
 
-                $data['code'] = $code;
-                $data['enabled'] = (isset($selectedOptions[$code]) && $selectedOptions[$code]['enabled']);
-                $data['position'] = (isset($selectedOptions[$code]) ? intval($selectedOptions[$code]['position']) : 0);
+                $sdata = array();
+                $sdata['code'] = $code;
+                $sdata['enabled'] = (isset($selectedOptions[$code]) && $selectedOptions[$code]['enabled']);
+                $sdata['position'] = (isset($selectedOptions[$code]) ? intval($selectedOptions[$code]['position']) : 0);
 
-                $entity->map($data);
+                $entity->map($sdata);
 
                 $this->options[] = $entity;
             }

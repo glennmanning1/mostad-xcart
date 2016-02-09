@@ -184,7 +184,7 @@ class FileCache extends \Doctrine\Common\Cache\CacheProvider
      */
     protected function getNamespaceIdHash($id)
     {
-        return LC_DEVELOPER_MODE ? $id : ('md5.' . md5($id));
+        return !LC_CACHE_NAMESPACE_HASH ? $id : ('md5.' . md5($id));
     }
 
     /**

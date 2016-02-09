@@ -273,7 +273,7 @@ abstract class AEntity extends \XLite\Base\SuperClass
      */
     protected function logWrongPropertyAccess($property, $isGetter = true)
     {
-        if (false && LOG_DEBUG == \Includes\Utils\ConfigParser::getOptions(array('log_details', 'level'))) {
+        if (LOG_DEBUG == \Includes\Utils\ConfigParser::getOptions(array('log_details', 'level'))) {
             \XLite\Logger::getInstance()->log(
                 sprintf(
                     'Requested %s for unknown property: %s::%s',

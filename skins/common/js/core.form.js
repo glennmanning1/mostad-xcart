@@ -598,7 +598,7 @@ CommonForm.prototype.checkDependencyState = function()
     var depField, depValue, value;
     var input, element;
     for (depField in deps) if (deps.hasOwnProperty(depField)) {
-      input = jQuery(this.form.elements.namedItem(depField)).not('[type="hidden"]').get(0)
+      input = jQuery('[name="' + depField + '"]', $(this.form)).not('[type="hidden"]').get(0);
       if (!input.commonController) {
         continue;
       }
@@ -1640,8 +1640,13 @@ CommonElement.prototype.enable = function()
 
 CommonElement.prototype.handleChange = function(event)
 {
-  if (this.element.form && this.element.form.commonController.controlReadiness) {
+  var controlReadiness = this.element.form && this.element.form.commonController.controlReadiness;
+
+  if (controlReadiness || this.$element.hasClass('validation-error')) {
     this.validate();
+  }
+
+  if (controlReadiness) {
     this.element.form.commonController.processReadiness();
   }
 };

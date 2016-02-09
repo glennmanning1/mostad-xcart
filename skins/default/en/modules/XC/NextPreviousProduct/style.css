@@ -56,3 +56,9 @@
 .next-previous-link span.arrow {
     color: #5194c5;
 }
+
+.next-previous-price .product-price span.product-price{
+    font-size: 14px;
+    margin: 0;
+    line-height: 1;
+}

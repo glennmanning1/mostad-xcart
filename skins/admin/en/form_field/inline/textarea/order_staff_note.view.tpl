@@ -9,6 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="arrow"></div>
-<strong>{t(#Staff note#)}:</strong>
+<span class="truncated"><widget template="form_field/inline/view.tpl" /></span>
 <span class="value" data-empty="{getCommonEmptyValue()}"><widget template="form_field/inline/view.tpl" /></span>
+<a class="more-less-link more">{t(#more#)}</a>
+<a class="more-less-link less">{t(#less#)}</a>

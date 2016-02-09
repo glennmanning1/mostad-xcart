@@ -45,25 +45,58 @@ class DateRange extends \XLite\View\FormField\Input\Text
      * Parse range as string
      *
      * @param string $string String
+     * @param string $format Format
      *
      * @return array
      */
-    public static function convertToArray($string)
+    public static function convertToArray($string, $format = null)
     {
-        if (is_string($string)) {
-            $string = $string && preg_match('/^(\d+)-(\d+)-(\d+)\D+(\d+)-(\d+)-(\d+)$/Ss', trim($string), $match)
-            ? array(
-                \XLite\Core\Converter::convertTimeToServer(
-                    mktime(0, 0, 0, $match[2], $match[3], $match[1])
-                ),
-                \XLite\Core\Converter::convertTimeToServer(
-                    mktime(23, 59, 59, $match[5], $match[6], $match[4])
-                )
-            )
-            : array(null, null);
+        $result = array(0, 0);
+
+        if (!empty($string) && is_string($string)) {
+
+            $format = ($format ?: static::getDateFormat()) . ' H:i:s';
+
+            $dates = explode(static::getDatesSeparator(), $string);
+
+            if (!empty($dates[0])) {
+                $startDate = \DateTime::createFromFormat($format, trim($dates[0]) . ' 0:00:00');
+                if ($startDate) {
+                    $result[0] = $startDate->getTimestamp();
+                }
+            }
+
+            if (!empty($dates[1])) {
+                $endDate = \DateTime::createFromFormat($format, trim($dates[1]) . ' 23:59:59');
+                if ($endDate) {
+                    $result[1] = $endDate->getTimestamp();
+                }
+            }
         }
 
-        return $string;
+        return $result;
+    }
+
+    /**
+     * Get used  date format
+     *
+     * @param boolean $forJS Flag: return format for JS DateRangePicker script (true) or for php's date() function (false)
+     *
+     * @return string
+     */
+    protected static function getDateFormat($forJS = false)
+    {
+        return $forJS ? 'DD-MMM-YYYY' : 'd-M-Y';
+    }
+
+    /**
+     * Get separate string between start date and end date
+     *
+     * @return string
+     */
+    protected static function getDatesSeparator()
+    {
+        return ' ~ ';
     }
 
     /**
@@ -77,7 +110,7 @@ class DateRange extends \XLite\View\FormField\Input\Text
 
         $list[static::RESOURCE_JS][] = 'js/moment-with-langs.min.js';
         $list[static::RESOURCE_JS][] = array(
-            'file'      => 'js/daterangepicker.min.js',
+            'file'      => 'js/daterangepicker.js',
             'no_minify' => true,
         );
         $list[static::RESOURCE_CSS][] = 'css/daterangepicker.css';
@@ -137,8 +170,9 @@ class DateRange extends \XLite\View\FormField\Input\Text
     protected function convertToString(array $value)
     {
         if (!empty($value[0]) || !empty($value[1])) {
-            $value[0] = !empty($value[0]) ? date('Y-m-d', $value[0]) : date('Y-m-d');
-            $value[1] = !empty($value[1]) ? date('Y-m-d', $value[1]) : date('Y-m-d');
+            $format = static::getDateFormat();
+            $value[0] = !empty($value[0]) ? date($format, $value[0]) : date($format);
+            $value[1] = !empty($value[1]) ? date($format, $value[1]) : date($format);
             $value = implode(' ~ ', $value);
 
         } else {
@@ -157,9 +191,48 @@ class DateRange extends \XLite\View\FormField\Input\Text
     {
         $result = parent::getCommonAttributes();
 
-        $result['data-end-date'] = date('Y-m-d', \XLite\Core\Converter::convertTimeToUser());
+        $result['data-end-date'] = date(static::getDateFormat(), \XLite\Core\Converter::convertTimeToUser());
+        $result['data-datarangeconfig'] = $this->getDateRangeConfig();
 
         return $result;
+    }
+
+    /**
+     * Get config settings for DateRangePicker
+     *
+     * @return string
+     */
+    protected function getDateRangeConfig()
+    {
+        $lng = \XLite\Core\Session::getInstance()->getLanguage()
+            ? \XLite\Core\Session::getInstance()->getLanguage()->getCode()
+            : 'en';
+
+        $config = array(
+            'separator' => static::getDatesSeparator(),
+            'language'  => $lng,
+            'format'    => static::getDateFormat(true),
+            'shortcuts' => array(),
+            'customShortcuts' => array(
+                array(
+                    'name' => 'today',
+                ),
+                array(
+                    'name' => 'this week',
+                ),
+                array(
+                    'name' => 'this month',
+                ),
+                array(
+                    'name' => 'this quarter',
+                ),
+                array(
+                    'name' => 'this year',
+                ),
+            ),
+        );
+
+        return json_encode($config);
     }
 
     /**
@@ -199,6 +272,7 @@ class DateRange extends \XLite\View\FormField\Input\Text
         return array(
             'selected'        => static::t('Selected:'),
             'days'            => static::t('Days'),
+            'day'             => static::t('Day'),
             'apply'           => static::t('Close'),
             'week-1'          => static::t('MO'),
             'week-2'          => static::t('TU'),
@@ -237,6 +311,11 @@ class DateRange extends \XLite\View\FormField\Input\Text
             'default-less'    => static::t('Please select a date range less than %d days'),
             'default-range'   => static::t('Please select a date range between %d and %d days'),
             'default-default' => static::t('Please select a date range'),
+            'today'           => static::t('Today'),
+            'this week'       => static::t('This week'),
+            'this month'      => static::t('This month'),
+            'this quarter'    => static::t('This quarter'),
+            'this year'       => static::t('This year'),
         );
     }
 

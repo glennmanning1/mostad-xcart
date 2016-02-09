@@ -186,8 +186,8 @@ class OnlineMethods extends \XLite\View\ItemsList\Model\Table
     {
         $result = parent::getSearchCondition();
 
-        $result->{\XLite\Model\Repo\Payment\Method::P_ORDERBY} = array(
-            'm.orderby, translations.name', 'asc'
+        $result->{\XLite\Model\Repo\Payment\Method::P_ORDERBY_FORCE} = array(
+            'm.adminOrderby, translations.name', 'asc'
         );
         $result->{\XLite\Model\Repo\Payment\Method::P_TYPE} = array(
             \XLite\Model\Payment\Method::TYPE_ALLINONE,

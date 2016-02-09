@@ -9,6 +9,10 @@
  * @link      http://www.x-cart.com/
  *}
 
+<widget IF="isUseFilter()" template="search_panel/filters.tpl" />
+
+<div class="title-margin"></div>
+
 <widget class="{getFormClass()}" name="search_form" className="{getContainerClass()}" />
 
   <list name="before" type="nested" />
@@ -37,17 +41,17 @@
 
     <ul IF="getHiddenConditions()" class="search-conditions-hidden clear clearfix">
       {foreach:getHiddenConditions(),name,condition}
-        <li class="{name}-condition">{condition.display()}</li>
+        <li class="{name}-condition {getRowClass(conditionArrayPointer,#odd#,#even#)}">{condition.display()}</li>
       {end:}
       <list name="hiddenConditions" type="nested" />
     </ul>
 
     <div IF="getHiddenConditions()" class="arrow"></div>
 
+    <widget IF="isUseFilter()" class="\XLite\View\Button\SaveSearchFilter" />
+
   </div>
 
   <list name="after" type="nested" />
 
 <widget name="search_form" end />
-
-

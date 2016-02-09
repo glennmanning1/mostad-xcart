@@ -30,7 +30,9 @@
 namespace XLite\View;
 
 /**
- * Address book 
+ * Address book
+ *
+ * @ListChild (list="layout.main", zone="customer", weight="0")
  */
 class OperateAsUserNotification extends \XLite\View\AView
 {
@@ -122,7 +124,7 @@ class OperateAsUserNotification extends \XLite\View\AView
      */
     protected function getFinishOperateAsUrl()
     {
-        return \XLite\Core\Converter::buildURL('profile', 'finishOperateAs', array(), \XLite::getAdminScript());
+        return $this->buildURL('login', 'logoff');
     }
 }
 

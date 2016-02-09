@@ -433,6 +433,7 @@ class LessParser extends \XLite\Base\Singleton
         return array(
             'cache_dir' => LC_DIR_DATACACHE,
             'compress'  => true,
+            'root_dir'  => LC_DIR_ROOT,
         );
     }
 }

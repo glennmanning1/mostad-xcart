@@ -51,10 +51,11 @@ class CheckoutFailed extends \XLite\Controller\Customer\Cart
      */
     protected function doNoAction()
     {
-        $this->restoreOrder();
+        $this->setReturnURL($this->buildURL('checkout'));
 
-        if ($this->addedOrder) {
-            $reason = $this->addedOrder->getFailureReason()
+        if ($this->getCart()) {
+            $cart = $this->getCart()->getNotFinishedOrder() ?: $this->getCart();
+            $reason = $cart->getFailureReason()
                 ?: $this->getDefaultFailureReason();
 
             \XLite\Core\TopMessage::addError($reason);

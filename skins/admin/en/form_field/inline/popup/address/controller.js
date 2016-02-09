@@ -165,8 +165,9 @@ OrderAddressView.prototype.syncField = function(i, field)
           this.syncFieldValue(
             from,
             to,
-            jQuery('.profile-' + prefix + 'Address .address-state_id .address-field').eq(0)
+            jQuery('.profile-' + prefix + 'Address .address-state .address-field').eq(0)
           );
+          jQuery('.profile-' + prefix + 'Address .address-state_id .address-field').html('');
 
         } else {
           from.val('');
@@ -175,6 +176,9 @@ OrderAddressView.prototype.syncField = function(i, field)
       } else if (-1 != field.name.search(/_country_code/)) {
         this.countryChanged[prefix] = true;
 
+      } else if (-1 != field.name.search(/_state_id/)) {
+        jQuery('.profile-' + prefix + 'Address .address-custom_state .address-field').html('');
+        jQuery('.profile-' + prefix + 'Address .address-state').hide();
       }
 
       if (sync) {

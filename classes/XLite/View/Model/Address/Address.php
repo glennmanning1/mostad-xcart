@@ -379,14 +379,10 @@ class Address extends \XLite\View\Model\AModel
 
                 if (isset($state) && $state->getCountry()->getCode() == $data['country_code']) {
                     $data['state'] = $state;
-                    $data['custom_state'] = '';
+                    unset($data['custom_state']);
                 }
 
                 unset($data['state_id']);
-            }
-
-            if (!isset($data['state'])) {
-                $data['state'] = $data['custom_state'];
             }
 
             unset($data['country_code']);

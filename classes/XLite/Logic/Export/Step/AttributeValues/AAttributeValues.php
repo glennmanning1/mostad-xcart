@@ -224,7 +224,7 @@ abstract class AAttributeValues extends \XLite\Logic\Export\Step\Base\I18n
      */
     protected function getDefaultColumnValue(array $dataset, $name, $i)
     {
-        return (method_exists($dataset['model'], 'isDefault'))
+        return $dataset['model']->isMultiple() && method_exists($dataset['model'], 'isDefault')
             ? $dataset['model']->isDefault() ? 'Yes' : 'No'
             : 'No';
     }

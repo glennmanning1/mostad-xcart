@@ -86,6 +86,25 @@ class Settings extends \XLite\Controller\Admin\AAdmin
     private $curlResponse;
 
     /**
+     * Define body classes
+     *
+     * @param array $classes Classes
+     *
+     * @return array
+     */
+    public function defineBodyClasses(array $classes)
+    {
+        $classes = parent::defineBodyClasses($classes);
+
+        $list = $this->getPages();
+        if (isset($list[$this->page])) {
+            $classes[] = 'settings-' . $list[$this->page];
+        }
+
+        return $classes;
+    }
+
+    /**
      * Return the current page title (for the content area)
      *
      * @return string

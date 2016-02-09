@@ -64,7 +64,7 @@ abstract class ANode extends \XLite\View\Menu\Admin\ANode
         $attributes = parent::getContainerTagAttributes();
 
         if (!empty($_COOKIE['XCAdminLeftMenuCompressed'])) {
-            $attributes['class'] = preg_replace('/pre-expanded/Ss', 'has-expanded', $attributes['class']);
+            $attributes['class'] = str_replace('pre-expanded', 'has-expanded', $attributes['class']);
         }
 
         return $attributes;

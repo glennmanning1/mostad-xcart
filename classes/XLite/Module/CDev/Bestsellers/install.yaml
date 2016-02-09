@@ -31,7 +31,3 @@ XLite\Model\LanguageLabel:
   - { name: 'Sales sort', translations: [{ code: en, label: 'Sales' }] }
   - { name: 'Sales asc', translations: [{ code: en, label: 'By Sales - 0-9' }] }
   - { name: 'Sales desc', translations: [{ code: en, label: 'By Sales - 9-0' }] }
-  - { name: 'The calculation failed', translations: [{ code: en, label: 'The calculation failed' }, { code: ru, label: 'Расчет завершен с ошибкой' }] }
-  - { name: 'The calculation completed', translations: [{ code: en, label: 'The calculation completed' }, { code: ru, label: 'Расчет успешно завершен' }] }
-  - { name: 'The process of sales calculation may take a while to complete. Please do not close this page until the process is fully completed.', translations: [{ code: en, label: 'The process of sales calculation may take a while to complete. Please do not close this page until the process is fully completed.' }, { code: ru, label: 'Процесс расчета продаж может занять продолжительное время. Пожалуйста, не закрывайте эту страницу до полного завершения процесса.' }] }
-  - { name: 'Sales calculation', translations: [{ code: en, label: 'Sales calculation' }, { code: ru, label: 'Расчет продаж' }] }

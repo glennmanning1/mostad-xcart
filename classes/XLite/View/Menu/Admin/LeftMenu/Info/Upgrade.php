@@ -54,7 +54,7 @@ class Upgrade extends \XLite\View\Menu\Admin\LeftMenu\ANodeNotification
     {
         $status = $this->getStatus();
 
-        return $this->getLastReedTimestamp() < $this->getLastUpdateTimestamp()
+        return $this->getLastReadTimestamp() < $this->getLastUpdateTimestamp()
             && $status['status'] !== static::STATUS_NO_UPDATES;
     }
 

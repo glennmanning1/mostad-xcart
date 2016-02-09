@@ -41,7 +41,7 @@ class Layout extends \XLite\Core\Layout implements \XLite\Base\IDecorator
      */
     public function getLogo()
     {
-        $url = \XLite\Core\Config::getInstance()->CDev->SimpleCMS->logo;
+        $url = str_replace(LC_DS, '/', \XLite\Core\Config::getInstance()->CDev->SimpleCMS->logo);
 
         return $url ?: parent::getLogo();
     }

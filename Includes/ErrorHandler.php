@@ -54,6 +54,12 @@ abstract class ErrorHandler
     const ERROR_PAGE_TYPE_CLOSED        = 'closed';
 
     /**
+     * HTTP codes
+     */
+    const HTTP_CODE_ERROR   = 500;
+    const HTTP_CODE_UNABLE  = 503;
+
+    /**
      * Throw exception
      *
      * @param string  $message Error message
@@ -271,8 +277,14 @@ abstract class ErrorHandler
      *
      * @return void
      */
-    protected static function showErrorPage($code, $message, $page = null, $prefix = 'ERROR_', $http_code = 500)
+    protected static function showErrorPage($code, $message, $page = null, $prefix = 'ERROR_', $http_code = null)
     {
+        if (null === $http_code) {
+            $http_code = static::getErrorPageType($code) !== static::ERROR_PAGE_TYPE_ERROR
+                ? static::HTTP_CODE_UNABLE
+                : static::HTTP_CODE_ERROR;
+        }
+
         showErrorPage(
             $code,
             $message,
@@ -283,7 +295,9 @@ abstract class ErrorHandler
                 : static::getErrorPage(static::getErrorPageType($code))
             ),
             $prefix,
-            $http_code
+            static::getErrorPageType($code) !== static::ERROR_PAGE_TYPE_ERROR
+                ? 503
+                : $http_code
         );
     }
 

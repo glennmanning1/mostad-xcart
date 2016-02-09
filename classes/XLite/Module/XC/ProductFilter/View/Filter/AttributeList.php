@@ -173,7 +173,9 @@ class AttributeList extends \XLite\Module\XC\ProductFilter\View\Filter\AFilter
             $cnd->productClass = !empty($productClasses) ? $productClasses : null;
         }
         $cnd->product = null;
+        $cnd->visible = true;
         $cnd->type = \XLite\Model\Attribute::getFilteredTypes();
+        $cnd->orderBy = array('translations.name', 'asc');
 
         return $cnd;
     }

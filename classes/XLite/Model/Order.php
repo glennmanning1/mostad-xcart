@@ -262,6 +262,15 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     protected $orderNumber;
 
     /**
+     * Recent flag: true if order's statuses were not changed manually by an administrator, otherwise - false
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $recent = true;
+
+    /**
      * 'Add item' error code
      *
      * @var string
@@ -345,6 +354,15 @@ class Order extends \XLite\Model\Base\SurchargeOwner
      * @var \XLite\Model\Address
      */
     protected $sourceAddress;
+
+    /**
+     * Flag to exporting entities
+     *
+     * @var boolean
+     *
+     * @Column (type="boolean")
+     */
+    protected $xcPendingExport = false;
 
     /**
      * Add item to order
@@ -528,8 +546,6 @@ class Order extends \XLite\Model\Base\SurchargeOwner
      */
     public function getFailureReason()
     {
-        $result = null;
-
         $transactions = $this->getPaymentTransactions()->getValues();
         /** @var \XLite\Model\Payment\Transaction $transaction */
         foreach (array_reverse($transactions) as $transaction) {
@@ -537,14 +553,12 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                 $reason = $transaction->getDataCell('status');
 
                 if ($reason && $reason->getValue()) {
-                    $result = $reason->getValue();
-
-                    break;
+                    return $reason->getValue();
                 }
             }
         }
 
-        return $result;
+        return null;
     }
 
     /**
@@ -649,7 +663,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             && (!$profile || $this->getProfile()->getProfileId() != $profile->getProfileId())
         ) {
             $this->getProfile()->setOrder(null);
-            if ($this->getProfile()->getAnonymous()) {
+            if ($this->getProfile()->getAnonymous() && !$profile->getAnonymous()) {
                 \XLite\Core\Database::getEM()->remove($this->getProfile());
             }
         }
@@ -732,12 +746,14 @@ class Order extends \XLite\Model\Base\SurchargeOwner
         foreach ($this->getDetails() as $detail) {
             $clonedDetails = $detail->cloneEntity();
             $newOrder->addDetails($clonedDetails);
+            $clonedDetails->setOrder($newOrder);
         }
 
         // Clone tracking numbers
         foreach ($this->getTrackingNumbers() as $tn) {
             $clonedTN = $tn->cloneEntity();
             $newOrder->addTrackingNumbers($clonedTN);
+            $clonedTN->setOrder($newOrder);
         }
 
         // Clone events
@@ -906,19 +922,19 @@ class Order extends \XLite\Model\Base\SurchargeOwner
 
             $config = $this->getCompanyConfiguration();
 
-            $address->setStreet($config->location_address);
-            $address->setCity($config->location_city);
-            $address->setCountryCode($config->location_country);
+            $address->setStreet($config->origin_address);
+            $address->setCity($config->origin_city);
+            $address->setCountryCode($config->origin_country);
 
-            if ($config->location_state) {
-                $address->setStateId($config->location_state);
+            if ($config->origin_state) {
+                $address->setStateId($config->origin_state);
             }
 
-            if ($config->location_custom_state) {
-                $address->setCustomState($config->location_custom_state);
+            if ($config->origin_custom_state) {
+                $address->setCustomState($config->origin_custom_state);
             }
 
-            $address->setZipcode($config->location_zipcode);
+            $address->setZipcode($config->origin_zipcode);
 
             $this->sourceAddress = $address;
         }
@@ -1199,7 +1215,9 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     {
         $this->markAsOrder();
 
-        $this->setShippingStatus(\XLite\Model\Order\Status\Shipping::STATUS_NEW);
+        if ($this->canChangeStatusOnSucceed()) {
+            $this->setShippingStatus(\XLite\Model\Order\Status\Shipping::STATUS_NEW);
+        }
 
         $property = \XLite\Core\Database::getRepo('XLite\Model\Order\Status\Property')->findOneBy(
             array(
@@ -1293,6 +1311,27 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             $list = array();
         }
 
+        if (\XLite\Core\Auth::getInstance()->isOperatingAsUserMode()) {
+            $fakeMethods = \XLite\Core\Auth::getInstance()->getOperateAsUserPaymentMethods();
+
+            $filteredFakeMethods = array_filter(
+                $fakeMethods,
+                function ($fakeMethod) use ($list) {
+                    $fakeServiceName = $fakeMethod->getServiceName();
+
+                    // Check if $list already contains fake method
+                    return !array_reduce($list, function ($carry, $method) use ($fakeServiceName) {
+                        return $carry ?: $method->getServiceName() === $fakeServiceName;
+                    }, false);
+                }
+            );
+
+            $list = array_merge(
+                $list,
+                $filteredFakeMethods
+            );
+        }
+
         return $list;
     }
 
@@ -1326,6 +1365,16 @@ class Order extends \XLite\Model\Base\SurchargeOwner
         } else {
             $this->unsetPaymentMethod();
         }
+    }
+
+    /**
+     * Returns true if order is allowed to change status on succeed
+     *
+     * @return boolean
+     */
+    protected function canChangeStatusOnSucceed()
+    {
+        return null === $this->getShippingStatus();
     }
 
     /**
@@ -1406,7 +1455,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     public function checkPaymentTransactionStatusEqual(\XLite\Model\Payment\Transaction $transaction, $status)
     {
         return is_array($status)
-            ? in_array($transaction->getStatus(), $status)
+            ? in_array($transaction->getStatus(), $status, true)
             : $transaction->getStatus() === $status;
     }
 
@@ -1472,12 +1521,12 @@ class Order extends \XLite\Model\Base\SurchargeOwner
         if (null === $paymentMethod || $this->getFirstOpenPaymentTransaction()) {
             $transaction = $this->getFirstOpenPaymentTransaction();
             if ($transaction) {
-                if ($transaction->isSameMethod($paymentMethod)) {
+                if (null === $paymentMethod) {
+                    $this->unsetPaymentMethod();
+
+                } elseif ($transaction->isSameMethod($paymentMethod)) {
                     $transaction->updateValue($this);
                     $paymentMethod = null;
-
-                } elseif (null === $paymentMethod) {
-                    $this->unsetPaymentMethod();
                 }
             }
         }
@@ -1723,12 +1772,13 @@ class Order extends \XLite\Model\Base\SurchargeOwner
         if ($value > 0) {
             $transaction = new \XLite\Model\Payment\Transaction();
 
+            $this->addPaymentTransactions($transaction);
+            $transaction->setOrder($this);
+
             $transaction->setPaymentMethod($method);
 
             \XLite\Core\Database::getEM()->persist($method);
 
-            $this->addPaymentTransactions($transaction);
-            $transaction->setOrder($this);
             $transaction->setCurrency($this->getCurrency());
 
             $transaction->setStatus($transaction::STATUS_INITIALIZED);
@@ -2610,8 +2660,11 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             }
 
             if ($changed) {
-                if (!$this->isNotificationSent && $this->isNotificationsAllowed()) {
-                    \XLite\Core\Mailer::getInstance()->sendOrderChanged($this, $this->isIgnoreCustomerNotifications());
+                if (!$this->isNotificationSent
+                    && $this->isNotificationsAllowed()
+                    && $this->getOrderNumber()
+                ) {
+                    \XLite\Core\Mailer::sendOrderChanged($this, $this->isIgnoreCustomerNotifications());
                 }
 
                 $this->isNotificationSent = false;
@@ -2647,7 +2700,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             );
             $oldIncStock = $property ? $property->getIncStock() : null;
 
-            if ($incStock !== $oldIncStock) {
+            if (!is_null($oldIncStock) && $incStock !== $oldIncStock) {
                 if ($incStock) {
                     $this->processIncrease();
 
@@ -2658,6 +2711,8 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                 \XLite\Core\Database::getEM()->flush();
             }
         }
+
+        $this->updateSales();
     }
 
     /**
@@ -2760,7 +2815,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     protected function processProcess()
     {
         if ($this->isNotificationsAllowed()) {
-            \XLite\Core\Mailer::getInstance()->sendOrderProcessed($this, $this->isIgnoreCustomerNotifications());
+            \XLite\Core\Mailer::sendOrderProcessed($this, $this->isIgnoreCustomerNotifications());
         }
 
         $this->isNotificationSent = true;
@@ -2774,7 +2829,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     protected function processShip()
     {
         if ($this->isNotificationsAllowed() && !$this->isIgnoreCustomerNotifications()) {
-            \XLite\Core\Mailer::getInstance()->sendOrderShipped($this);
+            \XLite\Core\Mailer::sendOrderShipped($this);
         }
 
         $this->isNotificationSent = true;
@@ -2797,17 +2852,8 @@ class Order extends \XLite\Model\Base\SurchargeOwner
      */
     protected function processDecline()
     {
-    }
-
-    /**
-     * A "change status" handler
-     *
-     * @return void
-     */
-    protected function processFail()
-    {
-        if ($this->isNotificationsAllowed()) {
-            \XLite\Core\Mailer::getInstance()->sendOrderFailed($this, $this->isIgnoreCustomerNotifications());
+        if ($this->isNotificationsAllowed() && $this->getOrderNumber()) {
+            \XLite\Core\Mailer::sendOrderFailed($this, $this->isIgnoreCustomerNotifications());
         }
 
         $this->isNotificationSent = true;
@@ -2818,10 +2864,19 @@ class Order extends \XLite\Model\Base\SurchargeOwner
      *
      * @return void
      */
+    protected function processFail()
+    {
+    }
+
+    /**
+     * A "change status" handler
+     *
+     * @return void
+     */
     protected function processCancel()
     {
         if ($this->isNotificationsAllowed()) {
-            \XLite\Core\Mailer::getInstance()->sendOrderCanceled($this, $this->isIgnoreCustomerNotifications());
+            \XLite\Core\Mailer::sendOrderCanceled($this, $this->isIgnoreCustomerNotifications());
         }
 
         $this->isNotificationSent = true;
@@ -2991,13 +3046,15 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             foreach ($transactions as $t) {
                 $backendTransactions = $t->getBackendTransactions();
 
+                $authorized = 0;
+
                 if ($backendTransactions && count($backendTransactions) > 0) {
                     // By backend transactions
                     foreach ($backendTransactions as $bt) {
                         if ($bt->isCompleted()) {
-                            switch($bt->getType()) {
+                            switch ($bt->getType()) {
                                 case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_AUTH:
-                                    $this->paymentTransactionSums['authorized'] += $bt->getValue();
+                                    $authorized += $bt->getValue();
                                     $this->paymentTransactionSums['blocked'] += $bt->getValue();
                                     break;
 
@@ -3009,7 +3066,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                                 case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_CAPTURE:
                                 case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_CAPTURE_PART:
                                     $this->paymentTransactionSums['captured'] += $bt->getValue();
-                                    $this->paymentTransactionSums['authorized'] -= $bt->getValue();
+                                    $authorized -= $bt->getValue();
                                     $this->paymentTransactionSums['sale'] += $bt->getValue();
                                     break;
 
@@ -3022,14 +3079,14 @@ class Order extends \XLite\Model\Base\SurchargeOwner
 
                                 case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND_MULTI:
                                     $this->paymentTransactionSums['refunded'] += $bt->getValue();
-                                    $this->paymentTransactionSums['authorized'] -= $bt->getValue();
+                                    $authorized -= $bt->getValue();
                                     $this->paymentTransactionSums['blocked'] -= $bt->getValue();
                                     $this->paymentTransactionSums['sale'] -= $bt->getValue();
                                     break;
 
                                 case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_VOID:
                                 case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_VOID_PART:
-                                    $this->paymentTransactionSums['authorized'] -= $bt->getValue();
+                                    $authorized -= $bt->getValue();
                                     $this->paymentTransactionSums['blocked'] -= $bt->getValue();
                                     break;
 
@@ -3041,9 +3098,9 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                 } else {
                     // By transaction
                     if ($t->isCompleted()) {
-                        switch($t->getType()) {
+                        switch ($t->getType()) {
                             case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_AUTH:
-                                $this->paymentTransactionSums['authorized'] += $t->getValue();
+                                $authorized += $t->getValue();
                                 $this->paymentTransactionSums['blocked'] += $t->getValue();
                                 break;
 
@@ -3055,7 +3112,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                             case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_CAPTURE:
                             case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_CAPTURE_PART:
                                 $this->paymentTransactionSums['captured'] += $t->getValue();
-                                $this->paymentTransactionSums['authorized'] -= $t->getValue();
+                                $authorized -= $t->getValue();
                                 $this->paymentTransactionSums['sale'] += $t->getValue();
                                 break;
 
@@ -3068,14 +3125,14 @@ class Order extends \XLite\Model\Base\SurchargeOwner
 
                             case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_REFUND_MULTI:
                                 $this->paymentTransactionSums['refunded'] += $t->getValue();
-                                $this->paymentTransactionSums['authorized'] -= $t->getValue();
+                                $authorized -= $t->getValue();
                                 $this->paymentTransactionSums['blocked'] -= $t->getValue();
                                 $this->paymentTransactionSums['sale'] -= $t->getValue();
                                 break;
 
                             case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_VOID:
                             case \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_VOID_PART:
-                                $this->paymentTransactionSums['authorized'] -= $t->getValue();
+                                $authorized -= $t->getValue();
                                 $this->paymentTransactionSums['blocked'] -= $t->getValue();
                                 break;
 
@@ -3083,7 +3140,19 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                         }
                     }
                 }
-            }
+
+                if (0 < $authorized
+                    && 0 < $this->paymentTransactionSums['captured']
+                    && !$t->getPaymentMethod()->getProcessor()->isTransactionAllowed($t, \XLite\Model\Payment\BackendTransaction::TRAN_TYPE_CAPTURE_MULTI)
+                ) {
+                    // Do not take in consideration an authorized sum after capture
+                    // if payment processor does not support multiple partial capture transactions
+                    $authorized = 0;
+                }
+
+                $this->paymentTransactionSums['authorized'] += $authorized;
+
+            } // foreach
         }
 
         return $this->paymentTransactionSums;
@@ -3129,16 +3198,22 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     // }}}
 
     /**
-     * Renew payment status
+     * Renew payment status.
+     * Return true if payment status has been changed
      *
-     * @return void
+     * @return boolean
      */
     public function renewPaymentStatus()
     {
+        $result = false;
+
         $status = $this->getCalculatedPaymentStatus(true);
         if ($this->getPaymentStatusCode() !== $status) {
             $this->setPaymentStatus($status);
+            $result = true;
         }
+
+        return $result;
     }
 
     /**
@@ -3153,14 +3228,15 @@ class Order extends \XLite\Model\Base\SurchargeOwner
         $result = \XLite\Model\Order\Status\Payment::STATUS_QUEUED;
 
         $sums = $this->getRawPaymentTransactionSums($override);
+        $total = $this->getCurrency()->roundValue($this->getTotal());
 
-        if (0.0 == $this->getTotal()) {
+        if (0.0 == $total) {
             $result = \XLite\Model\Order\Status\Payment::STATUS_PAID;
 
         } elseif ($sums['authorized'] > 0 && $sums['sale'] == 0 && $sums['captured'] == 0) {
             $result = \XLite\Model\Order\Status\Payment::STATUS_AUTHORIZED;
 
-        } elseif ($sums['sale'] < $this->getTotal()) {
+        } elseif ($sums['sale'] < $total) {
             if ($sums['sale'] > 0) {
                 $result = \XLite\Model\Order\Status\Payment::STATUS_PART_PAID;
 
@@ -3181,7 +3257,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
         if (\XLite\Model\Order\Status\Payment::STATUS_QUEUED === $result) {
             $lastTransaction = $this->getPaymentTransactions()->last();
             if ($lastTransaction) {
-                if ($lastTransaction->isFailed()) {
+                if ($lastTransaction->isFailed() || $lastTransaction->isVoid()) {
                     $result = \XLite\Model\Order\Status\Payment::STATUS_DECLINED;
                 }
 
@@ -3298,4 +3374,129 @@ class Order extends \XLite\Model\Base\SurchargeOwner
 
         return $isConfigured;
     }
+
+    /**
+     * Get payment transaction data.
+     * These data are displayed on the order page, invoice and packing slip
+     *
+     * @param boolean $isPrimary Flag: true - return only data fields marked by processor as 'primary', false - all fields OPTIONAL
+     *
+     * @return array
+     */
+    public function getPaymentTransactionData($isPrimary = false)
+    {
+        $result = array();
+
+        $transaction = $this->getPaymentTransactions()
+            ? $this->getPaymentTransactions()->last()
+            : null;
+
+        if ($transaction) {
+            $processor = $this->getPaymentMethod() ? $this->getPaymentMethod()->getProcessor() : null;
+
+            if ($processor) {
+                $result = $processor->getTransactionData($transaction, $isPrimary);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get last payment transaction ID.
+     * This data is displayed on the order page, invoice and packing slip
+     *
+     * @return string|null
+     */
+    public function getPaymentTransactionId()
+    {
+        $transaction = $this->getPaymentTransactions()
+            ? $this->getPaymentTransactions()->last()
+            : null;
+
+        return $transaction
+            ? $transaction->getPublicId()
+            : null;
+    }
+
+    // {{{ Sales statistic
+
+    /**
+     * Returns old payment status code
+     *
+     * @return string
+     */
+    protected function getOldPaymentStatusCode()
+    {
+        $oldPaymentStatus = $this->oldPaymentStatus;
+
+        return $oldPaymentStatus && $oldPaymentStatus->getCode()
+            ? $oldPaymentStatus->getCode()
+            : '';
+    }
+
+    /**
+     * Calculate sales delta
+     *
+     * @return integer|null
+     */
+    protected function getSalesDelta()
+    {
+        $result = null;
+
+        $newStatusCode = $this->getPaymentStatusCode();
+        if ($newStatusCode) {
+            $oldStatusCode = $this->getOldPaymentStatusCode();
+            $paidStatuses = \XLite\Model\Order\Status\Payment::getPaidStatuses();
+
+            if ((!$oldStatusCode || !in_array($oldStatusCode, $paidStatuses, true))
+                && in_array($newStatusCode, $paidStatuses, true)
+            ) {
+                $result = 1;
+
+            } elseif ($oldStatusCode
+                && in_array($oldStatusCode, $paidStatuses, true)
+                && !in_array($newStatusCode, $paidStatuses, true)
+            ) {
+                $result = -1;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Update sales statistics
+     *
+     * @param integer $delta Delta
+     */
+    protected function updateItemsSales($delta)
+    {
+        if (null === $delta) {
+            return;
+        }
+
+        foreach ($this->getItems() as $item) {
+            $product = $item->getObject();
+            if (null === $product) {
+                continue;
+            }
+
+            $product->setSales(
+                $product->getSales() + $delta * $item->getAmount()
+            );
+        }
+
+        \XLite\Core\Database::getEM()->flush();
+    }
+
+    /**
+     * Update sales
+     */
+    protected function updateSales()
+    {
+        $this->updateItemsSales($this->getSalesDelta());
+    }
+
+    // }}}
 }

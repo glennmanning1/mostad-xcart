@@ -34,6 +34,15 @@ namespace XLite\View\FormField\Select;
  */
 class ExportFiles extends \XLite\View\FormField\Select\Regular
 {
+    /**
+     * getDefaultValue
+     *
+     * @return string
+     */
+    protected function getDefaultValue()
+    {
+        return 'local';
+    }
 
     /**
      * Get default options list

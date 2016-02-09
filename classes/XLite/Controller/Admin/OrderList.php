@@ -51,7 +51,7 @@ class OrderList extends \XLite\Controller\Admin\AAdmin
      */
     public function getTitle()
     {
-        return static::t('Search for orders');
+        return static::t('Orders');
     }
 
     // {{{ Search
@@ -211,8 +211,36 @@ class OrderList extends \XLite\Controller\Admin\AAdmin
 
         $this->getItemsList()->processQuick();
 
+        $updateRecent = array();
         foreach ($changes as $orderId => $change) {
+            if (!empty($change['paymentStatus']) || !empty($change['shippingStatus'])) {
+                $updateRecent[$orderId] = array('recent' => 0);
+            }
             \XLite\Core\OrderHistory::getInstance()->registerOrderChanges($orderId, $change);
+        }
+
+        if (!empty($updateRecent)) {
+            \XLite\Core\Database::getRepo('XLite\Model\Order')->updateInBatchById($updateRecent);
+        }
+    }
+
+    /**
+     * Do action delete
+     *
+     * @return void
+     */
+    protected function doActionDelete()
+    {
+        $select = \XLite\Core\Request::getInstance()->select;
+
+        if ($select && is_array($select)) {
+            \XLite\Core\Database::getRepo('XLite\Model\Order')->deleteInBatchById($select);
+            \XLite\Core\TopMessage::addInfo(
+                'Orders has been deleted successfully'
+            );
+
+        } else {
+            \XLite\Core\TopMessage::addWarning('Please select the orders first');
         }
     }
 
@@ -223,6 +251,9 @@ class OrderList extends \XLite\Controller\Admin\AAdmin
      */
     protected function doActionSearch()
     {
+        // Clear stored search conditions
+        \XLite\Core\Session::getInstance()->{$this->getSessionCellName()} = array();
+
         $this->prepareSearchParams();
 
         $this->setReturnURL($this->getURL(array('searched' => 1)));
@@ -270,40 +301,90 @@ class OrderList extends \XLite\Controller\Admin\AAdmin
     }
 
     /**
+     * Get search filter
+     *
+     * @return \XLite\Model\SearchFilter
+     */
+    public function getSearchFilter()
+    {
+        $filter = parent::getSearchFilter();
+
+        if (!$filter && 'recent' == \XLite\Core\Request::getInstance()->filter_id) {
+
+            $searchParams = array(
+                \XLite\Model\Repo\Order::P_RECENT => 1,
+                static::PARAM_SEARCH_FILTER_ID    => 'recent',
+            );
+
+            $filter = new \XLite\Model\SearchFilter();
+            $filter->setParameters($searchParams);
+        }
+
+        return $filter;
+    }
+
+    /**
+     * Get currently used filter
+     *
+     * @return \XLite\Model\SearchFilter
+     */
+    public function getCurrentSearchFilter()
+    {
+        $filter = parent::getCurrentSearchFilter();
+
+        if (!$filter) {
+            $cellName = $this->getSessionCellName();
+            $searchParams = \XLite\Core\Session::getInstance()->$cellName;
+            if (
+                isset($searchParams[static::PARAM_SEARCH_FILTER_ID])
+                && 'recent' == $searchParams[static::PARAM_SEARCH_FILTER_ID]
+            ) {
+                $filter = new \XLite\Model\SearchFilter();
+                $filter->setId('recent');
+                $filter->setName(static::t('Recent orders'));
+            }
+        }
+
+        return $filter;
+    }
+
+    /**
      * Initialize search parameters from request data
      *
      * @return void
      */
     protected function prepareSearchParams()
     {
-        $ordersSearch = array();
+        $ordersSearch = $this->getSearchFilterParams();
 
-        // Prepare dates
-        $this->startDate = $this->getDateValue('startDate');
-        $this->endDate   = $this->getDateValue('endDate', true);
+        if (!$ordersSearch) {
+            // Prepare dates
+            $this->startDate = $this->getDateValue('startDate');
+            $this->endDate   = $this->getDateValue('endDate', true);
 
-        if (
-            0 === $this->startDate
-            || 0 === $this->endDate
-            || $this->startDate > $this->endDate
-        ) {
-            $date = getdate(\XLite\Core\Converter::time());
+            if (
+                0 === $this->startDate
+                || 0 === $this->endDate
+                || $this->startDate > $this->endDate
+            ) {
+                $date = getdate(\XLite\Core\Converter::time());
 
-            $this->startDate = mktime(0, 0, 0, $date['mon'], 1, $date['year']);
-            $this->endDate   = mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']);
-        }
-
-        foreach ($this->getSearchParams() as $modelParam => $requestParam) {
-            if (\XLite\Model\Repo\Order::P_DATE === $requestParam) {
-                $ordersSearch[$requestParam] = array($this->startDate, $this->endDate);
-
-            } elseif (isset(\XLite\Core\Request::getInstance()->$requestParam)) {
-                $ordersSearch[$requestParam] = \XLite\Core\Request::getInstance()->$requestParam;
+                $this->startDate = mktime(0, 0, 0, $date['mon'], 1, $date['year']);
+                $this->endDate   = mktime(0, 0, 0, $date['mon'], $date['mday'], $date['year']);
             }
-        }
 
-        if (!isset($ordersSearch[\XLite\Model\Repo\Order::P_PROFILE_ID])) {
-            $ordersSearch[\XLite\Model\Repo\Order::P_PROFILE_ID] = 0;
+            foreach ($this->getSearchParams() as $modelParam => $requestParam) {
+                if (\XLite\Model\Repo\Order::P_DATE === $requestParam) {
+                    $ordersSearch[$requestParam] = array($this->startDate, $this->endDate);
+
+                } elseif (isset(\XLite\Core\Request::getInstance()->$requestParam)) {
+                    $ordersSearch[$requestParam] = \XLite\Core\Request::getInstance()->$requestParam;
+                }
+            }
+
+            if (!isset($ordersSearch[\XLite\Model\Repo\Order::P_PROFILE_ID])) {
+                $ordersSearch[\XLite\Model\Repo\Order::P_PROFILE_ID] = 0;
+            }
         }
 
         \XLite\Core\Session::getInstance()->{$this->getSessionCellName()} = $ordersSearch;

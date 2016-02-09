@@ -129,21 +129,24 @@
 .accounting-page-wrapper .available-block-list li{
     max-width: 190px;
     margin-right: 5px;
+    margin-bottom: 70px;
 }
 .accounting-page-wrapper .available-block-list li a{
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: column;
-    -ms-flex-direction: column;
-            flex-direction: column;
+  text-align: center;
+  display: inline-block;
+}
+.accounting-page-wrapper .available-block-list li a:hover {
+  color: #1a509a;
 }
 
 .accounting-page-wrapper .available-block-list li img{
-    width: 100%;
+    width: 190px;
+    display: block;
 }
 
 .accounting-page-wrapper .available-block-list li .link-wrapper{
     margin-top: 12px;
     color: #1a509a;
     font-size: 13px;
+    display: block;
 }
-

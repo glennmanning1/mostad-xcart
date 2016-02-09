@@ -103,7 +103,7 @@ abstract class Price extends \XLite\View\Price implements \XLite\Base\IDecorator
      */
     protected function getLabels()
     {
-        return parent::getLabels() + $this->getSalePriceLabel();
+        return parent::getLabels() + array($this->getSalePriceLabel());
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class Price extends \XLite\View\Price implements \XLite\Base\IDecorator
      *
      * @return array
      */
-    protected function getSalePriceLabel()
+    public function getSalePriceLabel()
     {
         if (!isset($this->salePriceLabel)) {
             if ($this->participateSale()) {

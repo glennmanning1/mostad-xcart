@@ -214,6 +214,11 @@ div.group table.list th.actions.left {
 
 .items-list-table table.list tbody td.cell.name .view {
   width: 400px;
+  line-height: 20px;
+  -webkit-box-pack: start;
+  -webkit-justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
 }
 
 .ajax-container-loadable .items-list-table table.list tbody td.main .view {

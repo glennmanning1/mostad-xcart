@@ -39,6 +39,7 @@ class Download extends \XLite\View\AView
      * Widget parameters
      */
     const PARAM_COMPLETED_CONTEXT = 'completedContext';
+    const PARAM_POPUP_CONTEXT = 'popupContext';
 
     /**
      * Return widget default template
@@ -61,6 +62,7 @@ class Download extends \XLite\View\AView
 
         $this->widgetParams += array(
             static::PARAM_COMPLETED_CONTEXT => new \XLite\Model\WidgetParam\Bool('Complete section context', false),
+            static::PARAM_POPUP_CONTEXT => new \XLite\Model\WidgetParam\Bool('Popup context', false),
         );
     }
 
@@ -72,6 +74,16 @@ class Download extends \XLite\View\AView
     protected function isCompletedSection()
     {
         return $this->getParam(static::PARAM_COMPLETED_CONTEXT);
+    }
+
+    /**
+     * Check - widget run into popup section context or not
+     *
+     * @return boolean
+     */
+    protected function isPopupContext()
+    {
+        return $this->getParam(static::PARAM_POPUP_CONTEXT);
     }
 
     /**

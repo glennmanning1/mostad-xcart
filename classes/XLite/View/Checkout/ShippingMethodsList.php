@@ -82,6 +82,26 @@ class ShippingMethodsList extends \XLite\View\AView
     }
 
     /**
+     * No shippings methods available notification
+     *
+     * @return string
+     */
+    protected function getShippingNotAvailableNotification()
+    {
+        return static::t('There are no shipping methods available');
+    }
+
+    /**
+     * Error message for JS event
+     *
+     * @return string
+     */
+    protected function getErrorMessage()
+    {
+        return static::t('Order cannot be placed because there is no shipping methods available.');
+    }
+
+    /**
      * Check - shipping address is completed or not
      *
      * @return boolean

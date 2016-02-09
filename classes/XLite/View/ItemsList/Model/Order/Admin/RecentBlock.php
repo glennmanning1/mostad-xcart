@@ -34,7 +34,7 @@ namespace XLite\View\ItemsList\Model\Order\Admin;
  *
  * @ListChild (list="dashboard-center", weight="100", zone="admin")
  */
-class RecentBlock extends \XLite\View\ItemsList\Model\Order\Admin\Recent
+class RecentBlock extends \XLite\View\ItemsList\Model\Order\Admin\Search
 {
     /**
      * Get URL of 'More...' link
@@ -43,7 +43,7 @@ class RecentBlock extends \XLite\View\ItemsList\Model\Order\Admin\Recent
      */
     public function getMoreLink()
     {
-        return \XLite\Core\Converter::buildURL('recent_orders');
+        return \XLite\Core\Converter::buildURL('order_list', 'search', array('filter_id' => 'recent'));
     }
 
     /**
@@ -67,6 +67,29 @@ class RecentBlock extends \XLite\View\ItemsList\Model\Order\Admin\Recent
     }
 
     /**
+     * Get a list of CSS files
+     *
+     * @return array
+     */
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+        $list[] = $this->getDir() . '/' . $this->getPageBodyDir() . '/order/recents_style.css';
+
+        return $list;
+    }
+
+    /**
+     * Get container class
+     *
+     * @return string
+     */
+    protected function getContainerClass()
+    {
+        return parent::getContainerClass() . ' recent-block';
+    }
+
+    /**
      * isEmptyListTemplateVisible
      *
      * @return boolean
@@ -84,6 +107,13 @@ class RecentBlock extends \XLite\View\ItemsList\Model\Order\Admin\Recent
     protected function defineColumns()
     {
         $result = parent::defineColumns();
+
+        foreach ($result as $k => $v) {
+            if (isset($v[static::COLUMN_SORT])) {
+                unset($result[$k][static::COLUMN_SORT]);
+            }
+        }
+
         $result['orderNumber'][static::COLUMN_TEMPLATE]
             = $this->getDir() . '/' . $this->getPageBodyDir() . '/order/cell.orderNumber_with_date.tpl';
         unset($result['date']);
@@ -113,6 +143,19 @@ class RecentBlock extends \XLite\View\ItemsList\Model\Order\Admin\Recent
     protected function getPanelClass()
     {
         return null;
+    }
+
+    /**
+     * Get search condition
+     *
+     * @return \XLite\Core\CommonCell
+     */
+    protected function getSearchCondition()
+    {
+        $cnd = \XLite\Core\Database::getRepo('XLite\Model\Order')->getRecentOrdersCondition();
+        $cnd->{\XLite\Model\Repo\Order::P_ORDER_BY} = array(array('o.date', 'o.order_id'), array('DESC', 'DESC'));
+
+        return $cnd;
     }
 
     /**

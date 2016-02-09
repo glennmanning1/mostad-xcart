@@ -85,13 +85,18 @@ abstract class ANodeNotification extends \XLite\View\AView
      *
      * @return integer
      */
-    protected function getLastReedTimestamp()
+    protected function getLastReadTimestamp()
     {
         return $this->getParam(static::PARAM_LAST_READ);
     }
 
     // {{{ View helpers
 
+    /**
+     * Returns node tag attribute
+     *
+     * @return array
+     */
     protected function getNodeTagAttributes()
     {
         $result['class'] = implode(' ', $this->getNodeStyleClasses());

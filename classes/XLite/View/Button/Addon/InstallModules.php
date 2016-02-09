@@ -79,6 +79,7 @@ class InstallModules extends \XLite\View\Button\APopupButton
         
         // :TODO: must be taken from the SelectInstallationButton widget
         $list[] = 'button/js/select_installation_type.js';
+        $list[] = 'modules_manager/js/install_modules_selected.js';
 
         return $list;
     }

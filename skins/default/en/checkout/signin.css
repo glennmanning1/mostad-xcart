@@ -178,3 +178,13 @@
 /*   width: 1024px !important; */
 }
 
+.login-form .input-field-wrapper{
+  position: relative;
+}
+
+.login-form p.inline-error {
+  vertical-align: baseline;
+  position: absolute;
+  text-align: left;
+  width: 100%;
+}

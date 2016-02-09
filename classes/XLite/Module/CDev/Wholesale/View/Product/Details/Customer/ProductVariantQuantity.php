@@ -47,4 +47,14 @@ class ProductVariantQuantity extends \XLite\View\Product\Details\Customer\Quanti
             ? \XLite\Core\Database::getRepo('XLite\Module\CDev\Wholesale\Model\ProductVariantWholesalePrice')->hasWholesalePrice($this->getProductVariant())
             : parent::hasWholesalePrice();
     }
+
+    /**
+     * Return the specific widget service name to make it visible as specific CSS class
+     *
+     * @return null|string
+     */
+    public function getFingerprint()
+    {
+        return 'widget-fingerprint-wholesale-quantity';
+    }
 }

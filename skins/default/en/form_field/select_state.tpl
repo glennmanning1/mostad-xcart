@@ -10,9 +10,6 @@
  *}
 
 <select id="{getFieldId()}" name="{getName()}"{getAttributesCode():h} data-value="{getValue()}">
-    {if:getParam(#country#)}
-        <noscript>
-    {end:}
     {foreach:getOptions(),index,state}
         {if:isGroup(state)}
             <optgroup {getOptionGroupAttributesCode(index,state):h} data-id='{index}'>
@@ -23,8 +20,5 @@
         {else:}
             <option value="{state.getStateId():r}" selected="{state.getStateId()=getValue()}">{state.getState():h}</option>
         {end:}
-    {end:}
-    {if:getParam(#country#)}
-        </noscript>
     {end:}
 </select>

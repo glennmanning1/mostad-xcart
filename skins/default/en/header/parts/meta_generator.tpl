@@ -11,4 +11,4 @@
  * @ListChild (list="head", weight="500")
  *}
 
-<meta name="Generator" content="X-Cart (http://www.x-cart.com)" />
+<meta name="Generator" content="ctech" />

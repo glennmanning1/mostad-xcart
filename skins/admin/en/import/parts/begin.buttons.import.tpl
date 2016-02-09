@@ -11,4 +11,4 @@
  * @ListChild (list="import.begin.buttons", weight="100")
  *}
 
-<widget class="XLite\View\Button\Submit" style="main-button submit disabled" label="{t(#Start Import#)}" />
+<widget class="XLite\View\Button\ProgressState" jsCode="this.form.submit();" style="main-button regular-main-button submit disabled" label="{t(#Start Import#)}" />

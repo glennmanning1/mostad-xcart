@@ -364,6 +364,10 @@ class State extends \XLite\Model\Repo\ARepo
             self::RELATION_CACHE_CELL => array('\XLite\Model\Country'),
         );
 
+        $list['allGrouped'] = array(
+            self::RELATION_CACHE_CELL => array('\XLite\Model\Country'),
+        );
+
         $list['codes'] = array(
             self::ATTRS_CACHE_CELL => array('state_id'),
         );

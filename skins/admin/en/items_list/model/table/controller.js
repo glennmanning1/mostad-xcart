@@ -42,9 +42,9 @@ TableItemsList.prototype.placeNewContent = function(content)
 {
   TableItemsList.superclass.placeNewContent.apply(this, arguments);
   var form = this.container.parents('form').get(0);
-  if (form) {
-    form.bindElements();
-    form.change();
+  if (form && form.commonController) {
+    form.commonController.bindElements();
+    jQuery(form).trigger('change');
   }
 
   core.trigger('stickyPanelReposition');

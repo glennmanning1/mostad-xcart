@@ -57,7 +57,7 @@ CommonForm.elementControllers.push(
             field.addClass('edit-open-mark');
           }
 
-          jQuery('.field :input', this).first().focus().select();
+          jQuery('.field :input', this).first().focus();
           field.trigger('startEditInline');
         }
       }

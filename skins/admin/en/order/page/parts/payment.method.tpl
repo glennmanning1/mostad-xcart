@@ -21,4 +21,11 @@
       <li class="method-name">{t(#n/a#)}</li>
     {end:}
   </ul>
+  {if:order.getPaymentTransactionId()}
+    <p class='transaction'>
+      {t(#Transaction ID#)}: <br>
+      {order.getPaymentTransactionId()}
+    </p>
+  {end:}
+  <div FOREACH="orderForm.getComplexField(#paymentData#),w" class="payment-method-data">{w.display()}</div>
 </div>

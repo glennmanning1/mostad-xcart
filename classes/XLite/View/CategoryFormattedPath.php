@@ -97,6 +97,16 @@ class CategoryFormattedPath extends \XLite\View\AView
     }
 
     /**
+     * Check if category is last
+     *
+     * @return array
+     */
+    protected function isCurrentCategory(\XLite\Model\Category $category)
+    {
+        return $this->getCategory() === $category;
+    }
+
+    /**
      * Get path of current category
      *
      * @return array

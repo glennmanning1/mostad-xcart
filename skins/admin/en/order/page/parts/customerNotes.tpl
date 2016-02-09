@@ -11,7 +11,8 @@
  * @ListChild (list="order.items.bottom", weight="200")
  *}
 
-<div IF="isCustomerNotesVisible()" class="customer-notes">
+<div class="order-note customer-notes">
   <h3>{t(#Customer note#)}</h3>
+  {orderForm.displayComplexField(#customerNote#)}
   <list name="order.customerNotes" />
 </div>

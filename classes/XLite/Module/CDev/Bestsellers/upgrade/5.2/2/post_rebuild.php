@@ -27,8 +27,7 @@
  * @link      http://www.x-cart.com/
  */
 
-return function()
-{
+return function() {
     $pos = $i = $result = 0;
     $chunkSize = 10;
 
@@ -60,5 +59,5 @@ return function()
     \XLite\Core\Database::getEM()->flush();
     \XLite\Core\Database::getEM()->clear();
 
-   return $result;
+    return $result;
 };

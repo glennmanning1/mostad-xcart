@@ -113,7 +113,7 @@ class AttributeValueText extends \XLite\Model\Repo\AttributeValue\AAttributeValu
     {
         $qb = parent::defineFindOneByValueQuery($product, $attribute, $value);
 
-        $qb->andWhere('av.value = :value')
+        $qb->andWhere('translations.value = :value')
             ->setParameter('value', $value);
 
         return $qb;

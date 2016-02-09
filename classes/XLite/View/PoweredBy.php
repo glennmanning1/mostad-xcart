@@ -46,7 +46,7 @@ class PoweredBy extends \XLite\View\AView
      *
      * @var array
      */
-    protected $phrases = array(
+    protected static $phrases = array(
         'en' => array(
             '[Powered by X-Cart shopping cart]',
             '[Powered by X-Cart shopping cart]',
@@ -152,9 +152,9 @@ class PoweredBy extends \XLite\View\AView
         $phrase = static::PHRASE;
 
         $installationLng = \XLite::getInstallationLng();
-        $currentPhrases = $installationLng && isset($this->phrases[$installationLng])
-            ? $this->phrases[$installationLng]
-            : $this->phrases['en'];
+        $currentPhrases = $installationLng && isset(static::$phrases[$installationLng])
+            ? static::$phrases[$installationLng]
+            : static::$phrases['en'];
 
         if (isset($currentPhrases)
             && is_array($currentPhrases)
@@ -187,6 +187,30 @@ class PoweredBy extends \XLite\View\AView
         }
 
         return $phrase;
+    }
+
+    /**
+     * Returns "powered by" phrase index
+     *
+     * @return int
+     */
+    public static function getPoweredByPhraseIndex()
+    {
+        $phrase = static::PHRASE;
+
+        $installationLng = \XLite::getInstallationLng();
+        $currentPhrases = $installationLng && isset(static::$phrases[$installationLng])
+            ? static::$phrases[$installationLng]
+            : static::$phrases['en'];
+
+        if (isset($currentPhrases)
+            && is_array($currentPhrases)
+            && 0 < count($currentPhrases)
+        ) {
+            return mt_rand(0, count($currentPhrases) - 1);
+        } else {
+            return 0;
+        }
     }
 
     /**

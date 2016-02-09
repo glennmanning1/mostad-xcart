@@ -9,10 +9,10 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block import-box import-failed">
+<div class="import-box import-failed">
 
   <div class="header clearfix">
-    <h2><i class="icon-exclamation-sign"></i>  {t(#Verification results#)}</h2>
+    <h2><i class="icon-exclamation-sign"></i>  {getFailedHeader()}</h2>
   </div>
 
   <div class="content">

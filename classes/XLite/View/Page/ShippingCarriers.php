@@ -30,9 +30,7 @@
 namespace XLite\View\Page;
 
 /**
- * Payment transactions page view
- *
- * @ListChild (list="admin.center", zone="admin")
+ * Shipping carriers page view
  */
 class ShippingCarriers extends \XLite\View\AView
 {

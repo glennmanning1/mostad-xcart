@@ -8,7 +8,7 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  *
- * @ListChild (list="itemsList.product.grid.customer.info", weight="999")
+ * @ListChild (list="itemsList.product.grid.customer.info.photo", weight="999")
  * @ListChild (list="itemsList.product.list.customer.quicklook", weight="999")
  * @ListChild (list="productBlock.info", weight="999")
  *}

@@ -79,7 +79,7 @@ class Order extends \XLite\View\FormField\Inline\Popup\Address
     {
         $list = parent::getPopupParameters();
 
-        $order = $this->getEntity()->getOrder() ?: $this->getOrder();;
+        $order = $this->getEntity()->getOrder() ?: $this->getOrder();
 
         $list['order_id'] = $order->getOrderId();
 
@@ -135,6 +135,14 @@ class Order extends \XLite\View\FormField\Inline\Popup\Address
         return $result;
     }
 
+    protected function getOrderHistoryExcludedFields()
+    {
+        return array(
+            static::SAME_AS_BILLING,
+            $this->getAddressIdFieldName()
+        );
+    }
+
     /**
      * Save field value to entity
      *
@@ -145,8 +153,21 @@ class Order extends \XLite\View\FormField\Inline\Popup\Address
      */
     protected function saveFieldEntityValue(array $field, $value)
     {
+        $excluded = $this->getOrderHistoryExcludedFields();
+
         if ($this->canSaveAddressFields() && $this->isWritableField($field)) {
             parent::saveFieldEntityValue($field, $value);
+
+        } elseif (!in_array($field['field'][static::FIELD_NAME], $excluded)) {
+            $address = $this->getAddressModel();
+
+            if ($address) {
+                $oldValue = $this->getOldPropertyValue($address, $field, $value);
+
+                if ($value != $oldValue) {
+                    $this->registerOrderChanges($address, $field, $oldValue, $value);
+                }
+            }
         }
     }
 
@@ -193,8 +214,57 @@ class Order extends \XLite\View\FormField\Inline\Popup\Address
     {
         return !in_array(
             $field['field'][static::FIELD_NAME],
-            array($this->getAddressIdFieldName(), static::SAME_AS_BILLING)
+            array_merge(
+                array($this->getAddressIdFieldName(), static::SAME_AS_BILLING),
+                $this->getConditionalFields($field)
+            )
         );
+    }
+
+    /**
+     * Get conditional read-only fields
+     * 
+     * @param array $field Field
+     * 
+     * @return string
+     */
+    protected function getConditionalFields(array $field)
+    {
+        $fields = array();
+
+        // Make custom_state readonly if country has states
+        $countryWidget = $this->getFieldWidget($this->getCountryCodeFieldName());
+        if ($countryWidget && $countryWidget->getValue()) {
+            $countryCode = $countryWidget->getValue();
+            $country = \XLite\Core\Database::getRepo('XLite\Model\Country')->find($countryCode);
+
+            if ($country && $country->hasStates()) {
+                $fields[] = $this->getCustomStateFieldName();
+            }
+        }
+
+        return $fields;
+    }
+
+
+    /**
+     * Get country code field name 
+     * 
+     * @return string
+     */
+    protected function getCountryCodeFieldName()
+    {
+        return 'country_code';
+    }
+
+    /**
+     * Get custom state field name 
+     * 
+     * @return string
+     */
+    protected function getCustomStateFieldName()
+    {
+        return 'custom_state';
     }
 
     /**
@@ -243,7 +313,7 @@ class Order extends \XLite\View\FormField\Inline\Popup\Address
     protected function isSameAsBilling()
     {
         return 'shippingAddress' == $this->getParam(static::PARAM_FIELD_NAME)
-            && $this->getEntity()->isEqualAddress();
+            && $this->getEntity()->isEqualAddress(true);
     }
 
 }

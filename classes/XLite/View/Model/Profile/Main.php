@@ -318,7 +318,7 @@ class Main extends \XLite\View\Model\Profile\AProfile
     }
 
     /**
-     * Process the errors occured during the "validateInput" action
+     * Process the errors occurred during the "validateInput" action
      *
      * @return void
      */

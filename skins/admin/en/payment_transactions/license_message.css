@@ -20,10 +20,11 @@
 
 .license-message .info {
   background: url(images/screenshot.png) no-repeat 100% 0;
-  background-size: 45%;
+  background-size: 43%;
   min-height: 325px;
   margin-bottom: 20px;
   padding-left: 16px;
+  max-width: 1180px;
 }
 
 .license-message .description {
@@ -38,9 +39,16 @@
   width: 500px;
 }
 
+
 .license-message .features li {
   margin-top: 6px;
   margin-left: 26px;
+}
+
+
+.license-message .features li .module-link a{
+  font-size: 15px;
+  vertical-align: initial;
 }
 
 .license-message .features i {
@@ -72,9 +80,3 @@
   font-size: 19px;
 }
 
-.license-message .banner {
-  background: url(images/acr_banner.png) no-repeat;
-  background-size: 100%;
-  height: 140px;
-  max-width: 1180px;
-}

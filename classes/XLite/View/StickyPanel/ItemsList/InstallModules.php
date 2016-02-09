@@ -70,6 +70,30 @@ class InstallModules extends \XLite\View\StickyPanel\ItemsListForm
     }
 
     /**
+     * Define buttons widgets
+     *
+     * @return array
+     */
+    protected function defineButtons()
+    {
+        $list = parent::defineButtons();
+
+        if ($this->getModuleId()) {
+            $list['back'] = $this->getWidget(
+                array(
+                    'disabled' => false,
+                    'label'    => 'Back to marketplace',
+                    'style'    => 'action link',
+                    'location' => $this->buildURL('addons_list_marketplace'),
+                ),
+                '\XLite\View\Button\SimpleLink'
+            );
+        }
+
+        return $list;
+    }
+
+    /**
      * Get "save" widget
      *
      * @return \XLite\View\Button\Submit
@@ -78,15 +102,24 @@ class InstallModules extends \XLite\View\StickyPanel\ItemsListForm
     {
         $modules = $this->getModulesToInstall();
 
-        return $this->getWidget(
-            array(
-                'style'    => 'action submit',
-                'label'    => static::t('Install modules'),
-                'disabled' => empty($modules),
-            ),
-            // LAs of the modules popup button
-            'XLite\View\Button\Addon\InstallModules'
-        );
+        return $this->isKeysNoticeAutoDisplay()
+            ? $this->getWidget(
+                array(
+                    'label'    => static::t('Install modules'),
+                    'forcePopup' => false,
+                ),
+                // License warning popup button
+                'XLite\View\Button\KeysNotice'
+            )
+            : $this->getWidget(
+                array(
+                    'style'    => 'action submit',
+                    'label'    => static::t('Install modules'),
+                    'disabled' => empty($modules),
+                ),
+                // LAs of the modules popup button
+                'XLite\View\Button\Addon\InstallModules'
+            );
     }
 
     /**
@@ -98,14 +131,16 @@ class InstallModules extends \XLite\View\StickyPanel\ItemsListForm
     {
         $list = parent::defineAdditionalButtons();
 
-        $list[] = $this->getWidget(
-            array(
-                'disabled' => false,
-                'label'    => 'Empty',
-                'style'    => 'action link',
-            ),
-            'XLite\View\Button\Addon\InstallModulesSelected'
-        );
+        if (!$this->getModuleId()) {
+            $list[] = $this->getWidget(
+                array(
+                    'disabled' => false,
+                    'label'    => 'Empty',
+                    'style'    => 'action link',
+                ),
+                'XLite\View\Button\Addon\InstallModulesSelected'
+            );
+        }
 
         return $list;
     }
@@ -113,7 +148,7 @@ class InstallModules extends \XLite\View\StickyPanel\ItemsListForm
     /**
      * Should more actions buttons be disabled?
      *
-     * @return boolean 
+     * @return boolean
      */
     protected function isMoreActionsDisabled()
     {

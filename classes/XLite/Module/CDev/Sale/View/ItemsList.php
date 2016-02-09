@@ -87,6 +87,18 @@ abstract class ItemsList extends \XLite\View\ItemsList\Product\Customer\ACustome
      */
     protected function getLabels(\XLite\Model\Product $product)
     {
+        $label = \XLite\Module\CDev\Sale\Core\Labels::getLabel($product);
+
+        if ($product->getParticipateSale() && !$label) {
+            $widget = $this->getWidget(
+                array(
+                    'product'   => $product,
+                ),
+                'XLite\View\Price'
+            );
+            $widget->getSalePriceLabel();
+        }
+
         return parent::getLabels($product) + \XLite\Module\CDev\Sale\Core\Labels::getLabel($product);
     }
 }

@@ -140,6 +140,18 @@ jQuery(document).ready(
         this.columnSelectors.prop('checked', this.checked ? 'checked' : '');
       }
     );
+
+    jQuery('.promo-block .close').click(
+      function (event) {
+        var block = jQuery(this).parents('.promo-block').get(0);
+        var blockId = jQuery(block).data('promo-id');
+        if (0 < blockId.length) {
+          blockId = blockId + 'PromoBlock';
+          document.cookie = blockId + '=1';
+        }
+        jQuery(block).hide();
+      }
+    );
   }
 );
 
@@ -207,7 +219,7 @@ function loadDialog(url, dialogOptions, callback, link, $this)
 // Load dialog by link
 function loadDialogByLink(link, url, options, callback, $this)
 {
-  if (!link.linkedDialog || jQuery(link).hasClass('always-reload')) {
+  if (!link.linkedDialog || 0 == jQuery(link.linkedDialog).length || jQuery(link).hasClass('always-reload')) {
     link.linkedDialog = loadDialog(url, options, callback, link, $this);
 
   } else {
@@ -358,7 +370,7 @@ function visibleBox(id, skipOpenClose)
 /**
  * Attach tooltip to some element on hover action
  */
-function attachTooltip(elm, content)
+function attachTooltip(elm, content, forcePlacement)
 {
   var placement = 'right';
 
@@ -376,6 +388,7 @@ function attachTooltip(elm, content)
   ) {
     placement = 'left';
   }
+  placement = forcePlacement || placement;
 
   jQuery(elm).each(
     function () {
@@ -466,17 +479,14 @@ function assignWaitOverlay(elem)
 
   var div = jQuery('<div class="wait-block-overlay"><div class="wait-block"><div></div></div></div>');
 
-  var offset = elem.offset();
   div.css({
-    top:    offset.top + 'px',
-    left:   offset.left + 'px',
     width:  elem.outerWidth() + 'px',
     height: elem.outerHeight() + 'px'
   });
 
   // We do not show the overlay if the element has zero width or height (the element is not visible)
-  if (0 !== elem.outerWidth() && 0 !==  elem.outerHeight()) {
-    jQuery('body').append(div);
+  if (0 !== elem.outerWidth() && 0 !== elem.outerHeight()) {
+    elem.before(div)
   }
 
   waitOverlayRegistry[pattern] = div;
@@ -521,17 +531,14 @@ function assignShadeOverlay(elem)
 
   var div = jQuery('<div class="shade-block-overlay"></div>');
 
-  var offset = elem.offset();
   div.css({
-    top:    offset.top + 'px',
-    left:   offset.left + 'px',
     width:  elem.outerWidth() + 'px',
     height: elem.outerHeight() + 'px'
   });
 
   // We do not show the overlay if the element has zero width or height (the element is not visible)
   if (0 !== elem.outerWidth() && 0 !== elem.outerHeight()) {
-    jQuery('body').append(div);
+    elem.before(div)
   }
 
   shadeOverlayRegistry[pattern] = div;

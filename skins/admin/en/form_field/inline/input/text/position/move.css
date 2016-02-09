@@ -15,8 +15,8 @@
   margin-top: 0;
   margin-right: 5px;
   position: relative;
-  top: -3px;
   color: #bec6d8;
+  line-height: 1;
 }
 
 .inline-move .field .table-value,

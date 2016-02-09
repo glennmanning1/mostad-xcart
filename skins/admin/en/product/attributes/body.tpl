@@ -21,15 +21,15 @@
     <widget IF="canAddAttributes()" class="\XLite\View\Button\Dropdown\AddAttribute" listId="{getListId()}" />
   </div>
   <ul class="data" id="list{getListId()}">
-    <li FOREACH="getAttributesList(),id,a" class="line clearfix attribute">
-      <div class="attribute-name">
-        {a.name.display()}
-      </div>
-      {a.value.display()}
-      <div IF="isRemovable()" class="actions">
-        <widget class="XLite\View\Button\Remove" buttonName="delete[{id}]" label="{getPemoveText()}" style="delete" />
-      </div>
-    </li>
+    {foreach:getAttributesList(),id,a}
+      <li class="line clearfix attribute">
+        <div class="attribute-name">
+          {a.name.display()}
+        </div>
+        {a.value.display()}
+        <list name="product.attributes.actions" item="{a}" itemId="{id}">
+      </li>
+    {end:}
     <li IF="!getAttributesList()" class="list-empty">
       {t(#No attributes assigned#)}
     </li>

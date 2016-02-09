@@ -140,9 +140,9 @@
                   <td align="center" valign="top">
 
                     <!--[if (gte mso 9)|(IE)]>
-                    <table align="center" border="0" cellspacing="0" cellpadding="0" width="640">
+                    <table align="left" border="0" cellspacing="0" cellpadding="0" width="640">
                       <tr>
-                        <td align="center" valign="top">
+                        <td align="left" valign="top">
                     <![endif]-->
                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
                       <tr>

@@ -285,6 +285,26 @@ abstract class Online extends \XLite\Model\Payment\Base\Processor
     }
 
     /**
+     * Convert string to float
+     *
+     * @param string $money                 Money amount
+     * @param string $thousandDelimiter     Thousand delimiter
+     * @param string $decimalDelimiter      Decimal delimiter
+     *
+     * @return float
+     */
+    protected function parseMoneyFromString($money, $thousandDelimiter, $decimalDelimiter)
+    {
+        $preparedString = str_replace(
+            array($thousandDelimiter, $decimalDelimiter),
+            array('', '.'),
+            $money
+        );
+
+        return (float) $preparedString;
+    }
+
+    /**
      * Check total (transaction total and total from gateway response)
      *
      * @param float $total Total from gateway response

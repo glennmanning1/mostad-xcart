@@ -183,13 +183,13 @@ abstract class AAttributeValue extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function assembleColumnsData(array $rows)
     {
-        $data = parent::assembleColumnsData($rows);
+        $typeRaw = $this->getColumn('type');
+        $typeProcessed = $this->processColumn('type', $typeRaw);
+        $type = $this->assembleColumnData($typeProcessed, $rows);
 
-        if (!isset($data['type']) || $this->attributeType != $data['type']) {
-           $data = array();
-        }
-
-        return $data;
+        return !$type || $this->attributeType != $type
+            ? array()
+            : parent::assembleColumnsData($rows);
     }
 
     /**
@@ -216,7 +216,7 @@ abstract class AAttributeValue extends \XLite\Logic\Import\Processor\AProcessor
         if ($this->verifyValueAsEmpty($value)) {
             $this->addError('ATTRS-PRODUCT-SKU-FMT', array('column' => $column, 'value' => $value));
 
-        } else {
+        } elseif (!$this->isUpdateMode()) {
             $product = \XLite\Core\Database::getRepo('XLite\Model\Product')->findOneBy(array('sku' => $value));
 
             if (!$product && !$this->isProductWillBeAdded($value)) {

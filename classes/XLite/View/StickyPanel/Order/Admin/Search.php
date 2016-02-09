@@ -46,11 +46,36 @@ class Search extends \XLite\View\StickyPanel\Order\Admin\AAdmin
         $list[] = $this->getWidget(
             array(
                 'disabled'   => true,
-                'label'      => 'Print',
+                'label'      => 'Delete',
+                'style'      => 'more-action link list-action',
+                'icon-style' => 'fa fa-trash-o',
+            ),
+            'XLite\View\Button\DeleteSelected'
+        );
+
+        $list[] = $this->getWidget(
+            array(),
+            'XLite\View\Button\Divider'
+        );
+
+        $list[] = $this->getWidget(
+            array(
+                'disabled'   => true,
+                'label'      => 'Print invoice',
                 'style'      => 'more-action',
                 'icon-style' => 'fa fa-print',
             ),
             'XLite\View\Button\PrintSelectedInvoices'
+        );
+
+        $list[] = $this->getWidget(
+            array(
+                'disabled'   => true,
+                'label'      => 'Print packing slip',
+                'style'      => 'more-action',
+                'icon-style' => 'fa fa-print',
+            ),
+            'XLite\View\Button\PrintSelectedPackingSlip'
         );
 
         return $list;

@@ -49,6 +49,24 @@ class Settings extends \XLite\View\Model\AShippingSettings
     }
 
     /**
+     * Get editable options
+     *
+     * @return array
+     */
+    protected function getEditableOptions()
+    {
+        $options = parent::getEditableOptions();
+
+        foreach ($options as $key => $option) {
+            if ($option->getName() === 'optionValues') {
+                unset($options[$key]);
+            }
+        }
+
+        return $options;
+    }
+
+    /**
      * Detect form field class by option
      *
      * @param \XLite\Model\Config $option Option

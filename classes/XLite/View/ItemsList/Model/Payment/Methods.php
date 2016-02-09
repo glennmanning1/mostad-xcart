@@ -53,7 +53,10 @@ class Methods extends \XLite\View\ItemsList\Model\Table
             'description' => array(
                 static::COLUMN_NAME    => static::t('Description'),
                 static::COLUMN_CLASS   => 'XLite\View\FormField\Inline\Input\Text',
-                static::COLUMN_PARAMS  => array('required' => false),
+                static::COLUMN_PARAMS  => array(
+                    'required' => false,
+                    \XLite\View\FormField\Inline\AInline::PARAM_VIEW_FULL_WIDTH => true,
+                ),
                 static::COLUMN_ORDERBY  => 300,
                 static::COLUMN_EDIT_ONLY => true,
             ),

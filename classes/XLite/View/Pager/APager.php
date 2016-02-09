@@ -742,7 +742,7 @@ abstract class APager extends \XLite\View\RequestHandler\ARequestHandler
      *
      * @return string
      */
-    protected function getSessionCell()
+    public function getSessionCell()
     {
         $cell = parent::getSessionCell() . '_' . \XLite::getController()->getPagerSessionCell();
 

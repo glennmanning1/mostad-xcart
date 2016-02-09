@@ -77,7 +77,9 @@ class Progress extends \XLite\View\AView
      */
     protected function getTimeLabel()
     {
-        return \XLite\Core\Translation::formatTimePeriod($this->getQuickDataGenerator()->getTimeRemain());
+        $generator = \XLite\Logic\QuickData\Generator::getInstance();
+
+        return \XLite\Core\Translation::formatTimePeriod($generator->getTimeRemain());
     }
 
     /**

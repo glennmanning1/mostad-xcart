@@ -10,5 +10,5 @@
  *}
 
 <div{getDataCode():h}>
-  <widget class="XLite\View\FileUploader" object="{getValue()}" maxWidth="{getMaxWidth()}" maxHeight="{getMaxHeight()}" isImage="{isImage()}" fieldName="{getName()}" />
+  <widget class="XLite\View\FileUploader" object="{getValue()}" maxWidth="{getMaxWidth()}" maxHeight="{getMaxHeight()}" isImage="{isImage()}" fieldName="{getName()}" isViaUrlAllowed="{isViaUrlAllowed()}"/>
 </div>

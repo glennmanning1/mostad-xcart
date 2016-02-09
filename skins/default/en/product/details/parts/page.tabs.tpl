@@ -16,32 +16,32 @@
   <div class="tabs">
     <ul class="tabs primary">
       <li FOREACH="getTabs(),index,tab" class="{getTabClass(tab)}">
-        <a data-id="{tab.id:h}" href="#{tab.id:h}">{t(tab.name)}</a>
+        <a data-id="{tab.id:h}" href="{buildURL(#product#,##,_ARRAY_(#product_id#^product.productId))}#{tab.id:h}">{t(tab.name)}</a>
       </li>
     </ul>
   </div>
 
   <div class="tabs-container">
-  <div FOREACH="getTabs(),tab" id="{tab.id:h}" class="tab-container" style="{getTabStyle(tab)}">
-    <a name="{tab.id:h}"></a>
-    {if:tab.template}
-      <widget template="{tab.template}" />
-
-    {else:}
-      {if:tab.widget}
-        <widget class="{tab.widget}" product="{product}" />
+    <div FOREACH="getTabs(),tab" id="{tab.id:h}" class="tab-container hacky-container">
+      <a name="{tab.id:h}"></a>
+      {if:tab.template}
+        <widget template="{tab.template}" />
 
       {else:}
-        {if:tab.list}
-          <list name="{tab.list}" product="{product}" />
+        {if:tab.widget}
+          <widget class="{tab.widget}" product="{product}" />
+
         {else:}
-          {if:tab.widgetObject}
-            {tab.widgetObject.display():h}
+          {if:tab.list}
+            <list name="{tab.list}" product="{product}" />
+          {else:}
+            {if:tab.widgetObject}
+              {tab.widgetObject.display():h}
+            {end:}
           {end:}
         {end:}
       {end:}
-    {end:}
-  </div>
+    </div>
   </div>
 
 </div>

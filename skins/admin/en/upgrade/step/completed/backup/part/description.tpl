@@ -21,7 +21,7 @@
 <widget class="\XLite\View\Upgrade\Step\Completed\UpgradeNotes" />
 
 <div class="upgrade-note upgrade-description">
-  {t(#If there are some critical errors occured you can do the following#)}:
+  {t(#If there are some critical errors occurred you can do the following#)}:
 </div>
 
 <list name="actions" type="inherited" />

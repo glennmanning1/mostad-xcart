@@ -61,14 +61,4 @@ abstract class Float extends \XLite\View\FormField\Input\Text\Float implements \
 
         return $result;
     }
-
-    /**
-     * Get precision for discount value (4 digits after point)
-     *
-     * @return integer
-     */
-    protected function getE()
-    {
-        return 4;
-    }
 }

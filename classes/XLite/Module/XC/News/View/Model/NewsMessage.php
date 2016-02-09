@@ -208,4 +208,19 @@ class NewsMessage extends \XLite\View\Model\AModel
 
         parent::setModelProperties($data);
     }
+
+    /**
+     * Rollback model if data validation failed
+     *
+     * @return void
+     */
+    protected function rollbackModel()
+    {
+        parent::rollbackModel();
+
+        $urls = $this->getModelObject()->getCleanURLs();
+        foreach ($urls as $url) {
+            \XLite\Core\Database::getEM()->detach($url);
+        }
+    }
 }

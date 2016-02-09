@@ -180,6 +180,18 @@ abstract class FileManager extends \Includes\Utils\AUtils
     }
 
     /**
+     * Remove anything which isn't a word, whitespace, number
+     * or any of the following caracters -_~,;:[]().
+     */
+    public static function sanitizeFilename($filename)
+    {
+        $sanitized = preg_replace("([^\w\s\d\-_~,;:\[\]\(\).])", '', $filename);
+        $sanitized = preg_replace("([\.]{2,})", '', $sanitized);
+
+        return $sanitized;
+    }
+
+    /**
      * Return relative path by an absolute one
      *
      * @param string $path      Path to convert
@@ -322,6 +334,9 @@ abstract class FileManager extends \Includes\Utils\AUtils
     public static function getUniquePath($dir, $file)
     {
         $dir      = static::getCanonicalDir($dir, false);
+        $file     = static::sanitizeFilename(
+            \Includes\Utils\Converter::convertToTranslit($file)
+        );
         $pathinfo = pathinfo($file);
         $counter  = 1;
 
@@ -389,6 +404,20 @@ abstract class FileManager extends \Includes\Utils\AUtils
     public static function replace($path, $data, $pattern, $flags = 0, $mode = 0644)
     {
         return static::write($path, preg_replace($pattern, $data, static::read($path)), $flags, $mode);
+    }
+
+    /**
+     * Get filepath of the resource handle
+     *
+     * @param resource  $resource      File resource\handle
+     *
+     * @return boolean
+     */
+    public static function getResourcePath($resource)
+    {
+        $meta_data = stream_get_meta_data($resource);
+        $filename = $meta_data["uri"];
+        return realpath($filename);
     }
 
     /**
@@ -620,7 +649,44 @@ abstract class FileManager extends \Includes\Utils\AUtils
      */
     public static function isImage($path)
     {
-        return false !== getimagesize($path);
+        $result = false;
+
+        if (function_exists('exif_imagetype')) {
+            $result = 0 < (int)@exif_imagetype($path);
+
+        } elseif (function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME);
+            $result = preg_match('/^image\/.*/', finfo_file($finfo, $path));
+            finfo_close($finfo);
+
+        } else {
+            $data = @getimagesize($path);
+            $result = is_array($data) && $data[0];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return true if file has image extension
+     *
+     * @param string $path File path
+     *
+     * @return boolean
+     */
+    public static function isImageExtension($path)
+    {
+        return in_array(strtolower(pathinfo($path, PATHINFO_EXTENSION)), static::getImageExtensions());
+    }
+
+    /**
+     * Get list of allowed image extensions
+     *
+     * @return array
+     */
+    public static function getImageExtensions()
+    {
+        return array('gif', 'jpg', 'jpeg', 'png', 'ico');
     }
 
     /**

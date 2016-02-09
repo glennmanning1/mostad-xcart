@@ -94,7 +94,8 @@ class Coupon extends \XLite\Controller\Customer\ACustomer
         $error = '';
 
         try {
-            $coupon->checkCompatibility($cart) && $coupon->checkUnique($cart);
+            $coupon->checkUnique($cart);
+            $coupon->checkCompatibility($cart);
         } catch (\XLite\Module\CDev\Coupons\Core\CompatibilityException $exception) {
             $error = static::t($exception->getMessage(), $exception->getParams());
         }

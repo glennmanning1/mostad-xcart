@@ -10,6 +10,7 @@
  *
  * @ListChild (list="invoice.bottom.address.billing", weight="20")
  *}
+
 <div class="method-box">
   <strong class="method-title">{t(#Payment method#)}</strong>
   {if:order.getVisiblePaymentMethods()}
@@ -21,4 +22,11 @@
   {else:}
     {t(#n/a#)}<br />
   {end:}
+  {if:order.getPaymentTransactionId()}
+    {t(#Transaction ID#)}: {order.getPaymentTransactionId()}
+  {end:}
+  <div FOREACH="order.getPaymentTransactionData(1),item" class="sub-data">
+    <strong class="title">{t(item.title)}</strong>
+    <span class="value">{item.value}</span>
+  </div>
 </div>

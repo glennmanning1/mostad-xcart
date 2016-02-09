@@ -95,26 +95,23 @@ $translation = array (
   'Updating primary administrator profile...' => 'Идет обновление основного администраторского профиля...',
   'Registering primary administrator profile...' => 'Регистрация основного администраторского профиля...',
   'ERROR' => 'ОШИБКА',
+  'ERRORS:' => 'ОШИБКИ:',
+  'The rest report data:' => 'Остальные результаты проверки:',
   'cannot_connect_mysql_server' => 'Не удалось установить соединение с MySQL сервером или выбранной базой данных :pdoerr.<br />Нажмите кнопку \'НАЗАД\' и проверьте введенные данные о MySQL сервере.',
   'script_renamed_text' => '
 В целях защиты вашей установки X‑Cart 5, файл "install.php" был переименован в ":newname".
 
-При возникновении необходимости переустановки X‑Cart 5, переименуйте файл ":newname" обратно в "install.php" и пройдите по следующей ссылке:
+При возникновении необходимости переустановки X-Cart, переименуйте файл ":newname" обратно в "install.php" и пройдите по следующей ссылке:
      http://:host:webdir/install.php
 ',
   'script_renamed_text_html' => '
-<p>В целях защиты вашей установки X‑Cart 5, файл "install.php" был переименован в ":newname".</p>
-
-<p>При возникновении необходимости переустановки X‑Cart 5, переименуйте файл ":newname" обратно в "install.php"</p>',
-  'script_cannot_be_renamed_text' => '<P><font color="red"><b>ВНИМАНИЕ!</b> Не удалось переименовать файл install.php! Чтобы обезопасить свою установку X‑Cart 5 и предотвратить неавторизованное использование файла, переименуйте или удалите файл вручную.</font></P>',
-  'correct_permissions_text' => '
-Перед началом работы с магазином X‑Cart 5 необходимо установить следующие безопасные права на файлы:<br /><br />
-
-<code>:perms</code>
-',
+В целях защиты вашей установки X-Cart, файл "install.php" был переименован в ":newname".<br />
+При возникновении необходимости переустановки X-Cart, переименуйте файл ":newname" обратно в "install.php"',
+  'script_cannot_be_renamed_text' => '<span style="color: red;"><b>ВНИМАНИЕ!</b> Не удалось переименовать файл install.php! Чтобы обезопасить свою установку X-Cart и предотвратить неавторизованное использование файла, переименуйте или удалите файл вручную.</span>',
+  'correct_permissions_text' => 'Перед использованием X-Cart, пожалуйста установите следущие права на файлы:',
   'congratulations_text' => 'Поздравляем!
 
-Магазин на базе X‑Cart 5 успешно установлен и доступен по следующим ссылкам:
+Магазин на базе X-Cart 5 успешно установлен и доступен по следующим ссылкам:
 
 ЗОНА ПОКУПАТЕЛЯ (ГЛАВНАЯ СТРАНИЦА)
      http://:host:webdir/cart.php
@@ -213,16 +210,17 @@ $translation = array (
   'E-mail and password that you provide on this screen will be used to create primary administrator profile. Use them as credentials to access the Administrator Zone of your online store.' => 'E-mail-адрес и пароль, введенные на этой странице, будут использованы для создания основного администраторского профиля. Они являются именем пользователя и паролям для входа в основную учетную запись администратора.',
   'Please, enter non-empty password' => 'Пожалуйста, введите пароль',
   'Please, specify a valid e-mail address!' => 'Пожалуйста, укажите действующий e-mail-адрес',
-  'Permissions checking failed. Please make sure that the following files have writable permissions<br /><br /><i>:perms</i>' => 'Проверка требований не завершена. Пожалуйста, убедитесь, что следующие файлы доступны для записи:' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
-  'Permissions checking failed. Please make sure that the following file permissions are assigned (UNIX only):<br /><br /><i>:perms</i>' => 'Проверка разрешений не завершена. Пожалуйста, убедитесь, что установлены следующие права на файлы (только для ОС UNIX):' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
+  'Permissions checking failed. Please make sure that the following files have writable permissions<br /><br /><i>:perms</i>' => 'Проверка требований не завершена. Пожалуйста, убедитесь, что следующие файлы доступны для записи:' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="copy2clipboard-alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
+  'Permissions checking failed. Please make sure that the following file permissions are assigned (UNIX only):<br /><br /><i>:perms</i>' => 'Проверка разрешений не завершена. Пожалуйста, убедитесь, что установлены следующие права на файлы (только для ОС UNIX):' . PHP_EOL . '<br /><i class="copy2clipboard fa fa-clipboard"></i><div class="copy2clipboard-alert alert-success" style="display: none;"></div><div class="permissions-list">:perms</div>',
   'Copied to clipboard' => 'Скопировано в буфер обмена',
+  'Copy to clipboard' => 'Копировать в буфер обмена',
   'Cache building procedure failed: :message' => 'Не удалось сгенерировать кеш:<br />\n:message',
   'License agreement' => 'Лицензионное соглашение',
   'Configuring X-Cart' => 'Настройка параметров X‑Cart',
   'Setting up templates' => 'Установка темплейтов',
   'Building cache' => 'Генерация кеш',
-  'Creating administrator account' => 'Создание  учетной записи администратора',
-  'Building cache: Pass #:step...' => 'Генерация кеш: Шаг #:step...',
+  'Creating administrator account' => 'Создание аккаунта администратора',
+  'Building cache: Pass #:step...' => 'Генерация кеша: Шаг #:step...',
   'Cache is built' => 'Генерация кеш завершена',
   'Click here to redirect' => 'Нажмите здесь для перехода',
   'Reason: memory_get_usage() is disabled on your hosting.' => 'Причина: опция memory_get_usage() отключена на вашем сервере',
@@ -240,13 +238,13 @@ $translation = array (
   'Non-critical dependency failed' => 'Рекомендованные библиотеки или программное обеспечение не найдено',
   'requirements_failed_text' => 'Пожалуйста, обратитесь к своему <em>провайдеру хостинга</em> или отправьте нам <em>сведения об ошибке установки</em>, и наши специалисты помогут вам найти решение.',
   'Send a report' => 'Отправить сведения об ошибках',
+  'Send report and get a help' => 'Отправить отчет и получить помощь',
   'requirement_warning_text' => 'Конфигурация сервера неблагоприятна для усиановки. Это может привести к частичной или полной неработоспособности магазина X‑Cart 5. <br />Продолжить установку все равно?',
   'Yes, I want to continue the installation.' => 'Да, я хочу продолжить установку.',
   '[original report]' => '[original report]',
   '[replicated report]' => '[replicated report]',
   'Report generation failed.' => 'Отчет не создан',
   'Technical problems report' => 'Отчет о технических проблемах',
-  'ask_send_report_text' => 'В ходе тестирования обнаружено несколько проблем. Данный отчет о результатах тестирования будет отправлен в службу поддержки, чтобы наши специалисты проанализировать и исправить проблемы. Чтобы отслеживать ход работы, пожалуйста, укажите свой e-mail-адрес в поле ниже и войдите в своу учетную запись в <a href="https://secure.x-cart.com/" target="_blank">HelpDesk</a>. Если у вас нет учетной записи в системе HelpDesk, вы можете <a href="https://secure.x-cart.com/customer.php?area=login&amp;target=register" target="_blank">зарегистрироваться здесь</a>.',
   'See details' => 'Подробнее',
   'Hide details' => 'Скрыть детали',
   'Additional comments' => 'Дополнительные комментарии',
@@ -255,7 +253,7 @@ $translation = array (
   'Prevents unauthorized use of installation script' => 'Предотвращает неавторизованное использование<br />скрипта установки',
   'I accept the License Agreement' => 'Я принимаю условия соглашения и <a href="http://www.x-cart.ru/privacy-policy.html?utm_source=XC5Install&amp;utm_medium=acceptLA&amp;utm_campaign=XC5Install" target="_blank">Правила соблюдения конфиденциальности</a>',
   'Could not find license agreement file.<br />Aborting installation.' => 'Файл лицензионного соглашения не найден.<br />Прекращение установки.',
-  'lc_php_version_description' => 'Версии PHP <b>5.3.0+</b> поддерживаются.',
+  'lc_php_version_description' => 'Версии PHP <b>5.3.10+</b> поддерживаются.',
   'lc_php_disable_functions_description' => 'Обнаружено, что некоторые функции, используемые X‑Cart 5, отключены. Убедитесь, что эти функции не упомянуты в опции "disable_functions", и все php-расширения, необходимые для работы этих функций, активированы в файле php.ini. Пожалуйста, устраните проблему и попробуйте снова.',
   'lc_php_memory_limit_description' => 'Значение PHP опции memory_limit должно быть как минимум :minval.',
   'lc_php_pdo_mysql_description' => 'При поддержке MySQL,  расширение PDO необходимо для подклчения X‑Cart 5 к базе данных. Пожалуйста, убедитесь, что это расширение включено в файле php.ini, и попробуйте еще раз.',
@@ -275,13 +273,13 @@ $translation = array (
   'kb_lc_https_bouncer_description' => 'Посмотрите в нашем <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=524295#InstallationGuide-5.HTTPSbouncerisnotinstalled" target="_blank">руководстве</a> как решить проблему с библиотекой libCurl.',
   'kb_note_mysql_issue' => 'Посмотрите в нашем <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=524295#InstallationGuide-1.Problemswithconnectiontodatabase" target="_blank">руководстве</a> как решить проблему с MySQL соединением.',
   'Redirecting to the next step...' => 'Переход на следующий шаг...',
-  'Preparing data for cache generation...' => 'Поготовка данных для генерации кеш...',
+  'Preparing data for cache generation...' => 'Подготовка данных для генерации кеша...',
   'Config file' => 'Файл конфигурации',
   'lc_config_file_description' => 'Файл конфигурации не существует, и его нельзя скопировать из стандартного файла конфигурации. Данный файл необходим для установки программы.<br /><br />Пожалуйста, выполните следующие действия: <br /><br />1. Откройте директорию :dir<br />2. Скопируйте <i>:file1</i> to <i>:file2</i><br />3. Установите права на запись <i>:file2</i><br /><br />Попробуйте снова.',
   'PHP option magic_quotes_runtime that must be disabled' => 'PHP опйию magic_quotes_runtime необходимо отключить',
   'lc_php_magic_quotes_runtime_description' => 'PHP опция "magic_quotes_runtime" не рекомендуется для PHP 5.3. Если эта опция присутствует в файле php.ini, ее необходимо отключить для нормальной работы X‑Cart 5.',
   'Oops! Cache rebuild failed.' => 'Ой! Не удалось перестроить кеш.',
-  'Check for possible reasons <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=7504578">here</a>.' => 'Проверьте воможные причины <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=7504578" target="_blank" >здесь</a>.',
+  'Check for possible reasons <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=7504578">here</a>.' => 'Проверьте возможные причины <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=7504578" target="_blank" >здесь</a>.',
   'user_email_hint' => 'Чтобы мониторить эту проблему и получить решение, пожалуйста, укажите свой электронный адрес.',
   'Passed' => 'OK',
   'Default time zone' => 'Часовой пояс по умолчанию',
@@ -303,5 +301,8 @@ $translation = array (
   'Strong' => 'Сложный',
   'Uploading dump.sql into database...' => 'Загрузка SQL-дампа в базу данных...',
   'Redirecting to the next step...' => 'Переход на следующий шаг...',
-  'Add an online store for free' => 'Создайте онлайн-магазин бесплатно',
+  'Create an online store for free' => 'Создайте онлайн-магазин бесплатно',
+  'Consider hosting your X-Cart with us' => 'Попробуйте хостинг X-Cart у нас',
+  'VPS hosting for X-Cart. No installation hassle. Fully customizable.' => 'VPS-хостинг для X-Cart. Никаких сложностей с установкой. Полностью настраиваемый.',
+  'Having trouble installing X-Cart? Check out our installation guide' => 'Проблемы с установкой X-Cart?<br />Найдите решение в <a href="http://kb.x-cart.com/pages/viewpage.action?pageId=7505579" target="_blank">руководстве</a>',
 );

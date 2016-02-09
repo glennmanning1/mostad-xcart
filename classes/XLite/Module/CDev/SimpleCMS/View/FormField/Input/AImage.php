@@ -46,19 +46,6 @@ abstract class AImage extends \XLite\View\FormField\Input\AInput
     }
 
     /**
-     * Return CSS files list
-     *
-     * @return array
-     */
-    public function getCSSFiles()
-    {
-        $list = parent::getCSSFiles();
-        $list[] = $this->getDir() . '/form_field/style.css';
-
-        return $list;
-    }
-
-    /**
      * Return the image URL value
      *
      * @return string

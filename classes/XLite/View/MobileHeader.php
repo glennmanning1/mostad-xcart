@@ -56,4 +56,19 @@ class MobileHeader extends \XLite\View\AView
         return 'checkout' != $this->getTarget()
             || $this->isCheckoutAvailable();
     }
+
+    /**
+     * Should customer zone have language selector
+     *
+     * @return boolean
+     */
+    public function isNeedLanguageDropDown()
+    {
+        return 1 < \XLite\Core\Database::getRepo('XLite\Model\Language')->countBy(
+            array(
+                'enabled'   => true,
+                'added'     => true
+            )
+        );
+    }
 }

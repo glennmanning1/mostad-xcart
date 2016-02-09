@@ -135,6 +135,7 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
     // Register "Changing display mode" handler
     jQuery('.display-modes a', this.base).click(
       function() {
+        core.clearHash('pageId');
         return !o.load({'displayMode': jQuery(this).attr('class')});
       }
     );
@@ -142,6 +143,7 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
     // Register "Sort by" selector handler
     jQuery('.sort-crit a', this.base).click(
       function () {
+        core.clearHash('pageId');
         return !o.load({
           'sortBy': jQuery(this).data('sort-by'),
           'sortOrder': jQuery(this).data('sort-order')
@@ -187,7 +189,7 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
     {
       revert:         'invalid',
       revertDuration: 300,
-      zIndex:         500,
+      zIndex:         50000,
       distance:       10,
       containment:    'body',
 
@@ -199,12 +201,15 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
           .css(
             {
               'width':  base.parent().width() + 'px',
-              'height': base.parent().height() + 'px'
+              'height': base.parent().height() + 'px',
+              'position': 'fixed',
             }
           );
 
         base.addClass('drag-owner');
         base.parent().addClass('current');
+        var currentStyle = base.parent().attr('style');
+        base.parent().attr('style', currentStyle + '; z-index: auto !important;');
 
         if (jQuery.browser.msie) {
           base.addClass('ie-link-blocker');

@@ -10,5 +10,5 @@
  *}
 
 <li class="location-node">
-  <a href="{getLink()}" class="location-title home-link"><img src="images/home.png" alt="{getName():h}" /></a>
+  <a href="{getLink()}" class="location-title home-link"><img src="images/home.svg" alt="{getName():h}" /></a>
 </li>

@@ -58,6 +58,7 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     const MESSAGE_DECISION = 'decision';
 
     const SUBVALUE_DELIMITER = '&&';
+    const NULL_VALUE = 'NULL';
 
     const DEFAULT_CHARSET = 'UTF-8';
 
@@ -189,6 +190,24 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     public function isEof()
     {
         return !$this->isValid() || $this->file->eof();
+    }
+
+    /**
+     * Get available entity keys
+     *
+     * @return array
+     */
+    public function getAvailableEntityKeys()
+    {
+        $result = array();
+
+        foreach ($this->getKeyColumns() as $column) {
+            if (!empty($column[static::COLUMN_NAME])) {
+                $result[] = $column[static::COLUMN_NAME];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -652,7 +671,8 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
         $header = null;
 
         while (true) {
-            $fields = fgetcsv($f, 0, ',', '"');
+
+            $fields = fgetcsv($f, 0, $this->importer->getOptions()->delimiter, $this->importer->getOptions()->enclosure);
 
             if (false !== $fields && 1 === count($fields) && null === $fields[0]) {
                 // Skip blank lines
@@ -711,9 +731,14 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
                     $ip = 1;
                 }
 
-                if ($i >= static::MAX_PART_FILE_ROWS && $content) {
+                if ($content && (strlen($content) >= \XLite\Logic\Import\Importer::MAX_FILE_SIZE || $i >= static::MAX_PART_FILE_ROWS)) {
                     $save = true;
                 }
+            }
+
+            if (false === $fields) {
+                $content .= $pendingContent;
+                $i += $ip;
             }
 
             if ($save || false === $fields) {
@@ -1271,6 +1296,16 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     }
 
     /**
+     * Return true if import run in update-only mode
+     *
+     * @return boolean
+     */
+    protected function isUpdateMode()
+    {
+        return (bool) $this->importer->getOptions()->updateOnly;
+    }
+
+    /**
      * Import data
      *
      * @param array $data Row set Data
@@ -1283,27 +1318,68 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
 
         if ($model) {
             $this->setMetaData('updateCount', ((int) $this->getMetaData('updateCount')) + 1);
-
-        } else {
-            $this->setMetaData('addCount', ((int) $this->getMetaData('addCount')) + 1);
         }
 
-        if (!$model) {
+        if (!$model && !$this->isUpdateMode()) {
+            // Create model
             $model = $this->createModel($data);
-            \XLite\Core\Database::getEM()->persist($model);
-        }
-
-        $result = $this->updateModel($model, $data);
-        if ($result) {
-            try {
-                \XLite\Core\Database::getEM()->flush();
-            } catch (\Exception $e) {
-                \XLite\Logger::getInstance()->registerException($e);
-                $result = false;
+            $this->setMetaData('addCount', ((int) $this->getMetaData('addCount')) + 1);
+            if (null !== $model) {
+                \XLite\Core\Database::getEM()->persist($model);
             }
         }
 
+        if ($model) {
+            $result = $this->updateModel($model, $data);
+            if ($result) {
+                try {
+                    \XLite\Core\Database::getEM()->flush();
+                } catch (\Exception $e) {
+                    \XLite\Logger::getInstance()->registerException($e);
+                    $result = false;
+                }
+            }
+
+        } else {
+            // Model does not exist - do not create this, just skip
+            $this->importer->getOptions()->warningsAccepted = true;
+            $this->setMetaData('failedCount', ((int) $this->getMetaData('failedCount')) + 1);
+            $this->addNoEntityFoundMessage($this->getModelKeyFieldValues($data));
+            $result = true;
+        }
+
         return $result;
+    }
+
+    /**
+     * Add warning 'No entity found' to the log
+     *
+     * @return void
+     */
+    protected function addNoEntityFoundMessage($data = array())
+    {
+        $keys = array();
+
+        if ($data) {
+            foreach ($data as $key => $value) {
+                if (is_array($value)) {
+                    $_keys = array();
+                    foreach ($value as $k => $v) {
+                        $_keys[] = sprintf("%s: '%s'", $k, $v);
+                    }
+                    $value = '[' . implode(', ', $_keys) . ']';
+
+                } else {
+                    $value = "'" . $value . "'";
+                }
+
+                $keys[] = sprintf("%s: %s", $key, $value);
+            }
+        }
+
+        if ($keys) {
+            $this->addWarning('NO-ENTITY-FOUND', array('keys' => implode('; ', $keys)));
+        }
     }
 
     /**
@@ -1318,6 +1394,25 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
         $conditions = $this->assembleModelConditions($data);
 
         return $conditions ? $this->getRepository()->findOneByImportConditions($conditions) : null;
+    }
+
+    /**
+     * Get list of key fields values
+     *
+     * @param array $data Array of current row's data
+     *
+     * @return array
+     */
+    protected function getModelKeyFieldValues(array $data)
+    {
+        $result = array();
+        foreach ($this->getKeyColumns() as $column) {
+            if (isset($data[$column[static::COLUMN_NAME]])) {
+                $result[$this->getModelPropertyName($column)] = $data[$column[static::COLUMN_NAME]];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -1595,6 +1690,7 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
             'GLOBAL-TAX-CLASS-FMT'     => 'The "{{value}}" tax class does not exist',
             'GLOBAL-IMAGE-FMT'         => 'The "{{value}}" image does not exist',
             'GLOBAL-CATEGORY-FMT'      => 'The "{{value}}" category does not exist',
+            'NO-ENTITY-FOUND'          => 'Item not found ({{keys}})',
         );
     }
 
@@ -1761,6 +1857,18 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     }
 
     /**
+     * Verify value as null value
+     *
+     * @param mixed @value Value
+     *
+     * @return boolean
+     */
+    protected function verifyValueAsNull($value)
+    {
+        return is_array($value) && count($value) == 1 ? static::NULL_VALUE === $value[0] : static::NULL_VALUE === $value;
+    }
+
+    /**
      * Verify value as email
      *
      * @param mixed @value Value
@@ -1781,7 +1889,7 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
      */
     protected function verifyValueAsUinteger($value)
     {
-        return (bool) preg_match('/\d+/S', $value);
+        return !(bool) preg_match('/\D/S', trim($value));
     }
 
     /**
@@ -1819,6 +1927,20 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     protected function verifyValueAsURL($value)
     {
         return (bool)filter_var($value, FILTER_VALIDATE_URL);
+    }
+
+    /**
+     * Verify value as local URL
+     *
+     * @param mixed @value Value
+     *
+     * @return boolean
+     */
+    protected function verifyValueAsLocalURL($value)
+    {
+        $isSameHost = in_array(parse_url($value, PHP_URL_HOST), \XLite\Core\URLManager::getShopDomains(), true);
+        $isReadable = \Includes\Utils\FileManager::isFileReadable(LC_DIR_ROOT . ltrim(parse_url($value, PHP_URL_PATH), '/'));
+        return $this->verifyValueAsURL($value) && $isSameHost && $isReadable;
     }
 
     /**
@@ -1949,17 +2071,13 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     {
         // Do not verify files in verification mode and if 'ignoreFileChecking' option is true
         if (!$this->isVerification() || !$this->importer->getOptions()->ignoreFileChecking) {
-            if (1 < count(parse_url($value))) {
+            if ($this->verifyValueAsURL($value)) {
                 $request = new \XLite\Core\HTTP\Request($value);
                 $response = $request->sendRequest();
                 $result = ($response && 200 == $response->code);
 
             } else {
-                $dir = \Includes\Utils\FileManager::getRealPath(LC_DIR_VAR . $this->importer->getOptions()->dir);
-
-                $result = \Includes\Utils\FileManager::isReadable(
-                    $dir . LC_DS . $value
-                );
+                $result = \Includes\Utils\FileManager::isReadable(LC_DIR_ROOT . $value);
             }
 
         } else {
@@ -1970,6 +2088,38 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     }
 
     // }}}
+
+    /**
+     * Returns image comparing closure
+     *
+     * @param string $name  Image name
+     *
+     * @return Closure
+     */
+    protected function getImageFilter($name)
+    {
+        return function ($element) use ($name) {
+            $filename = $element->getFileName() ?: basename($element->getPath());
+            return $filename === basename($name);
+        };
+    }
+
+    /**
+     * Returns image rejecting closure (Rejects any images in DB which are not present in parameter array)
+     *
+     * @param array $images  Array of imported images
+     *
+     * @return Closure
+     */
+    protected function getImageRejectFilter($images)
+    {
+        return function ($element) use ($images) {
+            $filename = $element->getFileName() ?: basename($element->getPath());
+            return !in_array($filename, array_map(function ($image) {
+                return basename($image);
+            }, $images), true);
+        };
+    }
 
     // {{{ Normalizators
 
@@ -2825,6 +2975,12 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
             $result = array(
                 'text'    => $text . $count,
                 'comment' => $comment ? '(' . implode(', ', $comment) . ')' : '',
+            );
+
+        } elseif (!empty($cell['failedCount'])) {
+            $result = array(
+                'text'    => static::getTitle() . ': 0',
+                'comment' => '',
             );
         }
 

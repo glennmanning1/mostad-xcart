@@ -48,6 +48,19 @@ abstract class AAdmin extends \XLite\View\ItemsList\AItemsList
     }
 
     /**
+     * Defines CSS files for widget
+     *
+     * @return array
+     */
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+        $list[] = 'modules_manager/license/css/style.css';
+
+        return $list;
+    }
+
+    /**
      * Returns a list of CSS classes (separated with a space character) to be attached to the items list
      *
      * @return string

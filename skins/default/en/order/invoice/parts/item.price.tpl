@@ -10,4 +10,4 @@
  *
  * @ListChild (list="invoice.item", weight="20")
  *}
-<td class="price">{formatInvoicePrice(item.getDisplayPrice(),order.getCurrency(),1)}</td>
+<td class="price">{formatInvoicePrice(item.getItemNetPrice(),order.getCurrency(),1)}</td>

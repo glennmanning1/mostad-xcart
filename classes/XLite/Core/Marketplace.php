@@ -85,6 +85,7 @@ class Marketplace extends \XLite\Base\Singleton
     const FIELD_DO_REGISTER           = 'doRegister';
     const FIELD_IS_UPGRADE_AVAILABLE  = 'isUpgradeAvailable';
     const FIELD_ARE_UPDATES_AVAILABLE = 'areUpdatesAvailable';
+    const FIELD_IS_CONFIRMED          = 'isConfirmed';
     const FIELD_READABLE_NAME         = 'readableName';
     const FIELD_READABLE_AUTHOR       = 'readableAuthor';
     const FIELD_MODULE_ID             = 'moduleId';
@@ -123,6 +124,8 @@ class Marketplace extends \XLite\Base\Singleton
     const FIELD_XB_PRODUCT_ID         = 'xbProductId';
     const FIELD_IS_REQUEST_FOR_UPGRADE_SENT = 'isRequestForUpgradeSent';
     const FIELD_AFFILIATE_ID          = 'affiliateId';
+    const FIELD_TRIAL                 = 'trial';
+    const FIELD_MODULE_ENABLED        = 'enabled';
 
     const FIELD_TAG_NAME                    = 'tag_name';
     const FIELD_TAG_BANNER_EXPIRATION_DATE  = 'tag_banner_expiration_date';
@@ -137,6 +140,8 @@ class Marketplace extends \XLite\Base\Singleton
     const FIELD_NOTIFICATION_DESCRIPTION = 'description';
     const FIELD_NOTIFICATION_LINK        = 'link';
     const FIELD_NOTIFICATION_DATE        = 'date';
+
+    const INACTIVE_KEYS = 'inactiveMPKeys';
 
     /**
      * Marketplace API version
@@ -214,23 +219,25 @@ class Marketplace extends \XLite\Base\Singleton
      *
      * @return string
      */
-    public static function getPurchaseURL($id = 0, $params = array())
+    public static function getPurchaseURL($id = 0, $params = array(), $ignoreId = false)
     {
-        if (0 == intval($id)) {
+        if (!$ignoreId && 0 == intval($id)) {
             $id = 391;
         }
 
-        $params = array_merge(
-            array(
-                'area'       => 'purchase_services',
-                'target'     => 'generate_invoice',
-                'action'     => 'buy',
-                'add_' . $id => $id,
-                'store_url'  => \XLite\Core\URLManager::getShopURL(\XLite\Core\Converter::buildURL()),
-                'email'      => \XLite\Core\Auth::getInstance()->getProfile()->getLogin(),
-            ),
-            $params
+        $commonParams = array(
+            'area'      => 'purchase_services',
+            'target'    => 'generate_invoice',
+            'action'    => 'buy',
+            'store_url' => \XLite\Core\URLManager::getShopURL(\XLite\Core\Converter::buildURL()),
+            'email'     => \XLite\Core\Auth::getInstance()->getProfile()->getLogin(),
         );
+
+        if (!$ignoreId) {
+            $commonParams['add_' . $id] = $id;
+        }
+
+        $params = array_merge($commonParams, $params);
 
         $urlParams = array();
         foreach ($params as $k => $v) {
@@ -419,7 +426,12 @@ class Marketplace extends \XLite\Base\Singleton
     {
         $data = array();
 
-        $modules = \XLite\Core\Database::getRepo('XLite\Model\Module')->search($this->getCheckForUpdatesDataCnd());
+        $modules = \XLite\Core\Database::getCacheDriver()->fetch('InstalledModules');
+
+        if (!$modules) {
+             $modules = \XLite\Core\Database::getRepo('XLite\Model\Module')->search($this->getCheckForUpdatesDataCnd());
+             \XLite\Core\Database::getCacheDriver()->save('InstalledModules', $modules);
+        }
 
         if ($modules) {
             $data[static::FIELD_MODULES] = array();
@@ -429,11 +441,59 @@ class Marketplace extends \XLite\Base\Singleton
                     static::FIELD_AUTHOR => $module->getAuthor(),
                     static::FIELD_VERSION_MAJOR  => $module->getMajorVersion(),
                     static::FIELD_VERSION_MINOR  => $module->getMinorVersion(),
+                    static::FIELD_MODULE_ENABLED => $module->getEnabled() ? 1 : 0,
                 );
             }
         }
 
+        $keys = $this->getModuleLicenseKeys();
+
+        if ($keys) {
+            $data[static::FIELD_KEYS] = $keys;
+        }
+
+        $email = \XLite\Core\Config::getInstance()->Company->site_administrator;
+
+        if (!$email) {
+            $firstAdmin = \XLite\Core\Database::getRepo('XLite\Model\Profile')->findOneBy(
+                array(
+                    'access_level' => \XLite\Core\Auth::getInstance()->getAdminAccessLevel()
+                )
+            );
+            if ($firstAdmin) {
+                $email = $firstAdmin->getLogin();
+            }
+        }
+
+        $data[static::FIELD_EMAIL] = $email;
+
+        if (!\XLite::getXCNLicense() && !\XLite::isTrialPeriodExpired()) {
+            $data[static::FIELD_TRIAL] = 1;
+        }
+
         return $data;
+    }
+
+    /**
+     * Get module licence keys
+     *
+     * @return array
+     */
+    protected function getModuleLicenseKeys()
+    {
+        $result = array();
+
+        foreach (\XLite\Core\Database::getRepo('XLite\Model\ModuleKey')->findAll() as $key) {
+            if ('Core' == $key->getName() && 'CDev' == $key->getAuthor()) {
+                // Core key - ignore this
+
+            } else {
+                // Module key - include this
+                $result[] = $key->getKeyValue();
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -1567,74 +1627,115 @@ class Marketplace extends \XLite\Base\Singleton
      */
     public function checkAddonsKeys($ttl = null)
     {
+        $result = false;
+
         $repoModuleKey = \XLite\Core\Database::getRepo('\XLite\Model\ModuleKey');
 
-        $keys = array_unique(
-            \Includes\Utils\ArrayManager::getObjectsArrayFieldValues(
-                $repoModuleKey->findAll(),
-                'getKeyValue',
-                true
-            )
-        );
+        $keys = $repoModuleKey->findAll();
 
         if (!empty($keys)) {
+
+            // Prepare list of keys for the request
+            $paramKeys = array_unique(
+                \Includes\Utils\ArrayManager::getObjectsArrayFieldValues(
+                    $keys,
+                    'getKeyValue',
+                    true
+                )
+            );
+
+            // Make request to the marketplace
             $result = $this->performActionWithTTL(
                 $ttl,
                 static::ACTION_CHECK_ADDON_KEY,
-                array(static::FIELD_KEY => $keys),
+                array(static::FIELD_KEY => $paramKeys),
                 false
             );
 
-        } else {
-            $result = null;
-        }
+            if (!is_null($result) && static::TTL_NOT_EXPIRED !== $result) {
 
-        if (static::TTL_NOT_EXPIRED !== $result) {
-            $repoModule = \XLite\Core\Database::getRepo('\XLite\Model\Module');
+                // Received valid response
 
-            foreach ((array) $result as $key => $addonsInfo) {
-                foreach ($addonsInfo as $info) {
-                    if ('CDev' == $info['author'] && 'Core' == $info['name']) {
-                        // Entity is core
-                        $isValid = true;
+                $repoModule = \XLite\Core\Database::getRepo('\XLite\Model\Module');
+
+                foreach ($keys as $existingKey) {
+
+                    $keyValue = $existingKey->getKeyValue();
+
+                    if (isset($result[$keyValue]) && is_array($result[$keyValue])) {
+
+                        // MP response contains info about the existing key
+
+                        foreach ($result[$keyValue] as $info) {
+
+                            if ('CDev' == $info['author'] && 'Core' == $info['name']) {
+                                // Entity is core
+                                $isValid = true;
+
+                            } else {
+                                // Entity is module. Search for existing module
+                                $isValid = (bool) $repoModule->findOneBy(
+                                    array(
+                                        'author' => $info['author'],
+                                        'name'   => $info['name'],
+                                    )
+                                );
+                            }
+
+                            if ($isValid) {
+
+                                $info['active'] = 1;
+                                unset($info['key']);
+
+                                // Update existing key model object
+                                $repoModuleKey->update($existingKey, $info);
+
+                                // Clear cache for proper installation
+                                $this->clearActionCache(\XLite\Core\Marketplace::ACTION_GET_ADDONS_LIST);
+
+                            } else {
+                                // No module has been found - delete key
+                                $repoModuleKey->delete($existingKey);
+                            }
+
+                        } // foreach
 
                     } else {
-                        // Entity is module. Search for existing module
-                        $isValid = (bool) $repoModule->findOneBy(
-                            array(
-                                'author' => $info['author'],
-                                'name'   => $info['name'],
-                            )
-                        );
+                        // MP response doesn't contain existing key
+                        if (\XLite\Core\Config::getInstance()->Version->deleteEmptyKeys) {
+                            // Add key to the remove list
+                            $toDelete[] = $existingKey;
+
+                        } else {
+                            // Set key to inactive state
+                            $existingKey->setActive(0);
+                        }
                     }
 
-                    // Search for existing module key
-                    $keyModel = $repoModuleKey->findOneBy(
+                } // foreach ($keys...
+
+                if (!empty($toDelete)) {
+                    // Delete keys
+                    $repoModuleKey->deleteInBatch($toDelete);
+                }
+
+                if (\XLite\Core\Config::getInstance()->Version->deleteEmptyKeys) {
+                    $option = \XLite\Core\Database::getRepo('XLite\Model\Config')->findOneBy(
                         array(
-                            'keyValue' => $key,
-                            'author' => $info['author'],
-                            'name'   => $info['name'],
+                            'name'     => 'deleteEmptyKeys',
+                            'category' => 'Version'
                         )
                     );
 
-                    if ($isValid) {
-                        if ($keyModel) {
-                            $repoModuleKey->update($keyModel, $info);
-
-                        } else {
-                            $repoModuleKey->insert($info + array('keyValue' => $key));
-                        }
-
-                        // Clear cache for proper installation
-                        $this->clearActionCache(\XLite\Core\Marketplace::ACTION_GET_ADDONS_LIST);
-
-                    } else {
-                        // No module has been found
-                        if ($keyModel) {
-                            $repoModuleKey->delete($keyModel);
-                        }
+                    if ($option) {
+                        \XLite\Core\Database::getEM()->delete($option);
+                        \XLite\Core\Config::updateInstance();
                     }
                 }
+
+            } else {
+                // Wrong response or TTL is not expired
+                $result = false;
             }
         }
 
@@ -2300,7 +2401,9 @@ class Marketplace extends \XLite\Base\Singleton
                     $result = $this->{'prepare' . $method}($result);
                 }
 
-                $this->logInfo($action, 'Valid response received', array(), $result);
+                $suffix = empty($result) ? ' (empty)' : '';
+
+                $this->logInfo($action, 'Valid response received' . $suffix, array(), $result);
 
             } else {
                 $this->logError($action, 'Response has an invalid format', array(), $result);
@@ -2319,13 +2422,19 @@ class Marketplace extends \XLite\Base\Singleton
     /**
      * Clearing the temporary cache for a given marketplace action
      *
-     * @param string $action Marketplace action OPTIONAL
+     * @param string|array $action Marketplace action OPTIONAL
      *
      * @return mixed
      */
     public function clearActionCache($action = null)
     {
-        $list = isset($action) ? array($action) : $this->getCachedRequestTypes();
+        $list = isset($action)
+            ? (
+                !empty($action) && is_array($action)
+                ? $action
+                : array($action)
+            )
+            : $this->getCachedRequestTypes();
 
         foreach ($list as $requestType) {
             list($cellTTL, $cellData) = $this->getActionCacheVars($requestType);
@@ -2356,6 +2465,7 @@ class Marketplace extends \XLite\Base\Singleton
             static::ACTION_GET_LANDING_AVAILABLE,
             static::ACTION_GET_WAVES,
             static::ACTION_UPDATE_PM,
+            static::INACTIVE_KEYS,
         );
     }
 
@@ -2386,6 +2496,10 @@ class Marketplace extends \XLite\Base\Singleton
      */
     protected function performActionWithTTL($ttl, $action, array $data = array(), $saveInTmpVars = true)
     {
+        \XLite\Core\Lock\MarketplaceLocker::getInstance()->waitForUnlocked($action);
+
+        \XLite\Core\Lock\MarketplaceLocker::getInstance()->lock($action);
+
         $result = static::TTL_NOT_EXPIRED;
         $ttl = !is_null($ttl) ? $ttl : static::TTL_LONG;
 
@@ -2405,6 +2519,8 @@ class Marketplace extends \XLite\Base\Singleton
                 $this->setTTLStart($cellTTL);
             }
         }
+
+        \XLite\Core\Lock\MarketplaceLocker::getInstance()->unlock($action);
 
         return $saveInTmpVars ? \XLite\Core\TmpVars::getInstance()->$cellData : $result;
     }
@@ -2568,6 +2684,123 @@ class Marketplace extends \XLite\Base\Singleton
     protected function clearUpgradeCell()
     {
         \XLite\Core\TmpVars::getInstance()->{\XLite\Upgrade\Cell::CELL_NAME} = null;
+    }
+
+    // }}}
+
+    // {{{ License check
+
+    /**
+     * Return true if system detected unallowed modules
+     *
+     * @return boolean
+     */
+    public function hasUnallowedModules()
+    {
+        return (bool) $this->getInactiveContentData(false);
+    }
+
+    /**
+     * Return true if system detected inactive license key
+     *
+     * @return boolean
+     */
+    public function hasInactiveLicenseKey()
+    {
+        return (bool) $this->getInactiveContentData(true);
+    }
+
+    /**
+     * Get inactive content by type
+     *
+     * @param boolean $isCore Flag of result type (true - inactive core license key; false - unalloed modules)
+     *
+     * @return array
+     */
+    public function getInactiveContentData($isCore = true)
+    {
+        $result = array();
+
+        foreach ($this->getInactiveLicenseKeys() as $k => $v) {
+            if (
+                ($isCore && $v['isCore'])
+                || (!$isCore && !$v['isCore'])
+            ) {
+                $result[] = $v;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Check and return list of inactive license keys and unallowed modules
+     *
+     * @return array
+     */
+    public function getInactiveLicenseKeys($ttl = null)
+    {
+        list($cellTTL, $cellData) = $this->getActionCacheVars(static::INACTIVE_KEYS);
+
+        // Get cached result
+        $result = \XLite\Core\TmpVars::getInstance()->$cellData;
+
+        if (empty($result) || !is_array($result)) {
+            $result = array();
+        }
+
+        $ttl = !is_null($ttl) ? $ttl : static::TTL_LONG;
+
+        // Check if TTL has expired
+        if (!$this->checkTTL($cellTTL, $ttl)) {
+
+            $this->saveAddonsList();
+            $this->checkAddonsKeys(0);
+
+            $entities = array();
+
+            $coreLicense = \XLite::getXCNLicense();
+
+            if ($coreLicense && !\XLite::isFreeLicense() && !$coreLicense->getActive()) {
+                $entities[] = array(
+                    'isCore' => true,
+                    'key'    => $coreLicense->getKeyValue(),
+                );
+            }
+
+            $entities = array_merge($entities, $this->getUnallowedModules());
+
+            \XLite\Core\TmpVars::getInstance()->$cellData = $entities;
+
+            $this->setTTLStart($cellTTL);
+
+            $result = $entities;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get list of unallowed modules
+     *
+     * @return array
+     */
+    protected function getUnallowedModules()
+    {
+        $result = array();
+
+        $modules = \XLite\Core\Database::getRepo('XLite\Model\Module')->findUnallowedModules();
+
+        foreach ($modules as $module) {
+            $result[] = array(
+                'isCore'       => false,
+                'name'         => $module[0]->getName(),
+                'author'       => $module[0]->getAuthor(),
+                'key'          => $module['key'],
+            );
+        }
+
+        return $result;
     }
 
     // }}}

@@ -9,5 +9,5 @@
  * @link      http://www.x-cart.com/
  *}
 
-<span class="text-grey">from</span>
+<span class="text-grey">{t(#From#)}</span>
 <widget template="form_field/inline/input/text/price.tpl" />

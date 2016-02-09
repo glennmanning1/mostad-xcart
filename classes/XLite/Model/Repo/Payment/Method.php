@@ -45,6 +45,8 @@ class Method extends \XLite\Model\Repo\Base\I18n implements \XLite\Model\Repo\Ba
     const P_POSITION            = 'position';
     const P_TYPE                = 'type';
     const P_ORDERBY             = 'orderBy';
+     // Use the Force, Luke
+    const P_ORDERBY_FORCE       = 'orderByForce';
     const P_LIMIT               = 'limit';
     const P_NAME                = 'name';
     const P_COUNTRY             = 'country';
@@ -282,6 +284,7 @@ class Method extends \XLite\Model\Repo\Base\I18n implements \XLite\Model\Repo\Ba
             static::P_POSITION,
             static::P_TYPE,
             static::P_ORDERBY,
+            static::P_ORDERBY_FORCE,
             static::P_LIMIT,
             static::P_NAME,
             static::P_COUNTRY,
@@ -509,6 +512,25 @@ class Method extends \XLite\Model\Repo\Base\I18n implements \XLite\Model\Repo\Ba
     }
 
     /**
+     * Prepare certain search condition for position
+     *
+     * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
+     * @param array                      $value        Condition data
+     * @param boolean                    $countOnly    "Count only" flag
+     *
+     * @return void
+     */
+    protected function prepareCndOrderByForce(\Doctrine\ORM\QueryBuilder $queryBuilder, array $value, $countOnly)
+    {
+        if (!$countOnly) {
+            list($sort, $order) = $this->getSortOrderValue($value);
+
+            $queryBuilder->orderBy($sort, $order);
+            $this->assignDefaultOrderBy($queryBuilder);
+        }
+    }
+
+    /**
      * Prepare certain search condition
      *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to prepare
@@ -615,7 +637,7 @@ class Method extends \XLite\Model\Repo\Base\I18n implements \XLite\Model\Repo\Ba
         $qb = $this->createPureQueryBuilder('m');
 
         $this->prepareCndType($qb, $type, false);
-        $this->prepareCndOrderBy($qb, array('m.orderby'), false);
+        $this->prepareCndOrderBy($qb, array('m.adminOrderby'), false);
 
         return $this->addOrderByForAdditionByTypeQuery($qb);
     }
@@ -734,6 +756,11 @@ class Method extends \XLite\Model\Repo\Base\I18n implements \XLite\Model\Repo\Ba
                     } else {
                         $data[$i]['fromMarketplace'] = 1;
                         $data[$i]['moduleEnabled']   = 0;
+                    }
+
+                    if (isset($data[$i]['orderby'])) {
+                        $data[$i]['adminOrderby'] = $data[$i]['orderby'];
+                        unset($data[$i]['orderby']);
                     }
 
                 } else {

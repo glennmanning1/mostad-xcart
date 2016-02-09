@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="dialog-block export-box export-progress">
+<div class="export-box export-progress">
 
   <div class="header clearfix">
     <h2>{t(#Exporting data...#)}</h2>
@@ -17,13 +17,12 @@
 
   <div class="content">
     <widget class="XLite\View\Form\Export" name="exportform" formAction="cancel" />
-      <div class="subcontent">
+      <div class="subcontent clearfix">
         <widget class="XLite\View\EventTaskProgress" event="{getEventName()}" />
         <widget class="XLite\View\Button\Submit" label="{t(#Cancel#)}" />
-        <div class="time">{t(#About X remaining#,_ARRAY_(#time#^getTimeLabel()))}</div>
       </div>
       <div class="help">
-        <i class="icon-info-sign"></i>
+        <i class="fa fa-exclamation-triangle"></i>
         <p>
           {if:isBlocking()}
             {t(#The process of export may take much time. You may close the page, the operation will be in progress as background. If the operation takes long enough, we will send you a notification when it is complete.#)}

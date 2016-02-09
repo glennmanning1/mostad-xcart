@@ -12,5 +12,5 @@
  *}
 <div IF="order.getNotes()" class="customer-note">
   <div class="head-h3">{t(#Customer note#)}:</div>
-  <div>{order.getNotes()}</div>
+  <div>{order.getNotes():b}</div>
 </div>

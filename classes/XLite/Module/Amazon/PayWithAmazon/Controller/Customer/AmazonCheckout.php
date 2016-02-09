@@ -36,6 +36,13 @@ use XLite\Module\Amazon\PayWithAmazon\AMZ as AMZ;
 class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
 {
     /**
+     * params
+     *
+     * @var string
+     */
+    protected $params = array('target', 'amz_pa_ref');
+
+    /**
      * Return the current page title (for the content area)
      *
      * @return string
@@ -52,6 +59,16 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
      * @return boolean
      */
     protected function markCartCalculate()
+    {
+        return true;
+    }
+
+    /**
+     * Return true if checkout layout is used
+     *
+     * @return boolean
+     */
+    public function isCheckoutLayout()
     {
         return true;
     }
@@ -74,7 +91,7 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
             $this->setReturnURL($this->buildURL('cart'));
             $this->doRedirect();
         }
-        $this->checkAnonymousProfile();
+
         if (\XLite\Core\Request::getInstance()->isPost()) {
 
             switch (\XLite\Core\Request::getInstance()->mode) {
@@ -90,7 +107,6 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
                 if ($res) {
                     $res = AMZ::func_array_path($res, 'GetOrderReferenceDetailsResponse/GetOrderReferenceDetailsResult/OrderReferenceDetails/Destination/PhysicalDestination/0/#');
                     if ($res) {
-                        $this->checkAnonymousProfile();
 
                         $tmp = array();
                         $tmp['zipcode'] = $res['PostalCode'][0]['#'];
@@ -141,8 +157,6 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
                     'AmazonOrderReferenceId' => $amazon_pa_orefid,
                 ));
 
-                $this->checkAnonymousProfile();
-
                 // get more order details using GetOrderReferenceDetails after confirmation
                 $res = AMZ::func_amazon_pa_request('GetOrderReferenceDetails', array(
                     'AmazonOrderReferenceId' => $amazon_pa_orefid,
@@ -179,8 +193,10 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
 
                         $this->updateAddress($tmp);
 
+                        $profile = $this->getCartProfile();
+
                         // email, name
-                        if ($buyer) {
+                        if ($buyer && !$profile->getLogin()) {
                             $uinfo = array();
                             $uinfo['email'] = $buyer['Email'][0]['#'];
                             // list($uinfo['firstname'], $uinfo['lastname']) = explode(' ', $buyer['Name'][0]['#'], 2);
@@ -290,23 +306,6 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
         parent::handleRequest();
     }
 
-    protected function checkAnonymousProfile()
-    {
-        // amazon checkout is always anonymous, logoff but not clear cart
-        if (\XLite\Core\Auth::getInstance()->isLogged()) {
-            \XLite\Core\Auth::getInstance()->logoff();
-
-            $tmpProfile = new \XLite\Model\Profile;
-            $tmpProfile->setAnonymous(true);
-            \XLite\Core\Database::getEM()->persist($tmpProfile);
-
-            $this->getCart()->setProfile($tmpProfile);
-            $this->getCart()->setOrigProfile($tmpProfile);
-
-            \XLite\Core\Database::getEM()->flush();
-        }
-    }
-
     protected function placeAmazonOrder($payment_method_text)
     {
         $cart = $this->getCart();
@@ -335,6 +334,21 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
         }
         $this->getCart()->setPaymentMethod($_tmp_method);
 
+        $this->processCartProfile();
+
+        // Mark all addresses as non-work
+        if ($cart->getOrigProfile()) {
+            foreach ($cart->getOrigProfile()->getAddresses() as $address) {
+                $address->setIsWork(false);
+            }
+        }
+
+        if ($cart->getProfile()) {
+            foreach ($cart->getProfile()->getAddresses() as $address) {
+                $address->setIsWork(false);
+            }
+        }
+
         $this->getCart()->markAsOrder();
 
         // $this->updateCart(); // old way produce fingerprint warning in logs
@@ -349,6 +363,87 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
         return $this->getCart()->getOrderId();
     }
 
+    /**
+     * Process cart profile
+     *
+     * @return boolean
+     */
+    protected function processCartProfile()
+    {
+        $isAnonymous = $this->isAnonymous();
+
+        if ($isAnonymous) {
+            // Merge
+            $this->mergeAnonymousProfile();
+
+        } else {
+            // Clone profile
+            $this->cloneProfile();
+        }
+    }
+
+    /**
+     * Return true if current profile is anonymous
+     *
+     * @return boolean
+     */
+    public function isAnonymous()
+    {
+        $cart = $this->getCart();
+
+        return !$cart->getProfile() || $cart->getProfile()->getAnonymous();
+    }
+
+    /**
+     * Merge anonymous profile
+     *
+     * @return void
+     */
+    protected function mergeAnonymousProfile()
+    {
+        $cart = $this->getCart();
+        $profile = \XLite\Core\Database::getRepo('XLite\Model\Profile')
+            ->findOneAnonymousByProfile($cart->getProfile());
+
+        if ($profile) {
+            $profile->mergeWithProfile(
+                $cart->getProfile(),
+                \XLite\Model\Profile::MERGE_ALL ^ \XLite\Model\Profile::MERGE_ORDERS
+            );
+
+        } else {
+            $profile = $cart->getProfile()->cloneEntity();
+            $profile->setOrder(null);
+            $profile->setAnonymous(true);
+        }
+        $cart->setOrigProfile($profile);
+
+        \XLite\Core\Database::getEM()->flush();
+    }
+
+    /**
+     * Clone profile and move profile to original profile
+     *
+     * @return void
+     */
+    protected function cloneProfile()
+    {
+        $cart = $this->getCart();
+
+        $origProfile = $cart->getProfile();
+        $profile = $origProfile->cloneEntity();
+
+        // Assign cloned order's profile
+        $cart->setProfile($profile);
+        $profile->setOrder($cart);
+
+        // Save old profile as original profile
+        $cart->setOrigProfile($origProfile);
+        $origProfile->setOrder(null);
+
+        \XLite\Core\Database::getEM()->flush();
+    }
+
     protected function orderRedirect($orderids, $order_status) 
     {
         if ($order_status == \XLite\Model\Order\Status\Payment::STATUS_CANCELED || $order_status == \XLite\Model\Order\Status\Payment::STATUS_DECLINED) {
@@ -356,7 +451,7 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
             $reason = '';
             if ($order_status == \XLite\Model\Order\Status\Payment::STATUS_CANCELED) {
                 // some error
-                $reason = 'Some error occured during transaction, please try again later or use another payment method.';
+                $reason = 'Some error occurred during transaction, please try again later or use another payment method.';
             } elseif ($order_status == \XLite\Model\Order\Status\Payment::STATUS_DECLINED) {
                 // transaction declined
                 $reason = 'Transaction is declined';
@@ -392,6 +487,10 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
 
         $profile = $this->getCartProfile();
 
+        if (!$profile || !$profile->getProfileId()) {
+            return;
+        }
+
         $address = $profile->getShippingAddress();
         if ($address) {
             \XLite\Core\Database::getEM()->refresh($address);
@@ -403,19 +502,67 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
         $current = new \XLite\Model\Address;
         $current->map($this->prepareAddressData($data));
 
+        // Search for the same address in profile's address book
+        $equal = null;
+        foreach ($profile->getAddresses() as $addressEqual) {
+            if ($addressEqual->isEqualAddress($current)
+                && (!$address || $address->getAddressId() != $addressEqual->getAddressId())
+            ) {
+                $equal = $addressEqual;
+                break;
+            }
+        }
+
+        if ($equal && $address) {
+
+            if ($address->getIsWork()) {
+                $profile->getAddresses()->removeElement($address);
+                \XLite\Core\Database::getEM()->remove($address);
+            }
+
+            if ($address) {
+                $address->setIsShipping(false);
+                if ($andAsBilling) {
+                    $address->setIsBilling(false);
+                }
+                $address->setIsWork(false);
+            }
+
+            // Change selected address to the found one
+            $address = $equal;
+            $address->setIsShipping(true);
+            if ($andAsBilling) {
+                $address->setIsBilling($andAsBilling);
+            }
+
+            $noAddress = false;
+        }
+
         if ($noAddress || (!$address->getIsWork() && !$address->isEqualAddress($current))) {
 
-            $address = new \XLite\Model\Address;
+            if ($address) {
+                // Correct original address
+                $address->setIsShipping(false);
+                if ($andAsBilling) {
+                    $address->setIsBilling(false);
+                }
+                $address->setIsWork(false);
+            }
 
-            $address->setProfile($profile);
-            $address->setIsShipping(true);
-            $address->setIsBilling($andAsBilling);
-            $address->setIsWork(true);
+            // Create new address
+            $newAddress = new \XLite\Model\Address;
+
+            $newAddress->setProfile($profile);
+            $newAddress->setIsShipping(true);
+            $newAddress->setIsBilling($andAsBilling);
+            $newAddress->setIsWork(true);
 
             if ($noAddress || !(bool)\XLite\Core\Request::getInstance()->only_calculate) {
-                $profile->addAddresses($address);
-                \XLite\Core\Database::getEM()->persist($address);
+                $profile->addAddresses($newAddress);
+                \XLite\Core\Database::getEM()->persist($newAddress);
             }
+
+            $address = $newAddress;
         }
 
         $address->map($this->prepareAddressData($data));
@@ -430,6 +577,7 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
             $address->setIsBilling(true);
         }
 
+        \XLite\Core\Database::getEM()->flush();
         \XLite\Core\Session::getInstance()->same_address = $this->getCart()->getProfile()->isEqualAddress();
     }
 
@@ -451,6 +599,16 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
     public function getTermsURL()
     {
         return \XLite\Core\Config::getInstance()->General->terms_url;
+    }
+
+    /**
+     * Check - controller must work in secure zone or not
+     *
+     * @return boolean
+     */
+    public function isSecure()
+    {
+        return \XLite\Core\Config::getInstance()->Security->customer_security;
     }
 
     /**
@@ -579,7 +737,4 @@ class AmazonCheckout extends \XLite\Controller\Customer\ACustomer
     public function checkCheckoutAction()  { return false; }
     public function getSaveCardBoxClass() { return ''; }
     public function showSaveCardBox() { return false; }
-
 }
-
-

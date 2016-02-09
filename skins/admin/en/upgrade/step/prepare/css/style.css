@@ -272,7 +272,7 @@ table.incompatible-modules-list {
   width: 730px;
 }
 
-.alert.expired-keys * {
+.alert.expired-keys div {
   font-size: 16px;
 }
 
@@ -282,6 +282,8 @@ table.incompatible-modules-list {
 
 .alert.expired-keys ul li {
   border-top: #e5e5e5 1px solid;
+  display: table;
+  width: 100%;
 }
 
 .alert.expired-keys ul li:first-child {
@@ -299,16 +301,17 @@ table.incompatible-modules-list {
 }
 
 .alert.expired-keys ul li div {
-  display: inline-block;
+  display: table-cell;
   vertical-align: middle;
 }
 
 .alert.expired-keys ul li div.key-title {
-  width: 350px;
+  width: 650px;
 }
 
 .alert.expired-keys ul li div.key-exp-date {
-  width: 200px;
+  min-width: 120px;
+  white-space: nowrap;
 }
 
 .alert.expired-keys ul li div.key-url {

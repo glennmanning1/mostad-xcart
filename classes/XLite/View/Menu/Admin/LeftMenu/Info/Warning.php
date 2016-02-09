@@ -58,7 +58,7 @@ class Warning extends \XLite\View\Menu\Admin\LeftMenu\ANodeNotification
      */
     public function isUpdated()
     {
-        return $this->getLastReedTimestamp() < $this->getLastUpdateTimestamp();
+        return $this->getLastReadTimestamp() < $this->getLastUpdateTimestamp();
     }
 
     /**
@@ -201,7 +201,7 @@ class Warning extends \XLite\View\Menu\Admin\LeftMenu\ANodeNotification
      */
     protected function countMessages($carry, $item)
     {
-        if ($item['date'] >= $this->getLastReedTimestamp()) {
+        if ($item['date'] >= $this->getLastReadTimestamp()) {
             $carry += 1;
         }
 

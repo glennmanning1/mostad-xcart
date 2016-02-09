@@ -76,6 +76,10 @@ class Curl extends \PEAR2\HTTP\Request\Adapter\Curl
         // The maximum number of seconds to allow cURL functions to execute
         curl_setopt($this->curl, \CURLOPT_TIMEOUT, $this->connectTimeout + $this->requestTimeout);
 
+        if ($this->verb === 'HEAD') {
+            curl_setopt($this->curl, CURLOPT_NOBODY, true);
+        }
+
         if (preg_match('/^https/', $this->uri->url)) {
 
             if (\XLite\Core\Config::getInstance()->Environment->curl_cainfo) {

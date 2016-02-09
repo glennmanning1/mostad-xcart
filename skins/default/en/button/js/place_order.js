@@ -20,6 +20,7 @@ function PlaceOrderButtonView(base)
   core.bind('updateCart', _.bind(this.handleUpdateCart, this));
   core.bind('checkout.common.anyChange', _.bind(this.handleAnyFormChange, this));
   core.bind('checkout.common.getState', _.bind(this.handleGetState, this));
+  core.bind('checkout.shippingMethods.error', _.bind(this.handleUpdatePlaceButtonErrorMessage, this));
 
   PlaceOrderButtonView.superclass.constructor.apply(this, args);
 }
@@ -124,10 +125,20 @@ PlaceOrderButtonView.prototype.handleAnyFormChange = function()
       .removeAttr('title');
 
   } else {
+    var errorMsg = this.base.data('errorMsg')
+      || core.t('Order can not be placed because not all required fields are completed. Please check the form and try again.')
+
     this.base
       .addClass('disabled')
-      .attr('title', core.t('Order can not be placed because not all required fields are completed. Please check the form and try again.'));
+      .attr('title', errorMsg);
   }
+};
+
+PlaceOrderButtonView.prototype.handleUpdatePlaceButtonErrorMessage = function(event, data)
+{
+  if (data && data.errorMsg) {
+    this.base.data('errorMsg', data.errorMsg);
+  };
 };
 
 PlaceOrderButtonView.prototype.handleGetState = function(event, state)

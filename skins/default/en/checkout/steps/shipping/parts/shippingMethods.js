@@ -110,6 +110,25 @@ ShippingMethodsView.prototype.handleMethodChange = function()
   return this.base.submit();
 };
 
+ShippingMethodsView.prototype.assignWaitOverlay = function(base)
+{
+  ShippingMethodsView.superclass.assignWaitOverlay.apply(this, arguments);
+
+  assignShadeOverlay(jQuery('.step-payment-methods'), true);
+};
+
+ShippingMethodsView.prototype.unassignWaitOverlay = function(base)
+{
+  ShippingMethodsView.superclass.unassignWaitOverlay.apply(this, arguments);
+
+  unassignShadeOverlay(jQuery('.step-payment-methods'), true);
+};
+
+// Get base element for shade / unshade operation
+ShippingMethodsView.prototype.getShadeBase = function() {
+  return this.base.closest('.step-shipping-methods');
+};
+
 ShippingMethodsView.prototype.handleMethodSelect = function(event)
 {
   var box = jQuery(event.target).closest('.shipping-selector-box');
@@ -139,6 +158,15 @@ ShippingMethodsView.prototype.handleCheckoutReadyCheck = function(event, state)
   } else {
     state.result = false;
   }
+
+  if (!state.result) {
+    core.trigger(
+      this.getEventNamespace() + '.error',
+      {
+        errorMsg: this.base.find('.shipping-methods-not-available-wrapper').data('error-msg')
+      }
+    );
+  };
 
   state.blocked = this.base.get(0).isBgSubmitting
     || this.base.get(0).commonController.isChanged()

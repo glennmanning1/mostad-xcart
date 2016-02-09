@@ -16,14 +16,14 @@
     <div class="page-tabs" IF="isTabsNavigationVisible()">
 
       <ul role="tablist">
-        <li FOREACH="getTabs(),tab,tabPage" class="tab" role="presentation">
+        <li FOREACH="getTabs(),tab,tabPage" class="tab{if:tabPage.selected} active{end:}" role="presentation">
           <a href="{tabPage.url:h}" aria-controls="{tab}" role="tab" data-toggle="tab">{t(tabPage.title)}</a>
         </li>
         <list name="tabs.items" />
       </ul>
     </div>
     <div class="tab-content">
-      <div FOREACH="getTabs(),tab,tabPage" role="tabpanel" class="tab-pane" id="{tab}">
+      <div FOREACH="getTabs(),tab,tabPage" role="tabpanel" class="tab-pane{if:tabPage.selected} active{end:}" id="{tab}">
         <list name="tabs.content" />
         <widget template="{getTabTemplate(tabPage)}" IF="isTemplateOnlyTab(tabPage)" />
         <widget class="{getTabWidget(tabPage)}" IF="isWidgetOnlyTab(tabPage)" />

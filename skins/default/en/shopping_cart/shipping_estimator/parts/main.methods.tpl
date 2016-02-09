@@ -12,7 +12,7 @@
  *}
 <div IF="isEstimate()" class="estimate-methods">
   <div class="head-h3">{t(#Choose shipping method#)}</div>
-  <widget class="XLite\View\Form\Cart\ShippingEstimator\Change" name="change" />
+  <widget class="XLite\View\Form\Cart\ShippingEstimator\Change" name="change" className="method-change" />
 
     {if:hasRates()}
       <widget class="XLite\View\ShippingList" />

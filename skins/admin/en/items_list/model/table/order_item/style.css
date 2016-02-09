@@ -20,10 +20,9 @@
   width: 833px;
 }
 
-.order-info.not-editable .items-list-table .list-footer,
-.order-info.not-editable .items-bottom
+.order-info.not-editable .items-list-table.order-items table.list
 {
-  width: 890px;
+  width: 833px;
 }
 
 .items-list-table.order-items table.list tbody.lines tr.line.last td,

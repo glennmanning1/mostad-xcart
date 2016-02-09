@@ -82,6 +82,26 @@ PaymentMethodsView.prototype.handleMethodChange = function(event)
   return this.base.find('form').submit();
 };
 
+PaymentMethodsView.prototype.assignWaitOverlay = function(base)
+{
+  PaymentMethodsView.superclass.assignWaitOverlay.apply(this, arguments);
+
+  var shippingMethods = jQuery('.step-shipping-methods');
+  if (shippingMethods.length) {
+    assignShadeOverlay(shippingMethods, true);
+  }
+};
+
+PaymentMethodsView.prototype.unassignWaitOverlay = function(base)
+{
+  PaymentMethodsView.superclass.unassignWaitOverlay.apply(this, arguments);
+
+  var shippingMethods = jQuery('.step-shipping-methods');
+  if (shippingMethods.length) {
+    unassignShadeOverlay(shippingMethods, true);
+  }
+};
+
 PaymentMethodsView.prototype.unshadeDelayed = function()
 {
   setTimeout(

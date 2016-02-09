@@ -46,16 +46,7 @@ class Profile extends \XLite\Model\QueryBuilder\AQueryBuilder
     public function bindPattern($value)
     {
         if (!empty($value)) {
-            $cnd = new \Doctrine\ORM\Query\Expr\Orx();
-
-            $this->prepareField($this, 'firstname')
-                ->prepareField($this, 'lastname');
-
-            foreach ($this->getNameSubstringSearchFields() as $field) {
-                $cnd->add($field . ' LIKE :pattern');
-            }
-
-            $this->andWhere($cnd)
+            $this->andWhere('p.searchFakeField LIKE :pattern')
                 ->setParameter('pattern', '%' . $value . '%');
         }
 
@@ -472,20 +463,6 @@ class Profile extends \XLite\Model\QueryBuilder\AQueryBuilder
         );
 
         return $this->setParameter($fieldName, $fieldName);
-    }
-
-    /**
-     * List of fields to use in search by substring
-     *
-     * @return array
-     */
-    protected function getNameSubstringSearchFields()
-    {
-        return array(
-            'CONCAT(CONCAT(field_value_firstname.value, \' \'), field_value_lastname.value)',
-            'CONCAT(CONCAT(field_value_lastname.value, \' \'), field_value_firstname.value)',
-            'p.login'
-        );
     }
 
     // }}}

@@ -56,6 +56,7 @@ class Profile extends \XLite\View\ItemsList\Model\Table
     const PARAM_DATE_PERIOD     = 'date_period';
     const PARAM_DATE_RANGE      = 'dateRange';
     const PARAM_STATUS          = 'status';
+    const PARAM_LOGIN           = 'login';
 
     /**
      * Allowed sort criterion
@@ -197,6 +198,16 @@ class Profile extends \XLite\View\ItemsList\Model\Table
     // {{{ Behaviors
 
     /**
+     * Mark list as selectable
+     *
+     * @return boolean
+     */
+    protected function isSelectable()
+    {
+        return true;
+    }
+
+    /**
      * Mark list as removable
      *
      * @return boolean
@@ -292,6 +303,7 @@ class Profile extends \XLite\View\ItemsList\Model\Table
             \XLite\Model\Repo\Profile::SEARCH_DATE_PERIOD  => static::PARAM_DATE_PERIOD,
             \XLite\Model\Repo\Profile::SEARCH_DATE_RANGE   => static::PARAM_DATE_RANGE,
             \XLite\Model\Repo\Profile::SEARCH_STATUS       => static::PARAM_STATUS,
+            \XLite\Model\Repo\Profile::SEARCH_AND_LOGIN    => static::PARAM_LOGIN,
         );
     }
 
@@ -317,6 +329,7 @@ class Profile extends \XLite\View\ItemsList\Model\Table
             static::PARAM_DATE_PERIOD     => new \XLite\Model\WidgetParam\Set('Date period', '', false, array('', 'M', 'W', 'D', 'C')),
             static::PARAM_DATE_RANGE      => new \XLite\Model\WidgetParam\String('Date range', null),
             static::PARAM_STATUS          => new \XLite\Model\WidgetParam\String('Status', null),
+            static::PARAM_LOGIN           => new \XLite\Model\WidgetParam\String('Login', null),
         );
     }
 
@@ -377,6 +390,25 @@ class Profile extends \XLite\View\ItemsList\Model\Table
             }
         }
         $result->{\XLite\Model\Repo\Profile::SEARCH_ONLY_REAL} = true;
+
+        if ($result->{\XLite\Model\Repo\Profile::SEARCH_COUNTRY}) {
+            $country = \XLite\Core\Database::getRepo('XLite\Model\Country')->find(
+                $result->{\XLite\Model\Repo\Profile::SEARCH_COUNTRY}
+            );
+            if (!$country || !$country->hasStates()) {
+                $result->{\XLite\Model\Repo\Profile::SEARCH_STATE} = null;
+            }
+            if (!$country || $country->hasStates()) {
+                $result->{\XLite\Model\Repo\Profile::SEARCH_CUSTOM_STATE} = null;
+            }
+        }
+
+        if (filter_var($result->{\XLite\Model\Repo\Profile::SEARCH_PATTERN}, FILTER_VALIDATE_EMAIL)) {
+            $result->{\XLite\Model\Repo\Profile::SEARCH_AND_LOGIN} = $result->{\XLite\Model\Repo\Profile::SEARCH_PATTERN};
+            $result->{\XLite\Model\Repo\Profile::SEARCH_PATTERN} = null;
+        } else {
+            $result->{\XLite\Model\Repo\Profile::SEARCH_AND_LOGIN} = null;
+        }
 
         if ($result->{\XLite\Model\Repo\Profile::SEARCH_MEMBERSHIP}) {
             $membershipCondition = $result->{\XLite\Model\Repo\Profile::SEARCH_MEMBERSHIP};

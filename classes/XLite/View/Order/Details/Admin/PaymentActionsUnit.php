@@ -44,6 +44,13 @@ class PaymentActionsUnit extends \XLite\View\AView
     const PARAM_DISPLAY_SEPARATOR = 'displaySeparator';
 
     /**
+     * Cache of unit message value
+     *
+     * @var string
+     */
+    protected $message = null;
+
+    /**
      * Payment action units that need confirmation
      * 
      * @return array
@@ -109,6 +116,9 @@ class PaymentActionsUnit extends \XLite\View\AView
     /**
      * Return true if requested unit is allowed for the transaction
      *
+     * @param \XLite\Model\Payment\Transaction $transaction Transaction
+     * @param string                           $unit        Unit
+     *
      * @return boolean
      */
     protected function isTransactionUnitAllowed($transaction, $unit)
@@ -166,5 +176,33 @@ class PaymentActionsUnit extends \XLite\View\AView
             )
         );
     }
-}
 
+    /**
+     * Return true if warning message should be displayed
+     *
+     * @return boolean
+     */
+    protected function hasWarning()
+    {
+        return (bool) $this->getWarningMessage();
+    }
+
+    /**
+     * Get warning message
+     *
+     * @return string
+     */
+    protected function getWarningMessage()
+    {
+        $transaction = $this->getParam(self::PARAM_TRANSACTION);
+
+        if ($transaction && !isset($this->message)) {
+            $this->message = $transaction->getPaymentMethod()->getProcessor()->getTransactionMessage(
+                $transaction,
+                $this->getParam(self::PARAM_UNIT)
+            );
+        }
+
+        return $this->message;
+    }
+}

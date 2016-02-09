@@ -15,4 +15,4 @@
  * @ListChild (list="productBlock.info", weight="300")
  *}
 
-<widget class="\XLite\View\Price" product="{product}" displayOnlyPrice="true" />
+<widget class="\XLite\View\Price" product="{product}" displayOnlyPrice="1" />

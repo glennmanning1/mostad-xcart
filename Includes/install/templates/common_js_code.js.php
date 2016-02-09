@@ -222,11 +222,11 @@ jQuery().ready(
 
         clip.on('load', function(client) {
             clip.on('dataRequested', function (client, args) {
-                var box = jQuery(this).parents('.error-text').find('.permissions-list').get(0);
+                var box = jQuery('.permissions-list').get(0);
                 if (0 < jQuery(box).length) {
                     // Prepare text for clipboard
                     var text = box.innerHTML;
-                    text = text.replace(/<[a-z][^>]*>/g,'');
+                    text = text.trim().replace(/<\/?[a-z][^>]*>/g,'').replace(/[\t ]+/g, ' ');
                     client.setText(text);
 
                     // Select text within div.permissions-list
@@ -246,14 +246,14 @@ jQuery().ready(
             });
             clip.on('complete', function(client, args) {
                 // `this` is the element that was clicked
-                var alertBox = jQuery(this).parents('.error-text').find('.alert').get(0);
+                var alertBox = jQuery('.copy2clipboard-alert').get(0);
                 if (0 < jQuery(alertBox).length) {
                     alertBox.innerHTML = '<?php echo xtr('Copied to clipboard'); ?>';
                     jQuery(alertBox).fadeIn();
                 }
                 setTimeout(
                     function() {
-                        jQuery('.error-text.lc_file_permissions .alert').fadeOut();
+                        jQuery('.copy2clipboard-alert').fadeOut();
                     },
                     2000
                 );

@@ -62,12 +62,13 @@ class GeneralSettings extends \XLite\View\Model\Settings
     {
         parent::validateFields($data, $section);
 
-        $orderCounterNumber = (int)\XLite\Core\Config::getInstance()->General->order_number_counter;
+        $orderCounterNumber = \XLite\Core\Database::getRepo('XLite\Model\Order')->getMaxOrderNumber() + 1;
         $orderCounterNumberToChange = (int)\XLite\Core\Request::getInstance()->order_number_counter;
+
         if ($orderCounterNumberToChange < $orderCounterNumber) {
             $this->addErrorMessage(
-                static::SECTION_PARAM_FIELDS, 
-                'The next order number should be greater than the current one'
+                static::SECTION_PARAM_FIELDS,
+                'The value must be greater than the current maximum order number in the order list'
             );
         }
     }

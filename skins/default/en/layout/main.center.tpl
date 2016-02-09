@@ -18,7 +18,9 @@
   </div>
   {else:}
   <div id="main" class="clearfix">
-    <list name="layout.main.center" />
+    <div class="flex-container">
+        <list name="layout.main.center" />
+    </div>
   </div>
   {end:}
 </div>

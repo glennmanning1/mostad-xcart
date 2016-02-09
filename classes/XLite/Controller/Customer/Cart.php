@@ -63,6 +63,18 @@ class Cart extends \XLite\Controller\Customer\ACustomer
     }
 
     /**
+     * Call controller action
+     *
+     * @return void
+     */
+    protected function callAction()
+    {
+        if (!\XLite\Core\Request::getInstance()->isBot()) {
+            parent::callAction();
+        }
+    }
+
+    /**
      * Get page title
      *
      * @return string
@@ -406,34 +418,6 @@ class Cart extends \XLite\Controller\Customer\ACustomer
     protected function processAddItemSuccess()
     {
         \XLite\Core\TopMessage::addInfo('Product has been added to cart');
-    }
-
-    /**
-     * Restore order
-     *
-     * @return void
-     */
-    protected function restoreOrder()
-    {
-        \XLite\Core\Session::getInstance()->checkoutCanceled = true;
-        $this->doActionAddOrder();
-
-        if ($this->addedOrder
-            && !($this->addedOrder instanceof \XLite\Model\Cart)
-            && !\XLite\Core\Auth::getInstance()->isLogged()
-        ) {
-            $cart = $this->getCart();
-            $profile = $this->addedOrder->getProfile()->cloneEntity();
-            $profile->setOrder($cart);
-            $profile->setAnonymous(true);
-            $cart->setOrigProfile($this->addedOrder->getOrigProfile());
-            $cart->setProfile($profile);
-            $this->updateCart();
-        }
-
-        $this->setReturnURL(
-            $this->buildURL('checkout')
-        );
     }
 
     /**

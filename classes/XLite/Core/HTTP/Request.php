@@ -93,7 +93,7 @@ class Request extends \PEAR2\HTTP\Request
     public function requestToFile($file)
     {
         try {
-            $result = parent::sendRequest();
+            $result = parent::requestToFile($file);
 
         } catch (\Exception $exception) {
             $result = null;

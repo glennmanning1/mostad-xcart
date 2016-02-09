@@ -40,6 +40,7 @@ abstract class AFileUploader extends \XLite\View\FormField\AFormField
     const PARAM_MULTIPLE    = 'multiple';
     const PARAM_MAX_WIDTH   = 'maxWidth';
     const PARAM_MAX_HEIGHT  = 'maxHeight';
+    const PARAM_IS_VIA_URL_ALLOWED  = 'isViaUrlAllowed';
 
     /**
      * Return field type
@@ -91,6 +92,7 @@ abstract class AFileUploader extends \XLite\View\FormField\AFormField
             static::PARAM_MULTIPLE    => new \XLite\Model\WidgetParam\Bool('Multiple', false),
             static::PARAM_MAX_WIDTH   => new \XLite\Model\WidgetParam\Int('Max. width', 122),
             static::PARAM_MAX_HEIGHT  => new \XLite\Model\WidgetParam\Int('Max. height', 122),
+            static::PARAM_IS_VIA_URL_ALLOWED  => new \XLite\Model\WidgetParam\Int('Is ViaUrl allowed', true),
         );
     }
 
@@ -167,5 +169,15 @@ abstract class AFileUploader extends \XLite\View\FormField\AFormField
         }
 
         return $result;
+    }
+
+    /**
+     * Is ia url allowed
+     *
+     * @return boolean
+     */
+    protected function isViaUrlAllowed()
+    {
+        return $this->getParam(static::PARAM_IS_VIA_URL_ALLOWED);
     }
 }

@@ -350,10 +350,9 @@ class Profiler extends \XLite\Base\Singleton implements \Doctrine\DBAL\Logging\S
                 'open'  => true,
                 'time'  => 0,
             );
-
             if (static::$useXdebugStackTrace) {
-                xdebug_start_trace(
-                    LC_DIR_LOG . $timePoint . '.' . microtime(true),
+                @xdebug_start_trace(
+                    LC_DIR_LOG . \Includes\Utils\FileManager::sanitizeFilename($timePoint) . '.' . microtime(true),
                     XDEBUG_TRACE_COMPUTERIZED
                 );
             }
@@ -378,8 +377,8 @@ class Profiler extends \XLite\Base\Singleton implements \Doctrine\DBAL\Logging\S
             $this->points[$timePoint]['open'] = true;
 
             if (static::$useXdebugStackTrace) {
-                xdebug_start_trace(
-                    LC_DIR_VAR . 'log' . LC_DS . $timePoint . '.' . microtime(true),
+                @xdebug_start_trace(
+                    LC_DIR_VAR . 'log' . LC_DS . \Includes\Utils\FileManager::sanitizeFilename($timePoint) . '.' . microtime(true),
                     XDEBUG_TRACE_COMPUTERIZED
                 );
             }
@@ -519,7 +518,7 @@ class Profiler extends \XLite\Base\Singleton implements \Doctrine\DBAL\Logging\S
 
         $result = array(
             'totalQueriesTime'   => 0,
-            '$totalQueriesCount' => 0,
+            'totalQueriesCount' => 0,
         );
         foreach (static::$queries as $q => $d) {
             $cnt = count($d['time']);

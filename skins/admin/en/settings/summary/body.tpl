@@ -117,7 +117,7 @@
 
 <widget IF="libcurl|license_keys" template="settings/base.tpl" />
 
-<table cellspacing="1" cellpadding="5" class="settings-table">
+<table cellspacing="1" cellpadding="5" class="settings-table permissions-table">
 
 {if:!isWin()}
 <tr>

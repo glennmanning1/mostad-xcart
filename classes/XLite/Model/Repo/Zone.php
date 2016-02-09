@@ -236,6 +236,71 @@ class Zone extends \XLite\Model\Repo\ARepo
 
     // }}}
 
+    // {{{ Zones list for offline shipping
+
+    /**
+     * @param \XLite\Model\Shipping\Method $method
+     *
+     * @return array
+     */
+    public function getOfflineShippingZones($method)
+    {
+        $allZones = $this->findAllZones();
+        $usedZones = $this->getOfflineShippingUsedZones($method);
+
+        $usedList = array();
+        $unUsedList = array();
+
+        if ($usedZones) {
+            foreach ($allZones as $zone) {
+                if (isset($usedZones[$zone->getZoneId()])) {
+                    $usedList[$zone->getZoneId()] = sprintf('%s (%d)', $zone->getZoneName(), $usedZones[$zone->getZoneId()]);
+
+                } else {
+                    $unUsedList[$zone->getZoneId()] = sprintf('%s (%d)', $zone->getZoneName(), 0);
+                }
+            }
+
+            if ($usedList) {
+                asort($usedList);
+                asort($unUsedList);
+            }
+        } else {
+            foreach ($allZones as $zone) {
+                $unUsedList[$zone->getZoneId()] = $zone->getZoneName();
+            }
+        }
+
+        return array($usedList, $unUsedList);
+    }
+
+    /**
+     * @param \XLite\Model\Shipping\Method $method
+     *
+     * @return array
+     */
+    protected function getOfflineShippingUsedZones($method)
+    {
+        $list = array();
+
+        if ($method->getShippingMarkups()) {
+            foreach ($method->getShippingMarkups() as $markup) {
+                if ($markup->getZone()) {
+                    if (!isset($list[$markup->getZone()->getZoneId()])) {
+                        $list[$markup->getZone()->getZoneId()] = 1;
+
+                    } else {
+                        $list[$markup->getZone()->getZoneId()]++;
+                    }
+                }
+            }
+        }
+
+        return $list;
+    }
+
+    // }}}
+
     // {{{ Search
 
     /**

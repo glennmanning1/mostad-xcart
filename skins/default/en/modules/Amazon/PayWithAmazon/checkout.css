@@ -38,3 +38,6 @@ body.target-amazon-checkout .checkout-block ul.shipping-rates li {
   padding-left: 20px;
 }
 
+body.target-amazon-checkout .checkout-block .review-step .cart-items {
+  text-align: left;
+}

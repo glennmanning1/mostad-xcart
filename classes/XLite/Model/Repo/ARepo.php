@@ -147,6 +147,27 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
     protected $columnsCharSets = array();
 
     /**
+     * Identifiers of exported entities
+     *
+     * @var array
+     */
+    protected $exportSelection = array();
+
+    /**
+     * Current search condition
+     *
+     * @var \XLite\Core\CommonCell
+     */
+    protected $currentSearchCnd = null;
+
+    /**
+     * Has applied filter
+     *
+     * @var boolean
+     */
+    protected $hasFilter = false;
+
+    /**
      * Get repository type
      *
      * @return string
@@ -1935,13 +1956,108 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
     // {{{ Export routines
 
     /**
+     * Set selection of item ids for export
+     *
+     * @param array $filter Identificators
+     */
+    public function setExportSelection(array $selection)
+    {
+        $this->exportSelection = $selection;
+    }
+
+    /**
+     * Set selection of item ids for export
+     *
+     * @param array $filter Identificators
+     */
+    public function setExportFilter($filter)
+    {
+        if (!empty($filter) && method_exists($this, 'callSearchConditionHandler')) {
+            $this->currentSearchCnd = $filter;
+            $this->hasFilter = true;
+
+            $this->clearExportFilter();
+            $alias = $this->getDefaultAlias();
+
+            $qb = $this->createQueryBuilder()
+                       ->select($alias . '.' . $this->getPrimaryKeyField());
+
+            foreach ($this->currentSearchCnd as $key => $value) {
+                if (!$this->isRestrictedCondition($key) && $value) {
+                    call_user_func_array(
+                        array($this, 'callSearchConditionHandler'),
+                        array($value, $key, $qb, false)
+                    );
+                }
+            }
+
+            $ids = array_map(function ($item)
+                {
+                    return $item[$this->getPrimaryKeyField()];
+                },
+                $qb->getQuery()->getScalarResult()
+            );
+
+            for ($row = 0; $row < count($ids); $row += 1000) {
+                $batch = array_slice($ids, $row, 1000);
+
+                $updateQb = $this->createPureQueryBuilder()
+                       ->update($this->_entityName, $alias)
+                       ->set($alias . '.xcPendingExport', 1)
+                       ->where(
+                            $qb->expr()->in(
+                                $alias . '.' . $this->getPrimaryKeyField(),
+                                ':ids'
+                            )
+                        )->setParameter(
+                            'ids',
+                            $batch
+                        );
+
+                $updateQb->execute();
+            }
+        }
+    }
+
+    /**
+     * Checks if condition key is restricted to use
+     *
+     * @param string $key Condition key
+     */
+    public function isRestrictedCondition($key)
+    {
+        $list = array(
+            'limit',
+            'sortBy',
+            'orderBy',
+        );
+
+        return in_array($key, $list, true);
+    }
+
+    /**
+     * Set selection of item ids for export
+     *
+     * @param array $filter Identificators
+     */
+    public function clearExportFilter()
+    {
+        $alias = $this->getDefaultAlias();
+        $this->createPureQueryBuilder()
+             ->update($this->_entityName, $alias)
+             ->set($alias . '.xcPendingExport', 0)
+             ->execute();
+    }
+
+    /**
      * Count items for export routine
      *
      * @return integer
      */
     public function countForExport()
     {
-        return (int) $this->defineCountForExportQuery()->getSingleScalarResult();
+        return (int) $this->defineCountForExportQuery()
+                          ->getSingleScalarResult();
     }
 
     /**
@@ -1954,7 +2070,7 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
     public function getExportIterator($position = 0)
     {
         return $this->defineExportIteratorQueryBuilder($position)
-            ->iterate();
+                    ->iterate();
     }
 
     /**
@@ -1964,11 +2080,21 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
      */
     protected function defineCountForExportQuery()
     {
-        $qb = $this->createQueryBuilder();
+        $qb = $this->createPureQueryBuilder()
+                   ->select(
+                       'COUNT(DISTINCT ' . $this->getDefaultAlias() . '.' . $this->getPrimaryKeyField() . ')'
+                   );
 
-        return $qb->select(
-            'COUNT(DISTINCT ' . $qb->getMainAlias() . '.' . $this->getPrimaryKeyField() . ')'
-        );
+        if (!empty($this->currentSearchCnd) && $this->hasFilter) {
+            $qb->andWhere($qb->getMainAlias() . '.xcPendingExport = 1');
+        }
+
+        if (!empty($this->exportSelection)) {
+            $qb->andWhere($qb->getMainAlias() . '.' . $this->getPrimaryKeyField() . ' IN (:ids)')
+                     ->setParameter('ids', $this->exportSelection);
+        }
+
+        return $qb;
     }
 
     /**
@@ -1980,9 +2106,20 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
      */
     protected function defineExportIteratorQueryBuilder($position)
     {
-        return $this->createQueryBuilder()
-            ->setFirstResult($position)
-            ->setMaxResults(1000000000);
+        $qb = $this->createPureQueryBuilder()
+                   ->setFirstResult($position)
+                   ->setMaxResults(1000000000);
+
+        if (!empty($this->currentSearchCnd) && $this->hasFilter) {
+            $qb->andWhere($qb->getMainAlias() . '.xcPendingExport = 1');
+        }
+
+        if (!empty($this->exportSelection)) {
+            $qb->andWhere($qb->getMainAlias() . '.' . $this->getPrimaryKeyField() . ' IN (:ids)')
+                     ->setParameter('ids', $this->exportSelection);
+        }
+
+        return $qb;
     }
 
     // }}}
@@ -2029,18 +2166,24 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
      */
     protected function addImportCondition(\Doctrine\ORM\QueryBuilder $qb, $name, $value)
     {
+        $added = false;
+
         $alias = $qb->getMainAlias();
         if (property_exists($this->getClassMetadata()->name, $name)) {
             $qb->andWhere($alias . '.' . $name . ' = :' . $name);
+            $added = true;
 
         } elseif (property_exists($this->getClassMetadata()->name, 'translations')) {
             $qb->andWhere('translations.' . $name . ' = :'. $name);
             if (is_array($value)) {
                 $value = $value[\XLite\Logic\Import\Importer::getLanguageCode()];
             }
+            $added = true;
         }
 
-        $qb->setParameter($name, $value);
+        if ($added) {
+            $qb->setParameter($name, $value);
+        }
     }
 
     // }}}

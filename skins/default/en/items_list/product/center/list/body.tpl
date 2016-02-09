@@ -21,17 +21,12 @@
           <td class="product-photo">
             <div class="product-photo" style="width: {getIconWidth()}px;">
               <list name="photo" type="inherited" product="{product}" />
-              <div IF="product.hasImage()">
-                <list name="quicklook" type="inherited" product="{product}" />
-              </div>
             </div>
+            <list name="quicklook" type="inherited" product="{product}" />
           </td>
           <td class="product-info">
             <div class="product-info">
               <list name="info" type="inherited" product="{product}" />
-              <div IF="!product.hasImage()">
-                <list name="quicklook" type="inherited" product="{product}" />
-              </div>
             </div>
           </td>
         </tr>

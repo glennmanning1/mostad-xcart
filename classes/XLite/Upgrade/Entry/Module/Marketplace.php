@@ -333,8 +333,6 @@ class Marketplace extends \XLite\Upgrade\Entry\Module\AModule
      *
      * @param \XLite\Model\Module $moduleInstalled  Module model object
      * @param \XLite\Model\Module $moduleForUpgrade Module model object
-     *
-     * @return void
      */
     public function __construct(\XLite\Model\Module $moduleInstalled, \XLite\Model\Module $moduleForUpgrade)
     {
@@ -490,6 +488,9 @@ class Marketplace extends \XLite\Upgrade\Entry\Module\AModule
         $forUpgrade = $this->getModuleForUpgrade();
         $installed  = $this->getModuleInstalled();
 
+        $forUpgrade->setInstalled(true);
+        $isSkinModule = $this->isSkinModule();
+
         if ($forUpgrade->getIdentityData() !== $installed->getIdentityData()) {
             $forUpgrade->setEnabled($installed->getEnabled());
             $forUpgrade->setYamlLoaded($installed->getYamlLoaded());
@@ -499,10 +500,11 @@ class Marketplace extends \XLite\Upgrade\Entry\Module\AModule
             $this->moduleInfoInstalled = $this->getPreparedModuleInfo($forUpgrade, false);
 
         } else {
-            $forUpgrade->setEnabled(true);
+            $forUpgrade->setEnabled(!$isSkinModule);
         }
 
         $forUpgrade->setInstalled(true);
+        $forUpgrade->setIsSkin($isSkinModule);
         $forUpgrade->setFromMarketplace(false);
         $this->moduleInfoForUpgrade['fromMarketplace'] = false;
 

@@ -12,6 +12,8 @@
  *}
 
 <a href="{buildURL(#order_list#,#clearSearch#)}" class="clear-search">
-  <img src="images/broom.svg" alt="{t(#Clear search#)}" title="{t(#Clear search#)}" />
+    <span class="clear-search-image" title="{t(#Clear search#)}">
+        {getSVGImage(#images/broom.svg#):h}
+    </span>
 </a>
 

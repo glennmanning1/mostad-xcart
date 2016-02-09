@@ -44,7 +44,7 @@ abstract class Main extends \XLite\View\ItemsList\Product\Customer\Category\Main
     {
         $list = parent::defineDataForDataString();
 
-        $list['parameters']['category_id'] = \XLite\Core\Request::getInstance()->category_id;
+        $list['parameters']['category_id'] = $this->getCategoryId();
 
         return $list;
     }

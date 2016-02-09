@@ -80,18 +80,8 @@ class Category extends \XLite\View\Pager\Customer\Product\AProduct
     }
 
     /**
-     * Return maximum possible items number per page
-     *
-     * @return integer
-     */
-    protected function getItemsPerPageMax()
-    {
-        return (integer) \XLite\Core\Config::getInstance()->General->products_per_page_max ?: parent::getItemsPerPageMax();
-    }
-
-    /**
      * Should we use cache for pageId
-     * 
+     *
      * @return boolean
      */
     protected function isSavedPageId()

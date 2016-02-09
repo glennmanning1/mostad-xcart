@@ -47,6 +47,30 @@ class Generator extends \XLite\Base implements \SeekableIterator, \Countable
     protected $options;
 
     /**
+     * Generator instance
+     *
+     * @var Generator
+     */
+    protected static $instance;
+
+    /**
+     * Returns generator if it is initialised or FALSE otherwise
+     *
+     * @return Generator
+     */
+    public static function getInstance()
+    {
+        if (null === static::$instance) {
+            $state = \XLite\Core\Database::getRepo('XLite\Model\TmpVar')->getEventState(static::getEventName());
+            static::$instance = ($state && isset($state['options']))
+                ? new static($state['options'])
+                : false;
+        }
+
+        return static::$instance;
+    }
+
+    /**
      * Run
      *
      * @param array $options Options

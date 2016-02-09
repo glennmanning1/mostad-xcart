@@ -100,6 +100,15 @@ class Method extends \XLite\Model\Base\I18n
     protected $orderby = 0;
 
     /**
+     * Position in popup
+     *
+     * @var integer
+     *
+     * @Column (type="integer")
+     */
+    protected $adminOrderby = 0;
+
+    /**
      * Enabled status
      *
      * @var boolean
@@ -439,6 +448,36 @@ class Method extends \XLite\Model\Base\I18n
         }
 
         return $this;
+    }
+
+    /**
+     * Translation getter
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        $description = $this->getSoftTranslation()->getDescription();
+
+        if (\XLite\Core\Auth::getInstance()->isOperatingAsUserMode()) {
+            $methods = \XLite\Core\Auth::getInstance()->getOperateAsUserPaymentMethods();
+
+            $currentServiceName = $this->getServiceName();
+
+            $found = array_reduce(
+                $methods,
+                function($carry, $method) use ($currentServiceName){
+                    return $carry ?: $method->getServiceName() === $currentServiceName;
+                },
+                false
+            );
+
+            if ($found && !$this->isEnabled()) {
+                $description = static::t('This method is displayed because you are logged in as admin and operating as another user');
+            }
+        }
+
+        return $description;
     }
 
     /**

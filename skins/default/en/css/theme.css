@@ -544,16 +544,18 @@ ul.account-links li
   display: inline-block;
   list-style: none;
   padding: 0;
+  margin-left: 15px;
 }
 
 ul.account-links a
 {
-  /* text-decoration: none; */
+  text-decoration: none;
 }
 
-ul.account-links a:hover
+ul.account-links > li > a:hover
 {
-  text-decoration: underline;
+  text-decoration: none;
+  border-bottom: 1px solid #5194c5;
 }
 
 ul.account-links span.email {
@@ -777,21 +779,21 @@ ul.account-links span.email {
     width: 100%;
 }
 
-#breadcrumb li.last span {
+#breadcrumb li.last > a {
   color: #a9a9a9;
 }
 
 #breadcrumb .home-link {
-  line-height: 26px;
+  line-height: 20px;
 }
 
 #breadcrumb .home-link img
 {
   vertical-align: middle;
   position: relative;
-  top: -1px;
-  width: 23px;
-  height: 23px;
+  top: -2px;
+  width: 20px;
+  height: 20px;
 }
 
 #breadcrumb ul.breadcrumb {
@@ -805,14 +807,14 @@ ul.breadcrumb li.location-node {
   margin: 2px 0 0;
 }
 
-ul.breadcrumb li.location-node a,
-  ul.breadcrumb li.location-node span
+ul.breadcrumb li.location-node > a,
+  ul.breadcrumb li.location-node > span
 {
-  line-height: 12px;
+  font-size: 15px;
   text-decoration: none;
 }
 
-ul.breadcrumb li.location-node a:hover{
+ul.breadcrumb li.location-node > a:hover{
   text-decoration: underline;
 }
 
@@ -830,6 +832,13 @@ ul.breadcrumb li.location-node span.separator {
   line-height: 20px;
 }
 
+ul.breadcrumb > li.location-node + li:before {
+  color: #888;
+  padding-left: 10px;
+  padding-right: 5px;
+  content: '\203A\00A0';
+}
+
 ul.breadcrumb li:first-child {
   margin: 0px;
 }
@@ -841,7 +850,7 @@ li.location-node:hover ul.location-subnodes {
 ul.location-subnodes {
   position: absolute;
   top: 20px;
-  left: 22px;
+  left: 29px;
   list-style-type: none;
   background-color: #fff;
   z-index: 10000;
@@ -1111,7 +1120,7 @@ div.tabs .secondary span.active
 {
   background: transparent;
   margin: 0 auto;
-  width: auto;
+  width: 50%;
   text-align: center;
   padding-top: 15px;
 }

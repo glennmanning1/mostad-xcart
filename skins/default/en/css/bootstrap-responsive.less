@@ -417,9 +417,10 @@ div.product-details div.image
           padding-right: 10px;
 
           .minicart-items-number{
-            margin: 10px 0;
+            margin: 17px 0;
             font-size: @font-size-h4;
             font-weight: bold;
+            color: @mobile-menu-icons-color;
           }
 
           .minicart-items-text{
@@ -433,14 +434,15 @@ div.product-details div.image
   }
 
   .lc-minicart .items-list {
-    top: 40px !important;
+    top: @mobile-menu-height !important;
   }
 
   #logo{
-    padding-top: 40px;
+    padding-top: 29px;
     text-align: center;
     z-index: 50;
     padding-bottom: 10px;
+    margin-top: @mobile-menu-height;
 
     img {
       margin: 0 auto;
@@ -645,6 +647,10 @@ div.product-details div.image
     padding-top: 0;
   }
 
+  .lc-minicart {
+    padding-left: 40px;
+  }
+
   ul.account-links {
     position: relative;
     top: auto;
@@ -687,6 +693,10 @@ div.product-details div.image
     min-width: 115px;
     background-color: @light-accent-color;
     background: url("@{customer-skin}/images/shopping-bag.png") 10px 15px no-repeat;
+
+    svg{
+      display: none;
+    }
   }
 
   .lc-minicart.empty:hover

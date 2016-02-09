@@ -334,7 +334,7 @@ class Attributes extends \XLite\Logic\Import\Processor\AProcessor
      */
     protected function importOptionsColumn(\XLite\Model\Attribute $model, array $value, array $column)
     {
-        if ($value) {
+        if ($value && !$this->verifyValueAsNull($value)) {
             foreach ($value as $index => $val) {
                 $option = $model->getAttributeOptions()->get($index);
                 if (!$option) {
@@ -352,6 +352,8 @@ class Attributes extends \XLite\Logic\Import\Processor\AProcessor
                 \XLite\Core\Database::getRepo('\XLite\Model\AttributeOption')->delete($option, false);
                 $model->getAttributeOptions()->removeElement($option);
             }
+        } elseif ($value && !$this->verifyValueAsNull($value)) {
+            $model->getAttributeOptions()->clear();
         }
     }
 

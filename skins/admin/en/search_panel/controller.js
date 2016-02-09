@@ -50,7 +50,10 @@ var searchCallback = function ($form, linked) {
     }
   });
 
-  $linked.loadWidget();
+  $linked.loadWidget(function(content){
+    var newFormId = jQuery('.search-conditions-box', content).closest('form').find('input[name="xcart_form_id"]').val();
+    $form.find('input[name="xcart_form_id"]').val(newFormId);
+  });
 }
 
 var SearchConditionBox = function(submitFormFlag)
@@ -69,6 +72,13 @@ var SearchConditionBox = function(submitFormFlag)
     }
   );
 
+  // Delete filter with confirmation
+  jQuery('.saved-filter-options .delete-filter').click(
+    function() {
+      return confirm(core.t('Are you sure you want to delete this filter?'));
+    }
+  );
+
   // Add some additional functionality for the search conditions boxes
   jQuery('.search-conditions-box').each(
     function() {
@@ -83,13 +93,19 @@ var SearchConditionBox = function(submitFormFlag)
             // event.stopImmediatePropagation();
             event.preventDefault();
 
+            var formAction = jQuery('input[name="action"]', $form).eq(0).val();
+
             $.ajax({
               type:   $form.attr('method'),
               url:    $form.attr('action'),
               data:   $form.serialize(),
               success: function(data)
               {
-                searchCallback($form, linked);
+                if (formAction == 'search') {
+                  searchCallback($form, linked);
+                } else {
+                  location.reload();
+                }
               }
              });
 
@@ -138,20 +154,23 @@ var SearchConditionBox = function(submitFormFlag)
       boxes.each(
         function() {
           var filled = false;
-          jQuery(this).find('input[type="text"],input[type="checkbox"]:checked,select,textarea').each(
-            function() {
-              if (jQuery(this).val()) {
-                if (jQuery(this).attr('id') == 'stateSelectorId' && jQuery(this).data('value') == '') {
-                  // Skip state selector with empty value
-                } else {
-                  filled = true;
+          var parentBlock = jQuery(this).parents('.search-conditions-box').eq(0);
+          if (0 < parentBlock.length && true != core.getCommentedData(parentBlock, 'hideAdditionalFields')) {
+            jQuery(this).find('input[type="text"],input[type="checkbox"]:checked,select,textarea').each(
+              function() {
+                if (jQuery(this).val()) {
+                  if (jQuery(this).attr('id') == 'stateSelectorId' && jQuery(this).data('value') == '') {
+                    // Skip state selector with empty value
+                  } else {
+                    filled = true;
+                  }
                 }
               }
-            }
-          );
+            );
 
-          if (filled) {
-            jQuery(this).parents('.search-conditions-box').eq(0).addClass('full');
+            if (filled) {
+              parentBlock.addClass('full');
+            }
           }
         }
       );

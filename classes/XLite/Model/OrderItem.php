@@ -221,6 +221,12 @@ class OrderItem extends \XLite\Model\Base\SurchargeOwner
             $newItem->setObject($this->getObject());
         }
 
+        foreach ($this->getSurcharges() as $surchrg) {
+            $cloned = $surchrg->cloneEntity();
+            $cloned->setOwner($newItem);
+            $newItem->addSurcharges($cloned);
+        }
+
         if ($this->hasAttributeValues()) {
             foreach ($this->getAttributeValues() as $av) {
                 $cloned = $av->cloneEntity();

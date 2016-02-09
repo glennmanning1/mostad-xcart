@@ -51,15 +51,159 @@ class FooterMenu extends \XLite\View\Menu\Customer\Footer implements \XLite\Base
             (\XLite\Core\Auth::getInstance()->isLogged() ? 'L' : 'A'),
         );
 
-        foreach (\XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->search($cnd) as $v) {
+        $menus = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->getMenusPlainList($cnd);
+        foreach ($menus as $menuItem) {
             $menu[] = array(
-                'url'           => $v->getURL(),
-                'label'         => $v->getName(),
-                'controller'    => $v->getLinkController(),
+                'id'         => $menuItem->getId(),
+                'label'      => $menuItem->getName(),
+                'depth'      => $menuItem->getDepth(),
+                'controller' => $menuItem->getLinkController(),
+                'url'        => $menuItem->getUrl(),
             );
         }
 
+        if (!$menu) {
+            $menus = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->search($cnd);
+            foreach ($menus as $v) {
+                $menu[] = array(
+                    'url'           => $v->getURL(),
+                    'label'         => $v->getName(),
+                    'controller'    => $v->getLinkController(),
+                );
+            }
+        }
+
         return $menu ?: parent::defineItems();
+    }
+
+    /**
+     * Previous menu depth
+     *
+     * @var integer
+     */
+    protected $prevMenuDepth = 0;
+
+    /**
+     * Is first element
+     *
+     * @var integer
+     */
+    protected $isFirst = true;
+
+    /**
+     * Return the CSS files for the menu
+     *
+     * @return array
+     */
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+        $list[] = 'modules/CDev/SimpleCMS/css/footer_menu.css';
+
+        return $list;
+    }
+    
+    /**
+     * Return the JS files for the menu
+     *
+     * @return array
+     */
+    public function getJSFiles()
+    {
+        $list = parent::getJSFiles();
+        $list[] = 'modules/CDev/SimpleCMS/js/jquery_footer.js';
+
+        return $list;
+    }
+
+    /**
+     * Return widget default template
+     *
+     * @return string
+     */
+    protected function getDefaultTemplate()
+    {
+        return 'modules/CDev/SimpleCMS/footer_menu.tpl';
+    }
+
+    /**
+     * Return next menu level or not
+     *
+     * @param integer $menuDepth Level depth
+     *
+     * @return boolean
+     */
+    protected function isLevelUp($menuDepth)
+    {
+        $result = false;
+        if ($menuDepth > $this->prevMenuDepth) {
+            $result = true; 
+            $this->prevMenuDepth = $menuDepth;
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return previous menu level or not
+     *
+     * @param integer $menuDepth Level depth
+     *
+     * @return boolean
+     */
+    protected function isLevelBelow($menuDepth)
+    {
+        $result = false;
+        if ($menuDepth < $this->prevMenuDepth) {
+            $result = true; 
+            $this->prevMenuDepth = $menuDepth;
+        } else {
+            $result = false;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Return is level changed
+     *
+     * @return boolean
+     */
+    protected function closeMenuList($menuDepth = 0)
+    {
+        $result = '';
+        for ($i = $menuDepth;$i<$this->prevMenuDepth;$i++) {
+            $result .= '</ul></li>';
+        }
+        $this->prevMenuDepth = $menuDepth;
+
+        return $result;
+    }
+
+    /**
+     * Return is first element
+     *
+     * @return boolean
+     */
+    protected function isFirstElement()
+    {
+        $result = $this->isFirst;
+
+        return $result;
+    }
+
+    /**
+     * Return is higher element
+     *
+     * @return boolean
+     */
+    protected function isHigherElement($menuDepth = 0)
+    {
+        $this->isFirst = false;
+
+        return (0 == $menuDepth)?true:false;
     }
 }
 

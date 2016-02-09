@@ -70,7 +70,8 @@ class Transaction extends \XLite\Model\AEntity
     /**
      * Public token length
      */
-    const PUBLIC_TOKEN_LENGTH = 16;
+    const SUFFIX_TOKEN_LENGTH = 4;
+    const ORDERID_TOKEN_LENGTH = 6;
 
     /**
      * Token characters list
@@ -79,12 +80,9 @@ class Transaction extends \XLite\Model\AEntity
      */
     protected static $chars = array(
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-        'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D',
-        'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
-        'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-        'Y', 'Z', '_',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z',
     );
 
     /**
@@ -303,7 +301,7 @@ class Transaction extends \XLite\Model\AEntity
     {
         if (!$this->getPublicTxnId()) {
             $this->setPublicTxnId(
-                \XLite\Core\Operator::getInstance()->generateToken(static::PUBLIC_TOKEN_LENGTH, static::$chars)
+                $this->generateTransactionId()
             );
         }
 
@@ -322,6 +320,20 @@ class Transaction extends \XLite\Model\AEntity
     }
 
     /**
+     * Generate new transaction id by format: "OrderId-XXXX", where XXXX is random suffix
+     *
+     * @return string
+     */
+    public function generateTransactionId()
+    {
+        $suffix = \XLite\Core\Operator::getInstance()->generateToken(static::SUFFIX_TOKEN_LENGTH, static::$chars);
+
+        return $this->getOrder()
+            ? str_pad($this->getOrder()->getOrderId(), static::ORDERID_TOKEN_LENGTH, '0', STR_PAD_LEFT) . '-' . $suffix
+            : null;
+    }
+
+    /**
      * Renew transaction ID
      *
      * @return void
@@ -330,13 +342,15 @@ class Transaction extends \XLite\Model\AEntity
     {
         if (!$this->getPublicTxnId()) {
             $this->setPublicTxnId(
-                \XLite\Core\Operator::getInstance()->generateToken(static::PUBLIC_TOKEN_LENGTH, static::$chars)
+                $this->generateTransactionId()
             );
         }
 
-        $this->setPublicId(
-            $this->getPaymentMethod()->getProcessor()->generateTransactionId($this)
-        );
+        if ($this->getPaymentMethod() && $this->getPaymentMethod()->getProcessor()) {
+            $this->setPublicId(
+                $this->getPaymentMethod()->getProcessor()->generateTransactionId($this)
+            );
+        }
     }
 
     /**
@@ -688,6 +702,45 @@ class Transaction extends \XLite\Model\AEntity
     // {{{ Data operations
 
     /**
+     * Get list of transaction data matched to the data list defined in processor
+     * Return processor-specific data or (of it is empty and not strict mode) all stored data
+     *
+     * @param boolean $strict Strict flag
+     *
+     * @return array
+     */
+    public function getTransactionData($strict = false)
+    {
+        $list = new \Doctrine\Common\Collections\ArrayCollection();
+
+        $inputParams = $this->getPaymentMethod() && $this->getPaymentMethod()->getProcessor()
+            ? $this->getPaymentMethod()->getProcessor()->getInputDataFields()
+            : array();
+
+        if ($inputParams) {
+            foreach ($this->getData() as $cell) {
+                if (isset($inputParams[$cell->getName()])) {
+                    $list->add($cell);
+                    unset($inputParams[$cell->getName()]);
+                }
+            }
+
+            if ($inputParams && $strict) {
+                foreach ($inputParams as $param => $paramData) {
+                    $cell = new \XLite\Model\Payment\TransactionData();
+                    $cell->setName($param);
+                    $cell->setLabel($paramData['label']);
+                    $cell->setAccessLevel($paramData['accessLevel']);
+                    $cell->setTransaction($this);
+                    $list->add($cell);
+                }
+            }
+        }
+
+        return $list->isEmpty() && !$strict ? $this->getData() : $list;
+    }
+
+    /**
      * Set data cell
      *
      * @param string $name  Data cell name
@@ -774,18 +827,33 @@ class Transaction extends \XLite\Model\AEntity
      */
     public function createBackendTransaction($transactionType)
     {
-        $data = array(
-            'date'                => \XLite\Core\Converter::time(),
-            'type'                => $transactionType,
-            'value'               => $this->getValue(),
-            'payment_transaction' => $this,
+        $bt = \XLite\Core\Database::getRepo('XLite\Model\Payment\BackendTransaction')->insert(
+            $this->getCreateBackendTransactionData($transactionType),
+            false
         );
-
-        $bt = \XLite\Core\Database::getRepo('XLite\Model\Payment\BackendTransaction')->insert($data, false);
 
         $this->addBackendTransactions($bt);
 
         return $bt;
+    }
+
+    /**
+     * Get data to create backend transaction
+     *
+     * @param string $transactionType Type of backend transaction
+     *
+     * @return array
+     */
+    protected function getCreateBackendTransactionData($transactionType)
+    {
+        $data = array(
+            'date'                => \XLite\Core\Converter::time(),
+            'type'                => $transactionType,
+            'value'               => $this->getPaymentMethod()->getProcessor()->getTransactionValue($this, $transactionType),
+            'payment_transaction' => $this,
+        );
+
+        return $data;
     }
 
     /**
@@ -823,6 +891,15 @@ class Transaction extends \XLite\Model\AEntity
             static::t($this->getHistoryEventDescription(), $this->getHistoryEventDescriptionData()) . $descrSuffix,
             $this->getEventData()
         );
+
+        if ($this->getStatus() == static::STATUS_FAILED) {
+            $this->setDataCell(
+                'cart_items',
+                serialize($this->getCartItems()),
+                'Cart items'
+            );
+            \XLite\Core\Mailer::sendFailedTransactionAdmin($this);
+        }
     }
 
     /**
@@ -894,6 +971,20 @@ class Transaction extends \XLite\Model\AEntity
         $newTransaction->setOrder($this->getOrder());
         $newTransaction->setPaymentMethod($this->getPaymentMethod());
 
+        // Clone data cells
+        foreach ($this->getData() as $data) {
+            $cloned = $data->cloneEntity();
+            $newTransaction->addData($cloned);
+            $cloned->setTransaction($newTransaction);
+        }
+
+        // Clone backend transactions
+        foreach ($this->getBackendTransactions() as $backend) {
+            $cloned = $backend->cloneEntity();
+            $newTransaction->addBackendTransactions($cloned);
+            $cloned->setPaymentTransaction($newTransaction);
+        }
+
         return $newTransaction;
     }
 
@@ -907,5 +998,69 @@ class Transaction extends \XLite\Model\AEntity
         return !$this->note && $this->isFailed()
             ? static::getDefaultFailedReason()
             : $this->note;
+    }
+
+    /**
+     * Get cart items array
+     *
+     * @return array
+     */
+    protected function getCartItems()
+    {
+        $result = array();
+
+        foreach ($this->getOrder()->getItems() as $item) {
+            $row = array();
+            $row['name'] = $item->getName();
+            $row['sku'] = $item->getSku();
+            $row['price'] = $item->getPrice();
+            $row['amount'] = $item->getAmount();
+
+            if ($item->hasAttributeValues()) {
+                foreach ($item->getSortedAttributeValues() as $attr) {
+                    $row['attrs'][] = array(
+                        'name'  => $attr->getActualName(),
+                        'value' => $attr->getActualValue(),
+                    );
+                }
+
+            } else {
+                $row['attrs'] = array();
+            }
+
+            $result[] = $this->getCartItemData($item);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get cart item data as an array
+     *
+     * @param \XLite\Model\OrderItem $item Order item object
+     *
+     * @return array
+     */
+    protected function getCartItemData($item)
+    {
+        $result = array();
+        $result['name'] = $item->getName();
+        $result['sku'] = $item->getSku();
+        $result['price'] = $item->getPrice();
+        $result['amount'] = $item->getAmount();
+
+        if ($item->hasAttributeValues()) {
+            foreach ($item->getSortedAttributeValues() as $attr) {
+                $result['attrs'][] = array(
+                    'name'  => $attr->getActualName(),
+                    'value' => $attr->getActualValue(),
+                );
+            }
+
+        } else {
+            $result['attrs'] = array();
+        }
+
+        return $result;
     }
 }

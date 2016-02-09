@@ -945,6 +945,11 @@ class FlexyCompiler extends \XLite\Base\Singleton
                 // Do nothing - silent
                 break;
 
+            case ':b':
+                // Replace new-line with <br>
+                $expr = 'nl2br(' . $expr . ')';
+                break;
+
             default:
                 $wrongModifier = true;
                 if (substr($str, 0, 1) == ':') {

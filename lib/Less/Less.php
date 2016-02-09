@@ -68,6 +68,8 @@ class Less_Parser{
 	 */
 	public static $contentsMap = array();
 
+	public static $root_dir = '';
+
 
 	/**
 	 * @param Less_Environment|array|null $env
@@ -134,6 +136,11 @@ class Less_Parser{
 				if( is_string($value) ){
 					Less_Cache::SetCacheDir($value);
 					Less_Cache::CheckCacheDir();
+				}
+
+			case 'root_dir':
+				if( is_string($value) ){
+					Less_Parser::$root_dir = $value;
 				}
 			return;
 		}
@@ -380,6 +387,13 @@ class Less_Parser{
 		if( !empty($uri_root) ){
 			$uri_root = rtrim($uri_root,'/').'/';
 		}
+
+		//xcart hack
+		if (static::$root_dir) {
+			$dirname = str_replace(static::$root_dir, '', $dirname);
+			$filename = str_replace(static::$root_dir, '', $filename);
+		}
+
 
 		$currentFileInfo = array();
 

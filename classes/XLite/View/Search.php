@@ -55,7 +55,7 @@ class Search extends \XLite\View\Dialog
      */
     protected function getHead()
     {
-        return 'Products search';
+        return static::t('Products search');
     }
 
     /**

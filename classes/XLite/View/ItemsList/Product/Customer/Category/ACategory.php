@@ -325,4 +325,24 @@ abstract class ACategory extends \XLite\View\ItemsList\Product\Customer\ACustome
 
     // }}}
 
+    /**
+     * Defines if the widget is listening to #hash changes
+     * 
+     * @return boolean
+     */
+    protected function getListenToHash()
+    {
+        return true;
+    }
+    
+    /**
+     * Defines the #hash prefix of the data for the widget
+     * @TODO implement!
+     * 
+     * @return string
+     */
+    protected function getListenToHashPrefix()
+    {
+        return 'product.category';
+    }
 }

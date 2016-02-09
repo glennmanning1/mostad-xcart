@@ -15,5 +15,5 @@
   <h3>{t(#Upload files#)}</h3>
   <input id="files" type="file" name="files[]" multiple="multiple" />
   <p>{getUploadFileMessage()}</p>
-  <a href="{getSamplesURL()}" target="_blank">{t(#Import/Export guide#)}</a>
+  <a href="{getSamplesURL()}" target="_blank">{getSamplesURLText()}</a>
 </div>

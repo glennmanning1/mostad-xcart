@@ -14,6 +14,6 @@
 <input type="hidden" name="{getName()}" value="" />
 <input{getAttributesCode():h} />
 <div class="widget" title="{t(getWidgetTitle())}" data-enabled-label="{t(getEnabledLabel())}" data-disabled-label="{t(getDisabledLabel())}">
-<i class="fa fa-power-off"></i>
+<i class="fa {getIcon()}"></i>
 </div>
 </span>

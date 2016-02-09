@@ -15,13 +15,22 @@
 function ProductFilterView(base)
 {
   this.callSupermethod('constructor', arguments);
+
+  this.widgetParams = core.getCommentedData(base, 'widgetParams');
+
+  this.ajaxEvents = this.widgetParams.ajax_events;
+
   var o = this;
-  core.bind(
-    'updateProductFilter',
-    function(event, data) {
-      o.load();
-    }
-  );
+
+  if (this.ajaxEvents) {
+    core.bind(
+      'list.products.loaded',
+      function(event, data){
+        o.productsListView = data;
+        _.once(o.load());
+      }
+    );
+  }
 }
 
 extend(ProductFilterView, ALoadable);
@@ -33,8 +42,12 @@ ProductFilterView.autoload = function(){
 // No shade widget
 ProductFilterView.prototype.shadeWidget = false;
 
+ProductFilterView.prototype.productsListView = null;
+
+ProductFilterView.prototype.ajaxEvents = true;
+
 // Widget target
-ProductFilterView.prototype.widgetTarget = 'main';
+ProductFilterView.prototype.widgetTarget = 'category_filter';
 
 // Widget class name
 ProductFilterView.prototype.widgetClass = '\\XLite\\Module\\XC\\ProductFilter\\View\\Filter';
@@ -43,6 +56,24 @@ ProductFilterView.prototype.widgetClass = '\\XLite\\Module\\XC\\ProductFilter\\V
 ProductFilterView.prototype.bodyHandlerBinded = false;
 
 // Postprocess widget
+ProductFilterView.prototype.getFilters = function()
+{
+  var formData = $('form.filter-form').serializeArray();
+  var filters = formData.filter(
+    function(item){
+      return /^filter/.test(item.name) && item.value;
+    }
+  ).reduce(
+    function(acc, item){
+      acc[item.name] = item.value;
+      return acc;
+    },
+    {}
+  );
+
+  return filters;
+}
+
 ProductFilterView.prototype.postprocess = function(isSuccess)
 {
   this.callSupermethod('postprocess', arguments);
@@ -110,6 +141,42 @@ ProductFilterView.prototype.postprocess = function(isSuccess)
             popup.attr('timerId', setTimeout("jQuery('.product-filter .popup').hide()", 4000));
         }
     );
+
+    jQuery('form.filter-form').unbind('submit').submit(
+      function () {
+        if (!o.productsListView || !o.ajaxEvents) {
+          return true;
+        }
+
+        if (!jQuery(this).hasClass('disabled')) {
+          jQuery('button', this).addClass('disabled');
+          jQuery(this).addClass('disabled');
+
+          var filters = o.getFilters();
+          if (
+            o.productsListView.submitForm(
+              this,
+              function (XMLHttpRequest, textStatus, data, isValid) {
+                if (isValid) {
+                  core.clearHash('filter');
+                  o.productsListView.load(filters);
+                } else {
+                  o.productsListView.unshade();
+                }
+              }
+            )
+          ) {
+            o.productsListView.shade();
+          }
+        }
+
+        return false;
+      }
+    );
+
+    if (typeof ValueRangeWidget !== 'undefined') {
+      core.autoload(ValueRangeWidget);
+    }
   }
 }
 
@@ -118,52 +185,28 @@ core.autoload(ProductFilterView);
 /**
  * Decoration of the products list widget class
  */
+
 core.bind(
   'load',
   function() {
     decorate(
-      'ProductsListView',
-      'postprocess',
-      function(isSuccess, initial)
-      {
-        arguments.callee.previousMethod.apply(this, arguments);
+    'ProductsListView',
+    'postprocess',
+    function(isSuccess, initial)
+    {
+      arguments.callee.previousMethod.apply(this, arguments);
 
-        if (isSuccess) {
-          var o = this;
+      if (isSuccess) {
+        var o = this;
 
-          if (jQuery(this.base).hasClass('filtered-products')) {
+        if (jQuery(this.base).hasClass('filtered-products')) {
+          ProductFilterView.prototype.productsListView = this;
+        }
 
-            jQuery('form.filter-form').unbind('submit').submit(
-              function () {
-                if (!jQuery(this).hasClass('disabled')) {
-                  jQuery('form.filter-form button').addClass('disabled');
-                  jQuery(this).addClass('disabled');
-                  if (
-                    o.submitForm(
-                      this,
-                      function (XMLHttpRequest, textStatus, data, isValid) {
-                        if (isValid) {
-                          o.load();
-                        } else {
-                          o.unshade();
-                        }
-                      }
-                    )
-                  ) {
-                    o.shade();
-                  }
-                }
-
-                return false;
-              }
-            );
-
-          }
-
-          jQuery('form.filter-form button').removeClass('disabled');
-          jQuery('form.filter-form').removeClass('disabled');
-        } // if (isSuccess) {
-      } // function(isSuccess, initial)
+        jQuery('form.filter-form button').removeClass('disabled');
+        jQuery('form.filter-form').removeClass('disabled');
+      } // if (isSuccess) {
+    } // function(isSuccess, initial)
     ); // 'postprocess' method decoration (EXISTING method)
   }
-); // core.bind()
+);

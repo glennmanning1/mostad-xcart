@@ -770,6 +770,7 @@ ul.subcategory-list.subcategory-view-list li a {
 {
   text-decoration: none;
   text-align: left;
+  word-break: break-word;
 }
 
 .products-grid .product-name,
@@ -1162,6 +1163,25 @@ body.store-product h1#page-title,
 
 div.product-price {
   display: inline-block;
+  vertical-align: middle;
+}
+
+.product-items-available.low-stock{
+  font-size: 14px;
+  color: #df4414;
+  vertical-align: middle;
+  padding-left: 7px;
+}
+
+.products-grid .product-items-available.low-stock{
+    display: inline-block;
+    vertical-align: middle;
+    padding-top: 12px;
+    height: 34px;
+}
+
+.products-table .product-items-available.low-stock{
+    vertical-align: baseline;
 }
 
 .product-details div.product-price {
@@ -1249,6 +1269,11 @@ div.product-price {
 .product-details .product-items-available
 {
   color: #888;
+}
+
+.product-details .product-items-available.low-stock
+{
+  color: #df4414;
 }
 
 .product-details .product-in-stock,
@@ -1495,6 +1520,12 @@ table.list-body-list td
   background-color: white;
 }
 
+@media (max-width: 991px){
+  .lc-minicart:hover{
+    background-color: transparent;
+  }
+}
+
 .lc-minicart.empty
 {
   cursor: auto;
@@ -1516,6 +1547,12 @@ table.list-body-list td
   z-index: 900;
   display: block;
   cursor: auto;
+}
+
+@media (max-width : 991px) {
+  .lc-minicart .items-list{
+    right: 20px;
+  }
 }
 
 .lc-minicart p.title
@@ -2377,7 +2414,7 @@ iframe#pay_iframe {
 
 .checkout-block ul.shipping-rates.selected li label {
   color: #53769d;
-  width: calc(70% + 18px);
+  width: 100%;
 }
 
 /*.checkout-block ul.payments li label {
@@ -2540,10 +2577,6 @@ iframe#pay_iframe {
   padding: 8px 0px 9px 0px;
 }
 
-.checkout-block .steps ul.form li.error {
-  padding-bottom: 5px;
-}
-
 .checkout-block .steps ul.form li.save {
   padding-left: 89px;
 }
@@ -2578,6 +2611,7 @@ iframe#pay_iframe {
 {
   margin: 1px;
   border-style: solid;
+  line-height: 18px;
 }
 
 .checkout-block input[type="text"]:focus,
@@ -2596,6 +2630,7 @@ iframe#pay_iframe {
 .checkout-block .steps p.inline-error
 {
   vertical-align: baseline;
+  position: absolute;
 }
 
 .checkout-block .steps ul.form li p.inline-error *,
@@ -3283,22 +3318,42 @@ ul.shipping-rates li .rate-description {
  */
 
 ul.location-subnodes {
-  padding: 10px;
-  padding-top: 5px;
-  border: 1px solid silver;
+  margin-top: 5px;
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  box-shadow: 1px 1px 5px silver;
-  -webkit-box-shadow: 1px 1px 5px silver;
-  -moz-box-shadow: 1px 1px 5px silver;
+  box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.25);
+  -webkit-box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.25);
+  -moz-box-shadow: 0px 1px 4px 1px rgba(0,0,0,0.25);
 }
 
-ul.location-subnodes li {
-  padding: 0px 2px;
+ul.location-subnodes li:first-child > a{
+  padding-top: 14px;
 }
 
-ul.location-subnodes li a.current {
+ul.location-subnodes li:last-child > a{
+  padding-bottom: 14px;
+}
+
+ul.location-subnodes li > a {
+  padding: 6px 17px;
+  display: inline-block;
+  font-size: 14px;
+  color: #000;
+  text-decoration: none;
+}
+
+ul.location-subnodes li > a:hover {
+  text-decoration: none;
+}
+
+
+ul.location-subnodes li:hover {
+  text-decoration: none;
+  background-color: #f5fafd;
+}
+
+ul.location-subnodes li > a.current {
   font-weight: bold;
 }
 
@@ -3548,6 +3603,10 @@ form div.table-value.xcart-form-id-value {
 #main.force-change-password-section .header-text {
   font-size: 14px;
   padding: 0px 0px 20px 0px;
+}
+
+#main.force-change-password-section .model-form-buttons {
+  padding-bottom: 20px;
 }
 
 /**

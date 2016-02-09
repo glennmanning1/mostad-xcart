@@ -42,6 +42,7 @@ class OrderHistory extends \XLite\Base\Singleton
     const CODE_CHANGE_PAYMENT_STATUS_ORDER  = 'CHANGE PAYMENT STATUS ORDER';
     const CODE_CHANGE_SHIPPING_STATUS_ORDER = 'CHANGE SHIPPING STATUS ORDER';
     const CODE_CHANGE_NOTES_ORDER           = 'CHANGE NOTES ORDER';
+    const CODE_CHANGE_CUSTOMER_NOTES_ORDER  = 'CHANGE CUSTOMER NOTES ORDER';
     const CODE_CHANGE_AMOUNT                = 'CHANGE PRODUCT AMOUNT';
     const CODE_EMAIL_CUSTOMER_SENT          = 'EMAIL CUSTOMER SENT';
     const CODE_EMAIL_CUSTOMER_FAILED        = 'EMAIL CUSTOMER FAILED';
@@ -59,7 +60,8 @@ class OrderHistory extends \XLite\Base\Singleton
     const TXT_CHANGE_STATUS_ORDER           = 'Order status changed from {{oldStatus}} to {{newStatus}}';
     const TXT_CHANGE_PAYMENT_STATUS_ORDER   = 'Order payment status changed from {{oldStatus}} to {{newStatus}}';
     const TXT_CHANGE_SHIPPING_STATUS_ORDER  = 'Order shipping status changed from {{oldStatus}} to {{newStatus}}';
-    const TXT_CHANGE_NOTES_ORDER            = 'Order notes changed by {{user}}';
+    const TXT_CHANGE_NOTES_ORDER            = 'Order staff notes changed by {{user}}';
+    const TXT_CHANGE_CUSTOMER_NOTES_ORDER   = 'Order customer notes changed by {{user}}';
     const TXT_CHANGE_AMOUNT_ADDED           = '[Inventory] Return back to stock: "{{product}}" product amount in stock changes from "{{oldInStock}}" to "{{newInStock}}" ({{qty}} items)';
     const TXT_CHANGE_AMOUNT_REMOVED         = '[Inventory] Removed from stock: "{{product}}" product amount in stock changes from "{{oldInStock}}" to "{{newInStock}}" ({{qty}} items)';
     const TXT_UNABLE_RESERVE_AMOUNT         = '[Inventory] Unable to reduce stock for product: "{{product}}", amount: "{{qty}}" items';
@@ -264,6 +266,39 @@ class OrderHistory extends \XLite\Base\Singleton
     }
 
     /**
+     * Register order customer notes changes
+     *
+     * @param integer $orderId
+     * @param array   $change  old,new structure
+     *
+     * @return void
+     */
+    public function registerOrderChangeCustomerNotes($orderId, $change)
+    {
+        $comments = array();
+
+        if (!empty($change['old'])) {
+            $comments['Old customer note'][] = array(
+                'old' => null,
+                'new' => $change['old'],
+            );
+        }
+
+        $comments['New customer note'][] = array(
+            'old' => null,
+            'new' => $change['new'],
+        );
+
+        $this->registerEvent(
+            $orderId,
+            static::CODE_CHANGE_CUSTOMER_NOTES_ORDER,
+            $this->getOrderChangeCustomerNotesDescription($orderId, $change),
+            $this->getOrderChangeNotesData($orderId, $change),
+            serialize($comments)
+        );
+    }
+
+    /**
      * Register order notes changes
      *
      * @param integer $orderId
@@ -276,13 +311,13 @@ class OrderHistory extends \XLite\Base\Singleton
         $comments = array();
 
         if (!empty($change['old'])) {
-            $comments['Old order notes'][] = array(
+            $comments['Old staff note'][] = array(
                 'old' => null,
                 'new' => $change['old'],
             );
         }
 
-        $comments['New order notes'][] = array(
+        $comments['New staff note'][] = array(
             'old' => null,
             'new' => $change['new'],
         );
@@ -653,6 +688,19 @@ class OrderHistory extends \XLite\Base\Singleton
     protected function getOrderChangeNotesDescription($orderId, $change)
     {
         return static::TXT_CHANGE_NOTES_ORDER;
+    }
+
+    /**
+     * Text for change order notes description
+     *
+     * @param integer $orderId
+     * @param array   $change
+     *
+     * @return string
+     */
+    protected function getOrderChangeCustomerNotesDescription($orderId, $change)
+    {
+        return static::TXT_CHANGE_CUSTOMER_NOTES_ORDER;
     }
 
     /**

@@ -76,9 +76,12 @@ class CssJsPerformance extends \XLite\Controller\Admin\Settings
      */
     public function doActionCleanViewCache()
     {
-        \XLite\Core\WidgetCache::getInstance()->deleteAll();
+        if (\XLite\Core\WidgetCache::getInstance()->deleteAll()) {
+            \XLite\Core\TopMessage::addInfo('Widgets cache has been cleaned');
 
-        \XLite\Core\TopMessage::addInfo('Widgets cache has been cleaned');
+        } else {
+            \XLite\Core\TopMessage::addWarning('Widgets cache has not been cleaned completely');
+        }
     }
 
     /**

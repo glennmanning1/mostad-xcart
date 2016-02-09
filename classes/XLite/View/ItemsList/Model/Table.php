@@ -336,7 +336,7 @@ abstract class Table extends \XLite\View\ItemsList\Model\AModel
         $method = 'get' . $suffix . 'ColumnValue';
         $value = method_exists($this, $method)
             ? $this->$method($entity)
-            : $entity->{$column[static::COLUMN_CODE]};
+            : $this->getEntityValue($entity, $column[static::COLUMN_CODE]);
 
         // Preprocessing
         $method = 'preprocess' . \XLite\Core\Converter::convertToCamelCase($column[static::COLUMN_CODE]);
@@ -346,6 +346,31 @@ abstract class Table extends \XLite\View\ItemsList\Model\AModel
         }
 
         return $value;
+    }
+
+    /**
+     * Get entity value
+     *
+     * @param \XLite\Model\AEntity $entity Entity object
+     * @param string               $name   Property name
+     *
+     * @return mixed
+     */
+    protected function getEntityValue($entity, $name)
+    {
+        $result = null;
+
+        $method = 'get' . \XLite\Core\Converter::convertToCamelCase($name);
+
+        if (method_exists($entity, $method)) {
+            // $method assembled frm 'get' + field name
+            $result = $entity->$method();
+
+        } elseif ($entity->isPropertyExists($name)) {
+            $result = $entity->$name;
+        }
+
+        return $result;
     }
 
     /**

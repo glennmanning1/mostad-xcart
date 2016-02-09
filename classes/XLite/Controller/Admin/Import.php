@@ -44,6 +44,7 @@ class Import extends \XLite\Controller\Admin\AAdmin
         $list = parent::defineFreeFormIdActions();
         $list[] = 'cancel';
         $list[] = 'proceed';
+        $list[] = 'getErrorsFile';
 
         return $list;
     }
@@ -87,6 +88,16 @@ class Import extends \XLite\Controller\Admin\AAdmin
     }
 
     /**
+     * Get import target
+     *
+     * @return string
+     */
+    public function getImportTarget()
+    {
+        return $this->getImporter() ? $this->getImporter()->getOptions()->target : 'import';
+    }
+
+    /**
      * Import action
      *
      * @return void
@@ -106,6 +117,33 @@ class Import extends \XLite\Controller\Admin\AAdmin
         }
         \XLite\Core\Config::updateInstance();
 
+        $filesToImport = $this->getFilesToImport();
+
+        if ($filesToImport) {
+            \XLite\Logic\Import\Importer::run($this->getImportOptions(array('files' => $filesToImport)));
+        }
+    }
+
+    /**
+     * Get array of import options
+     *
+     * @param array $options Array of additional options OPTIONAL
+     *
+     * @return array
+     */
+    protected function getImportOptions($options = array())
+    {
+        return \XLite\Logic\Import\Importer::assembleImportOptions()
+            + $options;
+    }
+
+    /**
+     * Get list of files to import
+     *
+     * @return array
+     */
+    protected function getFilesToImport()
+    {
         $dirTo = LC_DIR_VAR . \XLite\Logic\Import\Importer::getImportDir();
 
         if (!\Includes\Utils\FileManager::isExists($dirTo)) {
@@ -171,12 +209,7 @@ class Import extends \XLite\Controller\Admin\AAdmin
             }
         }
 
-        if ($filesToImport) {
-            \XLite\Logic\Import\Importer::run(
-                \XLite\Logic\Import\Importer::assembleImportOptions()
-                + array('files' => $filesToImport)
-            );
-        }
+        return $filesToImport;
     }
 
     /**
@@ -247,7 +280,27 @@ class Import extends \XLite\Controller\Admin\AAdmin
 
         \XLite\Logic\Import\Importer::cancel();
 
-        $this->setReturnURL($this->buildURL('import'));
+        $this->setReturnURL($this->buildURL($this->getImportTarget()));
+    }
+
+    /**
+     * Reset
+     *
+     * @return void
+     */
+    protected function doActionGetErrorsFile()
+    {
+        header('Content-Type: application/force-download');
+        header('Content-Disposition: attachment; filename="errors.txt"');
+
+        $template  = 'import/errors-file.tpl';
+        $viewer = new \XLite\View\Import\ErrorsFile();
+        $content = $viewer->getContent();
+        print $content;
+        $this->setSuppressOutput(true);
+        $this->set('silent', true);
+
+        exit(0);
     }
 
     /**

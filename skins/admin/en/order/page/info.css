@@ -23,16 +23,6 @@
   position: relative;
 }
 
-.order-info.not-editable,
-.order-info.not-editable p.title,
-.order-info.not-editable .line-1,
-.order-info.not-editable .order-history,
-.order-info.not-editable .line-2,
-.order-info.not-editable .line-3
-{
-  width: 890px;
-}
-
 /* Top text blocks */
 .order-info {
   position: relative;
@@ -42,31 +32,43 @@
   margin-bottom: 15px;
 }
 
-.order-info p.title,
-.order-info p.title .date,
-.order-info p.title span.name,
-.order-info p.title .email
-{
+.order-info div.title {
+  color: #8f8f8f;
+  width: 420px;
+  display: table-cell;
+}
+
+.order-info .title .placed-date,
+.order-info .title .placed-date * {
   font-size: 16px;
 }
 
-.order-info p.title {
-  color: #8f8f8f;
+.order-info .title .placed-customer,
+.order-info .title .placed-customer * {
+  font-size: 14px;
 }
 
-.order-info p.title .date,
-.order-info p.title span.name
+.order-info .title .placed-customer {
+  margin-top: 12px;
+}
+
+.order-info div.title .date,
+.order-info div.title span.name
 {
   font-weight: bold;
   color: #5a5a5a;
 }
 
-.order-info p.title .email {
+.order-info div.title .email {
   color: #8f8f8f;
 }
 
-.order-info p.title a.name {
+.order-info div.title a.name {
   text-decoration: underline;
+}
+
+.order-info .totals div.title {
+  width: auto;
 }
 
 .order-info p.total {
@@ -93,61 +95,26 @@
 }
 
 /* Title box : note */
-.order-info .title-box .note {
-  background: transparent url(../../images/user_male.svg) no-repeat 1px 4px;
+
+.order-info .order-note.staff-note {
+  display: table-cell;
+  padding-left: 14px;
+}
+
+.order-info .order-note.staff-note h2 {
+  background: transparent url(../../images/user_male.svg) no-repeat;
   background-size: 24px;
+  margin: 0;
   padding-left: 34px;
-  padding-top: 3px;
+  padding-top: 5px;
+  font-size: 14px;
+  font-weight: bold;
+  height: 28px;
 }
 
-.order-info .title-box .note .view {
-  padding-top: 4px;
-  padding-bottom: 4px;
-  background-color: #faf5dd;
-  border: 1px solid #e0dabc;
-  overflow: visible;
-}
-
-.order-info .title-box .note .view .arrow {
-  background-color: #faf5dd;
-  position: absolute;
-  top: 50%;
-  left: -3px;
-  width: 5px;
-  height: 5px;
-  margin-top: -3px;
-  border-top: 1px solid #e0dabc;
-  border-left: 1px solid #e0dabc;
-  -moz-transform: rotate(-45deg);
-  -ms-transform: rotate(-45deg);
-  -webkit-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
-  transform: rotate(-45deg);
-}
-
-.order-info .title-box .note .inline-order-staff-note.empty .view,
-.order-info .title-box .note .inline-order-staff-note.empty .view .arrow
-{
-  background-color: #fff;
-  border-color: #ddedfa;
-}
-
-.order-info .title-box .note .inline-order-staff-note.empty .view,
-.order-info .title-box .note .inline-order-staff-note.empty .value
-{
-  color: #b4b4b4;
-}
-
-.order-info .title-box .note .view strong {
-  float: left;
-  padding-right: 5px;
-}
-
-.order-info .title-box .note .view .value {
-  overflow: hidden;
-  display: block;
-  min-width: 75px;
-  max-width: 250px;
+.order-info .order-note.customer-note .view {
+  width: 400px;
+  max-height: 110px;
 }
 
 /* Title box : history */
@@ -158,13 +125,11 @@
 
 .order-info .title-box .history a {
   text-decoration: none;
-  font-size: 24px;
+  font-size: 14px;
+  border-bottom: dashed 1px;
 }
 
 /* Line 1 */
-.line-1 {
-  margin-top: 34px;
-}
 
 .order-info .order-part {
   width: 199px;
@@ -184,12 +149,20 @@
 }
 
 .order-info .order-part .box .method {
-  padding-left: 2px;
-  min-height: 45px;
+  min-height: 90px;
 }
 
 .order-info .order-part .box .method .method-name {
-  padding-left: 9px;
+  padding-left: 10px;
+}
+
+.order-info .order-part .box .method .transaction {
+  padding-left: 10px;
+  color: #8f8f8f;
+}
+
+.order-info.not-editable .order-part .box .method .transaction {
+  padding: 0px;
 }
 
 .order-info .order-part .box .method .view {
@@ -202,8 +175,41 @@
   font-size: 14px;
 }
 
-.order-info .order-part .box .method .not-editable {
+.order-info:not(.not-editable) .order-part .box .method .view.not-editable {
   padding-left: 10px;
+}
+
+.order-info .order-part .box .method .payment-method-data .inline-field {
+  margin-bottom: 10px;
+}
+
+.order-info .order-part .box .method .payment-method-data * {
+  font-weight: normal;
+  line-height: normal;
+  word-wrap: break-word;
+}
+
+.order-info .order-part .box .method .payment-method-data .field {
+  padding: 6px 10px 6px 9px;
+}
+
+.order-info .order-part .box .method .payment-method-data .param-title {
+  color: #8f8f8f;
+}
+
+.order-info .order-part .box .method .payment-method-data .param-value {
+}
+
+.order-info .order-part .box .method .payment-method-data .inline-field.PurchaseOrder .view .param-title,
+.order-info .order-part .box .method .payment-method-data .inline-field.PurchaseOrder .field .value .param-title {
+  display: none;
+}
+
+.order-info .order-part .box .method .payment-method-data .inline-field.PurchaseOrder .view .param-title.force-display,
+.order-info .order-part .box .method .payment-method-data .inline-field.PurchaseOrder .field .value .param-title.force-display,
+.order-info .order-part .box .method .payment-method-data .inline-field.PurchaseOrder .view .po_number .param-title,
+.order-info .order-part .box .method .payment-method-data .inline-field.PurchaseOrder .field .value .po_number .param-title {
+  display: inline;
 }
 
 .order-info .order-part .box .method select {
@@ -422,8 +428,7 @@ ul.address-section li.address-field.address-title,
   float: left;
 }
 
-ul.address-section.payment-address-section li.address-field.address-type,
-ul.address-section li.address-field.address-state
+ul.address-section.payment-address-section li.address-field.address-type
 {
   display: none;
 }
@@ -706,6 +711,14 @@ div.line-3 .items a {
   padding-left: 4px;
 }
 
+.order-info .totals li.order-modifier.shipping-modifier div.method .view{
+  padding-right: 0;
+}
+
+.order-info .totals li.order-modifier.shipping-modifier div.separator {
+  margin-right: 9px;
+}
+
 .order-info.not-editable .totals li.order-modifier.shipping-modifier div.separator {
   padding-left: 10px;
   padding-right: 10px;
@@ -731,7 +744,6 @@ div.line-3 h2 {
 .customer-notes {
   float: left;
   padding-top: 20px;
-  width: 40%;
 }
 
 .customer-notes h3 {
@@ -851,6 +863,7 @@ img.truck {
 
 .order-history .event .details ul li .name {
   font-weight: bold;
+  margin-right: 5px;
 }
 
 .order-history .event .details ul li div {
@@ -863,10 +876,6 @@ img.truck {
 
 .order-history .event .details ul li ul li {
   margin-bottom: 0;
-}
-
-.order-history .event .details ul li .value {
-  margin-left: 5px;
 }
 
 .order-history .event .details .value .fa {
@@ -882,4 +891,31 @@ img.truck {
 .items-list-table table.list tbody.create .inline-field,
 .items-list-table table.list tbody.lines .inline-field {
     max-width: 300px;
+}
+
+.order-note.customer-notes {
+  min-height: 166px;
+}
+
+.order-note.customer-notes .inline-field {
+  margin-top: 10px;
+}
+
+.order-note.customer-notes .inline-field.editable {
+  margin-left: -9px;
+}
+
+.order-note.staff-note .order-note-box {
+  min-height: 147px;
+}
+
+/**
+ * Payment method data popup
+ */
+.ui-dialog .order-payment-data-dialog {
+  text-align: center;
+}
+
+.ui-dialog .order-payment-data-dialog ul {
+  margin-bottom: 20px;
 }
