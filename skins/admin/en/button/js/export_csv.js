@@ -1,0 +1,98 @@
+/* vim: set ts=2 sw=2 sts=2 et: */
+
+/**
+ * popup controller
+ *
+ * @author    Qualiteam software Ltd <info@x-cart.com>
+ * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+ * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+ * @link      http://www.x-cart.com/
+ */
+
+function PopupButtonExportCSV()
+{
+  core.bind('export.failed', _.bind(this.handleExportFinish, this));
+  core.bind('export.completed', _.bind(this.handleExportFinish, this));
+  PopupButtonExportCSV.superclass.constructor.apply(this, arguments);
+}
+
+// New POPUP button widget extends POPUP button class
+extend(PopupButtonExportCSV, PopupButton);
+
+// New pattern is defined
+PopupButtonExportCSV.prototype.pattern = '.export-csv';
+
+PopupButtonExportCSV.prototype.enableBackgroundSubmit = false;
+
+PopupButtonExportCSV.prototype.handleExportFinish = function () {
+  var elem = jQuery(this.pattern);
+  core.bind('afterPopupPlace', _.once(_.bind(this.postprocessFinish, this)));
+  popup.load(URLHandler.buildURL(core.getCommentedData(elem, 'url_params')));
+}
+PopupButtonExportCSV.prototype.postprocessFinish = function () {
+  $('a[data-autodownload]').each(function(){
+    this.click();
+  });
+}
+
+PopupButtonExportCSV.prototype.restoreState = function () {
+  $(".ui-dialog-content").dialog('destroy');
+  core.unbind('eventTaskRun');
+}
+
+PopupButtonExportCSV.prototype.getSelectionFromForm = function(elem) {
+  var form = elem.closest('form');
+  var checked = $(form).serializeArray().filter(function(value) {
+    return value.name.search('select') >= 0;
+  });
+  return checked.map(function(value) {
+    return /^select\[(.*)\]$/.exec(value.name)[1];
+  });
+}
+
+PopupButtonExportCSV.prototype.startExport = function(elem, items) {
+  var data = core.getCommentedData(elem, 'export');
+  data[xliteConfig.form_id_name] = xliteConfig.form_id;
+  var filter = this.getSelectionFromForm(elem);
+  if (filter.length > 0) {
+    data['options']['selection'] = filter;
+  }
+  return core.post(
+    {
+      target: 'export',
+    },
+    null,
+    data
+  );
+};
+
+decorate(
+  'PopupButtonExportCSV',
+  'callback',
+  function (selector, link)
+  {
+    // previous method call
+    arguments.callee.previousMethod.apply(this, arguments);
+    core.autoload(EventTaskProgress);
+    core.autoload(PopupExportController);
+  }
+);
+
+decorate(
+  'PopupButtonExportCSV',
+  'eachClick',
+  function (elem)
+  {
+    this.restoreState();
+    var xhr = this.startExport(elem);
+    // previous method call
+    var self = this;
+    var args = arguments;
+    xhr.always(function() {
+      args.callee.previousMethod.apply(self, args);
+    });
+  }
+);
+
+// Autoloading new POPUP widget
+core.autoload(PopupButtonExportCSV);

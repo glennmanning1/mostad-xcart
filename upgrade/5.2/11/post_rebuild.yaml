@@ -1,0 +1,35 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Data
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\SearchFilter:
+  - filterKey: search-filter-order_list
+    translations: [{ code: en, name: Unpaid }, { code: ru, name: Не оплаченные }]
+    parameters: { paymentStatus: [1,2,3], shippingStatus: [] }
+  - filterKey: search-filter-order_list
+    translations: [{ code: en, name: Paid but not shipped }, { code: ru, name: Оплаченные, но не отправленные }]
+    parameters: { paymentStatus: [4], shippingStatus: [1,2] }
+
+XLite\Model\Config:
+  - { name: origin_use_company, category: Company, type: checkbox, orderby: 380, value: true, translations: [{ code: en, option_name: 'Use the company address as the origin one', option_comment: 'See <a href="/admin.php?target=settings&page=Company#company-address">company address</a>' }] }
+  - { name: origin_address, category: Company, type: text, orderby: 390, translations: [{ code: en, option_name: 'Street address' }] }
+  - { name: origin_country, category: Company, type: country, orderby: 400, value: US, widgetParameters: { selectOne: false }, translations: [{ code: en, option_name: Country }] }
+  - { name: origin_state, category: Company, type: state, orderby: 410, translations: [{ code: en, option_name: State }] }
+  - { name: origin_custom_state, category: Company, type: text, orderby: 415, translations: [{ code: en, option_name: 'State' }] }
+  - { name: origin_city, category: Company, type: text, orderby: 420, translations: [{ code: en, option_name: City }] }
+  - { name: origin_zipcode, category: Company, type: text, orderby: 430, translations: [{ code: en, option_name: 'Zip/postal code' }] }
+
+  - { name: enabled, category: BannerRotation, type: XLite\View\FormField\Input\Checkbox\OnOff, orderby: 100, value: N, translations: [{ code: en, option_name: 'Enabled' }] }
+  - { name: interval, category: BannerRotation, type: XLite\View\FormField\Input\Text\Float, orderby: 300, value: 5, translations: [{ code: en, option_name: 'Banner inverval (in seconds)', option_comment: 'Set to "0" to disable automatic rotation'  }] }
+
+  - { name: order_number_counter, category: General, translations: [{ code: en, option_name: 'Next order #', option_comment: 'You can change the number that will be assigned on the next order. The new order number must be greater than the current maximum order number in the order list. ' }] }
+
+XLite\Model\LanguageLabel:
+  - { name: 'Payment methods appearance description', translations: [{ code: en, label: 'Here you can provide titles and descriptions for your payment methods and set the order in which they should appear on the storefront.<br><strong>Title</strong> &mdash; name of the custom payment method as should be displayed to customers;your custom payment name shown for customer;<br><strong>Description</strong> &mdash; short description of the payment method that should appear right below its title.' }] }
+  - { name: 'Re-deploy the store help text', translations: [{ code: en, label: 'Use this button to launch the store re-deployment process. Re-deployment may take a while to complete. Please do not close this page until the process is fully completed. If the page has been closed, please re-open it to complete the process (The store re-deployment is executed only while the page stays open).' }] }
+  - { name: 'Calculate quick data help text', translations: [{ code: en, label: 'Use this button to launch quick data calculation. Calculated quick data enhances your store''s performance by allowing quick product sorting. The process of quick data calculation may take a while to complete. Please do not close this page until the process is fully completed. If the page has been closed, please re-open it to complete the process (The calculation is performed only while the page stays open).' }] }

@@ -1,0 +1,61 @@
+/* vim: set ts=2 sw=2 sts=2 et: */
+
+/**
+ * Default styles
+ *
+ * @author    Qualiteam software Ltd <info@x-cart.com>
+ * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+ * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+ * @link      http://www.x-cart.com/
+ */
+#secondary-menu ul {
+    display: block;
+    vertical-align: top;
+    width: auto;
+    padding-right: 0;
+    box-sizing: border-box;
+}
+
+#secondary-menu > ul {
+    display: flex;
+    justify-content: space-around;
+}
+
+ul.footer-menu {
+    padding-right: 0;
+}
+#secondary-menu ul li ul {
+    display: block;
+    width: 100%;
+    float: none;
+}
+#secondary-menu ul > li {
+    list-style: none;
+    text-align: left;
+    margin-top: 0;
+    display: inline-block;
+    vertical-align: top;
+    padding-right: 15px;
+    box-sizing: border-box;
+    width: auto;
+}
+
+#secondary-menu ul.footer-menu > li > a,
+#secondary-menu ul.footer-menu > li > span.footer-title {
+    text-transform: uppercase;
+    font-size: 14px;
+    line-height: 3em;
+}
+
+#secondary-menu li ul li {
+    display: block;
+    padding-right: 0;
+}
+#secondary-menu ul li a, #secondary-menu ul li span.footer-title {
+    font-size: 13px;
+    text-decoration: none;
+    line-height: 1.75em;
+}
+#secondary-menu ul li ul li ul{
+    padding-left: 10px;
+}
