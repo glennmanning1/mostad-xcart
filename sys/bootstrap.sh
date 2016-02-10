@@ -48,3 +48,4 @@ if [ $PROVISIONED -eq 0 ]; then
 fi
 
 sudo systemctl restart httpd.service
+sudo systemctl restart mariadb.service

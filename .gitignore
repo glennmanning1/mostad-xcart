@@ -3,3 +3,4 @@
 var/
 Vagrantfile
 logs/
+etc/config.php
