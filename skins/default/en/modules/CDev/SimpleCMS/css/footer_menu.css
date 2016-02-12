@@ -8,6 +8,11 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  */
+
+#secondary-menu {
+    width: 75% !important;
+}
+
 #secondary-menu ul {
     display: block;
     vertical-align: top;
@@ -16,46 +21,80 @@
     box-sizing: border-box;
 }
 
-#secondary-menu > ul {
+#secondary-menu > .footer-menu {
     display: flex;
     justify-content: space-around;
-}
-
-ul.footer-menu {
     padding-right: 0;
 }
-#secondary-menu ul li ul {
+
+#secondary-menu .footer-menu .leaf ul {
     display: block;
     width: 100%;
     float: none;
+    padding-top: 3px;
 }
-#secondary-menu ul > li {
+#secondary-menu ul > .leaf {
     list-style: none;
     text-align: left;
     margin-top: 0;
     display: inline-block;
     vertical-align: top;
-    padding-right: 15px;
-    box-sizing: border-box;
-    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-#secondary-menu ul.footer-menu > li > a,
-#secondary-menu ul.footer-menu > li > span.footer-title {
+#secondary-menu .footer-menu > .leaf > a,
+#secondary-menu .footer-menu > .leaf > span.footer-title {
     text-transform: uppercase;
     font-size: 14px;
-    line-height: 3em;
+    display: inline-block;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
-#secondary-menu li ul li {
+#secondary-menu .leaf ul .leaf {
     display: block;
     padding-right: 0;
+    padding-left: 0;
+    padding-top: 3px;
+    padding-bottom: 3px;
 }
-#secondary-menu ul li a, #secondary-menu ul li span.footer-title {
+#secondary-menu ul .leaf a, #secondary-menu ul .leaf span.footer-title {
     font-size: 13px;
     text-decoration: none;
-    line-height: 1.75em;
+    white-space: normal;
+    word-break: break-word;
 }
-#secondary-menu ul li ul li ul{
+#secondary-menu ul .leaf ul .leaf ul{
     padding-left: 10px;
+}
+
+
+@media (max-width: 1199px) {
+    #secondary-menu {
+        width: 85% !important;
+    }
+}
+
+@media (max-width: 991px) {
+    #secondary-menu .footer-menu > .leaf {
+        min-width: 25%;
+    }
+}
+
+@media (max-width: 767px) {
+    #secondary-menu {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 479px) {
+    #secondary-menu .footer-menu > .leaf:not(:first-child) > a,
+    #secondary-menu .footer-menu > .leaf > span.footer-title {
+        margin-top: 20px;
+    }
+
+    #secondary-menu > .footer-menu {
+        flex-flow: column nowrap;
+    }
 }

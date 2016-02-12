@@ -1,0 +1,26 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Upgrade data
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Notification:
+  - templatesDirectory: modules/XC/ProductVariants/low_variant_limit_warning
+    availableForAdmin: false
+    availableForCustomer: false
+    enabledForAdmin: true
+    enabledForCustomer: false
+    translations:
+      - code: en
+        name: Variant low limit warning
+        description: 'This message is used to notify the administrator when the stock level of a product variant reaches the low stock limit as specified in the product details.'
+        adminSubject: Variant low stock warning
+        adminText: 'The inventory level of a product variant in your store has reached the low limit.'
+      - code: ru
+        name: Уведомление о заканчивающимся варианте товара
+        description: "Данное сообщение используется для оповещения администратора о достижении вариантом продукта минимального количества"
+        adminSubject: 'Заканчивается вариант товара'
+        adminText: 'Вариант продукта достиг минимального количества'

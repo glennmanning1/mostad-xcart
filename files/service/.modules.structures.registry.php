@@ -73,7 +73,7 @@ XC\Upselling:
     tables: [upselling_products]
     columns: {  }
 CDev\Wholesale:
-    tables: [olesalePrice, product_min_quantities, wholesale_prices]
+    tables: [olesalePrice, product_min_quantities, product_variant_wholesale_prices, wholesale_prices]
     columns: {  }
 Mostad\CustomTheme:
     tables: {  }
@@ -81,3 +81,15 @@ Mostad\CustomTheme:
 Mostad\Marketing:
     tables: {  }
     columns: { pages: { disableLayout: 'disableLayout TINYINT(1) NOT NULL' } }
+XC\RESTAPI:
+    tables: {  }
+    columns: {  }
+QSL\WordPressIntegration:
+    tables: {  }
+    columns: {  }
+XC\FreeShipping:
+    tables: {  }
+    columns: { products: { freeShip: 'freeShip TINYINT(1) NOT NULL', freightFixedFee: 'freightFixedFee NUMERIC(14, 4) NOT NULL' }, shipping_methods: { free: 'free TINYINT(1) NOT NULL' } }
+XC\ProductVariants:
+    tables: [product_variant_images, product_variants_attributes, product_variants, product_variant_attribute_value_checkbox, product_variant_attribute_value_select]
+    columns: { order_items: { variant_id: 'variant_id INT UNSIGNED DEFAULT NULL' } }

@@ -428,4 +428,242 @@ return array (
     'date' => '2016_02_04_15_00_23',
     'restoredTo' => '2016_02_03_21_13_18',
   ),
+  '2016_02_11_17_08_35' => 
+  array (
+    'date' => '2016_02_11_17_08_35',
+    'current' => 
+    array (
+      5 => 'CDev\\ContactUs',
+      29 => 'QSL\\CloudSearch',
+      51 => 'XC\\Upselling',
+      59 => 'CDev\\Coupons',
+      63 => 'CDev\\FeaturedProducts',
+      77 => 'CDev\\SimpleCMS',
+      80 => 'CDev\\TinyMCE',
+      85 => 'CDev\\VolumeDiscounts',
+      86 => 'CDev\\Wholesale',
+      91 => 'XC\\ThemeTweaker',
+      98 => 'XC\\ColorSchemes',
+      359 => 'Mostad\\CustomTheme',
+      362 => 'Mostad\\Marketing',
+    ),
+    'enabled' => 
+    array (
+    ),
+    'disabled' => 
+    array (
+    ),
+    'deleted' => 
+    array (
+    ),
+    'installed' => 
+    array (
+      0 => 'CDev\\GoogleAnalytics',
+      1 => 'CDev\\SimpleCMS',
+      2 => 'XC\\RESTAPI',
+    ),
+  ),
+  '2016_02_11_17_10_48' => 
+  array (
+    'date' => '2016_02_11_17_10_48',
+    'current' => 
+    array (
+      5 => 'CDev\\ContactUs',
+      29 => 'QSL\\CloudSearch',
+      51 => 'XC\\Upselling',
+      59 => 'CDev\\Coupons',
+      63 => 'CDev\\FeaturedProducts',
+      80 => 'CDev\\TinyMCE',
+      85 => 'CDev\\VolumeDiscounts',
+      86 => 'CDev\\Wholesale',
+      91 => 'XC\\ThemeTweaker',
+      95 => 'XC\\RESTAPI',
+      98 => 'XC\\ColorSchemes',
+      359 => 'Mostad\\CustomTheme',
+      362 => 'Mostad\\Marketing',
+      381 => 'CDev\\SimpleCMS',
+    ),
+    'enabled' => 
+    array (
+    ),
+    'disabled' => 
+    array (
+    ),
+    'deleted' => 
+    array (
+    ),
+    'installed' => 
+    array (
+      0 => 'QSL\\WordPressIntegration',
+    ),
+  ),
+  '2016_02_11_21_32_23' => 
+  array (
+    'date' => '2016_02_11_21_32_23',
+    'current' => 
+    array (
+      5 => 'CDev\\ContactUs',
+      29 => 'QSL\\CloudSearch',
+      51 => 'XC\\Upselling',
+      59 => 'CDev\\Coupons',
+      63 => 'CDev\\FeaturedProducts',
+      80 => 'CDev\\TinyMCE',
+      85 => 'CDev\\VolumeDiscounts',
+      86 => 'CDev\\Wholesale',
+      91 => 'XC\\ThemeTweaker',
+      95 => 'XC\\RESTAPI',
+      98 => 'XC\\ColorSchemes',
+      307 => 'QSL\\WordPressIntegration',
+      359 => 'Mostad\\CustomTheme',
+      362 => 'Mostad\\Marketing',
+      381 => 'CDev\\SimpleCMS',
+    ),
+    'enabled' => 
+    array (
+      199 => 'XC\\FreeShipping',
+    ),
+    'disabled' => 
+    array (
+    ),
+    'deleted' => 
+    array (
+    ),
+    'installed' => 
+    array (
+    ),
+  ),
+  '2016_02_11_22_14_49' => 
+  array (
+    'date' => '2016_02_11_22_14_49',
+    'current' => 
+    array (
+      5 => 'CDev\\ContactUs',
+      29 => 'QSL\\CloudSearch',
+      51 => 'XC\\Upselling',
+      59 => 'CDev\\Coupons',
+      63 => 'CDev\\FeaturedProducts',
+      80 => 'CDev\\TinyMCE',
+      85 => 'CDev\\VolumeDiscounts',
+      86 => 'CDev\\Wholesale',
+      91 => 'XC\\ThemeTweaker',
+      95 => 'XC\\RESTAPI',
+      98 => 'XC\\ColorSchemes',
+      199 => 'XC\\FreeShipping',
+      307 => 'QSL\\WordPressIntegration',
+      359 => 'Mostad\\CustomTheme',
+      362 => 'Mostad\\Marketing',
+      381 => 'CDev\\SimpleCMS',
+    ),
+    'enabled' => 
+    array (
+    ),
+    'disabled' => 
+    array (
+    ),
+    'deleted' => 
+    array (
+    ),
+    'installed' => 
+    array (
+      0 => 'XC\\ProductVariants',
+    ),
+  ),
+  '2016_02_12_18_07_27' => 
+  array (
+    'date' => '2016_02_12_18_07_27',
+    'current' => 
+    array (
+      5 => 'CDev\\ContactUs',
+      29 => 'QSL\\CloudSearch',
+      51 => 'XC\\Upselling',
+      59 => 'CDev\\Coupons',
+      63 => 'CDev\\FeaturedProducts',
+      80 => 'CDev\\TinyMCE',
+      85 => 'CDev\\VolumeDiscounts',
+      86 => 'CDev\\Wholesale',
+      91 => 'XC\\ThemeTweaker',
+      95 => 'XC\\RESTAPI',
+      98 => 'XC\\ColorSchemes',
+      104 => 'XC\\ProductVariants',
+      199 => 'XC\\FreeShipping',
+      307 => 'QSL\\WordPressIntegration',
+      359 => 'Mostad\\CustomTheme',
+      362 => 'Mostad\\Marketing',
+      381 => 'CDev\\SimpleCMS',
+    ),
+    'enabled' => 
+    array (
+    ),
+    'disabled' => 
+    array (
+    ),
+    'deleted' => 
+    array (
+      0 => 'XC\\PitneyBowes',
+    ),
+    'installed' => 
+    array (
+    ),
+  ),
+  '2016_02_12_18_11_29' => 
+  array (
+    'date' => '2016_02_12_18_11_29',
+    'current' => 
+    array (
+      5 => 'CDev\\ContactUs',
+      29 => 'QSL\\CloudSearch',
+      51 => 'XC\\Upselling',
+      59 => 'CDev\\Coupons',
+      63 => 'CDev\\FeaturedProducts',
+      80 => 'CDev\\TinyMCE',
+      85 => 'CDev\\VolumeDiscounts',
+      86 => 'CDev\\Wholesale',
+      91 => 'XC\\ThemeTweaker',
+      95 => 'XC\\RESTAPI',
+      98 => 'XC\\ColorSchemes',
+      104 => 'XC\\ProductVariants',
+      199 => 'XC\\FreeShipping',
+      307 => 'QSL\\WordPressIntegration',
+      359 => 'Mostad\\CustomTheme',
+      362 => 'Mostad\\Marketing',
+      381 => 'CDev\\SimpleCMS',
+    ),
+    'enabled' => 
+    array (
+    ),
+    'disabled' => 
+    array (
+    ),
+    'deleted' => 
+    array (
+      0 => 'XC\\NextPreviousProduct',
+      1 => 'XC\\News',
+      2 => 'Amazon\\PayWithAmazon',
+      3 => 'XC\\CanadaPost',
+      4 => 'XC\\Add2CartPopup',
+      5 => 'CDev\\GoSocial',
+      6 => 'CDev\\PINCodes',
+      7 => 'CDev\\XMLSitemap',
+      8 => 'XC\\UPS',
+      9 => 'CDev\\AustraliaPost',
+      10 => 'CDev\\ProductAdvisor',
+      11 => 'XC\\ProductFilter',
+      12 => 'XC\\SagePay',
+      13 => 'CDev\\Bestsellers',
+      14 => 'CDev\\TwoCheckout',
+      15 => 'XC\\EPDQ',
+      16 => 'XC\\IdealPayments',
+      17 => 'XC\\OgoneEcommerce',
+      18 => 'XC\\ESelectHPP',
+      19 => 'CDev\\Quantum',
+      20 => 'XC\\Sitemap',
+      21 => 'CDev\\Moneybookers',
+      22 => 'XC\\Stripe',
+      23 => 'CDev\\USPS',
+      24 => 'CDev\\UserPermissions',
+    ),
+    'installed' => 
+    array (
+    ),
+  ),
 );

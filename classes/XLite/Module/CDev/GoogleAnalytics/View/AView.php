@@ -22,7 +22,7 @@
  *
  * @category  X-Cart 5
  * @author    Qualiteam software Ltd <info@x-cart.com>
- * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+ * @copyright Copyright (c) 2011-2016 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  */
@@ -48,6 +48,21 @@ abstract class AView extends \XLite\View\AView implements \XLite\Base\IDecorator
 
         } else {
             $list[] = 'modules/CDev/GoogleAnalytics/common.js';
+        }
+
+        return $list;
+    }
+
+    /**
+     * Get a list of CSS files
+     *
+     * @return array
+     */
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+        if ('module' == $this->getTarget()) {
+            $list[] = 'modules/CDev/GoogleAnalytics/style.css';
         }
 
         return $list;

@@ -61,7 +61,17 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getMinorVersion()
     {
-        return '3';
+        return '4';
+    }
+
+    /**
+     * Get minor core version which is required for the module activation
+     *
+     * @return integer
+     */
+    public static function getMinorRequiredCoreVersion()
+    {
+        return '12';
     }
 
     /**
