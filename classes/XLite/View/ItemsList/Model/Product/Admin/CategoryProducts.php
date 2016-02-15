@@ -74,6 +74,16 @@ class CategoryProducts extends \XLite\View\ItemsList\Model\Product\Admin\Search
     }
 
     /**
+     * Checks if this itemslist is exportable through 'Export all' button
+     *
+     * @return boolean
+     */
+    protected function isExportable()
+    {
+        return true;
+    }
+
+    /**
      * Define columns structure
      *
      * @return array

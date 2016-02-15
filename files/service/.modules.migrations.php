@@ -666,4 +666,42 @@ return array (
     array (
     ),
   ),
+  '2016_02_12_19_18_45' => 
+  array (
+    'date' => '2016_02_12_19_18_45',
+    'current' => 
+    array (
+      5 => 'CDev\\ContactUs',
+      29 => 'QSL\\CloudSearch',
+      51 => 'XC\\Upselling',
+      59 => 'CDev\\Coupons',
+      63 => 'CDev\\FeaturedProducts',
+      80 => 'CDev\\TinyMCE',
+      85 => 'CDev\\VolumeDiscounts',
+      86 => 'CDev\\Wholesale',
+      91 => 'XC\\ThemeTweaker',
+      95 => 'XC\\RESTAPI',
+      98 => 'XC\\ColorSchemes',
+      104 => 'XC\\ProductVariants',
+      199 => 'XC\\FreeShipping',
+      307 => 'QSL\\WordPressIntegration',
+      359 => 'Mostad\\CustomTheme',
+      362 => 'Mostad\\Marketing',
+      381 => 'CDev\\SimpleCMS',
+    ),
+    'enabled' => 
+    array (
+    ),
+    'disabled' => 
+    array (
+    ),
+    'deleted' => 
+    array (
+    ),
+    'installed' => 
+    array (
+      0 => 'Core',
+      1 => 'CDev\\SimpleCMS',
+    ),
+  ),
 );

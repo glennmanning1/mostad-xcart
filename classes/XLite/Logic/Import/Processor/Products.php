@@ -1103,7 +1103,7 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
     {
         if ($value) {
             foreach ($value as $index => $path) {
-                $file = $this->verifyValueAsLocalURL($path) ? ltrim(parse_url($path, PHP_URL_PATH), '/') : $path;
+                $file = $this->verifyValueAsLocalURL($path) ? $this->getLocalPathFromURL($path) : $path;
                 if ($this->verifyValueAsFile($file)) {
                     $image = null;
 

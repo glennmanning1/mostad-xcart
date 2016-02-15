@@ -1939,7 +1939,8 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     protected function verifyValueAsLocalURL($value)
     {
         $isSameHost = in_array(parse_url($value, PHP_URL_HOST), \XLite\Core\URLManager::getShopDomains(), true);
-        $isReadable = \Includes\Utils\FileManager::isFileReadable(LC_DIR_ROOT . ltrim(parse_url($value, PHP_URL_PATH), '/'));
+        $path = $this->getLocalPathFromURL($value);
+        $isReadable = \Includes\Utils\FileManager::isFileReadable(LC_DIR_ROOT . $path);
         return $this->verifyValueAsURL($value) && $isSameHost && $isReadable;
     }
 
@@ -2088,6 +2089,19 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
     }
 
     // }}}
+
+    /**
+     * Returns local part of path from local URL
+     *
+     * @return string
+     */
+    public function getLocalPathFromURL($path)
+    {
+        $webdir = \XLite::getInstance()->getOptions(array('host_details', 'web_dir'));
+        $webdir = $webdir ? $webdir . '/' : '';
+
+        return ltrim(parse_url($path, PHP_URL_PATH), '/' . $webdir);
+    }
 
     /**
      * Returns image comparing closure

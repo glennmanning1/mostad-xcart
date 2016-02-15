@@ -198,6 +198,16 @@ class Profile extends \XLite\View\ItemsList\Model\Table
     // {{{ Behaviors
 
     /**
+     * Checks if this itemslist is exportable through 'Export all' button
+     *
+     * @return boolean
+     */
+    protected function isExportable()
+    {
+        return true;
+    }
+
+    /**
      * Mark list as selectable
      *
      * @return boolean

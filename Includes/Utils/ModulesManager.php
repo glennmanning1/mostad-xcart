@@ -601,7 +601,7 @@ abstract class ModulesManager extends \Includes\Utils\AUtils
         foreach (static::$activeModules as $module => $data) {
             $dependencies = array_merge_recursive(
                 $dependencies,
-                array_fill_keys(static::callModuleMethod($module, 'getDependencies'), $module)
+                array_fill_keys(static::callModuleMethod($module, 'getDependencies') ?: array(), $module)
             );
         }
 
@@ -622,7 +622,7 @@ abstract class ModulesManager extends \Includes\Utils\AUtils
         $list = array();
 
         foreach (static::$activeModules as $module => $data) {
-            $list = array_merge_recursive($list, static::callModuleMethod($module, 'getMutualModulesList'));
+            $list = array_merge_recursive($list, static::callModuleMethod($module, 'getMutualModulesList') ?: array());
         }
 
         array_walk_recursive($list, array('static', 'disableModule'));
@@ -734,7 +734,10 @@ abstract class ModulesManager extends \Includes\Utils\AUtils
      */
     public static function disableModule($key)
     {
-        if (isset(static::$activeModules[$key]) && !static::callModuleMethod($key, 'isSystem')) {
+        // During upgrade disabled module can be enabled in the database but still not copied in var/run.
+        // We should detect this and ignore disabling at this moment.
+        // Also skip disabling for system module.
+        if (isset(static::$activeModules[$key]) && !static::callModuleMethod($key, 'isSystem') && !defined('XC_UPGRADE_IN_PROGRESS')) {
 
             // Short names
             $data = static::$activeModules[$key];

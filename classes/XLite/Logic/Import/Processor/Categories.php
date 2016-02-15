@@ -441,7 +441,8 @@ class Categories extends \XLite\Logic\Import\Processor\AProcessor
         $path = $value;
         if ($value && !$this->verifyValueAsNull($value) && $this->verifyValueAsFile($path)) {
             $image = $model->getImage();
-            $file = $this->verifyValueAsLocalURL($path) ? ltrim(parse_url($path, PHP_URL_PATH), '/') : $path;
+
+            $file = $this->verifyValueAsLocalURL($path) ? $this->getLocalPathFromURL($path) : $path;
 
             if ($image) {
                 $compare = $this->getImageFilter($file);

@@ -278,6 +278,16 @@ class Search extends \XLite\View\ItemsList\Model\Product\Admin\AAdmin
     }
 
     /**
+     * Checks if this itemslist is exportable through 'Export all' button
+     *
+     * @return boolean
+     */
+    protected function isExportable()
+    {
+        return true;
+    }
+
+    /**
      * getSortByModeDefault
      *
      * @return string

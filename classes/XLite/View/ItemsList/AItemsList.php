@@ -404,6 +404,16 @@ abstract class AItemsList extends \XLite\View\Container
     }
 
     /**
+     * Checks if this itemslist is exportable through 'Export all' button
+     *
+     * @return boolean
+     */
+    protected function isExportable()
+    {
+        return false;
+    }
+
+    /**
      * Return params list to use for export
      *
      * @return \XLite\Core\CommonCell
@@ -420,7 +430,9 @@ abstract class AItemsList extends \XLite\View\Container
      */
     protected function getPageData()
     {
-        \XLite\Core\Session::getInstance()->{$this->getConditionCellName()} = $this->getExportSearchCondition();
+        if ($this->isExportable()) {
+            \XLite\Core\Session::getInstance()->{$this->getConditionCellName()} = $this->getExportSearchCondition();
+        }
         return $this->getData($this->getLimitCondition());
     }
 

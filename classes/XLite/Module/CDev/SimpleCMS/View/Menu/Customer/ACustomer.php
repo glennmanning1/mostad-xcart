@@ -82,20 +82,18 @@ abstract class ACustomer extends \XLite\View\Menu\Customer\ACustomer implements 
         $item = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->find($id);
         $result = false;
 
-        $self = $this;
-
         if ($item) {
             $children = $item->getChildren()->toArray();
 
             if ($children) {
-                $found = array_reduce(
-                    $children,
-                    function($carry, $child) use ($self){
-                        return $carry ?: $self->checkChilden($child->getId());
-                    },
-                    false
-                );
-                $result = $found ;
+                $found = false;
+                foreach ($children as $child) {
+                    $found = $this->checkChilden($child->getId());
+                    if ($found) {
+                        break;
+                    }
+                }
+                $result = $found;
             } else {
                 $childLink = \XLite::getInstance()->getShopURL($item->getLink());
                 $result = $childLink === \XLite\Core\URLManager::getCurrentURL();

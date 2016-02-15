@@ -42,14 +42,17 @@ class PaymentTransactionStatus extends \XLite\View\FormField\Select\Regular
      */
     protected function getDefaultOptions()
     {
-        $statuses = array_map(
-            function($status) {
-                return static::t($status . '[S]');
-            },
-            \XLite\Model\Payment\Transaction::getStatuses()
+        $statuses = \XLite\Model\Payment\Transaction::getStatuses();
+
+        $options = array(
+            ''  => static::t('All payment transaction statuses')
         );
 
-        return array(''  => static::t('All payment transaction statuses')) + $statuses;
+        foreach ($statuses as $key => $status) {
+            $options[$key] = static::t($status . '[S]');
+        }
+
+        return $options;
     }
 
 }

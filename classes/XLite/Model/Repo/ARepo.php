@@ -1991,32 +1991,45 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
                 }
             }
 
-            $ids = array_map(function ($item)
-                {
-                    return $item[$this->getPrimaryKeyField()];
+            $self = $this;
+
+            $ids = array_map(
+                function ($item) use ($self) {
+                    return $item[$self->getPrimaryKeyField()];
                 },
                 $qb->getQuery()->getScalarResult()
             );
 
-            for ($row = 0; $row < count($ids); $row += 1000) {
-                $batch = array_slice($ids, $row, 1000);
-
-                $updateQb = $this->createPureQueryBuilder()
-                       ->update($this->_entityName, $alias)
-                       ->set($alias . '.xcPendingExport', 1)
-                       ->where(
-                            $qb->expr()->in(
-                                $alias . '.' . $this->getPrimaryKeyField(),
-                                ':ids'
-                            )
-                        )->setParameter(
-                            'ids',
-                            $batch
-                        );
-
-                $updateQb->execute();
-            }
+            \Includes\Utils\ArrayManager::eachCons(
+                $ids,
+                1000,
+                array($this, 'writeExportIds')
+            );
         }
+    }
+
+    /**
+     * Write ids to xcPendingExport field
+     *
+     * @param array $ids Array of exported ids
+     */
+    public function writeExportIds(array $ids)
+    {
+        $expr = new \Doctrine\ORM\Query\Expr();
+        $alias = $this->getDefaultAlias();
+
+        $updateQb = $this->getQueryBuilder()
+            ->update($this->_entityName, $alias)
+            ->set($alias . '.xcPendingExport', 1)
+            ->where(
+                $expr->in(
+                    $alias . '.' . $this->getPrimaryKeyField(),
+                    ':ids'
+                )
+            )
+            ->setParameter('ids', $ids);
+
+        $updateQb->execute();
     }
 
     /**

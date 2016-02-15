@@ -262,6 +262,47 @@ abstract class ArrayManager extends \Includes\Utils\AUtils
     }
 
     /**
+     * Takes batches of items from $data split by size of $batchSize and applies $callback to each batch.
+     *
+     * @param array    $data        Array of items
+     * @param integer  $batchSize   Size of batches
+     * @param callable $callback    Callback which is applied to batches
+     *
+     * @return void
+     */
+    public static function eachCons($data, $batchSize, $callback)
+    {
+        $batches = static::partition($data, $batchSize);
+
+        foreach ($batches as $batch) {
+            call_user_func($callback, $batch);
+        }
+    }
+
+    /**
+     * Returns batches of items from $data with size of $batchSize.
+     *
+     * @param array    $data        Array of items
+     * @param integer  $batchSize   Size of batches
+     *
+     * @return array
+     */
+    public static function partition($data, $batchSize)
+    {
+        $size = count($data);
+
+        $result = array();
+
+        for ($position = 0; $position < $size; $position += $batchSize) {
+            $batch = array_slice($data, $position, $batchSize);
+
+            $result[] = $batch;
+        }
+
+        return $result;
+    }
+
+    /**
      * Find item
      *
      * FIXME: parameters are passed incorrectly into "call_user_func"

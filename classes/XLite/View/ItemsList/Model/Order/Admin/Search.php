@@ -321,6 +321,16 @@ class Search extends \XLite\View\ItemsList\Model\Order\Admin\AAdmin
     }
 
     /**
+     * Checks if this itemslist is exportable through 'Export all' button
+     *
+     * @return boolean
+     */
+    protected function isExportable()
+    {
+        return true;
+    }
+
+    /**
      * Return products list
      *
      * @param \XLite\Core\CommonCell $cnd       Search condition

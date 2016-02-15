@@ -41,8 +41,14 @@ class DefaultDisplayModeForProductsList extends \XLite\View\FormField\Select\Reg
      */
     protected function getDefaultOptions()
     {
-        return array_map(function($mode) {
-            return static::t($mode);
-        }, \XLite\View\ItemsList\Product\Customer\ACustomer::getCenterDisplayModes());
+        $modes = \XLite\View\ItemsList\Product\Customer\ACustomer::getCenterDisplayModes();
+
+        $options = array();
+
+        foreach ($modes as $key => $mode) {
+            $options[$key] = static::t($mode);
+        }
+
+        return $options;
     }
 }

@@ -576,7 +576,29 @@ class XLite extends \XLite\Base
      */
     public function initModules()
     {
+        static::checkUpgradeStatus();
+
         \Includes\Utils\ModulesManager::initModules();
+    }
+
+    /**
+     * Set up flag if upgrade is in progress.
+     * Modules will not be disabled during initialization if this flag is set.
+     *
+     * @return void
+     */
+    protected static function checkUpgradeStatus()
+    {
+        $actions = array('pre_upgrade_hooks', 'update_files');
+
+        if (
+            !defined('XC_UPGRADE_IN_PROGRESS')
+            && 'upgrade' == \XLite\Core\Request::getInstance()->target
+            && !empty(\XLite\Core\Request::getInstance()->action)
+            && in_array(\XLite\Core\Request::getInstance()->action, $actions)
+        ) {
+            define('XC_UPGRADE_IN_PROGRESS', true);
+        }
     }
 
     /**
@@ -746,9 +768,11 @@ class XLite extends \XLite\Base
 
         if ($target && $params) {
             $redirectUrl = \XLite\Core\Database::getRepo('XLite\Model\CleanURL')->buildURL($target, $params);
+            $redirectUrl = strtok($redirectUrl,'?');
             $web_dir = rtrim(\XLite::getInstance()->getOptions(array('host_details', 'web_dir')), '/');
+            $selfURI = strtok(\Includes\Utils\URLManager::getSelfURI(),'?');
 
-            if (($web_dir . '/' . $redirectUrl) !== \Includes\Utils\URLManager::getSelfURI()) {
+            if (($web_dir . '/' . $redirectUrl) !== $selfURI) {
 
                 \XLite\Core\Operator::redirect(
                     \XLite\Core\URLManager::getShopURL($redirectUrl),
@@ -827,7 +851,7 @@ class XLite extends \XLite\Base
      */
     final public function getMinorVersion()
     {
-        return '12';
+        return '13';
     }
 
     /**
