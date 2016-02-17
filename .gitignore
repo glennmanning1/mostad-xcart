@@ -4,3 +4,5 @@ var/
 Vagrantfile
 logs/
 etc/config.php
+/files/*
+!/files/.htaccess
