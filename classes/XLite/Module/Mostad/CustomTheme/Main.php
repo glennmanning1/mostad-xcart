@@ -78,6 +78,7 @@ abstract class Main extends \XLite\Module\AModule
         parent::runBuildCacheHandler();
 
         \XLite\Core\Layout::getInstance()->removeTemplateFromLists('layout/main.header.tpl');
+        \XLite\Core\Layout::getInstance()->removeTemplateFromLists('layout/main.center.center.tpl');
     }
 
 }
