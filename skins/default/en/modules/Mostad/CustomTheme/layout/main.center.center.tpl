@@ -15,6 +15,7 @@
   <widget IF="{isTrialNoticeAutoDisplay()}" class="\XLite\View\ModulesManager\TrialNotice" />
   <div class="section">
     <a id="main-content"></a>
+      {*<widget template="center.tpl" />*}
     <widget template="{getListingTemplate()}" />
   </div>
 </div>
