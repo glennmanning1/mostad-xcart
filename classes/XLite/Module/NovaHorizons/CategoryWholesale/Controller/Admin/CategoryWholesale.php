@@ -24,7 +24,7 @@ class CategoryWholesale extends \XLite\Controller\Admin\Category
 
     public function getCategroyId()
     {
-        return 10;
+        return $this->getCategory()->getId();
     }
 
     public function doActionCategoryWholesalePriceUpdate()
