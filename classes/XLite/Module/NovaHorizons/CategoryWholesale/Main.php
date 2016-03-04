@@ -46,4 +46,11 @@ abstract class Main extends \XLite\Module\AModule
         return 'Enables wholesale or volume pricing based on category and customer membership level.';
     }
 
+    public static function runBuildCacheHandler()
+    {
+        parent::runBuildCacheHandler();
+
+        \XLite\Core\Layout::getInstance()->removeTemplateFromLists('common/price_parts/price.tpl');
+    }
+
 }

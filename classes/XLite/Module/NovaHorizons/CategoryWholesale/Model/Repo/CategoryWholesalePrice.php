@@ -91,4 +91,20 @@ class CategoryWholesalePrice extends \XLite\Module\CDev\Wholesale\Model\Repo\Bas
 
         return $list;
     }
+
+    public function getWholesaleCategories()
+    {
+        $queryBuilder = $this->createQueryBuilder();
+
+        $queryBuilder
+            ->select("IDENTITY({$this->defaultAlias}.category)")
+            ->where("{$this->defaultAlias}.category IS NOT NULL")
+            ->distinct();
+
+        $result = $queryBuilder->getQuery()->getScalarResult();
+
+        $result = array_map('current', $result);
+
+        return $result;
+    }
 }

@@ -26,4 +26,17 @@ class Category extends \XLite\Model\Category implements \XLite\Base\IDecorator
     {
         return 0;
     }
+
+    public function isCategoryWholesalePricesEnabled(array $wholesaleCategories = array())
+    {
+        if (in_array($this->getId(), $wholesaleCategories)) {
+            return true;
+        }
+
+        if ($this->getParent()) {
+            return $this->getParent()->isCategoryWholesalePricesEnabled($wholesaleCategories);
+        }
+
+        return false;
+    }
 }

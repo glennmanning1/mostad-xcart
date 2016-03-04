@@ -31,8 +31,6 @@ class CategoryWholesale extends \XLite\Controller\Admin\Category
     {
         $list = new \XLite\Module\NovaHorizons\CategoryWholesale\View\ItemsList\CategoryWholesale();
         $list->processQuick();
-
-
     }
 
 }
