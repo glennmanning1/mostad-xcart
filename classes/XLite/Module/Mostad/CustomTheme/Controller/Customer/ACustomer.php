@@ -16,7 +16,7 @@ abstract class ACustomer extends \XLite\Controller\Customer\ACustomer implements
     public function getListingTemplate()
     {
 
-        if (function_exists('getCategory')) {
+        if (method_exists($this, 'getCategory') && $this->getCategory()) {
             $template = $this->getCategory()->getListingTemplate();
 
             if ($template) {
