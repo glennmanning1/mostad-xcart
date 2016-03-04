@@ -14,17 +14,7 @@ abstract class ACustomer extends \XLite\Controller\Customer\ACustomer implements
 
     public function isCategoryWholesalePricesEnabled()
     {
-        if (!method_exists($this, 'getProduct') && !$this->getProduct()) {
-            return false;
-        }
-
-        $category = $this->getProduct()->getCategory();
-
-        $wholesaleCategories = \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\CategoryWholesale\Model\CategoryWholesalePrice')
-            ->getWholesaleCategories();
-
-
-        return $category->isCategoryWholesalePricesEnabled($wholesaleCategories);
+        return false;
     }
 
 }
