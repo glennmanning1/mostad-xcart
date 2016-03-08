@@ -177,7 +177,7 @@ class WholesaleClassPrice  extends \XLite\View\ItemsList\Model\Table
     {
         $entity = parent::createEntity();
 
-        $entity->setSet($this->getSet());
+        $entity->set = $this->getSet();
 
         return $entity;
     }

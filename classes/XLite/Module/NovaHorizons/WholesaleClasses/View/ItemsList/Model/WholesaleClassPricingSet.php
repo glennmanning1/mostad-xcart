@@ -45,11 +45,17 @@ class WholesaleClassPricingSet extends \XLite\View\ItemsList\Model\Table
                 static::COLUMN_PARAMS       => array('required' => true),
                 static::COLUMN_NAME    => \XLite\Core\Translation::lbl('Name'),
                 static::COLUMN_ORDERBY => 100,
+
             ),
+            'class' => [
+                static::COLUMN_NAME    => \XLite\Core\Translation::lbl('Product class'),
+                static::COLUMN_CLASS   => 'XLite\Module\NovaHorizons\WholesaleClasses\View\FormField\Inline\Select\Model\ProductClass',
+                static::COLUMN_ORDERBY => 200,
+            ],
             'pricing' => array(
                 static::COLUMN_TEMPLATE      => 'modules/NovaHorizons/WholesaleClasses/page/wholesale_class_pricing_set/parts/edit_pricing.tpl',
                 static::COLUMN_HEAD_TEMPLATE => 'modules/NovaHorizons/WholesaleClasses/page/wholesale_class_pricing_set/parts/edit_pricing.tpl',
-                static::COLUMN_ORDERBY       => 200,
+                static::COLUMN_ORDERBY       => 300,
             ),
         );
     }

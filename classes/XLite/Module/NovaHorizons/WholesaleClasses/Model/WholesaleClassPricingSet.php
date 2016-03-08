@@ -47,4 +47,26 @@ class WholesaleClassPricingSet extends \XLite\Model\AEntity
      */
     protected $name = '';
 
+    /**
+     * @var \XLite\Model\ProductClass
+     *
+     * @ManyToOne(targetEntity="XLite\Model\ProductClass")
+     * @JoinColumn(name="class_id", referencedColumnName="id", onDelete="CASCADE")
+     */
+    protected $class;
+
+    /**
+     * @param $class
+     */
+    public function setClass($class)
+    {
+        if (!$class instanceof \XLite\Model\ProductClass) {
+            $classId = $class;
+            $class = new \XLite\Model\ProductClass();
+            $class->setId($classId);
+        }
+
+        $this->class = $class;
+    }
+
 }
