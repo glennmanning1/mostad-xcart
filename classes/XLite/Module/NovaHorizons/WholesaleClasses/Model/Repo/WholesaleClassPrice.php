@@ -89,17 +89,21 @@ class WholesaleClassPrice  extends \XLite\Module\CDev\Wholesale\Model\Repo\Base\
     {
         $queryBuilder = $this->createQueryBuilder('c');
 
+        $cnd = new \Doctrine\ORM\Query\Expr\Orx;
+
+        $cnd->add('c.quantityRangeEnd >= :quantity');
+        $cnd->add('c.quantityRangeEnd = 0');
+
         $queryBuilder->select('c')
             ->where('c.set = :set' )
-            ->andWhere('c.quantityRangeBegin >= :start')
-            ->andWhere('c.quantityRangeBegin < :end')
+            ->andWhere('c.quantityRangeBegin <= :quantity')
+            ->andWhere($cnd)
             ->setParameters(array(
                 'set' => $set,
-                'start' => $quantity,
-                'end'   => $quantity+1,
+                'quantity' => $quantity,
             ));
 
-        $result = $queryBuilder->getQuery()->getResult();
+        $result = $queryBuilder->getQuery()->getOneOrNullResult();
 
         if (!$result) {
             return 0;

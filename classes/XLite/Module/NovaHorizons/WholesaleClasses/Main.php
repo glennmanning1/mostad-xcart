@@ -81,6 +81,8 @@ abstract class Main extends \XLite\Module\AModule
         parent::runBuildCacheHandler();
 
         \XLite\Core\Layout::getInstance()->removeTemplateFromLists('common/price_parts/price.tpl');
+        \XLite\Core\Layout::getInstance()->removeTemplateFromLists('shopping_cart/parts/item.price.tpl');
+        \XLite\Core\Layout::getInstance()->removeTemplateFromLists('shopping_cart/parts/item.subtotal.tpl');
     }
 
 }
