@@ -12,7 +12,7 @@
  * @ListChild (list="product.plain_price_only", weight="10")
  *}
 
-{if:isCategoryWholesalePricesEnabled()}
+{if:hasWholesalePriceClass()}
     <li><span>This has Volume pricing for it's category, see price in cart.</span></li>
 {else:}
 <li><span class="price product-price">{formatPrice(getListPrice(),null,1):h}</span></li>

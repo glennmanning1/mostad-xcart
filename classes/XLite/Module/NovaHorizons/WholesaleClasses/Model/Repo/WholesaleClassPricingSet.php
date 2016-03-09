@@ -104,4 +104,60 @@ class WholesaleClassPricingSet extends \XLite\Model\Repo\ARepo
     {
         return [];
     }
+
+    /**
+     * @return array
+     */
+    public function getWholesaleClassIds()
+    {
+        $queryBuilder = $this->createQueryBuilder();
+
+        $queryBuilder->select('IDENTITY('.$this->defaultAlias . '.class)')
+            ->where($this->defaultAlias . '.class IS NOT NULL')
+            ->distinct();
+
+        $result = $queryBuilder->getQuery()->getScalarResult();
+
+        $result = array_map('current', $result);
+
+        return $result;
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getWholesaleClassProductIds()
+    {
+        $queryBuilder = $this->createQueryBuilder('wcps');
+
+        $queryBuilder->select('p.product_id')
+            ->join('\XLite\Model\Product', 'p', 'WITH', 'wcps.class = p.productClass')
+            ->where('wcps.class IS NOT NULL')
+            ->distinct();
+
+        $result = $queryBuilder->getQuery()->getScalarResult();
+
+        $result = array_map('current', $result);
+
+        return $result;
+    }
+
+    /**
+     * @param $productClass
+     *
+     * @return bool
+     */
+    public function hasWholesalePriceClass($productClass)
+    {
+        $queryBuilder = $this->getQueryBuilder('ps');
+
+        $queryBuilder->select()
+            ->where('ps.class = :productClass')
+            ->setParameter('productClass', $productClass);
+
+        $result = $queryBuilder->getQuery()->getResult();
+
+        return !empty($result);
+    }
 }

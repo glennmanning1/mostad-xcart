@@ -73,4 +73,14 @@ abstract class Main extends \XLite\Module\AModule
         return '0';
     }
 
+    /**
+     *
+     */
+    public static function runBuildCacheHandler()
+    {
+        parent::runBuildCacheHandler();
+
+        \XLite\Core\Layout::getInstance()->removeTemplateFromLists('common/price_parts/price.tpl');
+    }
+
 }
