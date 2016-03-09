@@ -25,6 +25,15 @@ class WholesaleClassPrice extends \XLite\Controller\Admin\AAdmin
     {
         $list = new \XLite\Module\NovaHorizons\WholesaleClasses\View\ItemsList\Model\WholesaleClassPrice();
         $list->processQuick();
+
+        \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPrice')
+            ->correctQuantityRangeEnd($this->getPriceSet());
+    }
+
+    public function getPriceSet()
+    {
+        return \XLite\Core\Database::getRepo('\XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
+                ->find(\XLite\Core\Request::getInstance()->pricing_set_id);
     }
 
 }

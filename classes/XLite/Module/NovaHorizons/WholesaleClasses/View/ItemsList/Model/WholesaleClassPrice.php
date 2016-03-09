@@ -329,18 +329,6 @@ class WholesaleClassPrice  extends \XLite\View\ItemsList\Model\Table
             ]
         );
 
-        foreach (['data', 'new'] as $idx) {
-            foreach ($requestData[ $idx ] as $id => $value) {
-//                if (empty($value['membership']) && 1 == $value['quantityRangeBegin']) {
-//                    unset($requestData[$idx][$id]);
-//
-//                    \XLite\Core\TopMessage::addWarning(
-//                        'The base price can not be changed on this page.'
-//                    );
-//                }
-            }
-        }
-
         return $requestData;
     }
 
@@ -370,8 +358,6 @@ class WholesaleClassPrice  extends \XLite\View\ItemsList\Model\Table
         $this->getCommonParams();
 
         if (!$this->commonParams['pricing_set_id'] instanceof \XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet) {
-//            return $this->commonParams['pricing_set_id'];
-//        } else {
             $pricingSet = \XLite\Core\Database::getRepo('\XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
                 ->find($this->commonParams['pricing_set_id']);
 

@@ -37,7 +37,7 @@ class WholesaleClassPrice extends \XLite\View\Form\ItemsList\AItemsList
     {
         $list = parent::getDefaultParams();
 
-        $list['pricing_set_id'] = '1';
+        $list['pricing_set_id'] = \XLite\Core\Request::getInstance()->pricing_set_id;;
 
         return $list;
     }
