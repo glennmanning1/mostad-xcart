@@ -1,0 +1,2 @@
+XLite\Model\Order\Modifier:
+    - { class: '\XLite\Module\NovaHorizons\WholesaleClasses\Logic\Order\Modifier\VolumePricing', weight: 100 }

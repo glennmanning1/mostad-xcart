@@ -85,4 +85,27 @@ class WholesaleClassPrice  extends \XLite\Module\CDev\Wholesale\Model\Repo\Base\
         return $list;
     }
 
+    public function getPriceBySetAndQuantity($set, $quantity)
+    {
+        $queryBuilder = $this->createQueryBuilder('c');
+
+        $queryBuilder->select('c')
+            ->where('c.set = :set' )
+            ->andWhere('c.quantityRangeBegin >= :start')
+            ->andWhere('c.quantityRangeBegin < :end')
+            ->setParameters(array(
+                'set' => $set,
+                'start' => $quantity,
+                'end'   => $quantity+1,
+            ));
+
+        $result = $queryBuilder->getQuery()->getResult();
+
+        if (!$result) {
+            return 0;
+        }
+
+        return $quantity * $result->getPrice();
+    }
+
 }
