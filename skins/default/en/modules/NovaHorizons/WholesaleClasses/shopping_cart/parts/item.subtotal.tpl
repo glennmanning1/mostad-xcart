@@ -11,7 +11,7 @@
  * @ListChild (list="cart.item", weight="60")
  *}
 <td class="item-subtotal">
-    {if:hasWholesalePriceClass(item)}
+    {if:item.hasWholesalePriceClass()}
     See subtotals
     {else:}
   <span class="subtotal{if:item.getExcludeSurcharges()} modified-subtotal{end:}"><widget class="XLite\View\Surcharge" surcharge="{item.getDisplayTotal()}" currency="{cart.getCurrency()}" /></span>

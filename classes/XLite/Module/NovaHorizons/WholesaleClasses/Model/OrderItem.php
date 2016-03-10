@@ -16,20 +16,20 @@
  * @link      http://novahorizons.io/
  */
 
-namespace XLite\Module\NovaHorizons\WholesaleClasses\View;
+namespace XLite\Module\NovaHorizons\WholesaleClasses\Model;
 
 
-class Cart extends \XLite\View\Cart implements \XLite\Base\IDecorator
+class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
 {
-
-    /**
+     /**
      * @return bool
      */
-    public function hasWholesalePriceClass($item)
+    public function hasWholesalePriceClass()
     {
         $result = \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
-            ->findBy(array('class' => $item->getProduct()->getProductClass()));
+            ->findBy(array('class' => $this->getProduct()->getProductClass()));
 
         return !empty($result);
     }
+
 }
