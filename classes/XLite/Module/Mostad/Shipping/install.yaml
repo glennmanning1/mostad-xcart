@@ -1,0 +1,28 @@
+XLite\Model\Order\Modifier:
+    - { class: '\XLite\Module\Mostad\Shipping\Logic\Order\Modifier\Shipping', weight: 100 }
+
+XLite\Model\Config:
+  - name: chocolates_class
+    category: Mostad\Shipping
+    type: \XLite\View\FormField\Select\ProductClass
+    orderby: 100
+    translations:
+      - code: en
+        option_name: Chocolates product class
+        option_comment: Select the product class for chocolate shipping rules.
+  - name: newsletter_class
+    category: Mostad\Shipping
+    type: \XLite\View\FormField\Select\ProductClass
+    orderby: 200
+    translations:
+      - code: en
+        option_name: Newsletter product class
+        option_comment: Select the product class for newsletter shipping rules.
+  - name: planning_letters_class
+    category: Mostad\Shipping
+    type: \XLite\View\FormField\Select\ProductClass
+    orderby: 300
+    translations:
+      - code: en
+        option_name: Tax Planning Letters product class
+        option_comment: Select the product class for Tax Planning Letters shipping rules.
