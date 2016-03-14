@@ -112,4 +112,19 @@ class WholesaleClassPrice  extends \XLite\Module\CDev\Wholesale\Model\Repo\Base\
         return $quantity * $result->getPrice();
     }
 
+    /**
+     * Process contition
+     *
+     * @param \XLite\Core\CommonCell $cnd    Contition
+     * @param mixed                  $object Object
+     *
+     * @return \XLite\Core\CommonCell
+     */
+    protected function processContition($cnd, $object)
+    {
+        $cnd->{self::P_SET} = $object;
+
+        return $cnd;
+    }
+
 }
