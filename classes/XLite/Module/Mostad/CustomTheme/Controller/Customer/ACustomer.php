@@ -13,18 +13,20 @@ abstract class ACustomer extends \XLite\Controller\Customer\ACustomer implements
 {
     const TEMPLATE_PATH = 'modules/Mostad/CustomTheme/categoryListingTemplate/';
 
+    const DEFAULT_TEMPLATE = 'center.tpl';
+
     public function getListingTemplate()
     {
 
         if (method_exists($this, 'getCategory') && $this->getCategory()) {
             $template = $this->getCategory()->getListingTemplate();
 
-            if ($template) {
+            if (!empty($template) && $template !== self::DEFAULT_TEMPLATE) {
                 return self::TEMPLATE_PATH . $template;
             }
         }
 
-        return 'center.tpl';
+        return self::DEFAULT_TEMPLATE;
     }
 
 }
