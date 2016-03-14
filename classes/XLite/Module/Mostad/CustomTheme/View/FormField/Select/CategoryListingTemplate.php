@@ -23,7 +23,7 @@ class CategoryListingTemplate extends \XLite\View\FormField\Select\ASelect
 {
 
     public static $categoryListingTemplates = array(
-        'center.tpl'                 => 'Default',
+        ''                           => 'Default',
         'anchoredProductListing.tpl' => 'Anchored Product Listing',
         'productListing.tpl'         => 'Product Listing',
         'subcategoryListing.tpl'     => 'Subcategory Listing',

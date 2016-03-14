@@ -24,7 +24,9 @@ abstract class Main extends \XLite\View\ItemsList\Product\Customer\Category\Main
 
     protected function isVisible()
     {
-        if ($this->getCategory()->getListingTemplate() != '') {
+        $listingTemplate = $this->getCategory()->getListingTemplate();
+
+        if (!empty($listingTemplate)) {
             return false;
         }
         return parent::isVisible() && $this->getCategory() && $this->getCategory()->isVisible();
