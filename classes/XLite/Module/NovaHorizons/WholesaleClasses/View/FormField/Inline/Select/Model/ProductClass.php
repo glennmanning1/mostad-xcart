@@ -100,6 +100,6 @@ class ProductClass extends \XLite\View\FormField\Inline\Base\Single
      */
     protected function getProductClass()
     {
-        return $this->getEntity();
+        return $this->getEntity()->getClass();
     }
 }
