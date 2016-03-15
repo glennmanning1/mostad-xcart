@@ -18,7 +18,9 @@
 
 namespace XLite\Module\Mostad\Coupons\View\ItemsList;
 
-
+/**
+ * @LC_Dependencies("CDev\Coupons","XC\FreeShipping")
+ */
 class Coupons extends \XLite\Module\CDev\Coupons\View\ItemsList\Coupons implements \XLite\Base\IDecorator
 {
     /**

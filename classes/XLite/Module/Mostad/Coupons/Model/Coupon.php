@@ -21,6 +21,9 @@ namespace XLite\Module\Mostad\Coupons\Model;
 
 use Doctrine\ORM\Mapping\JoinColumn;
 
+/**
+ * @LC_Dependencies("CDev\Coupons","XC\FreeShipping")
+ */
 class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\Base\IDecorator
 {
 

@@ -30,7 +30,9 @@
 namespace XLite\Module\Mostad\Coupons;
 
 /**
- * Main module
+ * Main
+ *
+ * @LC_Dependencies("CDev\Coupons","XC\FreeShipping")
  */
 abstract class Main extends \XLite\Module\AModule
 {
