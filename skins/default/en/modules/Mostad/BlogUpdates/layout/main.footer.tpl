@@ -12,6 +12,6 @@
  *}
 
 <div id="footer-area">
-    <widget class="\XLite\Modules\Mostad\BlogUpdates\View\BlogUpdates" />
+    <widget class="\XLite\Module\Mostad\BlogUpdates\View\BlogUpdates" />
     <list name="layout.main.footer">
 </div>
