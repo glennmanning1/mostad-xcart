@@ -84,4 +84,9 @@ abstract class Main extends \XLite\Module\AModule
         return '0';
     }
 
+    public static function getDependencies()
+    {
+        return array('CDev\ContactUs');
+    }
+
 }
