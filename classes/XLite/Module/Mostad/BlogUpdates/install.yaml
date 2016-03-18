@@ -1,0 +1,10 @@
+XLite\Model\Config:
+  - name: wp_blog_url
+    category: Mostad\BlogUpdates
+    type: text
+    orderby: 100
+    value: ''
+    translations:
+      - code: en
+        option_name: Full URL of WP Blog Feed
+        option_comment: Make sure to include the schema (HTTP/HTTPS).  For example http://example.com/feed
