@@ -11,14 +11,17 @@
  *}
 
 {if:getBlogData()}
-<div class="blog-content">
+<section id="recent-blogs">
     <h2>From Our Blog</h2>
     <ul>
         {foreach:getBlogData(),key,value}
         <li>
-            <div class="blog-date-icon">{value.getMonth()} {value.getDay()}</div>
-            <div class="blog-blurb">{value.getTitle()}</div>
-            <div class="blog-link"><a href="{value.getLink()}">Read article</a></div>
+            <div class="date">{value.getMonth()} <b>{value.getDay()}</b></div>
+            <div class="details">
+                {value.getTitle()}<br />
+                <a href="{value.getLink()}" target="_blank">Read article</a>
+            </div>
+            <div class="blog-link"></div>
         </li>
         {end:}
     </ul>
