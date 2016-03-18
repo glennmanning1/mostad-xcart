@@ -3,10 +3,10 @@
 {**
  * Shopping cart item : price
  *
- * @author    Qualiteam software Ltd <info@x-cart.com>
- * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
- * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
- * @link      http://www.x-cart.com/
+ * @author    Nova Horzions LLC <info@novahorizons.io>
+ * @copyright Copyright (c) 2015 Nova Horzions LLC <info@novahorizons.io>. All rights reserved
+ * @license   http://novahorizons.io/ License Agreement
+ * @link      http://novahorizons.io/
  *
  * @ListChild (list="cart.item", weight="40")
  *}
