@@ -42,8 +42,6 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
      */
     protected $product;
 
-    protected $foo;
-
     /**
      * Coupon constructor.
      *
