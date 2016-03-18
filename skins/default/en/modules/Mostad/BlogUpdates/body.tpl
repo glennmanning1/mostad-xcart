@@ -25,5 +25,5 @@
         </li>
         {end:}
     </ul>
-</div>
+</section>
 {end:}
