@@ -1,0 +1,27 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Hidden Categories Module
+#
+# @category  X-Cart 5 Module
+# @author    CFL Systems, Inc. <support@cflsystems.com>
+# @copyright Copyright (c) 2015 CFL Systems, Inc. All rights reserved.
+# @license   CFL Systems Software License Agreement - https://www.cflsystems.com/software-license-agreement.html
+# @link      https://www.cflsystems.com/hidden-categories-for-x-cart-5.html
+
+XLite\Model\Config:
+  - name: csi_hidden_cats_show_column
+    category: 'CSI\HiddenCategories'
+    type: checkbox
+    orderby: 10
+    value: 'N'
+    translations:
+      - code: en
+        option_name: 'Show "Hidden" column in categories list (admin)'
+  - name: csi_hidden_cats_hide_products
+    category: 'CSI\HiddenCategories'
+    type: checkbox
+    orderby: 20
+    value: 'Y'
+    translations:
+      - code: en
+        option_name: 'Hide products in search results if the product category or any of its parents is marked as hidden'
