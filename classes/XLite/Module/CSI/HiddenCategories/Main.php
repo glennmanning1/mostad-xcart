@@ -16,7 +16,7 @@
  *
  * @category  X-Cart 5 Module
  * @author    CFL Systems, Inc. <support@cflsystems.com>
- * @copyright Copyright (c) 2015 CFL Systems, Inc. All rights reserved.
+ * @copyright Copyright (c) 2015-2016 CFL Systems, Inc. All rights reserved.
  * @license   CFL Systems Software License Agreement - https://www.cflsystems.com/software-license-agreement.html
  * @link      https://www.cflsystems.com/hidden-categories-for-x-cart-5.html
  */
@@ -85,7 +85,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getMinorVersion()
     {
-        return '0';
+        return '1';
     }
 
     /**

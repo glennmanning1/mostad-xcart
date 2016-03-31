@@ -16,7 +16,7 @@ function TinyMCE(base)
   this.callSupermethod('constructor', arguments);
   var self = this;
   jQuery('textarea.tinymce').each(function() {
-    var id = $(this).attr('id');
+    var id = jQuery(this).attr('id');
     if (id) {
       self.initialization('#' + id);
       this.commonController.bind(
@@ -31,8 +31,7 @@ function TinyMCE(base)
 
 extend(TinyMCE, CommonElement);
 
-TinyMCE.prototype.isRequired = function (field)
-{
+TinyMCE.prototype.isRequired = function (field) {
   var rulesParsing = field.attr('class');
   var getRules = /validate\[(.*)\]/.exec(rulesParsing);
 
@@ -44,13 +43,12 @@ TinyMCE.prototype.isRequired = function (field)
   var rules = str.split(/\[|,|\]/);
   console.log(rules.indexOf('required'));
   return -1 !== rules.indexOf('required');
-}
+};
 
-TinyMCE.prototype.specialValidate = function(id, event, state)
-{
+TinyMCE.prototype.specialValidate = function (id, event, state) {
   if (!this.isRequired(jQuery('#' + id))) {
     return;
-  };
+  }
   var elem = tinymce ? tinymce.get(id) : null;
 
   if (elem && elem.getContent() === '') {

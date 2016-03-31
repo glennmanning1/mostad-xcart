@@ -9,46 +9,47 @@
  * @link      http://www.x-cart.com/
  */
 
-function footer() {
-    var fh = $('#footer-area').height();
-    if (fh > 150) {
-        $('#page').css('padding-bottom', fh);
-    }
-}
-function mobileDropdown() {
-    if ($('#top-menu.dropdown-menu').hasClass('scrollable') == true) {
-        $('#top-menu.dropdown-menu').removeClass('scrollable').removeAttr('style');
-    }
-    var h1 = $(window).height();
-    var h2 = $('#top-menu.dropdown-menu').height();
-    var h3 = $('.mobile_header ul.nav-pills').height();
-    if (h1 < h2+h3) {
-        $('#top-menu.dropdown-menu').addClass('scrollable').height(h1-h3);
-    }
+function footer () {
+  var fh = jQuery('#footer-area').height();
+  if (fh > 150) {
+    jQuery('#page').css('padding-bottom', fh);
+  }
 }
 
-$(document).ready(function() {
-    mobileDropdown();
-    footer();
-    $(window).resize(footer);
-    $(window).resize(mobileDropdown);
-    $(function() {
-            $('#top-main-menu a, #top-main-menu .primary-title').on('touchstart', function(e) {
-                    if ($(this).hasClass('tap') !== true && $(this).parent().parent().hasClass('tap') !== true) {
-                            $('ul.tap, a.tap, .primary-title.tap').removeClass('tap');
-                    }
-                    if ($(this).next('ul').length !== 0) {
-                            $(this).toggleClass('tap');
-                            if ($(this).hasClass('tap') == true) {
-                                    e.preventDefault();	
-                            }
-                            $(this).next('ul').toggleClass('tap');
-                    }
-                    $(document).on('touchstart', function(e) {
-                            if($(e.target).closest('.tap').length == 0) {
-                                    $('ul.tap, a.tap, .primary-title.tap').removeClass('tap');
-                            }
-                    });
-            });
+function mobileDropdown () {
+  if (jQuery('#top-menu.dropdown-menu').hasClass('scrollable') == true) {
+    jQuery('#top-menu.dropdown-menu').removeClass('scrollable').removeAttr('style');
+  }
+  var h1 = jQuery(window).height();
+  var h2 = jQuery('#top-menu.dropdown-menu').height();
+  var h3 = jQuery('.mobile_header ul.nav-pills').height();
+  if (h1 < h2+h3) {
+    jQuery('#top-menu.dropdown-menu').addClass('scrollable').height(h1-h3);
+  }
+}
+
+jQuery(function () {
+  mobileDropdown();
+  footer();
+  jQuery(window).resize(footer);
+  jQuery(window).resize(mobileDropdown);
+  jQuery(function () {
+    jQuery('#top-main-menu a, #top-main-menu .primary-title').on('touchstart', function (e) {
+      if (jQuery(this).hasClass('tap') !== true && jQuery(this).parent().parent().hasClass('tap') !== true) {
+        jQuery('ul.tap, a.tap, .primary-title.tap').removeClass('tap');
+      }
+      if (jQuery(this).next('ul').length !== 0) {
+        jQuery(this).toggleClass('tap');
+        if (jQuery(this).hasClass('tap') == true) {
+          e.preventDefault();
+        }
+        jQuery(this).next('ul').toggleClass('tap');
+      }
+      jQuery(document).on('touchstart', function (e) {
+        if (jQuery(e.target).closest('.tap').length == 0) {
+          jQuery('ul.tap, a.tap, .primary-title.tap').removeClass('tap');
+        }
+      });
     });
+  });
 });

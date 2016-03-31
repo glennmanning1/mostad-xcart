@@ -16,7 +16,7 @@
  *
  * @category  X-Cart 5 Module
  * @author    CFL Systems, Inc. <support@cflsystems.com>
- * @copyright Copyright (c) 2015 CFL Systems, Inc. All rights reserved.
+ * @copyright Copyright (c) 2015-2016 CFL Systems, Inc. All rights reserved.
  * @license   CFL Systems Software License Agreement - https://www.cflsystems.com/software-license-agreement.html
  * @link      https://www.cflsystems.com/hidden-categories-for-x-cart-5.html
  */
@@ -34,6 +34,13 @@ class Category extends \XLite\Model\Repo\Category implements \XLite\Base\IDecora
     const SEARCH_CSI_HIDDEN_CATEGORY = 'csiHiddenCategory';
     
     /**
+     * Parameters
+     *
+     * @var boolean
+     */
+    protected $excludeHidden = true;
+
+    /**
      * Initialize the query builder (to prevent the use of language query)
      *
      * @param \Doctrine\ORM\QueryBuilder $queryBuilder Query builder to use
@@ -44,7 +51,11 @@ class Category extends \XLite\Model\Repo\Category implements \XLite\Base\IDecora
      */
     protected function initializeQueryBuilder($queryBuilder, $alias = null, $excludeRoot = true)
     {
-        $this->addHiddenCategoryCondition($queryBuilder, $alias);
+        if ($this->excludeHidden) {
+            $this->addHiddenCategoryCondition($queryBuilder, $alias);
+        }
+        
+        $this->excludeHidden = true;
 
         return parent::initializeQueryBuilder($queryBuilder, $alias, $excludeRoot);
     }
@@ -57,6 +68,20 @@ class Category extends \XLite\Model\Repo\Category implements \XLite\Base\IDecora
     public function getHiddenCategoryCondition()
     {
         return !\XLite::isAdminZone();
+    }
+
+    /**
+     * Define the Doctrine query
+     *
+     * @param integer $categoryId Category Id
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function defineCategoryPathQuery($categoryId)
+    {
+        $this->excludeHidden = false;
+
+        return parent::defineCategoryPathQuery($categoryId);
     }
 
     /**

@@ -50,7 +50,7 @@
     -moz-transition: visibility .3s, opacity .3s;
     -webkit-transition: visibility .3s, opacity .3s;
     transition: visibility .3s, opacity .3s;
-    z-index: 1000;
+    z-index: 10000;
 }
 #top-main-menu li ul.tap {
 	left: auto;

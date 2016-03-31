@@ -406,7 +406,12 @@ class AuthorizeNetSIM extends \XLite\Model\Payment\Base\WebBased
      */
     public function generateTransactionId(\XLite\Model\Payment\Transaction $transaction, $prefix = null)
     {
-        return substr(parent::generateTransactionId($transaction, $prefix), 0, 20);
+        $prefix = $prefix ?: $transaction->getPaymentMethod()->getSetting('prefix');
+
+        $id = $transaction->getPublicTxnId();
+        $maxPrefix = max(0, 20 - strlen($id));
+
+        return substr($prefix, 0, $maxPrefix) . $id;
     }
 
     /**

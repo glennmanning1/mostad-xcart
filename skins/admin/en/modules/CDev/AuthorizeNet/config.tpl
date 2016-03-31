@@ -9,6 +9,12 @@
  * @link      http://www.x-cart.com/
  *}
 
+<style>
+  #settings_prefix{
+    width: 175px;
+  }
+</style>
+
 <table cellspacing="1" cellpadding="5" class="settings-table">
 
   <tr>
@@ -72,6 +78,14 @@ To obtain the transaction key from the Merchant Interface, do the following:
     </td>
     <td>
     <input type="text" id="settings_prefix" value="{paymentMethod.getSetting(#prefix#)}" name="settings[prefix]" />
+    <widget
+      class="XLite\View\Tooltip"
+      id="settings_prefix_help"
+      text="{t(#It's recommended to limit the length of invoice prefix to 9 characters#)}"
+      caption=""
+      isImageTag="true"
+      className="help-icon"
+    />
     </td>
   </tr>
 

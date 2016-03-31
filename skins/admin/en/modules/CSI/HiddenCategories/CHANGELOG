@@ -1,4 +1,7 @@
 $ CHANGELOG - Hidden Categories $
 
+version 5.2.1 - March 24, 2016
+Bug under newer version of XC5 - redirects to home page when Clean URLs are used. Fixed.
+
 version 5.2.0 - October 20, 2015
 First release
