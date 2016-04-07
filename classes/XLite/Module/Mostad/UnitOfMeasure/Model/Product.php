@@ -45,13 +45,22 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
             self::UOM_BOX     => 'box',
             self::UOM_PACKAGE => 'package',
         );
+
+    protected $pluralUnitsOfMeasure = array(
+            self::UOM_EACH    => 'each',
+            self::UOM_BOX     => 'boxes',
+            self::UOM_PACKAGE => 'packages',
+        );
     
-    public function getUomDescriptor($friendly = false)
+    public function getUomDescriptor($friendly = false, $amount = 1)
     {
         if (!$this->uomDescriptor) {
             $this->uomDescriptor = self::UOM_EACH;
         }
         if ($friendly) {
+            if ($amount > 1) {
+                return $this->pluralUnitsOfMeasure[$this->uomDescriptor];
+            }
             return self::$unitsOfMeasure[$this->uomDescriptor];
         }
         
@@ -65,6 +74,17 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
         }
 
         return $this->uomQuantity;
+    }
+
+    public function getUomDisplay($amount = 1)
+    {
+        $desciptor = $this->getUomDescriptor(true, $amount);
+
+        if ($this->getUomQuantity() > 1) {
+            $desciptor .= ' of ' . $this->getUomQuantity();
+        }
+
+        return $desciptor;
     }
 
 }
