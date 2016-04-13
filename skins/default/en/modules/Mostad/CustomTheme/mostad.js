@@ -9,7 +9,10 @@ $(function() {
         }
     });
 
+    bindDialogs();
+});
 
+function bindDialogs() {
     // Set up our dialogs
     $('.dialog-trigger').on('click', function(event) {
         event.preventDefault();
@@ -25,5 +28,11 @@ $(function() {
         draggable: false,
         width:     500
     });
-});
+}
 
+core.registerTriggersBind(
+    'update-product-page',
+    function(product){
+        console.log('wat');
+        bindDialogs();
+    });
