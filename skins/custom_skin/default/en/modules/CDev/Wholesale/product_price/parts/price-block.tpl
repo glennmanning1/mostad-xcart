@@ -27,7 +27,6 @@
             <tr class="price-row" FOREACH="getWholesalePrices(),wholesalePrice">
 
                 <list type="nested" name="widgetlist" wholesalePrice="{wholesalePrice}" />
-
             </tr>
             </tbody>
 
