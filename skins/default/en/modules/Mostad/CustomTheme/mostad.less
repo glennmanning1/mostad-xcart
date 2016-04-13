@@ -17,12 +17,35 @@ body {
   line-height: 18px;
   margin: 0;
   padding: 0;
-  text-align: center;
+  text-align: inherit;
   @media (max-width: @screen-sm-max) {
     background-position-y: 40px;
   }
 }
 
+// Dialog Styles
+.ui-dialog-title {
+	display: none;
+}
+
+.dialog-header  {
+	width: 100%;
+    max-width: 980px;
+    height: 40px;
+    margin: 0 auto;
+    padding: 20px 0 15px 0;
+    background-size: 70px;
+    background: #006699 url('images/popuplogo.gif') no-repeat 4px 4px;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+}
+
+.dialog-content {
+    margin: 0 auto;
+    width: 90%;
+    padding: 30px;
+}
 
 
 .navbar-inverse {

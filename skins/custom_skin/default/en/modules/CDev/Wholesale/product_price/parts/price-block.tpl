@@ -11,16 +11,26 @@
  * @ListChild (list="wholesale.price", weight="20")
  *}
 
-<table class="wholesale-prices-product-block">
+<div id="wholesale-prices" class="dialog-target">
+    <div class="dialog-header"></div>
+    <div class="dialog-content">
+        <table class="wholesale-prices-product-block">
+            <thead>
+                <tr>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Savings each</th>
+                </tr>
+            </thead>
+            <tbody>
 
-    <tr>
-        <td  FOREACH="getWholesalePrices(),wholesalePrice" >
-            {wholesalePrice.getQuantityRangeBegin()}{if:wholesalePrice.getQuantityRangeEnd() = 0} - {wholesalePrice.getQuantityRangeEnd()}{else:}+{end:}
-        </td>
-    </tr>
-    <tr>
-        <td  FOREACH="getWholesalePrices(),wholesalePrice" >
-            {formatPrice(wholesalePrice.getDisplayPrice(),null,1):h}
-        </td>
-    </tr>
-</table>
+            <tr class="price-row" FOREACH="getWholesalePrices(),wholesalePrice">
+
+                <list type="nested" name="widgetlist" wholesalePrice="{wholesalePrice}" />
+
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
+</div>

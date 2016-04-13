@@ -30,7 +30,7 @@ abstract class AView extends \XLite\View\AView implements \XLite\Base\IDecorator
 
         $list = parent::getThemeFiles($adminZone);
 
-//        $list[static::RESOURCE_JS][] = '';
+        $list[static::RESOURCE_JS][] =  'modules/Mostad/CustomTheme/mostad.js';
 
         $list[ static::RESOURCE_CSS ][] = [
             'file'  => 'modules/Mostad/CustomTheme/mostad.less',
