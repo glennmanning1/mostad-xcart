@@ -13,7 +13,6 @@
 
 <td>
     <span class="price-value">{formatPrice(wholesalePrice.getDisplayPrice(),null,1):h}</span>
-    {*<span class="price-label">/ {t(#each#)}</span>*}
-    <span IF="getQuantityUnit()" class="price-quantity-unit">/ <span>{quantityUnit.name}</span></span>
+    <span class="price-label">/ {t(#each#)}</span>
 </td>
 
