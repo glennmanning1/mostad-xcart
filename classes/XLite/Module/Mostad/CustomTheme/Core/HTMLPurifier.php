@@ -40,8 +40,9 @@ class HTMLPurifier extends \XLite\Core\HTMLPurifier implements \XLite\Base\IDeco
 
             $config = static::addConfigOptions($config, $options);
 
-            $def = $config->getHTMLDefinition(true);
-            $def->addAttribute('a', 'data-target', 'Text');
+            if ($def = $config->maybeGetRawHTMLDefinition()) {
+                $def->addAttribute('a', 'data-target', 'Text');
+            }
 
 
             static::$purifier = new \HTMLPurifier($config);
