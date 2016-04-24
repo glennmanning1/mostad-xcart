@@ -9,7 +9,50 @@ $(function() {
     });
 
     bindDialogs();
+
+    if ($('.planning-letter').length == 1) {
+        var oneId;
+        var twoId;
+        var threeId;
+        var $issueSelect;
+        var $issueSelectOptions;
+        var $issueBoxes;
+        setIssueSelect();
+        bindChecks();
+
+
+        $('.add2cart').on('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+        });
+        core.registerTriggersBind(
+            'update-product-page',
+            function(product) {
+                setIssueSelect();
+                bindChecks();
+                if ($issueSelect.val() == threeId) {
+                    $issueBoxes.attr('checked', 'checked');
+                } else {
+                    var currentlyChecked = $issueBoxes.filter(':checked').length;
+                    if (
+                        $issueSelect.val() == oneId && currentlyChecked > 1
+                        || $issueSelect.val() == twoId && currentlyChecked > 2
+                    ) {
+                        $issueBoxes.attr('checked', false);
+                    }
+                }
+
+            });
+    }
 });
+
+core.registerTriggersBind(
+    'update-product-page',
+    function(product) {
+        bindDialogs();
+    });
+
 
 function bindDialogs() {
     // Set up our dialogs
@@ -28,12 +71,59 @@ function bindDialogs() {
         width:     500
     });
 }
+function setIssueSelect() {
+    $issueSelect = $('select:first');
+    $issueSelectOptions = $issueSelect.find('option');
 
-core.registerTriggersBind(
-    'update-product-page',
-    function(product) {
-        bindDialogs();
+    $.each($issueSelectOptions, function(index, element) {
+        var $option = $(element);
+        var optionString = $option.html();
+        if (typeof optionString === "string" && optionString != "") {
+            if (optionString.includes("One")) {
+                oneId = $option.attr('value');
+            }
+            if (optionString.includes("Two")) {
+                twoId = $option.attr('value');
+            }
+            if (optionString.includes("Three")) {
+                threeId = $option.attr('value');
+            }
+        }
     });
+
+    $issueBoxes = $('input:checkbox');
+    $.each($issueBoxes, function(index, element) {
+        var $checkbox = $(element);
+        var $label = $checkbox.parents('label');
+
+        if (!$label.html().includes('Issue')) {
+            $issueBoxes.splice(index, 1);
+        }
+    });
+}
+
+function bindChecks() {
+    $issueBoxes.off('click.mostad');
+    $issueBoxes.on('click.mostad', function(event) {
+        var currentlyChecked = $issueBoxes.filter(':checked').length;
+        if ($issueSelect.val() == oneId && currentlyChecked > 1) {
+            event.preventDefault();
+            event.stopPropagation();
+            alert('You can only select one issue!');
+        }
+
+        if ($issueSelect.val() == twoId && currentlyChecked > 2) {
+            event.preventDefault();
+            event.stopPropagation();
+            alert('You can only select two issues!');
+        }
+
+        if ($issueSelect.val() == threeId) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    });
+}
 
 
 ProductDetailsView.prototype.processVariantImageAsGallery = function(data) {
