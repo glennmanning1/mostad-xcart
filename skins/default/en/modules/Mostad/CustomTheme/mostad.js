@@ -26,26 +26,27 @@ $(function() {
             event.stopPropagation();
 
         });
-        core.registerTriggersBind(
-            'update-product-page',
-            function(product) {
-                setIssueSelect();
-                bindChecks();
-                if ($issueSelect.val() == threeId) {
-                    $issueBoxes.attr('checked', 'checked');
-                } else {
-                    var currentlyChecked = $issueBoxes.filter(':checked').length;
-                    if (
-                        $issueSelect.val() == oneId && currentlyChecked > 1
-                        || $issueSelect.val() == twoId && currentlyChecked > 2
-                    ) {
-                        $issueBoxes.attr('checked', false);
-                    }
-                }
 
-            });
     }
 });
+core.registerTriggersBind(
+    'update-product-page',
+    function(product) {
+        setIssueSelect();
+        bindChecks();
+        if ($issueSelect.val() == threeId) {
+            $issueBoxes.attr('checked', 'checked');
+        } else {
+            var currentlyChecked = $issueBoxes.filter(':checked').length;
+            if (
+                $issueSelect.val() == oneId && currentlyChecked > 1
+                || $issueSelect.val() == twoId && currentlyChecked > 2
+            ) {
+                $issueBoxes.attr('checked', false);
+            }
+        }
+
+    });
 
 core.registerTriggersBind(
     'update-product-page',
@@ -96,7 +97,7 @@ function setIssueSelect() {
         var $checkbox = $(element);
         var $label = $checkbox.parents('label');
 
-        if (!$label.html().includes('Issue')) {
+        if ($label.length && !$label.html().includes('Issue')) {
             $issueBoxes.splice(index, 1);
         }
     });
