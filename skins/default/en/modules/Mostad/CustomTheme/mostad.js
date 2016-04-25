@@ -32,6 +32,10 @@ $(function() {
 core.registerTriggersBind(
     'update-product-page',
     function(product) {
+        // If we don't have the approrpiate parts, get out
+        if ($('.planning-letter').length != 1) {
+            return;
+        }
         setIssueSelect();
         bindChecks();
         if ($issueSelect.val() == threeId) {
