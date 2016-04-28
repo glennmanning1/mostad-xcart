@@ -31,10 +31,10 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
      */
     public function getPublicImages()
     {
-        $list = parent::getPublicImages();
+        $list = \XLite\Model\ProductAbstract::getPublicImages();
 
         if ($this->isUseVariantImage()) {
-            array_unshift($list, $this->getDefaultVariant()->getImage());
+            $list[] = $this->getDefaultVariant()->getImage();
         }
 
         return $list;
