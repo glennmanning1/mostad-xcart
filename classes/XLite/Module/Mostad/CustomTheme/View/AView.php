@@ -37,6 +37,7 @@ abstract class AView extends \XLite\View\AView implements \XLite\Base\IDecorator
             'media' => 'screen',
             'merge' => 'bootstrap/css/bootstrap.less',
         ];
+        $list[static::RESOURCE_CSS][] = 'modules/Mostad/CustomTheme/mostad.css';
 
         return $list;
     }
