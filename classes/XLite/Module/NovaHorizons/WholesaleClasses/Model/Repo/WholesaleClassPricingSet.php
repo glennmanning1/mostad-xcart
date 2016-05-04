@@ -150,14 +150,33 @@ class WholesaleClassPricingSet extends \XLite\Model\Repo\ARepo
      */
     public function hasWholesalePriceClass($productClass)
     {
-        $queryBuilder = $this->getQueryBuilder('ps');
+        $result = $this->getWholesalePriceClassSet($productClass);
+        
+        return !empty($result);
+    }
 
-        $queryBuilder->select()
-            ->where('ps.class = :productClass')
+    public function getWholesalePriceClassSet($productClass)
+    {
+        $qb = $this->createQueryBuilder()
+            ->where($this->getDefaultAlias() . '.class = :productClass')
             ->setParameter('productClass', $productClass);
 
-        $result = $queryBuilder->getQuery()->getResult();
+        $result = $qb->getQuery()->getOneOrNullResult();
 
-        return !empty($result);
+        return $result;
+    }
+
+    public function getWholesalePrices($product)
+    {
+        $class = $product->getProductClass();
+        
+        $set = $this->getWholesalePriceClassSet($class);
+        
+        if (!$set) {
+            return null;
+        }
+        
+        return \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPrice')
+            ->getWholesaleClassPrices($set);
     }
 }

@@ -56,6 +56,19 @@ class WholesaleClassPricingSet extends \XLite\Model\AEntity
     protected $class;
 
     /**
+     * @var \Doctrine\Common\Collections\ArrayCollection
+     *
+     * @OneToMany(targetEntity="XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPrice", mappedBy="set")
+     */
+    protected $prices;
+
+    protected $basePrice;
+
+    public function __construct() {
+        $this->prices = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * @param $class
      */
     public function setClass($class)
@@ -67,6 +80,26 @@ class WholesaleClassPricingSet extends \XLite\Model\AEntity
         }
 
         $this->class = $class;
+    }
+    
+    public function getMinQuantity($membership = null)
+    {
+        return 1;
+    }
+
+    public function getBasePrice()
+    {
+        if ($this->basePrice) {
+            return $this->basePrice;
+        }
+        $this->basePrice = 0.01;
+        foreach ($this->getPrices() as $price) {
+            if ($price->getPrice() > $this->basePrice) {
+                $this->basePrice = $price->getPrice();
+            }
+        }
+
+        return $this->basePrice;
     }
 
 }

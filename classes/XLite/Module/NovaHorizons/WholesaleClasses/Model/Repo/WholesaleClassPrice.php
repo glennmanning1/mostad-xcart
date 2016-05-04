@@ -127,4 +127,16 @@ class WholesaleClassPrice  extends \XLite\Module\CDev\Wholesale\Model\Repo\Base\
         return $cnd;
     }
 
+    public function getWholesaleClassPrices($set)
+    {
+        $queryBuilder = $this->createQueryBuilder('c');
+        
+        $queryBuilder->where('c.set = :set' )
+            ->setParameters(array(
+                'set' => $set,
+            ));
+
+        return $queryBuilder->getResult();
+    }
+
 }

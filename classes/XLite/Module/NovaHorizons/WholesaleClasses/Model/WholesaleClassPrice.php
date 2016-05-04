@@ -33,7 +33,7 @@ class WholesaleClassPrice extends \XLite\Module\CDev\Wholesale\Model\Base\AWhole
     /**
      * @var \XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet
      *
-     * @ManyToOne(targetEntity="XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet")
+     * @ManyToOne(targetEntity="XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet", inversedBy="prices")
      * @JoinColumn(name="set_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $set;
@@ -45,7 +45,7 @@ class WholesaleClassPrice extends \XLite\Module\CDev\Wholesale\Model\Base\AWhole
      */
     public function getOwner()
     {
-        $this->getSet();
+        return $this->getSet();
     }
 
         /**
