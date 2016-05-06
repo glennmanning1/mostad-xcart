@@ -16,10 +16,6 @@
           class="items-range">{wholesalePrice.getQuantityRangeBegin()}-{wholesalePrice.getQuantityRangeEnd()}</span>
     <span IF="wholesalePrice.getQuantityRangeBegin()=wholesalePrice.getQuantityRangeEnd()"
           class="items-range">{wholesalePrice.getQuantityRangeBegin()}</span>
-    {if:getQuantityUnit()}
-    <span class="items-label"><span>{quantityUnit.name}</span></span>
-    {else:}
     <span class="items-label">{t(#items#)}</span>
-    {end:}
 
 </td>

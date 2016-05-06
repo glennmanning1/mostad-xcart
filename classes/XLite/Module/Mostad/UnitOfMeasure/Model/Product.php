@@ -41,9 +41,9 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
     protected $uomDescriptor = self::UOM_EACH;
     
     static $unitsOfMeasure =  array(
-            self::UOM_EACH    => 'each',
-            self::UOM_BOX     => 'box',
-            self::UOM_PACKAGE => 'package',
+            self::UOM_EACH    => 'ea',
+            self::UOM_BOX     => 'bx',
+            self::UOM_PACKAGE => 'pkg',
         );
 
     protected $pluralUnitsOfMeasure = array(

@@ -16,11 +16,24 @@
  * @link      http://novahorizons.io/
  */
 
-namespace XLite\Module\Mostad\CustomTheme\View;
+namespace XLite\Module\Mostad\CustomTheme\Model;
 
+/**
+ * @LC_Dependencies("XC\ProductVariants")
+ */
 
-class ProductPrice extends \XLite\Module\CDev\Wholesale\View\ProductPrice implements \XLite\Base\IDecorator
+class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
 {
-    
+    /**
+     * Get item image
+     *
+     * @return \XLite\Model\Base\Image
+     */
+    public function getImage()
+    {
+        $image = $this->getProduct()->getProductImage();
+
+        return $image ?: parent::getImage();
+    }
 
 }

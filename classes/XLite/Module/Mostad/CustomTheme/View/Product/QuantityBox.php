@@ -18,9 +18,6 @@
 
 namespace XLite\Module\Mostad\CustomTheme\View\Product;
 
-/**
- * @LC_Dependencies("QSL\AdvancedQuantity")
- */
 class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base\IDecorator
 {
     /**
@@ -32,7 +29,7 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
     {
         return trim(
             'quantity'
-//            . ' wheel-ctrl'
+            . ' no-wheel-mark'
             . ($this->isCartPage() ? ' watcher' : '')
             . ' ' . $this->getParam(self::PARAM_STYLE)
             . ' validate[required,custom[integer],min[' . $this->getMinQuantity() . ']'

@@ -19,11 +19,19 @@
 namespace XLite\Module\Mostad\CustomTheme\Model;
 
 /**
- * @LC_Dependencies("XC\ProductVariants", "QSL\AdvancedQuantity")
+ * @LC_Dependencies("XC\ProductVariants")
  */
 class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 {
-
+    /**
+     * Get image
+     *
+     * @return \XLite\Model\Image\Product\Image
+     */
+    public function getImage()
+    {
+        return \XLite\Model\ProductAbstract::getImage();
+    }
     /**
      * Get public images
      *

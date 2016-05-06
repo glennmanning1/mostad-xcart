@@ -186,7 +186,7 @@ if (typeof ProductDetailsView !== "undefined") {
             imageChanged = true;
 
             // Remove old variant image
-            this.base.find('.product-image-gallery li.variant-image').remove();
+            // this.base.find('.product-image-gallery li.variant-image').remove();
 
         }
 
