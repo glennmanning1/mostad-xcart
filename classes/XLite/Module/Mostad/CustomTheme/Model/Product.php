@@ -47,36 +47,5 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 
         return $list;
     }
-    
-    /**
-     * Get minimum product quantity available to customer to purchase
-     *
-     * @param \XLite\Model\Membership $membership Customer's membership OPTIONAL
-     *
-     * @return integer
-     */
-    public function getMinQuantity($membership = null)
-    {
-        $absoluteMin = $this->getAbsoluteMinimumQuantity();
-        
-        if ($absoluteMin !== 1) {
-            return $absoluteMin;
-        }
-        
-        $id = $membership ? $membership->getMembershipId() : 0;
-
-        if (!isset($this->minQuantities[$id])) {
-            $minQuantity = \XLite\Core\Database::getRepo('XLite\Module\CDev\Wholesale\Model\MinQuantity')
-                ->getMinQuantity(
-                    $this,
-                    $membership
-                );
-
-            $this->minQuantities[$id] = isset($minQuantity) ? $minQuantity->getQuantity() : 1;
-
-        }
-
-        return $this->minQuantities[$id];
-    }
 
 }

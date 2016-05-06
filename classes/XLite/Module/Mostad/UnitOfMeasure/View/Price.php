@@ -26,7 +26,13 @@ class Price extends \XLite\View\Price implements \XLite\Base\IDecorator
     {
         $product = $this->getProduct();
 
-        $output = 'per ' . $product->getUomDescriptor(true);
+        $descriptor = $product->getUomDescriptor(true);
+
+        if ($descriptor === \XLite\Module\Mostad\UnitOfMeasure\Model\Product::$unitsOfMeasure[\XLite\Module\Mostad\UnitOfMeasure\Model\Product::UOM_EACH]) {
+            return $descriptor;
+        }
+
+        $output = 'per ' . $descriptor;
 
         if ($product->getUomQuantity() <= 1) {
             return $output;

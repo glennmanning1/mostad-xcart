@@ -200,3 +200,15 @@ if (typeof ProductDetailsView !== "undefined") {
 
     };
 }
+
+function checkQty(field, rules, i, options) {
+    console.log(field, rules, i, options);
+    var mod = parseInt(rules[9]);
+    var val = parseInt(field.val());
+    var diff = val % mod;
+
+    if (diff !== 0) {
+        return 'Must be order in multiples of ' + mod;
+    }
+
+}

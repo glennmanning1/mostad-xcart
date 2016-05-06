@@ -19,6 +19,7 @@
 namespace XLite\Module\Mostad\UnitOfMeasure\Model;
 
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 
 class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
@@ -39,9 +40,15 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
      * @Column(name="uom_descriptor", type="string", length=10)
      */
     protected $uomDescriptor = self::UOM_EACH;
+
+    /**
+     * @var int
+     * @Column(name="order_quantity", type="integer")
+     */
+    protected $orderQuantity = 1;
     
     static $unitsOfMeasure =  array(
-            self::UOM_EACH    => 'ea',
+            self::UOM_EACH    => 'each',
             self::UOM_BOX     => 'bx',
             self::UOM_PACKAGE => 'pkg',
         );
@@ -58,9 +65,6 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
             $this->uomDescriptor = self::UOM_EACH;
         }
         if ($friendly) {
-            if ($amount > 1) {
-                return $this->pluralUnitsOfMeasure[$this->uomDescriptor];
-            }
             return self::$unitsOfMeasure[$this->uomDescriptor];
         }
         
@@ -86,5 +90,7 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 
         return $desciptor;
     }
+    
+    
 
 }
