@@ -32,7 +32,7 @@ class ContactUs extends \XLite\Module\CDev\ContactUs\View\ContactUs implements \
         ) {
             $result = '<script src="https://www.google.com/recaptcha/api.js" async defer></script>'
                       . "\n"
-                      . '<div class="g-recaptcha" data-sitekey="your_site_key"></div>';
+                      . '<div class="g-recaptcha" data-sitekey="'.$config->recaptcha_public_key.'"></div>';
         }
 
         return $result;
