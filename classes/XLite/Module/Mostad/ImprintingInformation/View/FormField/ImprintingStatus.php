@@ -19,12 +19,15 @@
 namespace XLite\Module\Mostad\ImprintingInformation\View\FormField;
 
 
-class ImprintingStatus extends \XLite\View\FormField\Input\Radio
+use XLite\Module\Mostad\ImprintingInformation\Model\Imprinting;
+use XLite\View\FormField\Select\RadioButtonsList\ARadioButtonsList;
+
+class ImprintingStatus extends ARadioButtonsList
 {
 
     protected function getDefaultOptions()
     {
-        return \XLite\Module\Mostad\ImprintingInformation\Model\Imprinting::getStatusArray();
+        return Imprinting::getStatusArray();
     }
 
 }
