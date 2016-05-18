@@ -39,10 +39,12 @@ class Product extends \XLite\View\Model\Product implements \XLite\Base\IDecorato
                 ),
             'orderQuantity' => array(
                 self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
-                self::SCHEMA_LABEL    => 'Order Quantity',
+                self::SCHEMA_LABEL    => 'Order in quantities of',
                 self::SCHEMA_REQUIRED => true,
                 ),
             )
             + array_slice($this->schemaDefault, 8, count($this->schemaDefault)-8, true);
+
+        $this->schemaDefault['weight'][self::SCHEMA_LABEL] = 'Weight(lbs) per unit of measure';
     }
 }
