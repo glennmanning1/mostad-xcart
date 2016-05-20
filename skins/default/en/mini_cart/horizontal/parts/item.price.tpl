@@ -10,4 +10,4 @@
  *
  * @ListChild (list="minicart.horizontal.item", weight="20")
  *}
-<div class="item-price">nerp<widget class="XLite\View\Surcharge" surcharge="{item.getDisplayPrice()}" currency="{cart.getCurrency()}" /> &times; {item.getAmount()}</div>
+<div class="item-price"><widget class="XLite\View\Surcharge" surcharge="{item.getDisplayPrice()}" currency="{cart.getCurrency()}" /> &times; {item.getAmount()}</div>
