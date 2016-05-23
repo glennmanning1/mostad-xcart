@@ -40,7 +40,7 @@ class Product extends \XLite\View\Model\Product implements \XLite\Base\IDecorato
             'friendlyDescriptor' => array(
                 self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
                 self::SCHEMA_LABEL    => 'Friendly unit of measure descriptor',
-                self::SCHEMA_REQUIRED => true,
+                self::SCHEMA_REQUIRED => false,
                 ),
             'orderQuantity' => array(
                 self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
