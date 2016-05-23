@@ -46,6 +46,12 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
      * @Column(name="order_quantity", type="integer")
      */
     protected $orderQuantity = 1;
+
+    /**
+     * @var string
+     * @Column(name="friendly_descriptor", type="string")
+     */
+    protected $friendlyDescriptor;
     
     static $unitsOfMeasure =  array(
             self::UOM_EACH    => 'each',
@@ -89,6 +95,15 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
         }
 
         return $desciptor;
+    }
+
+    public function getFriendlyUom()
+    {
+        if ($this->friendlyDescriptor) {
+            return $this->friendlyDescriptor;
+        }
+
+        return $this->getUomDisplay();
     }
     
     
