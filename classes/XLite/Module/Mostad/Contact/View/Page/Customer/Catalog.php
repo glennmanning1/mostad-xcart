@@ -46,11 +46,6 @@ class Catalog extends \XLite\View\AView
         return 'modules/Mostad/Contact/catalog/body.tpl';
     }
 
-    /**
-     * Return captcha
-     *
-     * @return string
-     */
     protected function getCaptcha()
     {
         $config = \XLite\Core\Config::getInstance()->CDev->ContactUs;
@@ -60,8 +55,9 @@ class Catalog extends \XLite\View\AView
             $config->recaptcha_private_key
             && $config->recaptcha_public_key
         ) {
-            require_once LC_DIR_MODULES . '/CDev/ContactUs/recaptcha/recaptchalib.php';
-            $result = recaptcha_get_html($config->recaptcha_public_key);
+            $result = '<script src="https://www.google.com/recaptcha/api.js" async defer></script>'
+                      . "\n"
+                      . '<div class="g-recaptcha" data-sitekey="'.$config->recaptcha_public_key.'"></div>';
         }
 
         return $result;
