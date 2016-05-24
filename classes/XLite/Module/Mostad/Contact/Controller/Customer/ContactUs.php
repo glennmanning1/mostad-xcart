@@ -23,6 +23,55 @@ class ContactUs extends \XLite\Module\CDev\ContactUs\Controller\Customer\Contact
 {
 
     /**
+     * @return string
+     */
+    protected function getDataSessionKey()
+    {
+        return 'contact_us';
+    }
+
+    /**
+     * Name of method on \XLite\Core\Mailer to call to send form data
+     *
+     * @return string
+     */
+    protected function getMailerMethodName()
+    {
+        return 'sendContactUsMessage';
+    }
+
+    /**
+     * Return value of data
+     *
+     * @param string $field Field
+     *
+     * @return string
+     */
+    public function getValue($field)
+    {
+        $data = \XLite\Core\Session::getInstance()->{$this->getDataSessionKey()};
+
+        $value = $data && isset($data[$field]) ? $data[$field] : '';
+
+        if (
+                !$value
+                && in_array($field, array('name', 'email'))
+        ) {
+            $auth = \XLite\Core\Auth::getInstance();
+            if ($auth->isLogged()) {
+                if ('email' == $field) {
+                    $value = $auth->getProfile()->getLogin();
+
+                } elseif (0 < $auth->getProfile()->getAddresses()->count()) {
+                    $value = $auth->getProfile()->getAddresses()->first()->getName();
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      * Send message
      *
      * @return void
@@ -90,15 +139,16 @@ class ContactUs extends \XLite\Module\CDev\ContactUs\Controller\Customer\Contact
 
 
             if (!$isValid) {
-                \XLite\Core\TopMessage::addError('Please enter the correct captcha');
+                \XLite\Core\TopMessage::addError('Please check the box to verify you are human');
             }
         }
 
         if ($isValid) {
-            $errorMessage = \XLite\Core\Mailer::sendContactUsMessage(
-                $data,
-                \XLite\Core\Config::getInstance()->CDev->ContactUs->email
-                    ?: \XLite\Core\Config::getInstance()->Company->support_department
+            $methodName   = $this->getMailerMethodName();
+            $errorMessage = \XLite\Core\Mailer::$methodName(
+                    $data,
+                    \XLite\Core\Config::getInstance()->CDev->ContactUs->email
+                            ?: \XLite\Core\Config::getInstance()->Company->support_department
             );
 
             if ($errorMessage) {
@@ -111,7 +161,8 @@ class ContactUs extends \XLite\Module\CDev\ContactUs\Controller\Customer\Contact
             }
         }
 
-        \XLite\Core\Session::getInstance()->contact_us = $data;
+
+        \XLite\Core\Session::getInstance()->{$this->getDataSessionKey()} = $data;
     }
 
 }
