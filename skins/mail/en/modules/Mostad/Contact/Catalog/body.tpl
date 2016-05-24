@@ -1,5 +1,5 @@
 <p>
-    {getNotificationText():h}
+    Catalog Request
 </p>
 <p>
     <b>{t(#Name#)}:</b> {data.name}<br/>
@@ -9,7 +9,7 @@
     <b>{t(#Address#)}:</b> {data.address}<br/>
     <b>{t(#Address 2#)}:</b> {data.address2}<br/>
     <b>{t(#City#)}:</b> {data.city}<br/>
-    <b>{t(#State#)}:</b> {data.state}<br/>
+    <b>{t(#State#)}:</b> {getStateName(data.state)}<br/>
     <b>{t(#Zip#)}:</b> {data.zipcode}<br/>
     <b>{t(#Firm Type#)}:</b> {data.firmType}<br/>
     <b>{t(#Firm Type (Other)#)}:</b> {data.firmTypeOther}<br/>

@@ -73,7 +73,7 @@
             <label for="state">
                 State <span class="form-required" title="This field is required.">*</span>
             </label>
-            <widget class="\XLite\View\FormField\Select\State" fieldName="state" value="{getValue(#state#)}" required="true" country="US" />
+            <widget class="\XLite\View\FormField\Select\State" fieldName="state" value="{getValue(#state#)}" fieldOnly="true" required="true" country="US" />
         </div>
 
         <div class="form-item">

@@ -36,4 +36,15 @@ class Catalog extends ContactUs
     {
         return 'sendCatalogRequestMessage';
     }
+
+    public function getStateName($stateId)
+    {
+        $state = \XLite\Core\Database::getRepo('XLite\Model\State')->find($stateId);
+
+        if (!$state) {
+            return null;
+        }
+
+        return $state->getCode();
+    }
 }
