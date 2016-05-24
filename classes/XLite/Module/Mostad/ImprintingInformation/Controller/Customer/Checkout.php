@@ -21,6 +21,7 @@ namespace XLite\Module\Mostad\ImprintingInformation\Controller\Customer;
 
 class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Base\IDecorator
 {
+
     /**
      * Go to cart view if cart is empty
      *
@@ -28,7 +29,10 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
      */
     public function handleRequest()
     {
-        if ($this->target == 'checkout' && $this->needsImprinting()) {
+        if ($this->target == 'checkout' &&
+                $this->cartHasItemsNeedingImprinting() &&
+                !$this->orderHasConfirmedImprinting()
+        ) {
             $this->setHardRedirect();
             $this->setReturnURL($this->buildURL('imprinting'));
             $this->doRedirect();
@@ -37,7 +41,8 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
         parent::handleRequest();
     }
 
-    protected function needsImprinting(){
+    protected function cartHasItemsNeedingImprinting()
+    {
 
         /** @var OrderItem $item */
         foreach ($this->getCart()->getItems() as $item) {
@@ -49,5 +54,10 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
         return false;
     }
 
+    protected function orderHasConfirmedImprinting()
+    {
+        $imprinting = $this->getCart(false)->getImprinting();
 
+        return ($imprinting && $imprinting->getConfirm());
+    }
 }

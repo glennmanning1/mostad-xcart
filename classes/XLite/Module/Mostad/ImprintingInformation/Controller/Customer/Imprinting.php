@@ -52,7 +52,13 @@ class Imprinting extends \XLite\Controller\Customer\ACustomer
         // Set Order ID on info to current cart
         $this->getModelForm()->getModelObject()->setOrder($this->getCart(false));
 
-        $this->getModelForm()->performAction('modify');
+        $result = $this->getModelForm()->performAction('modify');
+
+        if ($result) {
+            $this->setHardRedirect();
+            $this->setReturnURL($this->buildURL('checkout'));
+            $this->doRedirect();
+        }
     }
 
     /**
