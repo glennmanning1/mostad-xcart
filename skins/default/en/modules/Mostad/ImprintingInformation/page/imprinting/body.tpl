@@ -10,4 +10,5 @@
  *}
 
 
-<widget class="XLite\Module\Mostad\ImprintingInformation\View\Model\Imprinting" useBodyTemplate="1" />
+<widget class="XLite\Module\Mostad\ImprintingInformation\View\Model\Imprinting" useBodyTemplate="1">
+</widget>

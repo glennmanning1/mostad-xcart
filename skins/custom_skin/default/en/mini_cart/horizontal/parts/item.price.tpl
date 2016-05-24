@@ -15,9 +15,17 @@
         <tr>
             <td align="left">
                 <span class="quantity">{item.getAmount()} {item.getUomDisplay()}</span>
+                {if:!item.hasWholesalePriceClass()}
                 &times; <widget class="XLite\View\Surcharge" surcharge="{item.getDisplayPrice()}" currency="{cart.getCurrency()}" />
+                {end:}
             </td>
-            <td align="right"><widget class="XLite\View\Surcharge" surcharge="{item.getSubtotal()}" currency="{cart.getCurrency()}" /></td>
+            <td align="right">
+                {if:item.hasWholesalePriceClass()}
+                See below
+                {else:}
+                <widget class="XLite\View\Surcharge" surcharge="{item.getSubtotal()}" currency="{cart.getCurrency()}" />
+                {end:}
+            </td>
         </tr>
     </table>
 </div>

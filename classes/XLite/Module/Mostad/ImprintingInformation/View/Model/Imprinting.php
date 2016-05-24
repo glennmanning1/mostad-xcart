@@ -32,11 +32,11 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_LABEL    => 'Firm Name',
             self::SCHEMA_REQUIRED => false,
         ),
-//        'address' => array(
-//            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\SKU',
-//            self::SCHEMA_LABEL    => 'Address',
-//            self::SCHEMA_REQUIRED => false,
-//        ),
+        'address' => array(
+            self::SCHEMA_CLASS    => 'XLite\Module\Mostad\ImprintingInformation\View\FormField\Address',
+            self::SCHEMA_LABEL    => 'Address',
+            self::SCHEMA_REQUIRED => false,
+        ),
         'email' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Email',
             self::SCHEMA_LABEL    => 'Email',
