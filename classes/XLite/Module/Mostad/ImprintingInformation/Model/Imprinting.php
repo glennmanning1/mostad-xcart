@@ -47,6 +47,16 @@ class Imprinting extends \XLite\Model\AEntity
     protected $id;
 
     /**
+     * Item order
+     *
+     * @var \XLite\Model\Order
+     *
+     * @OneToOne  (targetEntity="XLite\Model\Order", inversedBy="imprinting")
+     * @JoinColumn (name="order_id", referencedColumnName="order_id", onDelete="CASCADE")
+     */
+    protected $order;
+
+    /**
      * @var string
      * @Column(type="string", length=10)
      */

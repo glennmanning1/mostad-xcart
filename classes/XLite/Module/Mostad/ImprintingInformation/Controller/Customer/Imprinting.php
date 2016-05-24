@@ -37,6 +37,11 @@ class Imprinting extends \XLite\Controller\Customer\ACustomer
 
     protected $params = array('target', 'order_id');
 
+    public function getPageTitle()
+    {
+        return 'Order Imprint Information';
+    }
+
     protected function getModelFormClass()
     {
         return 'XLite\Module\Mostad\ImprintingInformation\View\Model\Imprinting';
@@ -44,9 +49,10 @@ class Imprinting extends \XLite\Controller\Customer\ACustomer
 
     protected function doActionUpdate()
     {
+        // Set Order ID on info to current cart
+        $this->getModelForm()->getModelObject()->setOrder($this->getCart(false));
+
         $this->getModelForm()->performAction('modify');
-
-
     }
 
     /**
