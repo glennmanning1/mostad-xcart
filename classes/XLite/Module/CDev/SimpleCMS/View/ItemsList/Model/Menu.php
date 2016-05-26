@@ -76,7 +76,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
                 static::COLUMN_ORDERBY  => 300,
             ),
             'submenus' => array(
-                static::COLUMN_NAME     => \XLite\Core\Translation::lbl('Submenu'),
+                static::COLUMN_NAME     => static::t('Submenu'),
                 static::COLUMN_TEMPLATE => 'modules/CDev/SimpleCMS/items_list/model/table/menu/parts/info.submenus.tpl',
                 static::COLUMN_ORDERBY  => 400,
                 static::COLUMN_EDIT_LINK => true,
@@ -94,7 +94,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
     {
         return \XLite\Core\Request::getInstance()->id
             ? \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')
-                ->find(intval(\XLite\Core\Request::getInstance()->id))
+                ->find((int) \XLite\Core\Request::getInstance()->id)
             : \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->getRootMenu();
     }
 
@@ -125,7 +125,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
      */
     protected function getCreateURL()
     {
-        return \XLite\Core\Converter::buildUrl(
+        return \XLite\Core\Converter::buildURL(
             'menu',
             null,
             array(
@@ -153,7 +153,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
             )
         );
 
-        return 'submenus' == $column[static::COLUMN_CODE]
+        return 'submenus' === $column[static::COLUMN_CODE]
             ? $link
             : parent::buildEntityURL($entity, $column);
     }
@@ -172,7 +172,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
         $parent = null;
         if (\XLite\Core\Request::getInstance()->id) {
             $parent = \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')
-                ->find(intval(\XLite\Core\Request::getInstance()->id));
+                ->find((int) \XLite\Core\Request::getInstance()->id);
         }
 
         if (!$parent) {
@@ -207,7 +207,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
         $result->type = $this->getPage();
 
         $result->{\XLite\Module\CDev\SimpleCMS\Model\Repo\Menu::SEARCH_PARENT} = \XLite\Core\Request::getInstance()->id
-            ? intval(\XLite\Core\Request::getInstance()->id)
+            ? (int) \XLite\Core\Request::getInstance()->id
             : \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu')->getRootMenuId();
 
         return $result;
@@ -277,7 +277,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
      */
     protected function isEditLinkEnabled(array $column, \XLite\Model\AEntity $entity)
     {
-        return 'submenus' == $column[static::COLUMN_CODE]
+        return 'submenus' === $column[static::COLUMN_CODE]
             ? parent::isEditLinkEnabled($column, $entity)
                 && !$entity->getSubmenusCount()
             : parent::isEditLinkEnabled($column, $entity);
@@ -292,7 +292,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
      */
     protected function getEditLinkLabel($entity)
     {
-        return static::t('Add new');
+        return static::t('Add');
     }
 
     // }}}
@@ -324,7 +324,7 @@ class Menu extends \XLite\View\ItemsList\Model\Table
      *
      * @return array
      */
-    static public function getSearchParams()
+    public static function getSearchParams()
     {
         return array();
     }

@@ -51,8 +51,18 @@ class PaymentMethod extends \XLite\View\FormField\Select\Regular
         $list = array();
 
         // Get all active payment methods
-        foreach (\XLite\Core\Database::getRepo('\XLite\Model\Payment\Method')->findAllActive() as $method) {
-            $list[$method->getMethodId()] = $method->getName();
+        $methods = \XLite\Core\Database::getRepo('\XLite\Model\Payment\Method')->findAllActive();
+
+        // In case methods have custom isEnabled() method
+        $activeMethods = array_filter(
+            $methods,
+            function($method) {
+                return $method->isEnabled();
+            }
+        );
+
+        foreach ($activeMethods as $method) {
+            $list[$method->getMethodId()] = $method->getTitle();
         }
 
         if ($this->getOrder() && $this->getOrder()->getPaymentTransactions()) {

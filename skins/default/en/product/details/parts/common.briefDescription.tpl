@@ -11,4 +11,4 @@
  * @ListChild (list="product.details.page.info", weight="18")
  *}
 
-<div class="brief-descr product-description" IF="product.briefDescription">{product.briefDescription:h}</div>
+<div class="brief-descr product-description" IF="product.briefDescription">{product.getProcessedBriefDescription():h}</div>

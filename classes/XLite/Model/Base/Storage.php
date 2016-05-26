@@ -461,22 +461,28 @@ abstract class Storage extends \XLite\Model\AEntity
     /**
      * Load from local file
      *
-     * @param string $path     Absolute path
-     * @param string $basename File name OPTIONAL
+     * @param string  $path       Absolute path
+     * @param string  $basename   File name OPTIONAL
+     * @param boolean $makeUnique True - create unique named file
      *
      * @return boolean
      */
-    public function loadFromLocalFile($path, $basename = null)
+    public function loadFromLocalFile($path, $basename = null, $makeUnique = false)
     {
         $result = true;
         $basename = $basename ?: basename($path);
 
         if (\Includes\Utils\FileManager::isExists($path)) {
 
-            foreach ($this->getAllowedFileSystemRoots() as $root) {
-                if (\Includes\Utils\FileManager::getRelativePath($path, $root)) {
-                    $local = true;
-                    break;
+            if ($makeUnique) {
+                $local = false;
+
+            } else {
+                foreach ($this->getAllowedFileSystemRoots() as $root) {
+                    if (\Includes\Utils\FileManager::getRelativePath($path, $root)) {
+                        $local = true;
+                        break;
+                    }
                 }
             }
 
@@ -485,6 +491,8 @@ abstract class Storage extends \XLite\Model\AEntity
                     $this->getStoreFileSystemRoot(),
                     $basename
                 );
+
+                $basename = basename($newPath);
 
                 if (\Includes\Utils\FileManager::copy($path, $newPath)) {
                     $path = $newPath;

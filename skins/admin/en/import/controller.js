@@ -22,7 +22,7 @@ function appendViewAll(element) {
       appendHideAll(element);
     });
   });
-};
+}
 
 function appendHideAll(element) {
   var buttonText = core.t("Hide all warnings/errors");
@@ -38,33 +38,33 @@ function appendHideAll(element) {
     });
 
   });
-};
+}
 
 core.microhandlers.add(
   'Errors fade',
   '.errors-wrapper',
-  function(){
-    var maxHeight = intval($(this).css('max-height'));
-    var actualHeight = $(this).find('.errors').height();
-    $(this).data('max-height', maxHeight);
-    $(this).data('actual-height', actualHeight);
+  function () {
+    var $this = jQuery(this);
+    var maxHeight = intval($this.css('max-height'));
+    var actualHeight = $this.find('.errors').height();
+    $this.data('max-height', maxHeight);
+    $this.data('actual-height', actualHeight);
 
     if ( actualHeight > maxHeight ) {
-      appendViewAll($(this));
-      $(this).removeClass('initial');
-      $(this).height(maxHeight);
-    };
+      appendViewAll($this);
+      $this.removeClass('initial');
+      $this.height(maxHeight);
+    }
   }
 );
 
-
 jQuery().ready(
-  function() {
+  function () {
     var importTarget = core.getCommentedData('.import-page', 'importTarget');
     jQuery('.import-progress .bar')
       .bind(
         'changePercent',
-        function(event, data) {
+        function (event, data) {
           if (data) {
             if ('undefined' != typeof(data.rowsProcessedLabel)) {
               jQuery('.import-progress .rows-processed').html(data.rowsProcessedLabel);
@@ -74,14 +74,14 @@ jQuery().ready(
       )
       .bind(
         'error',
-        function() {
+        function () {
           this.errorState = true;
           self.location = URLHandler.buildURL({ 'target': importTarget, 'failed': 1 });
         }
       )
       .bind(
         'complete',
-        function() {
+        function () {
           if (!this.errorState) {
             self.location = URLHandler.buildURL({ 'target': importTarget, 'completed': 1 });
           }
@@ -90,7 +90,7 @@ jQuery().ready(
 
     jQuery('#files').live(
       'change',
-      function() {
+      function () {
         if (jQuery('#files').val()) {
           jQuery('.import-box .submit').removeClass('disabled');
         } else {
@@ -100,7 +100,7 @@ jQuery().ready(
     );
 
     jQuery('.import-box.import-begin form').submit(
-      function() {
+      function () {
         if (!jQuery('#files').val()) {
           return false;
         }

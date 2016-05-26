@@ -442,11 +442,22 @@ abstract class AEntity extends \XLite\Base\SuperClass
                 $file->loadFromURL($temporaryFile->getPath(), false);
 
             } else {
-                $file->loadFromLocalFile(
+                $isSaved = $file->loadFromLocalFile(
                     $temporaryFile->getStoragePath(),
                     pathinfo($temporaryFile->getPath(), \PATHINFO_FILENAME)
                     . '.' . pathinfo($temporaryFile->getPath(), \PATHINFO_EXTENSION)
                 );
+
+                if ($isSaved === false) {
+                    if ($properties['many']) {
+                        $this->{$properties['getter']}()->removeElement($temporaryFile);
+
+                    } else {
+                        $this->{$properties['setter']}(null);
+                    }
+                    \XLite\Core\Database::getEM()->remove($temporaryFile);
+                    $file = null;
+                }
             }
         }
 

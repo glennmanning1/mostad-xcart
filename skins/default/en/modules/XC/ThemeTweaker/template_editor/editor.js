@@ -57,7 +57,7 @@ var TemplateNavigator = function () {
 
   elements.filter(
     function() {
-      return this.innerHTML.search(/<[a-z]/) == -1;
+      return !this.innerHTML || this.innerHTML.search(/<[a-z]/) == -1;
     }
   ).mousemove(
     function (event) {

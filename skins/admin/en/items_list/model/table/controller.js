@@ -113,14 +113,35 @@ TableItemsList.prototype.processFormChanged = function(form)
     }
   );
 
-  this.container.find('.table-pager a').addClass('disabled').removeClass('enabled');
+  this.markPagerAsDisabled();
 };
+
+TableItemsList.prototype.markPagerAsDisabled = function()
+{
+  var pagerBlock = this.container.find('.table-pager');
+
+  if (pagerBlock.length > 0) {
+    assignShadeOverlay(pagerBlock).css('z-index', 3);
+    pagerBlock.find('a').addClass('disabled').removeClass('enabled');
+  };
+}
+
+TableItemsList.prototype.markPagerAsEnabled = function()
+{
+  var pagerBlock = this.container.find('.table-pager');
+
+  if (pagerBlock.length > 0) {
+    unassignShadeOverlay(pagerBlock);
+    pagerBlock.find('a').removeClass('disabled').addClass('enabled');
+  };
+}
+
 
 // Process form and form's elements after form cancel all changes
 TableItemsList.prototype.processFormUndo = function(form)
 {
   this.container.find('.table-pager .input input, .table-pager .page-length').removeProp('disabled');
-  this.container.find('.table-pager a').removeClass('disabled').addClass('enabled');
+  this.markPagerAsEnabled();
 };
 
 // Inline creation button listener

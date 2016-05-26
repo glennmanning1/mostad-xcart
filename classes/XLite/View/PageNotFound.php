@@ -52,6 +52,19 @@ class PageNotFound extends \XLite\View\AView
     }
 
     /**
+     * Add NOINDEX in meta tags
+     *
+     * @return array
+     */
+    public function getMetaTags()
+    {
+        $list = parent::getMetaTags();
+        $list[] = '<meta name="robots" content="noindex,nofollow"/>';
+
+        return $list;
+    }
+
+    /**
      * Return widget default template
      *
      * @return string

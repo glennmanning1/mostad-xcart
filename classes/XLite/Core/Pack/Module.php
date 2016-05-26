@@ -40,6 +40,7 @@ class Module extends \XLite\Core\Pack\APack
     const METADATA_FIELD_ACTUAL_NAME   = 'ActualName';
     const METADATA_FIELD_VERSION_MINOR = 'VersionMinor';
     const METADATA_FIELD_VERSION_MAJOR = 'VersionMajor';
+    const METADATA_FIELD_VERSION_BUILD = 'VersionBuild';
     const METADATA_FIELD_MIN_CORE_VERSION = 'MinCoreVersion';
     const METADATA_FIELD_NAME          = 'Name';
     const METADATA_FIELD_AUTHOR        = 'Author';
@@ -110,6 +111,7 @@ class Module extends \XLite\Core\Pack\APack
             self::METADATA_FIELD_ACTUAL_NAME        => $this->module->getActualName(),
             self::METADATA_FIELD_VERSION_MAJOR      => $this->module->callModuleMethod('getMajorVersion'),
             self::METADATA_FIELD_VERSION_MINOR      => $this->module->callModuleMethod('getMinorVersion'),
+            self::METADATA_FIELD_VERSION_BUILD      => $this->module->callModuleMethod('getBuildVersion'),
             self::METADATA_FIELD_MIN_CORE_VERSION   => $this->module->callModuleMethod('getMinorRequiredCoreVersion'),
             self::METADATA_FIELD_NAME               => $this->module->callModuleMethod('getModuleName'),
             self::METADATA_FIELD_AUTHOR             => $this->module->callModuleMethod('getAuthorName'),

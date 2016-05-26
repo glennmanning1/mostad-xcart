@@ -66,18 +66,23 @@ class OnlineList extends \XLite\View\AView
      */
     protected function getSettingsURL(\XLite\Model\Shipping\Method $method)
     {
+        $url = null;
+
         $module = $method->getProcessorModule();
 
-        if ($module && $module->isInstalled() && $module->getEnabled()) {
-            $url = $method->getProcessorObject()
-                ? $method->getProcessorObject()->getSettingsURL()
-                : '';
+        if ($module) {
 
-        } elseif ($module && $module->isInstalled()) {
-            $url = $module->getInstalledURL();
+            if ($module->isInstalled() && $module->getEnabled()) {
+                $url = $method->getProcessorObject()
+                    ? $method->getProcessorObject()->getSettingsURL()
+                    : '';
 
-        } else {
-            $url = $module->getMarketplaceURL();
+            } elseif ($module->isInstalled()) {
+                $url = $module->getInstalledURL();
+
+            } else {
+                $url = $module->getMarketplaceURL();
+            }
         }
 
         return $url;

@@ -260,6 +260,17 @@ class OrderList extends \XLite\Controller\Admin\AAdmin
     }
 
     /**
+     * Clear search conditions for searchTotal
+     *
+     * @return void
+     */
+    protected function clearSearchTotalConditions()
+    {
+        $searchTotalSessionCell = \XLite\View\ItemsList\Model\Order\Admin\SearchTotal::getSessionCellName();
+        \XLite\Core\Session::getInstance()->{$searchTotalSessionCell} = array();
+    }
+
+    /**
      * Clear search conditions
      *
      * @return void
@@ -267,6 +278,7 @@ class OrderList extends \XLite\Controller\Admin\AAdmin
     protected function doActionClearSearch()
     {
         \XLite\Core\Session::getInstance()->{$this->getSessionCellName()} = array();
+        $this->clearSearchTotalConditions();
 
         $this->setReturnURL($this->getURL(array('searched' => 1)));
     }
@@ -284,6 +296,7 @@ class OrderList extends \XLite\Controller\Admin\AAdmin
 
             // Clear stored search conditions
             \XLite\Core\Session::getInstance()->{$this->getSessionCellName()} = array();
+            $this->clearSearchTotalConditions();
             $this->prepareSearchParams();
 
             // Get ItemsList widget

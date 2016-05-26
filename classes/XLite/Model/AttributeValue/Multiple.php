@@ -204,7 +204,7 @@ abstract class Multiple extends \XLite\Model\AttributeValue\AAttributeValue
                 : $modifier['value'];
         }
 
-        return round($value, 2);
+        return round($value, 3);
     }
 
     /**

@@ -135,7 +135,7 @@ class Marketplace extends \XLite\Upgrade\Entry\Module\AModule
     public function getMinorVersionOld()
     {
         if (!isset($this->minorVersionOld)) {
-            $this->minorVersionOld = $this->getModuleInstalled()->getMinorVersion();
+            $this->minorVersionOld = $this->getModuleInstalled()->getFullMinorVersion();
         }
 
         return $this->minorVersionOld;
@@ -158,7 +158,7 @@ class Marketplace extends \XLite\Upgrade\Entry\Module\AModule
      */
     public function getMinorVersionNew()
     {
-        return $this->getModuleForUpgrade()->getMinorVersion();
+        return $this->getModuleForUpgrade()->getFullMinorVersion();
     }
 
     /**
@@ -236,7 +236,7 @@ class Marketplace extends \XLite\Upgrade\Entry\Module\AModule
      *
      * @return string
      */
-    public function getModuleInstalledPageURL()
+    public function getInstalledURL()
     {
         $result = '';
 
@@ -322,10 +322,27 @@ class Marketplace extends \XLite\Upgrade\Entry\Module\AModule
     {
         $licenseKey = $this->getModuleForUpgrade()->getLicenseKey();
 
-        return \XLite\Core\Marketplace::getInstance()->getAddonHash(
+        $result = \XLite\Core\Marketplace::getInstance()->getAddonHash(
             $this->getModuleInstalled()->getMarketplaceID(),
             $licenseKey ? $licenseKey->getKeyValue() : null
         );
+
+        if (!$result) {
+
+            $params = array(
+                'name'    => $this->getActualName(),
+                'version' => $this->getModuleInstalled()->getVersion(),
+            );
+
+            $this->addFileErrorMessage(
+                'Module ({{name}} v{{version}}) not found on marketplace (hash is not received)',
+                \XLite\Core\Marketplace::getInstance()->getError(),
+                true,
+                $params
+            );
+        }
+
+        return $result;
     }
 
     /**

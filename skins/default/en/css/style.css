@@ -732,6 +732,11 @@ ul.subcategory-list.subcategory-view-list li a {
   width: 130px;
 }
 
+.cart-tray .product-added .regular-button
+{
+  white-space: normal;
+}
+
 .cart-tray.droppable .tray-area
 {
   background-color: white;
@@ -969,15 +974,26 @@ ul.product-options li.product-option
  * Product details page & product quick look
  */
 
-
 .target-product.non-added-product #breadcrumb .top-continue {
   display: none;
 }
 
+div.product-details .image {
+  display: inline-block;
+  vertical-align: top;
+}
+
 div.product-details .product-details-info
 {
+  display: inline-block;
   position: relative;
   margin-left: 20px;
+}
+
+@media(max-width: 767px){
+  div.product-details .product-details-info {
+    margin-left: 0;
+  }
 }
 
 .ui-dialog .product-quicklook .product-details-info
@@ -2375,7 +2391,6 @@ iframe#pay_iframe {
 .checkout-block .review-step .step-box .box
 {
   background-color: #f6f6f6;
-  color: #8a8a8a;
   padding: 15px 11px;
 }
 
@@ -2385,7 +2400,6 @@ iframe#pay_iframe {
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  color: inherit;
 }
 
 /* Fade */
@@ -2766,6 +2780,10 @@ ul.shipping-rates li label {
   position: relative;
 }
 
+ul.shipping-rates li label input[type=radio] {
+  opacity: 0.99;
+}
+
 ul.shipping-rates li sup {
   display: inline;
 }
@@ -2975,10 +2993,6 @@ ul.shipping-rates li .rate-title {
   display: block;
   font-size: 14px;
   vertical-align: middle;
-  color: #689bd0;
-}
-ul.shipping-rates li .rate-title {
-  color: #666769;
 }
 .checkout-block .payments li .payment-test-mode {
   text-transform: uppercase;

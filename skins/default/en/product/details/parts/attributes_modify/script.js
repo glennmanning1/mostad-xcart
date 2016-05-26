@@ -82,3 +82,6 @@ core.registerWidgetsParamsGetter('update-product-page', getAttributeValuesParams
 core.registerWidgetsTriggers('update-product-page', getAttributeValuesTriggers);
 core.registerTriggersBind('update-product-page', bindAttributeValuesTriggers);
 core.registerShadowWidgets('update-product-page', getAttributeValuesShadowWidgets);
+core.registerShadowWidgets('update-product-page', function() {
+  return '.widget-fingerprint-common-attributes';
+});

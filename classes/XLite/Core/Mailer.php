@@ -90,6 +90,13 @@ class Mailer extends \XLite\Base\Singleton
      */
     protected static $errorMessage;
 
+    /**
+     * Static cache (registry) of sent e-mail notifications
+     *
+     * @var array
+     */
+    protected static $mailRegistry = array();
+
     // {{{ Profile created
 
     /**
@@ -699,31 +706,42 @@ class Mailer extends \XLite\Base\Singleton
      */
     public static function sendOrderChangedCustomer(\XLite\Model\Order $order)
     {
-        static::register('order', $order);
-        static::register('recipientName', $order->getProfile()->getName());
-
-        $result = static::compose(
-            static::TYPE_ORDER_CHANGED_CUSTOMER,
+        $isSent = static::checkMailRegistry(
+            'sendOrderAdvancedChangedCustomer',
             static::getOrdersDepartmentMail(),
-            $order->getProfile()->getLogin(),
-            'order_changed',
-            array(),
-            true,
-            \XLite::CUSTOMER_INTERFACE,
-            static::getMailer()->getLanguageCode(\XLite::CUSTOMER_INTERFACE, $order->getProfile()->getLanguage())
+            $order->getProfile()->getLogin()
         );
 
-        if ($result) {
-            \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailSent(
-                $order->getOrderId(),
-                'Order is changed'
+        if (!$isSent) {
+
+            // 'Order changed' notification wasn't sent earlier - send this notification
+
+            static::register('order', $order);
+            static::register('recipientName', $order->getProfile()->getName());
+
+            $result = static::compose(
+                static::TYPE_ORDER_CHANGED_CUSTOMER,
+                static::getOrdersDepartmentMail(),
+                $order->getProfile()->getLogin(),
+                'order_changed',
+                array(),
+                true,
+                \XLite::CUSTOMER_INTERFACE,
+                static::getMailer()->getLanguageCode(\XLite::CUSTOMER_INTERFACE, $order->getProfile()->getLanguage())
             );
 
-        } elseif (static::$errorMessage) {
-            \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailFailed(
-                $order->getOrderId(),
-                static::$errorMessage
-            );
+            if ($result) {
+                \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailSent(
+                    $order->getOrderId(),
+                    'Order is changed'
+                );
+
+            } elseif (static::$errorMessage) {
+                \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailFailed(
+                    $order->getOrderId(),
+                    static::$errorMessage
+                );
+            }
         }
     }
 
@@ -740,35 +758,46 @@ class Mailer extends \XLite\Base\Singleton
      */
     public static function sendOrderAdvancedChangedCustomer(\XLite\Model\Order $order)
     {
-        static::register(
-            array(
-                'order' => $order,
-                'recipientName' => $order->getProfile()->getName(),
-            )
-        );
-
-        $result = static::compose(
-            static::TYPE_ORDER_ADVANCED_CHANGED_CUSTOMER, // todo: remove
+        $isSent = static::checkMailRegistry(
+            'sendOrderChangedCustomer',
             static::getOrdersDepartmentMail(),
-            $order->getProfile()->getLogin(),
-            'order_advanced_changed',
-            array(),
-            true,
-            \XLite::CUSTOMER_INTERFACE,
-            static::getMailer()->getLanguageCode(\XLite::CUSTOMER_INTERFACE, $order->getProfile()->getLanguage())
+            $order->getProfile()->getLogin()
         );
 
-        if ($result) {
-            \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailSent(
-                $order->getOrderId(),
-                'Order is changed'
+        if (!$isSent) {
+
+            // 'Order changed' notification wasn't sent earlier - send this notification
+
+            static::register(
+                array(
+                    'order' => $order,
+                    'recipientName' => $order->getProfile()->getName(),
+                )
             );
 
-        } elseif (static::$errorMessage) {
-            \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailFailed(
-                $order->getOrderId(),
-                static::$errorMessage
+            $result = static::compose(
+                static::TYPE_ORDER_ADVANCED_CHANGED_CUSTOMER, // todo: remove
+                static::getOrdersDepartmentMail(),
+                $order->getProfile()->getLogin(),
+                'order_advanced_changed',
+                array(),
+                true,
+                \XLite::CUSTOMER_INTERFACE,
+                static::getMailer()->getLanguageCode(\XLite::CUSTOMER_INTERFACE, $order->getProfile()->getLanguage())
             );
+
+            if ($result) {
+                \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailSent(
+                    $order->getOrderId(),
+                    'Order is changed'
+                );
+
+            } elseif (static::$errorMessage) {
+                \XLite\Core\OrderHistory::getInstance()->registerCustomerEmailFailed(
+                    $order->getOrderId(),
+                    static::$errorMessage
+                );
+            }
         }
     }
 
@@ -1222,7 +1251,41 @@ class Mailer extends \XLite\Base\Singleton
             static::$errorMessage = static::getMailer()->getLastErrorMessage();
         }
 
+        // Save sent email notification to the registry
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+        if (!empty($backtrace[1]['function'])) {
+            static::$mailRegistry[] = static::getMailRegistryKey($backtrace[1]['function'], $from, $to);
+        }
+
         return $result;
+    }
+
+    /**
+     * Return true if specified notification has already been sent
+     *
+     * @param string $func Function name
+     * @param string $from From e-mail
+     * @param string $to   To e-mail
+     *
+     * @return boolean
+     */
+    protected static function checkMailRegistry($func, $from, $to)
+    {
+        return in_array(static::getMailRegistryKey($func, $from, $to), static::$mailRegistry);
+    }
+
+    /**
+     * Generate key for sent emails registry
+     *
+     * @param string $func Function name
+     * @param string $from From e-mail
+     * @param string $to   To e-mail
+     *
+     * @return string
+     */
+    protected static function getMailRegistryKey($func, $from, $to)
+    {
+        return sprintf('%s-%s-%s', $func, $from, $to);
     }
 
     /**
@@ -1433,7 +1496,7 @@ class Mailer extends \XLite\Base\Singleton
             'company_name',
             'company_link',
             'company_website',
-            'company_street_address',
+            'company_address',
             'company_country',
             'company_state',
             'company_fax',

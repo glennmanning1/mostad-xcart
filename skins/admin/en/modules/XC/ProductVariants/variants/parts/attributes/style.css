@@ -9,6 +9,11 @@
  * @link      http://www.x-cart.com/
  */
 
+div.attributes ul.data {
+  overflow: hidden;
+  width: 100%;
+}
+
 div.attributes ul.data li {
   padding: 16px 11px 10px;
   position: relative;
@@ -57,7 +62,6 @@ div.attributes ul.data div.name span {
 }
 
 div.attributes ul.data li.fade-variant {
-  overflow: hidden;
   white-space: nowrap;
 }
 

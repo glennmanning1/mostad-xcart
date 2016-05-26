@@ -417,8 +417,8 @@ class LessParser extends \XLite\Base\Singleton
             'customer-skin' => '\'' . $xlite->getShopURL(
                 dirname($layout->getResourceWebPath('body.tpl', \XLite\Core\Layout::WEB_PATH_OUTPUT_URL, \XLite::CUSTOMER_INTERFACE))
             ) . '\'',
-            'common-skin'   => '\'' . $xlite->getShopURL(
-                dirname($layout->getResourceWebPath('ZeroClipboard.swf', \XLite\Core\Layout::WEB_PATH_OUTPUT_URL, \XLite::COMMON_INTERFACE))
+            'common-skin' => '\'' . $xlite->getShopURL(
+                $layout->getResourceWebPath('', \XLite\Core\Layout::WEB_PATH_OUTPUT_URL, \XLite::COMMON_INTERFACE)
             ) . '\'',
         );
     }

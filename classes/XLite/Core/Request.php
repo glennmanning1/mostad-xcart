@@ -615,6 +615,7 @@ class Request extends \XLite\Base\Singleton
         $url = $this->getCookieURL($secure);
 
         return isset($url['path']) ? $url['path'] : '/';
+        return !empty($url['path']) ? $url['path'] : '/';
     }
 
     /**

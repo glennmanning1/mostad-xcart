@@ -8,20 +8,20 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  */
-StickyPanelModelList.prototype.enableExportSelected = function (){
+StickyPanelModelList.prototype.enableExportSelected = function () {
   var exportBtn = this.base.find('div.items-export button.regular-button:first');
 	exportBtn.find('span:first').text(core.t('Export selected'));
-}
-StickyPanelModelList.prototype.disableExportSelected = function (){
+};
+
+StickyPanelModelList.prototype.disableExportSelected = function () {
 	var exportBtn = this.base.find('div.items-export button.regular-button:first');
 	exportBtn.find('span:first').text(core.t('Export all'));
-}
+};
 
 decorate(
   'StickyPanelModelList',
   'reposition',
-  function (selector)
-  {
+  function (selector) {
   	arguments.callee.previousMethod.apply(this, arguments);
 
   	var widget = this.base.parents('form').eq(0).find('.widget.items-list').length > 0
@@ -41,10 +41,8 @@ decorate(
   }
 );
 
-$(document).ready(function(){
-  $('div.items-export > button.regular-button:first').click(function()
-    {
-      $(this).siblings('div.hidden').find('button').click();
-    }
-  );
+jQuery(function () {
+  jQuery('div.items-export > button.regular-button:first').click(function () {
+    jQuery(this).closest('.items-export').siblings('div.hidden').find('button').click();
+  });
 });

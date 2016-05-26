@@ -128,6 +128,13 @@ CommonForm.elementControllers.push(
       );
 
       field.bind(
+        'beforeSaveFieldInline',
+        function(event, data) {
+          data.value = $('<div>').html(data.value).text()
+        }
+      );
+
+      field.bind(
         'afterSaveFieldInline',
         function(event) {
           this.updateMoreLessLinksVisibility();

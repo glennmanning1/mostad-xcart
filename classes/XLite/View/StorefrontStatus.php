@@ -62,18 +62,7 @@ class StorefrontStatus extends \XLite\View\AView
      */
     protected function isTogglerVisible()
     {
-        return true;
-    }
-
-    /**
-     * Check ACL permissions
-     *
-     * @return boolean
-     */
-    protected function checkACL()
-    {
-        return parent::checkACL()
-            && \XLite\Core\Auth::getInstance()->isPermissionAllowed(\XLite\Model\Role\Permission::ROOT_ACCESS);
+        return \XLite\Core\Auth::getInstance()->isPermissionAllowed(\XLite\Model\Role\Permission::ROOT_ACCESS);
     }
 
     /**

@@ -40,6 +40,7 @@ XLite\Model\Config:
     translations:
       - code: en
         option_name: Mark templates
+        option_comment: "Template tracking is a feature that allows you to find out the place of a specific page element in your site's template hierarchy. With this feature, simply by pointing your cursor at any element on a page, you can find out the name of the template file in which this element is declared, as well as view the hierarchy of parent templates for this element."
   - name: showMessagesOnTop
     category: XC\WebmasterKit
     type: checkbox
@@ -82,4 +83,5 @@ XLite\Model\Config:
         option_name: Write profiling data to log file instead of printing it onto the screen
 
 XLite\Model\LanguageLabel:
-  - { name: "Webmaster Kit module is recommended for use by advanced users only. It must not be used on production servers as it may significantly reduce the website performance.", translations: [{ code: en, label: 'This module is recommended for use by advanced users only. It must not be used on production servers as it may significantly reduce the website performance.' },{ code: ru, label: 'Модуль Webmaster kit рекомендован для использования только продвинутыми пользователями. Он не должен использоваться на серверах действующих магазинов, так как может значительно замедлять работу сайта.' }]}
+  - { name: "Webmaster Kit module is recommended for use by advanced users only. It must not be used on production servers as it may significantly reduce the website performance.", translations: [{ code: en, label: 'This module is recommended for use by advanced users only. It must not be used on production servers as it may significantly reduce the website performance.' }, { code: ru, label: 'Модуль Webmaster kit рекомендован для использования только продвинутыми пользователями. Он не должен использоваться на серверах действующих магазинов, так как может значительно замедлять работу сайта.' }]}
+  - { name: 'If the store is being run in production, it is strongly recommended NOT to keep the module Webmaster Kit enabled', translations: [{ code: en, label: 'If the store is being run in production, it is strongly recommended NOT to keep the module <a href="{{url}}">Webmaster Kit</a> enabled, as it is intended only for the development stage when you need to implement design changes and custom features. On production servers, it may significantly reduce the website performance.' }, { code: ru, label: 'После запуска магазина в эксплуатацию, настоятельно рекомендуется не оставлять включенным модуль <a href="{{url}}">Webmaster Kit</a>, так как он предназначен для использования только на стадии отладки, когда производится реализация изменений дизайна/функциональности. На серверах действующих магазинов данный модуль может значительно замедлять работу сайта.' }]}

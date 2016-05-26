@@ -85,7 +85,7 @@ abstract class SafeMode
     /**
      * Check request parameters
      *
-     * @return void
+     * @return boolean
      */
     public static function isRestoreDateSet()
     {
@@ -116,7 +116,7 @@ abstract class SafeMode
     /**
      * Check request parameters
      *
-     * @return void
+     * @return boolean
      */
     public static function isSafeModeStarted()
     {
@@ -348,7 +348,9 @@ abstract class SafeMode
      */
     protected static function generateAccessKey()
     {
-        return uniqid();
+        return function_exists('openssl_random_pseudo_bytes')
+            ? bin2hex(openssl_random_pseudo_bytes(16))
+            : md5(microtime(true) + rand(0, 1000000));
     }
 
     /**

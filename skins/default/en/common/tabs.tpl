@@ -17,7 +17,11 @@
 
       <ul>
         <li FOREACH="getTabs(),tabPage" class="tab{if:tabPage.selected}-current active{end:}">
-          <a href="{tabPage.url:h}">{t(tabPage.title)}</a>
+          {if:getTabLinkTemplate(tabPage)}
+            <widget template="{getTabLinkTemplate(tabPage)}" tabPage="{tabPage}" />
+          {else:}
+            <a href="{tabPage.url:h}">{t(tabPage.title)}</a>
+          {end:}
         </li>
       </ul>
 

@@ -23,12 +23,16 @@
     <input class="input-file" type="file" name="userfile" />
     <div class="clear"></div>
 
-    <widget class="\XLite\View\Button\Submit" style="upload-restore" label="Upload and restore" />
+    <div class="button-block">
+        <widget class="\XLite\View\Button\Submit" style="upload-restore" label="Upload and restore" />
+        <widget class="\XLite\View\Tooltip" id="upload-restore-help" text="{t(#You can upload the database data directly from your local computer#,_ARRAY_(#N#^getUploadMaxFilesize())):h}" isImageTag=true className="help-icon" />
+    </div>
 
-    <widget class="\XLite\View\Tooltip" id="upload-restore-help" text="{t(#You can upload the database data directly from your local computer#,_ARRAY_(#N#^getUploadMaxFilesize())):h}" isImageTag=true className="help-icon" />
-    <widget IF="isFileExists()" class="\XLite\View\Button\Regular" style="restore-from-server" action="restore_from_local_file" label="Restore from server" />
-    
-    <widget IF="isFileExists()" class="\XLite\View\Tooltip" id="restore-from-server-help" text="{t(#Alternatively, upload file sqldump.sql.php to the var/backup/ sub-directory click on the "Restore from server" button#)}" isImageTag=true className="help-icon" />
-  
+    <div class="button-block" IF="isFileExists()" >
+
+        <widget class="\XLite\View\Button\Regular" style="restore-from-server" action="restore_from_local_file" label="Restore from server" />
+        <widget class="\XLite\View\Tooltip" id="restore-from-server-help" text="{t(#Alternatively, upload file sqldump.sql.php to the var/backup/ sub-directory click on the "Restore from server" button#)}" isImageTag=true className="help-icon" />
+    </div>
+
   <widget name="db_restore" end />
 </div>

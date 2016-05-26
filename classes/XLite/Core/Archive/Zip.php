@@ -79,7 +79,7 @@ class Zip extends \XLite\Core\Archive\AArchive
         $destinationPath .= '.zip';
 
         $packer = new \ZipArchive;
-        $packer->open($destinationPath, \ZipArchive::OVERWRITE);
+        $packer->open($destinationPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
         $commonDirectory = $this->getCommonDirectory($files);
 

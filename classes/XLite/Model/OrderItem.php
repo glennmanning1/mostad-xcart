@@ -100,7 +100,7 @@ class OrderItem extends \XLite\Model\Base\SurchargeOwner
      *      scale=4,
      *      options={
      *          @\XLite\Core\Doctrine\Annotation\Behavior (list={"taxable"}),
-     *          @\XLite\Core\Doctrine\Annotation\Purpose  (name="net", source="clear"),
+     *          @\XLite\Core\Doctrine\Annotation\Purpose  (name="net", source="item"),
      *          @\XLite\Core\Doctrine\Annotation\Purpose  (name="display", source="net")
      *      }
      * )

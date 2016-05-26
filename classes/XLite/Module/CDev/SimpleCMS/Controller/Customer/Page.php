@@ -63,7 +63,7 @@ class Page extends \XLite\Controller\Customer\ACustomer
     {
         return $this->isVisible() && $this->checkAccess()
             ? $this->getPage()->getName()
-            : static::t('Page not found');
+            : '';
     }
 
     /**
@@ -149,19 +149,6 @@ class Page extends \XLite\Controller\Customer\ACustomer
     }
 
     /**
-     * Check if current page is accessible
-     *
-     * @return boolean
-     */
-    protected function checkAccess()
-    {
-        $page = $this->getPage();
-
-        return parent::checkAccess()
-            && (empty($page) || $page->getEnabled());
-    }
-
-    /**
      * Check controller visibility
      *
      * @return boolean
@@ -169,6 +156,7 @@ class Page extends \XLite\Controller\Customer\ACustomer
     protected function isVisible()
     {
         return parent::isVisible()
-            && $this->getPage();
+            && $this->getPage()
+            && $this->getPage()->getEnabled();
     }
 }

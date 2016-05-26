@@ -19,6 +19,17 @@ function PlaceOrderButtonView(base)
   this.bind('local.postprocess', _.bind(this.assignHandlers, this))
   core.bind('updateCart', _.bind(this.handleUpdateCart, this));
   core.bind('checkout.common.anyChange', _.bind(this.handleAnyFormChange, this));
+  core.bind('checkout.common.block', _.bind(
+    function() {
+      this.blocked = true;
+    }, this)
+  );
+  core.bind('checkout.common.unblock', _.bind(
+    function() {
+      this.blocked = false;
+    }, this)
+  );
+
   core.bind('checkout.common.getState', _.bind(this.handleGetState, this));
   core.bind('checkout.shippingMethods.error', _.bind(this.handleUpdatePlaceButtonErrorMessage, this));
 
@@ -29,6 +40,8 @@ extend(PlaceOrderButtonView, ALoadable);
 
 // Shade widget
 PlaceOrderButtonView.prototype.shadeWidget = false;
+
+PlaceOrderButtonView.prototype.blocked = false;
 
 // Update page title
 PlaceOrderButtonView.prototype.updatePageTitle = false;
@@ -97,8 +110,8 @@ PlaceOrderButtonView.prototype.checkState = function(supressErrors)
 
   var state = {
     widget:        this,
-    result:        this.base.parents('form').get(0).validate(supressErrors),
-    blocked:       this.isLoading,
+    result:        this.base.parents('form').get(0).validate(supressErrors) && !this.blocked,
+    blocked:       this.isLoading || this.blocked,
     supressErrors: supressErrors
   };
 

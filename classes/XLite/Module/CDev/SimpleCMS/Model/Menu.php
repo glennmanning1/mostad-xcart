@@ -123,7 +123,7 @@ class Menu extends \XLite\Model\Base\I18n
      * @var \XLite\Module\CDev\SimpleCMS\Model\Menu
      *
      * @ManyToOne  (targetEntity="XLite\Module\CDev\SimpleCMS\Model\Menu", inversedBy="children")
-     * @JoinColumn (name="parent_id", referencedColumnName="id")
+     * @JoinColumn (name="parent_id", referencedColumnName="id", onDelete="SET NULL")
      */
     protected $parent;
 

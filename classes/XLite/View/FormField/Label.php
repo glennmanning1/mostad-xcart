@@ -55,7 +55,18 @@ class Label extends \XLite\View\FormField\Label\ALabel
     {
         $classes = parent::assembleClasses($classes);
         $classes[] = 'label-field';
+        $classes[] = 'input';
 
         return $classes;
+    }
+
+    /**
+     * Get default wrapper class
+     *
+     * @return string
+     */
+    protected function getDefaultWrapperClass()
+    {
+        return 'input input-label';
     }
 }

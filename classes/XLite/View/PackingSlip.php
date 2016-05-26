@@ -216,9 +216,6 @@ class PackingSlip extends \XLite\View\AView
                     $result += array_filter($name);
                     unset($data['title'], $data['firstname'], $data['lastname']);
                     break;
-                case 'phone':
-                case 'zipcode':
-                    break;
                 default:
                     $result[$serviceName] = $field;
                     break;

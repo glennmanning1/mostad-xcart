@@ -55,7 +55,7 @@ function ProductsListController(base)
             product.each(function(){
               if (jQuery(this).hasClass('ui-draggable')) {
                 jQuery(this).draggable('disable');
-              };
+              }
             });
 
             if (this.block) {
@@ -82,8 +82,7 @@ function ProductsListController(base)
     this
     )
   );
-
-};
+}
 
 extend(ProductsListController, ListsController);
 
@@ -117,19 +116,15 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
     // Must be done before any event handled on 'A' tags. IE fix
     if (jQuery.browser.msie) {
       jQuery(draggablePattern, this.base).find('a')
-        .each(
-          function() {
-            this.defferHref = this.href;
-            this.href = 'javascript:void(0);';
+        .each(function() {
+          this.defferHref = this.href;
+          this.href = 'javascript:void(0);';
+        })
+        .click(function() {
+          if (!o.base.hasClass('ie-link-blocker')) {
+            self.location = this.defferHref;
           }
-        )
-        .click(
-          function() {
-            if (!o.base.hasClass('ie-link-blocker')) {
-              self.location = this.defferHref;
-            }
-          }
-        );
+        });
     }
 
     // Register "Changing display mode" handler
@@ -202,7 +197,7 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
             {
               'width':  base.parent().width() + 'px',
               'height': base.parent().height() + 'px',
-              'position': 'fixed',
+              'position': 'fixed'
             }
           );
 
@@ -329,9 +324,9 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
 
       drop: function(event, ui)
       {
-        if ( !$(o.base).has(ui.draggable).length ) {
+        if ( !jQuery(o.base).has(ui.draggable).length ) {
           return;
-        };
+        }
         var pid = core.getValueFromClass(ui.draggable, 'productid');
         if (pid) {
           cartTray
@@ -443,13 +438,11 @@ ProductsListView.prototype.postprocess = function(isSuccess, initial)
 }; // ProductsListView.prototype.postprocess()
 
 // Post AJAX request to add product to cart
-ProductsListView.prototype.addToCart = function(elem)
-{
+ProductsListView.prototype.addToCart = function (elem) {
   elem = jQuery(elem);
   var pid = core.getValueFromClass(elem, 'productid');
 
   if (pid && !this.isLoading) {
-
     if (elem.parents('.need-choose-options').length) {
       self.location = URLHandler.buildURL({ target: 'product', product_id: pid });
 
@@ -468,10 +461,9 @@ ProductsListView.prototype.addToCart = function(elem)
       );
     }
   }
-}
+};
 
-ProductsListView.prototype.handleAddToCart = function(XMLHttpRequest, textStatus, data, isValid)
-{
+ProductsListView.prototype.handleAddToCart = function (XMLHttpRequest, textStatus, data, isValid) {
   if (!isValid) {
     core.trigger(
       'message',
@@ -481,13 +473,12 @@ ProductsListView.prototype.handleAddToCart = function(XMLHttpRequest, textStatus
       }
     );
   }
-}
+};
 
 // Get event namespace (prefix)
-ProductsListView.prototype.getEventNamespace = function()
-{
+ProductsListView.prototype.getEventNamespace = function () {
   return 'list.products';
-}
+};
 
 /**
  * Load product lists controller

@@ -56,7 +56,7 @@ class ProductPageCollection extends \XLite\View\ProductPageCollection implements
             );
         }
 
-        return $widgets;
+        return array_unique($widgets);
     }
 
     /**

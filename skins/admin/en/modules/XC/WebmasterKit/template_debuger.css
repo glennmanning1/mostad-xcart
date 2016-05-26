@@ -109,18 +109,6 @@ body div.tpl-debug-info ul li strong {
   line-height: 40px;
 }
 
-.tpl-debug-switcher .help {
-  display: inline-block;
-  position: relative;
-  top: 8px;
-  width: 16px;
-  height: 16px;
-  background: transparent url(../images/help_mark.png) no-repeat left top;
-  cursor: pointer;
-  padding: 0px;
-  vertical-align: middle;
-}
-
 .tpl-debug-switcher > div {
   border: 3px solid #f3efe4;
   padding: 10px;

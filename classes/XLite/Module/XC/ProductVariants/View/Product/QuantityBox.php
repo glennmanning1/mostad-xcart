@@ -59,7 +59,7 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
      */
     protected function getMaxQuantity()
     {
-        return $this->getOrderItem() && $this->getOrderItem()->getVariant() && !$this->getOrderItem()->getVariant()->getDefaultAmount()
+        return $this->getOrderItem() && $this->getOrderItem()->getVariant()
             ? $this->getOrderItem()->getVariant()->getAvailableAmount() + $this->getOrderItem()->getAmount()
             : parent::getMaxQuantity();
     }

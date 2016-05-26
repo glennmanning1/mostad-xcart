@@ -140,6 +140,8 @@ abstract class SurchargeOwner extends \XLite\Model\AEntity
         return $list;
     }
 
+
+
     /**
      * Get surcharge totals
      *
@@ -147,19 +149,37 @@ abstract class SurchargeOwner extends \XLite\Model\AEntity
      */
     public function getSurchargeTotals()
     {
-        $surcharges = array();
+        return $this->calculateSurchargeTotals($this->getExcludeSurcharges());
+    }
 
-        $rawSurcharges = \XLite::isAdminZone()
-            ? array_merge($this->getExcludeSurcharges(), $this->getIncludeSurcharges())
-            : $this->getExcludeSurcharges();
+    /**
+     * Get surcharge totals
+     *
+     * @return array
+     */
+    public function getCompleteSurchargeTotals()
+    {
+        return $this->calculateSurchargeTotals(
+            array_merge($this->getExcludeSurcharges(), $this->getIncludeSurcharges())
+        );
+    }
 
-        foreach ($rawSurcharges as $surcharge) {
+    /**
+     * Get surcharge totals
+     *
+     * @return array
+     */
+    public function calculateSurchargeTotals($surcharges)
+    {
+        $list = array();
+
+        foreach ($surcharges as $surcharge) {
             $code = $surcharge->getCode();
 
-            if (!isset($surcharges[$code])) {
+            if (!isset($list[$code])) {
                 $modifierClass = $surcharge->getClass();
 
-                $surcharges[$code] = array(
+                $list[$code] = array(
                     'name'      => $surcharge->getTypeName(),
                     'cost'      => 0,
                     'available' => $surcharge->getAvailable(),
@@ -173,17 +193,17 @@ abstract class SurchargeOwner extends \XLite\Model\AEntity
                 );
             }
 
-            $surcharges[$code]['cost'] += $surcharge->getValue();
-            $surcharges[$code]['count']++;
-            $surcharges[$code]['lastName'] = $surcharge->getName();
-            $surcharges[$code]['weight'] = $surcharge->getSortingWeight();
+            $list[$code]['cost'] += $surcharge->getValue();
+            $list[$code]['count']++;
+            $list[$code]['lastName'] = $surcharge->getName();
+            $list[$code]['weight'] = $surcharge->getSortingWeight();
         }
 
-        uasort($surcharges, function ($a, $b) {
+        uasort($list, function ($a, $b) {
             return $a['weight'] < $b['weight'] ? -1 : $a['weight'] > $b['weight'];
         });
 
-        return $surcharges;
+        return $list;
     }
 
     /**

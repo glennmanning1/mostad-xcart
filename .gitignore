@@ -7,3 +7,4 @@ etc/config.php
 /files/*
 !/files/.htaccess
 /images/*
+node_modules

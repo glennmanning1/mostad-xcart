@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="tooltip-main" data-placement="{getParam(#placement#)}">
+<div class="tooltip-main" data-placement="{getParam(#placement#)}" data-delay="{getParam(#delay#)}">
 {if:isImageTag()}
 <i {getAttributesCode():h}></i>
 {else:}

@@ -973,13 +973,57 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
             if (!$this->verifyValueAsNull($value)) {
                 foreach ($value as $membership) {
                     $membership = $this->normalizeValueAsMembership($membership);
-                    if ($membership) {
+                    if ($membership && !$this->isAlreadyProductBindedWithMembership($model, $membership)) {
                         $model->addMemberships($membership);
                         $membership->addProduct($model);
+                        $this->bindProductWithMembership($model, $membership);
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Check if product binded with membership
+     *
+     * @param \XLite\Model\Product      $model          Product
+     * @param \XLite\Model\Membership   $membership     Membership
+     *
+     * @return boolean
+     */
+    protected function isAlreadyProductBindedWithMembership(\XLite\Model\Product $model, \XLite\Model\Membership $membership)
+    {
+        $key = 'XLite\Model\Membership|Product';
+
+        return isset($this->modelsLocalCache[$key][$model->getProductId()])
+            && is_array($this->modelsLocalCache[$key][$model->getProductId()])
+            && in_array(
+                $membership->getMembershipId(),
+                $this->modelsLocalCache[$key][$model->getProductId()]
+            );
+    }
+
+    /**
+     * Add bind to local cache
+     *
+     * @param \XLite\Model\Product      $model          Product
+     * @param \XLite\Model\Membership   $membership     Membership
+     *
+     * @return void
+     */
+    protected function bindProductWithMembership(\XLite\Model\Product $model, \XLite\Model\Membership $membership)
+    {
+        $key = 'XLite\Model\Membership|Product';
+
+        if (!isset($this->modelsLocalCache[$key])) {
+            $this->modelsLocalCache[$key] = array();
+        }
+        $productId = $model->getProductId();
+        if (!isset($this->modelsLocalCache[$key][$productId])) {
+            $this->modelsLocalCache[$key][$productId] = array();
+        }
+
+        $this->modelsLocalCache[$key][$productId][] = $membership->getMembershipId();
     }
 
     /**
@@ -1241,7 +1285,10 @@ class Products extends \XLite\Logic\Import\Processor\AProcessor
                 $cnd = new \XLite\Core\CommonCell();
 
                 if ($product && $product->getId()) {
-                    $cnd->{\XLite\Model\Repo\Attribute::SEARCH_PRODUCT}         = $product;
+                    $cnd->{\XLite\Model\Repo\Attribute::SEARCH_PRODUCT} = $product;
+
+                } else {
+                    $cnd->{\XLite\Model\Repo\Attribute::SEARCH_PRODUCT} = null;
                 }
 
                 $cnd->{\XLite\Model\Repo\Attribute::SEARCH_PRODUCT_CLASS}   = $productClass;

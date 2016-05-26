@@ -71,22 +71,21 @@ abstract class ArrayManager extends \Includes\Utils\AUtils
      */
     public static function filterMultidimensional(array $data)
     {
-        return array_reduce(
-            array_keys($data),
-            function ($acc, $key) use ($data) {
-                if ($data[$key] && is_array($data[$key])) {
-                    $subArray = static::filterMultidimensional($data[$key]);
-                    if ($subArray) {
-                        $acc[$key] = $subArray;
-                    }
-                } elseif ($data[$key]) {
-                    $acc[$key] = $data[$key];
-                }
+        $result = array();
 
-                return $acc;
-            },
-            array()
-        );
+        foreach ($data as $key => $value) {
+            $filteredValue = $value;
+
+            if ($value && is_array($value)) {
+                $filteredValue = static::filterMultidimensional($value);
+            }
+
+            if ($filteredValue) {
+                $result[$key] = $filteredValue;
+            }
+        }
+
+        return $result;
     }
 
     /**

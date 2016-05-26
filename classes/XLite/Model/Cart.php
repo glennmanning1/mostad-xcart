@@ -107,24 +107,26 @@ class Cart extends \XLite\Model\Order
                 \XLite\Core\Session::getInstance()->lastLoginUnique = !$exists;
             }
 
-            if (!$doCalculate) {
-                $cart->setIgnoreLongCalculations();
+            if ($cart->isPersistent()) {
+                if (!$doCalculate) {
+                    $cart->setIgnoreLongCalculations();
+                }
+
+                if (!$cart->isIgnoreLongCalculations()
+                    && ($cart instanceof \XLite\Model\Cart
+                        || (\XLite\Core\Converter::time() - static::RENEW_PERIOD) > $cart->getLastRenewDate()
+                    )
+                ) {
+                    $cart->renew();
+
+                } else {
+                    $cart->calculate();
+                }
+
+                $cart->renewSoft();
+
+                \XLite\Core\Session::getInstance()->order_id = $cart->getOrderId();
             }
-
-            if (!$cart->isIgnoreLongCalculations()
-                && ($cart instanceof \XLite\Model\Cart
-                    || (\XLite\Core\Converter::time() - static::RENEW_PERIOD) > $cart->getLastRenewDate()
-                )
-            ) {
-                $cart->renew();
-
-            } else {
-                $cart->calculate();
-            }
-
-            $cart->renewSoft();
-
-            \XLite\Core\Session::getInstance()->order_id = $cart->getOrderId();
         }
 
         return static::$instances[$className];
@@ -236,9 +238,11 @@ class Cart extends \XLite\Model\Order
      */
     public function calculate()
     {
-        parent::calculate();
+        if ($this->isPersistent()) {
+            parent::calculate();
 
-        \XLite\Core\Session::getInstance()->lastCartInitialCalculate = \XLite\Core\Converter::time();
+            \XLite\Core\Session::getInstance()->lastCartInitialCalculate = \XLite\Core\Converter::time();
+        }
     }
 
     /**
@@ -250,8 +254,24 @@ class Cart extends \XLite\Model\Order
     public function assignOrderNumber()
     {
         if (!$this->getOrderNumber()) {
-            $this->setOrderNumber(\XLite\Core\Database::getRepo('XLite\Model\Order')->findNextOrderNumber());
+            $this->setOrderNumber(
+                \XLite\Core\Database::getRepo('XLite\Model\Order')->findNextOrderNumber(false)
+            );
+
+            if ($this->isFlushOnOrderNumberAssign()) {
+                \XLite\Core\Database::getEM()->flush();
+            }
         }
+    }
+
+    /**
+     * Should we flush in order assign
+     *
+     * @return boolen
+     */
+    public function isFlushOnOrderNumberAssign()
+    {
+        return true;
     }
 
     /**

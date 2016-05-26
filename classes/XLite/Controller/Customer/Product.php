@@ -149,20 +149,7 @@ class Product extends \XLite\Controller\Customer\Base\Catalog
      */
     public function getMaxImageWidth()
     {
-        $maxWidth = 0;
-
-        $defaultWidth = $this->getDefaultMaxImageSize(true);
-
-        if ($this->getProduct()->hasImage()) {
-            foreach ($this->getProduct()->getPublicImages() as $img) {
-                $maxWidth = max($maxWidth, $img->getWidth());
-            }
-
-        } else {
-            $maxWidth = $defaultWidth;
-        }
-
-        return min($maxWidth, $defaultWidth);
+        return $this->getDefaultMaxImageSize(true);
     }
 
     /**

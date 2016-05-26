@@ -214,50 +214,49 @@ function toggleSection(section) {
 jQuery().ready(
     function() {
 
-        // Prepare clipboard operations
-        var clip = new ZeroClipboard(
-            jQuery('.copy2clipboard'),
-            { moviePath: 'skins/common/ZeroClipboard.swf' }
-        );
+        // Show clipboard tooltip
+        function showClipboardTooltip(elem, success) {
+            var alertBox = jQuery('.copy2clipboard-alert', elem.parentElement).get(0);
+            var msg = '<?php echo xtr('Copied to clipboard'); ?>';
+            if (!success) {
+                msg = '<?php echo xtr('Press Ctrl+C to copy selected'); ?>';
+            }
+            if (0 < jQuery(alertBox).length) {
+                alertBox.innerHTML = msg;
+                jQuery(alertBox).fadeIn();
+            }
+            setTimeout(
+                function() {
+                    jQuery('.copy2clipboard-alert').fadeOut();
+                },
+                2000
+            );
+        }
 
-        clip.on('load', function(client) {
-            clip.on('dataRequested', function (client, args) {
-                var box = jQuery('.permissions-list').get(0);
-                if (0 < jQuery(box).length) {
-                    // Prepare text for clipboard
-                    var text = box.innerHTML;
-                    text = text.trim().replace(/<\/?[a-z][^>]*>/g,'').replace(/[\t ]+/g, ' ');
-                    client.setText(text);
-
-                    // Select text within div.permissions-list
-                    if (document.selection) {
-                        var range = document.body.createTextRange();
-                        range.moveToElementText(box);
-                        range.select();
-
-                    } else if (window.getSelection) {
-                        var selection = window.getSelection();
-                        var range = document.createRange();
-                        range.selectNodeContents(box);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    }
+        // Create clipboard
+        var clipboard = new Clipboard('.copy2clipboard', {
+            text: function(trigger) {
+                var result = '';
+                var box = jQuery('.permissions-list', trigger.parentElement);
+                if (0 < box.length) {
+                    result = jQuery(box).html();
                 }
-            });
-            clip.on('complete', function(client, args) {
-                // `this` is the element that was clicked
-                var alertBox = jQuery('.copy2clipboard-alert').get(0);
-                if (0 < jQuery(alertBox).length) {
-                    alertBox.innerHTML = '<?php echo xtr('Copied to clipboard'); ?>';
-                    jQuery(alertBox).fadeIn();
-                }
-                setTimeout(
-                    function() {
-                        jQuery('.copy2clipboard-alert').fadeOut();
-                    },
-                    2000
-                );
-            });
+                return result;
+            }
+        });
+
+        // Actions on clipboard success
+        clipboard.on('success', function(e) {
+            console.info('Trigger:', e.trigger);
+            showClipboardTooltip(e.trigger, 1);
+            e.clearSelection();
+        });
+
+        // Actions on clipboard error
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action);
+            console.error('Trigger:', e.trigger);
+            showClipboardTooltip(e.trigger);
         });
     }
 );

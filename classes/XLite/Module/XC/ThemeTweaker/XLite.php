@@ -43,6 +43,6 @@ class XLite extends \XLite implements \XLite\Base\IDecorator
     {
         parent::initModules();
 
-        \XLite\Core\Layout::getInstance()->addSkin('theme_tweaker/default', \XLite::CUSTOMER_INTERFACE);
+        \XLite\Core\Layout::getInstance()->addSkin('theme_tweaker' . LC_DS . 'default', \XLite::CUSTOMER_INTERFACE);
     }
 }

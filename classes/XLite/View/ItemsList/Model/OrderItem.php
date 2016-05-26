@@ -54,6 +54,13 @@ class OrderItem extends \XLite\View\ItemsList\Model\Table
     protected $order;
 
     /**
+     * PageDataForUpdate runtime cache
+     * 
+     * @var array
+     */
+    protected $pageDataForUpdate;
+
+    /**
      * Get a list of CSS files required to display the widget properly
      *
      * @return array
@@ -271,8 +278,10 @@ class OrderItem extends \XLite\View\ItemsList\Model\Table
     {
         $result = array();
         $fields = $this->getOrderItemsDataFields();
-
-        foreach ($this->getPageDataForUpdate() as $entity) {
+        if ($this->pageDataForUpdate === null) {
+            $this->pageDataForUpdate = $this->getPageDataForUpdate();
+        }
+        foreach ($this->pageDataForUpdate as $entity) {
             $itemData = array();
             foreach ($fields as $field) {
                 $getter = 'getOrderItemDataFieldValue' . ucfirst($field);
@@ -305,7 +314,7 @@ class OrderItem extends \XLite\View\ItemsList\Model\Table
         $currency = $this->getOrder()->getCurrency();
 
         foreach ($oldItemsData as $itemId => $data) {
-            $changedFields = $this->getChangedFields($itemId, $data);
+            $changedFields = $this->getChangedFields($itemId, $data, $newItemsData);
 
             if (!empty($changedFields)) {
                 $diff = array_diff($changedFields, array('attributeValues'));
@@ -716,7 +725,7 @@ class OrderItem extends \XLite\View\ItemsList\Model\Table
         $result = parent::getLineAttributes($index, $entity);
 
         if ($entity) {
-            $result['data-clear-price'] = $entity->getDisplayPrice();
+            $result['data-clear-price'] = $entity->getClearPrice();
         }
 
         return $result;
@@ -925,7 +934,7 @@ class OrderItem extends \XLite\View\ItemsList\Model\Table
      */
     protected function getOriginalPrice(\XLite\Model\OrderItem $item)
     {
-        return $item->getDisplayPrice();
+        return $item->getClearPrice();
     }
 
     /**

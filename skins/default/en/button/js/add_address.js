@@ -18,12 +18,14 @@ extend(PopupButtonAddAddress, PopupButton);
 
 PopupButtonAddAddress.prototype.pattern = '.add-address';
 
-PopupButtonAddAddress.prototype.callback = function(selector)
-{
-  PopupButton.prototype.callback.apply(this, arguments);
-
-  // Some autoloading could be added
-  UpdateStatesList();
-}
+decorate(
+  'PopupButtonAddAddress',
+  'callback',
+  function (selector)
+  {
+    // Some autoloading could be added
+    UpdateStatesList();
+  }
+);
 
 core.autoload(PopupButtonAddAddress);

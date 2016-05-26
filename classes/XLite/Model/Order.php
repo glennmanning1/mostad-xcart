@@ -42,7 +42,8 @@ namespace XLite\Model;
  *          @Index (name="payment_status", columns={"payment_status_id"}),
  *          @Index (name="shipping_status", columns={"shipping_status_id"}),
  *          @Index (name="shipping_id", columns={"shipping_id"}),
- *          @Index (name="lastRenewDate", columns={"lastRenewDate"})
+ *          @Index (name="lastRenewDate", columns={"lastRenewDate"}),
+ *          @Index (name="orderNumber", columns={"orderNumber"})
  *      }
  * )
  *
@@ -257,7 +258,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
      *
      * @var integer
      *
-     * @Column (type="text", nullable=true)
+     * @Column (type="string", length=255, nullable=true)
      */
     protected $orderNumber;
 
@@ -1968,6 +1969,16 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     }
 
     /**
+     * Get value of isNotificationSent flag
+     *
+     * @return boolean
+     */
+    public function isNotificationSent()
+    {
+        return $this->isNotificationSent;
+    }
+
+    /**
      * Set value of isNotificationsAllowedFlag flag and return old value
      *
      * @param boolean $value New value
@@ -2131,25 +2142,34 @@ class Order extends \XLite\Model\Base\SurchargeOwner
     /**
      * Get items included surcharges totals
      *
+     * @param boolean $forCartItems Flag: true - return values for cart items only, false - for cart totals and items
+     *
      * @return array
      */
-    public function getItemsIncludeSurchargesTotals()
+    public function getItemsIncludeSurchargesTotals($forCartItems = false)
     {
         $list = array();
 
-        foreach ($this->getIncludeSurcharges() as $surcharge) {
-            if (!isset($list[$surcharge->getKey()])) {
-                $list[$surcharge->getKey()] = array(
-                    'surcharge' => $surcharge,
-                    'cost'      => 0,
-                );
+        if ($forCartItems) {
+
+            // Add surcharges for cart items
+            foreach ($this->getItems() as $item) {
+                foreach ($item->getIncludeSurcharges() as $surcharge) {
+                    if (!isset($list[$surcharge->getKey()])) {
+                        $list[$surcharge->getKey()] = array(
+                            'surcharge' => $surcharge,
+                            'cost'      => 0,
+                        );
+                    }
+
+                    $list[$surcharge->getKey()]['cost'] += $surcharge->getValue();
+                }
             }
 
-            $list[$surcharge->getKey()]['cost'] += $surcharge->getValue();
-        }
+        } else {
 
-        foreach ($this->getItems() as $item) {
-            foreach ($item->getIncludeSurcharges() as $surcharge) {
+            // Get global cart surcharges
+            foreach ($this->getIncludeSurcharges() as $surcharge) {
                 if (!isset($list[$surcharge->getKey()])) {
                     $list[$surcharge->getKey()] = array(
                         'surcharge' => $surcharge,
@@ -2666,8 +2686,6 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                 ) {
                     \XLite\Core\Mailer::sendOrderChanged($this, $this->isIgnoreCustomerNotifications());
                 }
-
-                $this->isNotificationSent = false;
             }
         }
 
@@ -2818,7 +2836,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             \XLite\Core\Mailer::sendOrderProcessed($this, $this->isIgnoreCustomerNotifications());
         }
 
-        $this->isNotificationSent = true;
+        $this->setIsNotificationSent(true);
     }
 
     /**
@@ -2832,7 +2850,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             \XLite\Core\Mailer::sendOrderShipped($this);
         }
 
-        $this->isNotificationSent = true;
+        $this->setIsNotificationSent(true);
     }
 
     /**
@@ -2856,7 +2874,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             \XLite\Core\Mailer::sendOrderFailed($this, $this->isIgnoreCustomerNotifications());
         }
 
-        $this->isNotificationSent = true;
+        $this->setIsNotificationSenti(true);
     }
 
     /**
@@ -2879,7 +2897,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             \XLite\Core\Mailer::sendOrderCanceled($this, $this->isIgnoreCustomerNotifications());
         }
 
-        $this->isNotificationSent = true;
+        $this->setIsNotificationSent(true);
     }
 
     // }}}
@@ -3044,6 +3062,7 @@ class Order extends \XLite\Model\Base\SurchargeOwner
             );
 
             foreach ($transactions as $t) {
+                \XLite\Core\Database::getEM()->refresh($t);
                 $backendTransactions = $t->getBackendTransactions();
 
                 $authorized = 0;
@@ -3285,13 +3304,13 @@ class Order extends \XLite\Model\Base\SurchargeOwner
                 : \XLite\Model\Order\Status\Payment::STATUS_AUTHORIZED;
         } else {
             if ($transaction->isRefunded()) {
-                $paymentTransactionSums = $this->getRawPaymentTransactionSums();
+                $paymentTransactionSums = $this->getRawPaymentTransactionSums(true);
                 $refunded = $paymentTransactionSums['refunded'];
 
                 // Check if the whole refunded sum (along with the previous refunded transactions for the order)
                 // covers the whole total for order
-                $status = $refunded < ((float)$this->getTotal())
-                    ? \XLite\Model\Order\Status\Payment::STATUS_PAID
+                $status = $this->getCurrency()->roundValue($refunded) < $this->getCurrency()->roundValue($this->getTotal())
+                    ? \XLite\Model\Order\Status\Payment::STATUS_PART_PAID
                     : \XLite\Model\Order\Status\Payment::STATUS_REFUNDED;
 
             } elseif ($transaction->isFailed()) {

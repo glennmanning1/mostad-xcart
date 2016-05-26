@@ -50,19 +50,19 @@ var searchCallback = function ($form, linked) {
     }
   });
 
-  $linked.loadWidget(function(content){
+  $linked.loadWidget(function (content){
     var newFormId = jQuery('.search-conditions-box', content).closest('form').find('input[name="xcart_form_id"]').val();
     $form.find('input[name="xcart_form_id"]').val(newFormId);
   });
-}
+};
 
-var SearchConditionBox = function(submitFormFlag)
+var SearchConditionBox = function (submitFormFlag)
 {
   var makeSubmitFormFlag = !_.isUndefined(submitFormFlag) && (submitFormFlag === true);
 
   // Switch secondary box visibility
   jQuery('.search-conditions-box .arrow').click(
-    function() {
+    function () {
       var searchConditions = jQuery('.search-conditions-box');
       if (searchConditions.hasClass('full')) {
         searchConditions.removeClass('full')
@@ -74,14 +74,14 @@ var SearchConditionBox = function(submitFormFlag)
 
   // Delete filter with confirmation
   jQuery('.saved-filter-options .delete-filter').click(
-    function() {
+    function () {
       return confirm(core.t('Are you sure you want to delete this filter?'));
     }
   );
 
   // Add some additional functionality for the search conditions boxes
   jQuery('.search-conditions-box').each(
-    function() {
+    function () {
       var $this = jQuery(this);
       var linked = core.getCommentedData($this, 'linked');
 
@@ -95,11 +95,11 @@ var SearchConditionBox = function(submitFormFlag)
 
             var formAction = jQuery('input[name="action"]', $form).eq(0).val();
 
-            $.ajax({
+            jQuery.ajax({
               type:   $form.attr('method'),
               url:    $form.attr('action'),
               data:   $form.serialize(),
-              success: function(data)
+              success: function (data)
               {
                 if (formAction == 'search') {
                   searchCallback($form, linked);

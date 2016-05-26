@@ -142,7 +142,23 @@ class Date extends \XLite\View\FormField\Input\Text
      */
     protected function sanitize()
     {
-       return strtotime(parent::sanitize()) ?: 0;
+       return parent::sanitize() ?: 0;
+    }
+
+    /**
+     * Set value
+     *
+     * @param mixed $value Value to set
+     *
+     * @return void
+     */
+    public function setValue($value)
+    {
+        if (!is_numeric($value)) {
+            $value = \XLite\Core\Converter::parseFromJsFormat($value);
+        }
+
+        parent::setValue($value);
     }
 
     /**

@@ -72,7 +72,7 @@ abstract class Main extends \XLite\Module\AModule
      */
     public static function getMinorVersion()
     {
-        return '3';
+        return '4';
     }
 
     /**
@@ -107,9 +107,9 @@ abstract class Main extends \XLite\Module\AModule
     public static function getSkins()
     {
         return array(
-            \XLite::ADMIN_INTERFACE     => array('custom_skin/admin'),
-            \XLite::CUSTOMER_INTERFACE  => array('custom_skin/default'),
-            \XLite::MAIL_INTERFACE      => array('custom_skin/mail'),
+            \XLite::ADMIN_INTERFACE    => array('custom_skin' . LC_DS . 'admin'),
+            \XLite::CUSTOMER_INTERFACE => array('custom_skin' . LC_DS . 'default'),
+            \XLite::MAIL_INTERFACE     => array('custom_skin' . LC_DS . 'mail'),
         );
     }
 }

@@ -368,9 +368,11 @@ class Order extends \XLite\Model\Repo\ARepo
      * The next order number is used only for orders.
      * This generator checks the  field for independent ID for orders only
      *
+     * @param boolean   $flushByDefault  Should we flush change in order number   OPTIONAL
+     *
      * @return integer
      */
-    public function findNextOrderNumber()
+    public function findNextOrderNumber($flushByDefault = true)
     {
         if (!\XLite\Core\Config::getInstance()->General->order_number_counter) {
             $this->initializeNextOrderNumber();
@@ -389,7 +391,8 @@ class Order extends \XLite\Model\Repo\ARepo
 
         \XLite\Core\Database::getRepo('XLite\Model\Config')->update(
             $orderNumber,
-            array('value' => $value + 1)
+            array('value' => $value + 1),
+            $flushByDefault
         );
 
         return $value;
@@ -883,7 +886,7 @@ class Order extends \XLite\Model\Repo\ARepo
     {
         if (!empty($value)) {
             $queryBuilder->linkLeft('o.payment_transactions', 'payment_transactions')
-                ->andWhere('payment_transactions.publicTxnId LIKE :transactionID')
+                ->andWhere('payment_transactions.public_id LIKE :transactionID')
                 ->setParameter('transactionID', '%' . $value . '%');
         }
     }
@@ -1215,4 +1218,38 @@ class Order extends \XLite\Model\Repo\ARepo
     }
 
     // }}}
+
+    /**
+     * Assemble regular fields from record
+     *
+     * @param array $record  Record
+     * @param array $regular Regular fields info OPTIONAL
+     *
+     * @return array
+     */
+    protected function assembleRegularFieldsFromRecord(array $record, array $regular = array())
+    {
+        $shippingMethod = null;
+
+        if (isset($record['shipping']['processor'])
+            && isset($record['shipping']['code'])
+        ) {
+            $shippingMethod = \XLite\Core\Database::getRepo('XLite\Model\Shipping\Method')->findOneBy(
+                array(
+                    'processor' => $record['shipping']['processor'],
+                    'code'      => $record['shipping']['code']
+                )
+            );
+        }
+
+        if ($shippingMethod) {
+            $record['shipping_id']              = $shippingMethod->getMethodId();
+            $record['shipping_method_name']     = $shippingMethod->getName();
+        }
+        if (isset($record['shipping'])) {
+            unset($record['shipping']);
+        }
+
+        return parent::assembleRegularFieldsFromRecord($record, $regular);
+    }
 }

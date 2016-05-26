@@ -36,8 +36,6 @@ namespace XLite\View;
  */
 class TopCategoriesSlidebar extends \XLite\View\SideBarBox
 {
-
-
     /**
      * Widget parameter names
      */
@@ -71,53 +69,96 @@ class TopCategoriesSlidebar extends \XLite\View\SideBarBox
      */
     protected $pathIds;
 
+    protected $categories = null;
 
     /**
-     * Display item CSS class name as HTML attribute
-     *
-     * @param integer               $index    Item number
-     * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
-     *
-     * @return string
+     * categoriesPath runtime cache
+     * @var array
      */
-    public function displayItemClass($index, $count, \XLite\Model\Category $category)
-    {
-        $className = $this->assembleItemClassName($index, $count, $category);
+    protected static $categoriesPath;
 
-        return $className ? ' class="' . $className . '"' : '';
+    /**
+     * Preprocess DTO
+     *
+     * @param  array    $categoryDTO
+     * @return array
+     */
+    protected function preprocessDTO($categoryDTO)
+    {
+        $categoryDTO['link']                = $this->buildURL('category', '', array('category_id' => $categoryDTO['id']));
+        $categoryDTO['hasSubcategories']    = 0 < $categoryDTO['subcategoriesCount'];
+        $categoryDTO['children']            = array();
+
+        if (!$categoryDTO['name']) {
+            $categoryDTO['name'] = $this->getFirstTranslatedName($categoryDTO['id']);
+        }
+
+        return $categoryDTO;
     }
 
     /**
-     * Display item link class name as HTML attribute
+     * Get name fallback
      *
-     * @param integer               $i        Item number
-     * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
+     * @param integer $categoryId Category id
      *
      * @return string
      */
-    public function displayLinkClass($i, $count, \XLite\Model\Category $category)
+    protected function getFirstTranslatedName($categoryId)
     {
-        $className = $this->assembleLinkClassName($i, $count, $category);
-
-        return $className ? ' class="' . $className . '"' : '';
+        return \XLite\Core\Database::getRepo('XLite\Model\Category')
+            ->getFirstTranslatedName($categoryId);
     }
 
     /**
-     * Display item children container class as HTML attribute
+     * Get cache parameters for proprocessed DTOs
      *
-     * @param integer           $i      Item number
-     * @param integer           $count  Items count
-     * @param \XLite\View\AView $widget Current category
-     *
-     * @return string
+     * @return array
      */
-    public function displayListItemClass($i, $count, \XLite\View\AView $widget)
+    protected function getProcessedDTOsCacheParameters()
     {
-        $className = $this->assembleListItemClassName($i, $count, $widget);
+        $cacheParameters = array(
+            'categoriesDTOs'
+        );
 
-        return $className ? ' class="' . $className . '"' : '';
+        $auth = \XLite\Core\Auth::getInstance();
+        if ($auth->isLogged()
+            && $auth->getProfile()->getMembership()
+        ) {
+            $cacheParameters[] = $auth->getProfile()->getMembership()->getMembershipId();
+        }
+
+        return $cacheParameters;
+    }
+
+    /**
+     * Collect categories collection
+     *
+     * @return array
+     */
+    protected function collectCategories()
+    {
+        $cacheKey = md5(serialize($this->getProcessedDTOsCacheParameters()));
+        $driver = \XLite\Core\Database::getCacheDriver();
+
+        if ($driver->contains($cacheKey)) {
+            return $driver->fetch($cacheKey);
+        }
+
+        $preprocessedDTOs = array();
+
+        $dtos = \XLite\Core\Database::getRepo('XLite\Model\Category')->getCategoriesAsDTO();
+        foreach ($dtos as $key => $categoryDTO) {
+            $preprocessedDTOs[] = $this->preprocessDTO($categoryDTO);
+        }
+
+        foreach ($preprocessedDTOs as $categoryDTO) {
+            // Make tree structure
+            $preprocessedDTOs[$categoryDTO['parent_id']]['children'][] = $categoryDTO;
+        }
+
+        $driver->save($cacheKey, $preprocessedDTOs);
+
+        return $preprocessedDTOs;
     }
 
     /**
@@ -159,9 +200,167 @@ class TopCategoriesSlidebar extends \XLite\View\SideBarBox
      */
     protected function getCategories($categoryId = null)
     {
-        return \XLite\Core\Database::getRepo('\XLite\Model\Category')->getSubcategories(
-            $categoryId ?: $this->getParam(self::PARAM_ROOT_ID)
+        if(null === $this->categories) {
+            $this->categories = $this->collectCategories();
+        }
+
+        if (!$categoryId) {
+            $categoryId = 1;
+        }
+
+        return isset($this->categories[$categoryId]['children'])
+            ? $this->categories[$categoryId]['children']
+            : array();
+    }
+
+
+    /**
+     * Check if category included into active trail or not
+     *
+     * @param integer $categoryId Category id
+     *
+     * @return boolean
+     */
+    protected function isActiveTrail($categoryId)
+    {
+        if ($this->pathIds === null) {
+            $this->pathIds = array();
+
+            if (static::$categoriesPath === null) {
+                static::$categoriesPath = \XLite\Core\Database::getRepo('\XLite\Model\Category')
+                    ->getCategoryPath($this->getCategoryId());
+            }
+
+            if (is_array(static::$categoriesPath)) {
+
+                foreach (static::$categoriesPath as $cat) {
+
+                    $this->pathIds[] = $cat->getCategoryId();
+
+                }
+
+            }
+
+        }
+
+        return in_array($categoryId, $this->pathIds);
+    }
+
+    /**
+     * Display item CSS class name as HTML attribute
+     *
+     * @param integer               $index    Item number
+     * @param integer               $count    Items count
+     * @param array                 $category Current category
+     *
+     * @return string
+     */
+    public function displayLinkClass($index, $count, $category)
+    {
+        $className = $this->assembleItemClassName($index, $count, $category);
+
+        return $className ? ' class="' . $className . '"' : '';
+    }
+
+    /**
+     * Display item CSS class name as HTML attribute
+     *
+     * @param integer               $index    Item number
+     * @param integer               $count    Items count
+     * @param \XLite\Model\Category $category Current category
+     *
+     * @return string
+     */
+    public function displayItemClass($index, $count, $category)
+    {
+        $className = $this->assembleLinkClassName($index, $count, $category);
+
+        return $className ? ' class="' . $className . '"' : '';
+    }
+
+    /**
+     * Assemble item CSS class name
+     *
+     * @param integer   $index    Item number
+     * @param integer   $count    Items count
+     * @param array     $category Current category
+     *
+     * @return string
+     */
+    protected function assembleItemClassName($index, $count, $category)
+    {
+        $classes = array();
+
+        $active = $this->isActiveTrail($category['id']);
+
+        if (!$category['hasSubcategories']) {
+            $classes[] = 'leaf';
+
+        } elseif (self::DISPLAY_MODE_LIST != $this->getParam(self::PARAM_DISPLAY_MODE)) {
+            $classes[] = $active ? 'expanded' : 'collapsed';
+        }
+
+        if (0 == $index) {
+            $classes[] = 'first';
+        }
+
+        $listParam = array(
+            'rootId'     => $this->getParam('rootId'),
+            'is_subtree' => $this->getParam('is_subtree'),
         );
+        if (
+            ($count - 1) == $index
+            && $this->isViewListVisible('topCategories.children', $listParam)
+        ) {
+            $classes[] = 'last';
+        }
+
+        if ($active) {
+            $classes[] = 'active-trail';
+        }
+
+        return implode(' ', $classes);
+    }
+
+    /**
+     * Assemble item CSS class name
+     *
+     * @param integer   $index    Item number
+     * @param integer   $count    Items count
+     * @param array     $category Current category
+     *
+     * @return string
+     */
+    protected function assembleLinkClassName($index, $count, $category)
+    {
+        $classes = array();
+
+        $classes[] = \XLite\Core\Request::getInstance()->category_id == $category['id']
+            ? 'active'
+            : '';
+
+
+        return implode(' ', $classes);
+    }
+
+    /**
+     * Assemble item children container class name
+     *
+     * @param integer           $i      Item number
+     * @param integer           $count  Items count
+     * @param \XLite\View\AView $widget Current category FIXME! this variable is not used
+     *
+     * @return string
+     */
+    protected function assembleListItemClassName($i, $count, \XLite\View\AView $widget)
+    {
+        $classes = array('leaf');
+
+        if (($count - 1) == $i) {
+            $classes[] = 'last';
+        }
+
+        return implode(' ', $classes);
     }
 
     /**
@@ -206,117 +405,6 @@ class TopCategoriesSlidebar extends \XLite\View\SideBarBox
     protected function isSubtree()
     {
         return $this->getParam(self::PARAM_IS_SUBTREE) !== false;
-    }
-
-    /**
-     * Check if category included into active trail or not
-     *
-     * @param \XLite\Model\Category $category Category
-     *
-     * @return boolean
-     */
-    protected function isActiveTrail(\XLite\Model\Category $category)
-    {
-        if (!isset($this->pathIds)) {
-
-            $this->pathIds = array();
-
-            $categoriesPath = \XLite\Core\Database::getRepo('\XLite\Model\Category')
-                ->getCategoryPath($this->getCategoryId());
-
-            if (is_array($categoriesPath)) {
-
-                foreach ($categoriesPath as $cat) {
-
-                    $this->pathIds[] = $cat->getCategoryId();
-
-                }
-
-            }
-
-        }
-
-        return in_array($category->getCategoryId(), $this->pathIds);
-    }
-
-    /**
-     * Assemble item CSS class name
-     *
-     * @param integer               $index    Item number
-     * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
-     *
-     * @return string
-     */
-    protected function assembleItemClassName($index, $count, \XLite\Model\Category $category)
-    {
-        $classes = array();
-
-        $active = $this->isActiveTrail($category);
-
-        if (!$category->hasSubcategories()) {
-            $classes[] = 'leaf';
-
-        } elseif (self::DISPLAY_MODE_LIST != $this->getParam(self::PARAM_DISPLAY_MODE)) {
-            $classes[] = $active ? 'expanded' : 'collapsed';
-        }
-
-        if (0 == $index) {
-            $classes[] = 'first';
-        }
-
-        $listParam = array(
-            'rootId'     => $this->getParam('rootId'),
-            'is_subtree' => $this->getParam('is_subtree'),
-        );
-        if (
-            ($count - 1) == $index
-            && $this->isViewListVisible('topCategories.children', $listParam)
-        ) {
-            $classes[] = 'last';
-        }
-
-        if ($active) {
-            $classes[] = 'active-trail';
-        }
-
-        return implode(' ', $classes);
-    }
-
-    /**
-     * Assemble list item link class name
-     *
-     * @param integer               $i        Item number
-     * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
-     *
-     * @return string
-     */
-    protected function assembleLinkClassName($i, $count, \XLite\Model\Category $category)
-    {
-        return \XLite\Core\Request::getInstance()->category_id == $category->getCategoryId()
-            ? 'active'
-            : '';
-    }
-
-    /**
-     * Assemble item children container class name
-     *
-     * @param integer           $i      Item number
-     * @param integer           $count  Items count
-     * @param \XLite\View\AView $widget Current category FIXME! this variable is not used
-     *
-     * @return string
-     */
-    protected function assembleListItemClassName($i, $count, \XLite\View\AView $widget)
-    {
-        $classes = array('leaf');
-
-        if (($count - 1) == $i) {
-            $classes[] = 'last';
-        }
-
-        return implode(' ', $classes);
     }
 
     // {{{ Cache

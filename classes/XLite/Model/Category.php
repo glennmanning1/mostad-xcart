@@ -44,12 +44,6 @@ namespace XLite\Model;
 class Category extends \XLite\Model\Base\Catalog
 {
     /**
-     * WEB LC root postprocessing constant
-     */
-    const WEB_LC_ROOT = '{{WEB_LC_ROOT}}';
-
-
-    /**
      * Node unique ID
      *
      * @var integer
@@ -506,11 +500,7 @@ class Category extends \XLite\Model\Base\Catalog
      */
     public function getViewDescription()
     {
-        return str_replace(
-            $this->getWebPreprocessingTags(),
-            $this->getWebPreprocessingURL(),
-            $this->getDescription()
-        );
+        return static::getPreprocessedValue($this->getDescription());
     }
 
     /**
@@ -581,38 +571,73 @@ class Category extends \XLite\Model\Base\Catalog
     }
 
     /**
-     * Register tags to be replaced with some URLs
+     * Lifecycle callback
      *
-     * @return array
+     * @return void
      */
-    protected function getWebPreprocessingTags()
+    public function prepareBeforeSave()
     {
-        return array(
-            static::WEB_LC_ROOT,
-        );
+        parent::prepareBeforeSave();
+
+        $this->cleanDTOsCache();
     }
 
     /**
-     * Register URLs that should be given instead of tags
+     * Clean categoriesDTOs cache cells
      *
-     * @return array
+     * @return  void
      */
-    protected function getWebPreprocessingURL()
+    protected function cleanDTOsCache()
     {
-        // Get URL of shop. If the HTTPS is used then it should be cleaned from ?xid=<xid> construction
-        $url = \XLite\Core\URLManager::getShopURL(
-            null,
-            \XLite\Core\Request::getInstance()->isHTTPS(),
-            array(),
-            null,
-            false
+        $cacheParameters = array(
+            'categoriesDTOs'
         );
+        $driver = \XLite\Core\Database::getCacheDriver();
 
-        // We are cleaning URL from unnecessary here <xid> construction
-        $url = preg_replace('/(\?.*)/', '', $url);
+        $cacheKey = md5(serialize($cacheParameters));
+        $driver->delete($cacheKey);
 
-        return array(
-            $url,
-        );
+        $memberships = \XLite\Core\Database::getRepo('XLite\Model\Membership')->findAllMemberships();
+        $languages = \XLite\Core\Database::getRepo('XLite\Model\Language')->findActiveLanguages();
+        foreach ($languages as $language) {
+            $cacheKey = md5(
+                serialize(
+                    array_merge(
+                        $cacheParameters,
+                        array(
+                            $language->getCode()
+                        )
+                    )
+                )
+            );
+            $driver->delete($cacheKey);
+
+            foreach ($memberships as $membership) {
+                $cacheKey = md5(
+                    serialize(
+                        array_merge(
+                            $cacheParameters,
+                            array(
+                                $membership->getMembershipId()
+                            )
+                        )
+                    )
+                );
+                $driver->delete($cacheKey);
+
+                $cacheKey = md5(
+                    serialize(
+                        array_merge(
+                            $cacheParameters,
+                            array(
+                                $language->getCode(),
+                                $membership->getMembershipId()
+                            )
+                        )
+                    )
+                );
+                $driver->delete($cacheKey);
+            }
+        }
     }
 }

@@ -110,7 +110,7 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
      */
     public function getMinorVersionOld()
     {
-        return $this->callModuleMethod('getMinorVersion');
+        return $this->callModuleMethod('getFullMinorVersion');
     }
 
     /**
@@ -130,7 +130,8 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
      */
     public function getMinorVersionNew()
     {
-        return $this->getMetadata('VersionMinor');
+        return $this->getMetadata('VersionMinor')
+            . ($this->getMetadata('VersionBuild') ? '.' . $this->getMetadata('VersionBuild') : '');
     }
 
     /**
@@ -337,6 +338,11 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
         return \XLite\Core\Database::getRepo('\XLite\Model\Module')->findOneBy($this->getModuleDataInstalled());
     }
 
+    protected function parseMinorVersion($version)
+    {
+
+    }
+
     /**
      * Return common module data
      *
@@ -346,11 +352,14 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
     {
         list($author, $name) = explode('\\', $this->getActualName());
 
+        list($minorVersion, $build) = \Includes\Utils\Converter::parseMinorVersion($this->getMinorVersionNew());
+
         return array(
             'name'            => $name,
             'author'          => $author,
             'majorVersion'    => $this->getMajorVersionNew(),
-            'minorVersion'    => $this->getMinorVersionNew(),
+            'minorVersion'    => $minorVersion,
+            'build'           => $build,
             'fromMarketplace' => false,
             'installed'       => true,
             'authorEmail'     => '',
@@ -364,9 +373,12 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
      */
     protected function getModuleDataInstalled()
     {
+        list($minorVersion, $build) = \Includes\Utils\Converter::parseMinorVersion($this->getMinorVersionOld());
+
         $data = $this->getModuleData();
         $data['majorVersion'] = $this->getMajorVersionOld();
-        $data['minorVersion'] = $this->getMinorVersionOld();
+        $data['minorVersion'] = $minorVersion;
+        $data['build']        = $build;
 
         return $data;
     }
@@ -395,13 +407,17 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
         unset($data['majorVersion']);
         unset($data['minorVersion']);
 
+        list($minorVersionNew, $build) = \Includes\Utils\Converter::parseMinorVersion($this->getMinorVersionNew());
+
         $modules = \XLite\Core\Database::getRepo('\XLite\Model\Module')->findBy($data);
 
         foreach ($modules as $moduleOld) {
             if ($moduleOld) {
                 if ($moduleOld->getMajorVersion() != $this->getMajorVersionNew()
-                    || $moduleOld->getMinorVersion() != $this->getMinorVersionNew()
+                    || $moduleOld->getMinorVersion() != $minorVersionNew
+                    || $moduleOld->getBuild() != $build
                 ) {
+                    // Old module has different version - delete it
                     $module->setYamlLoaded($moduleOld->getYamlLoaded());
                     \XLite\Core\Database::getRepo('\XLite\Model\Module')->delete($moduleOld);
                 }
@@ -411,7 +427,8 @@ class Uploaded extends \XLite\Upgrade\Entry\Module\AModule
         // Save changes in DB
         if ($module->getModuleID()) {
             $module->setMajorVersion($this->getMajorVersionNew());
-            $module->setMinorVersion($this->getMinorVersionNew());
+            $module->setMinorVersion($minorVersionNew);
+            $module->setBuild($build);
             \XLite\Core\Database::getRepo('\XLite\Model\Module')->update($module);
 
         } else {

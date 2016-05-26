@@ -18,7 +18,8 @@ function Tooltip()
       attachTooltip(
         jQuery(obj.caption, this),
         jQuery('.help-text', this).hide().html(),
-        jQuery(this).data('placement')
+        jQuery(this).data('placement'),
+        jQuery(this).data('delay')
       );
     }
   );

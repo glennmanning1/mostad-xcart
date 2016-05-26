@@ -256,7 +256,7 @@ class Menu extends \XLite\Model\Repo\ARepo
                 $this->editExistingMenus();
             }
         } elseif (!\XLite\Core\Database::getEM()->contains(static::$rootMenu)) {
-            static::$rootMenu = \XLite\Core\Database::getEM()->merge(static::$rootMenu);
+            static::$rootMenu = $this->findOneByLpos(1);
         }
 
         return static::$rootMenu ?: null;
@@ -302,7 +302,7 @@ class Menu extends \XLite\Model\Repo\ARepo
             if (NULL === $item->getLpos() || 0 == $item->getLpos()) {
                 $item = $this->performInsert($item);
             } 
-            if (NULL === $item->getParent()) {
+            if (NULL === $item->getParent() && $item->getDepth() !== -1 ) {
                 $item->setParent($this->getRootMenu());
             } 
             \XLite\Core\Database::getEm()->persist($item);
@@ -882,18 +882,102 @@ class Menu extends \XLite\Model\Repo\ARepo
         return $this->maxRightPos;
     }
 
+
+    // {{{ Correct categories structure methods
+
+    /**
+     * Correct categories structure: lpos, rpos and depth fields
+     *
+     * @return void
+     */
+    public function recalculateTreeStructure()
+    {
+        $nestedSetCorrector = new \XLite\Logic\NestedSet(
+            $this->getMenusRawData()
+        );
+
+        list($data, $quickFlags) = $nestedSetCorrector->recalculateStructure();
+
+        if ($data) {
+            foreach ($data as $catId => $d) {
+                $query = 'UPDATE ' . $this->getTableName()
+                    . ' SET ' . implode(', ', array_map(function($v) { return $v . ' = ?'; }, array_keys($d)))
+                    . ' WHERE id = ?';
+                array_push($d, $catId);
+                \XLite\Core\Database::getEM()->getConnection()->executeUpdate($query, array_values($d));
+            }
+        }
+
+        if ($quickFlags) {
+            $qfKeys = array(
+                'menu_id',
+                'submenus_count_all',
+                'submenus_count_enabled',
+            );
+
+            foreach ($quickFlags as $qfData) {
+                $qfQuery = 'REPLACE INTO '
+                    . \XLite\Core\Database::getRepo('XLite\Module\CDev\SimpleCMS\Model\Menu\QuickFlags')->getTableName()
+                    . ' (' . implode(', ', $qfKeys) . ')'
+                    . ' VALUES (' . implode(', ', array_fill(0, count($qfData), '?')) . ')';
+                \XLite\Core\Database::getEM()->getConnection()->executeUpdate($qfQuery, array_values($qfData));
+            }
+        }
+    }
+
+    /**
+     * Simplified search for menus data
+     *
+     * @return array
+     */
+    protected function getMenusRawData()
+    {
+        $fields = array(
+            'm.id as id',
+            'm.parent_id',
+            'm.lpos',
+            'm.rpos',
+            'm.depth',
+            'm.position as pos',
+            'm.enabled',
+            'qf.submenus_count_all      as subnodes_count_all',
+            'qf.submenus_count_enabled  as subnodes_count_enabled',
+        );
+
+        $query = 'SELECT ' . implode(',', $fields) . ' FROM ' . $this->getTableName() . ' m '
+            . ' LEFT JOIN ' . \XLite\Core\Database::getRepo('\XLite\Module\CDev\SimpleCMS\Model\Menu\QuickFlags')->getTableName()
+            . ' qf ON m.id = qf.menu_id '
+            . ' ORDER BY m.id';
+
+        return \Includes\Utils\Database::fetchAll($query);
+    }
+
+    /**
+     * @param array                $data        Data
+     * @param \XLite\Model\AEntity $parent      Entity parent callback OPTIONAL
+     * @param array                $parentAssoc Entity mapped propery method OPTIONAL
+     */
+    public function loadFixtures(array $data, \XLite\Model\AEntity $parent = null, array $parentAssoc = array())
+    {
+        parent::loadFixtures($data, $parent, $parentAssoc);
+        \XLite\Core\Database::getEM()->flush();
+        \XLite\Core\Database::getEM()->clear();
+
+        $this->recalculateTreeStructure();
+    }
+
     /**
      * Prepare data for a new menu node
      *
      * @param \XLite\Module\CDev\SimpleCMS\Model\Menu $entity Menu object
      * @param \XLite\Module\CDev\SimpleCMS\Model\Menu $parent Parent menu object OPTIONAL
      *
-     * @return void
+     * @return \XLite\Module\CDev\SimpleCMS\Model\Menu
      */
     protected function prepareNewMenuData(\XLite\Module\CDev\SimpleCMS\Model\Menu $entity, \XLite\Module\CDev\SimpleCMS\Model\Menu $parent = null)
     {
         if (!isset($parent)) {
-            $parent = $this->getMenu($entity->getParentId());
+            $parent = $entity->getParent();
         }
         if (!isset($parent)) {
             $parent = $this->getRootMenu();
@@ -904,8 +988,11 @@ class Menu extends \XLite\Model\Repo\ARepo
             $entity->setLpos($parent->getLpos() + 1);
             $entity->setRpos($parent->getLpos() + 2);
         }
+
         $entity->setParent($parent);
         $entity->setDepth($parent->getDepth() + 1);
+
+        return $parent;
     }
 
     /**
@@ -938,7 +1025,7 @@ class Menu extends \XLite\Model\Repo\ARepo
 
         if (empty($parentID)) {
             // Insert root menu
-            $this->prepareNewMenuData($entity);
+            $parent = $this->prepareNewMenuData($entity);
 
         } else {
             // Get parent for non-root menu

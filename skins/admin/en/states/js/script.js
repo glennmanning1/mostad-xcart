@@ -8,8 +8,6 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  */
-
-function setChecked(input, check)
-{
-    $(input).prop('checked', check);
+function setChecked(input, check) {
+    jQuery(input).prop('checked', check);
 }

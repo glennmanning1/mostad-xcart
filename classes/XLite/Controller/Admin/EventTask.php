@@ -76,6 +76,7 @@ class EventTask extends \XLite\Controller\Admin\AAdmin
 
         $task = \XLite\Core\Database::getRepo('XLite\Model\EventTask')->findOneBy(array('name' => $event));
         if ($task) {
+            \XLite\Core\Database::getRepo('XLite\Model\EventTask')->cleanTasks($event, $task->getId());
             if (\XLite\Core\EventListener::getInstance()->handle($task->getName(), $task->getArguments())) {
                 $task = \XLite\Core\Database::getEM()->merge($task);
                 \XLite\Core\Database::getEM()->remove($task);

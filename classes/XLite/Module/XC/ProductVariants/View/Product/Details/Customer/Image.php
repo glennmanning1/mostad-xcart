@@ -42,9 +42,10 @@ class Image extends \XLite\View\Product\Details\Customer\Image implements \XLite
     protected function defineHasZoomImage()
     {
         $result = parent::defineHasZoomImage();
+        $product = $this->getProduct();
 
-        if (!$result && $this->getProduct()->hasVariants()) {
-            foreach ($this->getProduct()->getVariants() as $variant) {
+        if (!$result && $product->hasVariants()) {
+            foreach ($product->getVariants() as $variant) {
                 if ($variant->getImage() && $this->isImageZoomable($variant->getImage())) {
                     $result = true;
                     break;

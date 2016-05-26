@@ -582,18 +582,20 @@ class Upgrade extends \XLite\Controller\Admin\Base\Addon
             /** @var \XLite\Model\Module $module */
             foreach (\XLite\Upgrade\Cell::getInstance()->getDisabledModulesHooks() as $marketplaceId => $module) {
                 $action = \XLite\Core\Request::getInstance()->disabledModulesHooks[$marketplaceId];
-                $module = \XLite\Core\Database::getEM()->merge($module);
+                $installedModule = $module->getModuleInstalled();
 
-                if (1 == $action) {
-                    // Enable module
-                    $module->setEnabled(true);
-                    $modulesToEnable[] = $module;
-                    $restorePoint['enabled'][$module->getModuleId()] = $module->getActualName();
-                } elseif (0 == $action) {
-                    // Uninstall module
-                    \XLite\Upgrade\Cell::getInstance()->removeModuleEntry($module);
-                    $this->uninstallModule($module);
-                    $restorePoint['deleted'][] = $module->getActualName();
+                if ($installedModule) {
+                    if (1 == $action) {
+                        // Enable module
+                        $installedModule->setEnabled(true);
+                        $modulesToEnable[] = $installedModule;
+                        $restorePoint['enabled'][$installedModule->getModuleId()] = $installedModule->getActualName();
+                    } elseif (0 == $action) {
+                        // Uninstall module
+                        \XLite\Upgrade\Cell::getInstance()->removeModuleEntry($installedModule);
+                        $this->uninstallModule($installedModule);
+                        $restorePoint['deleted'][] = $installedModule->getActualName();
+                    }
                 }
             }
 

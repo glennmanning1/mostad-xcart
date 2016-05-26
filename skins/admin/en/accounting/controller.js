@@ -13,16 +13,16 @@ core.microhandlers.add(
   'MarketplaceSearch',
   '.marketplace-search',
   function (event) {
-    jQuery(this).click(function(event) {
-      $.ajax({
+    jQuery(this).click(function() {
+      jQuery.ajax({
         async: false,
-        type: "GET",
+        type: 'GET',
         url: URLHandler.buildURL({
           target:         'addons_list_marketplace',
           clearCnd:       '1',
-          clearSearch:    '1',
+          clearSearch:    '1'
         }),
-        data: "",
+        data: ''
       });
     });
   }

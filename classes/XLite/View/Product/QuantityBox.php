@@ -210,16 +210,6 @@ class QuantityBox extends \XLite\View\Product\AProduct
     }
 
     /**
-     * Return name of the \XLite\Model\Inventory model to get max available quantity
-     *
-     * @return string
-     */
-    protected function getMaxQuantityMethod()
-    {
-        return $this->isCartPage() ? 'getPublicAmount' : 'getAvailableAmount';
-    }
-
-    /**
      * Return maximum allowed quantity
      *
      * @return integer
@@ -228,9 +218,13 @@ class QuantityBox extends \XLite\View\Product\AProduct
     {
         $maxValue = $this->getParam(self::PARAM_MAX_VALUE);
 
+        $orderItemsAmount = $this->getOrderItem()
+            ? $this->getOrderItem()->getAmount()
+            : 0;
+
         return isset($maxValue)
             ? $maxValue
-            : $this->getProduct()->getInventory()->{$this->getMaxQuantityMethod()}();
+            : $this->getProduct()->getInventory()->getAvailableAmount() + $orderItemsAmount;
     }
 
     /**

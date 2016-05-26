@@ -9,8 +9,7 @@
  * @link      http://www.x-cart.com/
  */
 
-function PopupButtonExportCSV()
-{
+function PopupButtonExportCSV() {
   core.bind('export.failed', _.bind(this.handleExportFinish, this));
   core.bind('export.completed', _.bind(this.handleExportFinish, this));
   PopupButtonExportCSV.superclass.constructor.apply(this, arguments);
@@ -28,29 +27,32 @@ PopupButtonExportCSV.prototype.handleExportFinish = function () {
   var elem = jQuery(this.pattern);
   core.bind('afterPopupPlace', _.once(_.bind(this.postprocessFinish, this)));
   popup.load(URLHandler.buildURL(core.getCommentedData(elem, 'url_params')));
-}
+  popup.pseudoClose = true;
+};
+
 PopupButtonExportCSV.prototype.postprocessFinish = function () {
-  $('a[data-autodownload]').each(function(){
+  jQuery('a[data-autodownload]').each(function () {
     this.click();
   });
-}
+};
 
 PopupButtonExportCSV.prototype.restoreState = function () {
-  $(".ui-dialog-content").dialog('destroy');
+  jQuery('.ui-dialog-content').dialog('destroy');
+  jQuery('.widget-popupexport').parent().remove();
   core.unbind('eventTaskRun');
-}
+};
 
 PopupButtonExportCSV.prototype.getSelectionFromForm = function(elem) {
-  var form = elem.closest('form');
-  var checked = $(form).serializeArray().filter(function(value) {
+  var form = jQuery(elem).closest('form');
+  var checked = jQuery(form).serializeArray().filter(function(value) {
     return value.name.search('select') >= 0;
   });
   return checked.map(function(value) {
     return /^select\[(.*)\]$/.exec(value.name)[1];
   });
-}
+};
 
-PopupButtonExportCSV.prototype.startExport = function(elem, items) {
+PopupButtonExportCSV.prototype.startExport = function (elem, items) {
   var data = core.getCommentedData(elem, 'export');
   data[xliteConfig.form_id_name] = xliteConfig.form_id;
   var filter = this.getSelectionFromForm(elem);
@@ -59,20 +61,35 @@ PopupButtonExportCSV.prototype.startExport = function(elem, items) {
   }
   return core.post(
     {
-      target: 'export',
+      target: 'export'
     },
     null,
     data
   );
 };
 
+PopupButtonExportCSV.prototype.cancelExport = function (widget, box) {
+  this.restoreState();
+  var data = [];
+  data[xliteConfig.form_id_name] = xliteConfig.form_id;
+
+  return core.post(
+    {
+      target: 'export',
+      action: 'cancel'
+    },
+    null,
+    data
+  );
+}
+
 decorate(
   'PopupButtonExportCSV',
   'callback',
-  function (selector, link)
-  {
+  function (selector, link) {
     // previous method call
     arguments.callee.previousMethod.apply(this, arguments);
+    core.bind('popup.beforeClose', _.once(_.bind(this.cancelExport, this)));
     core.autoload(EventTaskProgress);
     core.autoload(PopupExportController);
   }
@@ -81,8 +98,7 @@ decorate(
 decorate(
   'PopupButtonExportCSV',
   'eachClick',
-  function (elem)
-  {
+  function (elem) {
     this.restoreState();
     var xhr = this.startExport(elem);
     // previous method call

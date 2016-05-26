@@ -35,6 +35,13 @@ namespace XLite\Model;
 class Shipping extends \XLite\Base\Singleton
 {
     /**
+     * RuntimeDefaultAddressCache
+     *
+     * @var array
+     */
+    static $runtimeDefaultAddressCache = false;
+
+    /**
      * List of registered shipping processors
      *
      * @var \XLite\Model\Shipping\Processor\AProcessor[]
@@ -262,19 +269,23 @@ class Shipping extends \XLite\Base\Singleton
      */
     public static function getDefaultAddress()
     {
-        $config = \XLite\Core\Config::getInstance()->Shipping;
-        $state = \XLite\Model\Address::getDefaultFieldValue('state');
-        $country = \XLite\Model\Address::getDefaultFieldValue('country');
+        if (static::$runtimeDefaultAddressCache === false) {
+            $config = \XLite\Core\Config::getInstance()->Shipping;
+            $state = \XLite\Model\Address::getDefaultFieldValue('state');
+            $country = \XLite\Model\Address::getDefaultFieldValue('country');
 
-        return array(
-            'address'      => $config->anonymous_address,
-            'city'         => \XLite\Model\Address::getDefaultFieldValue('city'),
-            'state'        => $state ? $state->getCode() : '',
-            'custom_state' => \XLite\Model\Address::getDefaultFieldValue('custom_state'),
-            'zipcode'      => \XLite\Model\Address::getDefaultFieldValue('zipcode'),
-            'country'      => $country ? $country->getCode() : '',
-            'type'         => $config->anonymous_address_type,
-        );
+            static::$runtimeDefaultAddressCache = array(
+                'address'      => $config->anonymous_address,
+                'city'         => \XLite\Model\Address::getDefaultFieldValue('city'),
+                'state'        => $state ? $state->getCode() : '',
+                'custom_state' => \XLite\Model\Address::getDefaultFieldValue('custom_state'),
+                'zipcode'      => \XLite\Model\Address::getDefaultFieldValue('zipcode'),
+                'country'      => $country ? $country->getCode() : '',
+                'type'         => $config->anonymous_address_type,
+            );
+        }
+
+        return static::$runtimeDefaultAddressCache;
     }
 
     /**
@@ -328,7 +339,9 @@ class Shipping extends \XLite\Base\Singleton
      */
     protected function getProcessorRates($processor, $modifier)
     {
-        return $processor->getRates($modifier);
+        $rates = $processor->getRates($modifier);
+
+        return $rates && is_array($rates) ? $rates : array();
     }
 
     /**

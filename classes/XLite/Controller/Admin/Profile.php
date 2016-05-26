@@ -323,4 +323,36 @@ class Profile extends \XLite\Controller\Admin\AAdmin
             $this->setReturnURL($this->getShopURL(''));
         }
     }
+
+
+    /**
+     * Login as admin
+     *
+     * @return void
+     */
+    protected function doActionLoginAs()
+    {
+        $profile = $this->getModelForm()->getModelObject();
+
+        if (
+            $profile
+            && !$profile->getAnonymous()
+            && $profile->isAdmin()
+            && !$profile->isPermissionAllowed(\XLite\Model\Role\Permission::ROOT_ACCESS)
+            && (\XLite\Core\Auth::getInstance()->isPermissionAllowed('manage admins')
+                || \XLite\Core\Auth::getInstance()->isPermissionAllowed(\XLite\Model\Role\Permission::ROOT_ACCESS))
+        ) {
+            \XLite\Core\Auth::getInstance()->loginProfile($profile);
+
+            \XLite\Core\TopMessage::addInfo(
+                'You are logged in as: user',
+                array('user' => $profile->getLogin())
+            );
+            $this->setReturnURL(
+                \XLite::getInstance()->getShopURL(
+                    \XLite::getAdminScript()
+                )
+            );
+        }
+    }
 }

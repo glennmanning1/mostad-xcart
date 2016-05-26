@@ -11,6 +11,6 @@
  * @ListChild (list="product.details.page.image")
  *}
 <div class="default-image" style="display: none;">
-  <widget class="\XLite\View\Image" maxWidth="{getDefaultMaxImageSize(1)}" maxHeight="{getDefaultMaxImageSize(0)}" />
+  <widget class="\XLite\View\Image" alt="{product.name}" maxWidth="{getDefaultMaxImageSize(1)}" maxHeight="{getDefaultMaxImageSize(0)}" />
 </div>
 

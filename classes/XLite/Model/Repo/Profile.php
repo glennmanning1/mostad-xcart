@@ -135,9 +135,11 @@ class Profile extends \XLite\Model\Repo\ARepo
         $this->currentSearchCnd = $this->preprocessCnd($cnd);
 
         foreach ($this->currentSearchCnd as $key => $value) {
-            if (!$countOnly || static::SEARCH_ORDERBY !== $key) {
-                $this->callSearchConditionHandler($value, $key, $queryBuilder);
+            if ($countOnly && (static::SEARCH_ORDERBY === $key || static::SEARCH_LIMIT === $key)) {
+                continue;
             }
+
+            $this->callSearchConditionHandler($value, $key, $queryBuilder);
         }
 
         if (!$countOnly) {
@@ -271,10 +273,11 @@ class Profile extends \XLite\Model\Repo\ARepo
     {
         if (isset($data['login'])
             && (isset($data['order_id'])
-                && 0 == $data['order_id']
+                && (0 == $data['order_id'] && $data['order_id'] !== 'null')
                 || 1 === count($data)
             )
         ) {
+            // N.B. Thats loading only customerss
             $entity = $this->defineOneByRecord($data['login'])->getSingleResult();
 
         } else {
@@ -1045,7 +1048,7 @@ class Profile extends \XLite\Model\Repo\ARepo
         if (!$result
             && !empty($data['login'])
             && isset($data['order_id'])
-            && !$data['order_id']
+            && (!$data['order_id'] || $data['order_id'] === 'null')
         ) {
             $result = array(
                 'login' => $data['login'],
@@ -1076,6 +1079,29 @@ class Profile extends \XLite\Model\Repo\ARepo
         }
 
         parent::linkLoadedEntity($entity, $parent, $parentAssoc);
+    }
+
+
+    /**
+     * Load fixture
+     *
+     * @param array                $record      Record
+     * @param array                $regular     Regular fields info OPTIONAL
+     * @param array                $assocs      Associations info OPTIONAL
+     * @param \XLite\Model\AEntity $parent      Entity parent callback OPTIONAL
+     * @param array                $parentAssoc Entity mapped propery method OPTIONAL
+     *
+     * @return \XLite\Model\AEntity
+     */
+    public function loadFixture(
+        array $record,
+        array $regular = array(),
+        array $assocs = array(),
+        \XLite\Model\AEntity $parent = null,
+        array $parentAssoc = array()
+    ) {
+        $entity = parent::loadFixture($record, $regular, $assocs, $parent, $parentAssoc);
+        $entity->updateSearchFakeField();
     }
 
     /**

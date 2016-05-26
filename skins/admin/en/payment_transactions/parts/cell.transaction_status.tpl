@@ -20,5 +20,6 @@
         caption="{getTransactionStatusPopoverTitle():h}"
         isImageTag="false"
         placement="left"
+        delay="0"
         className="help" />
 </div>

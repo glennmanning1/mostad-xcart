@@ -52,8 +52,8 @@ define('LC_OS_IS_WIN', LC_OS_CODE === 'win');
 define('LC_SESSION_TYPE', 'Sql');
 
 set_include_path(
-    get_include_path()
-    . PATH_SEPARATOR . LC_DIR_LIB
+    LC_DIR_LIB
+    . PATH_SEPARATOR . get_include_path()
 );
 
 // Some common functions

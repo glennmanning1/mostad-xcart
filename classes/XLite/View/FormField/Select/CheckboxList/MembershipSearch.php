@@ -116,4 +116,25 @@ class MembershipSearch extends \XLite\View\FormField\Select\CheckboxList\ACheckb
 
         return $list;
     }
+
+    /**
+     * Check - current value is selected or not
+     *
+     * @param mixed $value Value
+     *
+     * @return boolean
+     */
+    protected function isOptionSelected($value)
+    {
+        $type = static::TYPE_MEMBERSHIP;
+
+        $processedValues = array_map(
+            function($rawValue){
+                return $type . '_' . $rawValue;
+            },
+            $this->getValue()
+        );
+
+        return parent::isOptionSelected($value) || in_array($value, $processedValues);
+    }
 }

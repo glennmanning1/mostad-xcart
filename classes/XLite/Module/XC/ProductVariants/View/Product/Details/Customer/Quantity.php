@@ -41,8 +41,10 @@ class Quantity extends \XLite\View\Product\Details\Customer\Quantity implements 
      */
     protected function getMaxQuantity()
     {
-        return $this->getProductVariant() && !$this->getProductVariant()->getDefaultAmount()
-            ? $this->getProductVariant()->getAvailableAmount()
+        $productVariant = $this->getProductVariant();
+
+        return $productVariant && !$productVariant->getDefaultAmount()
+            ? $productVariant->getAvailableAmount()
             : parent::getMaxQuantity();
     }
 }

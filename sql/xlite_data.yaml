@@ -68,9 +68,9 @@ XLite\Model\Config:
   - { name: order_number_counter, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 390, value: 1, translations: [{ code: en, option_name: 'Next order #', option_comment: 'You can change the number that will be assigned on the next order. The new order number must be greater than the current maximum order number in the order list. ' }] }
   - { name: cart_ttl, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 395, value: 7, translations: [{ code: en, option_name: 'Cart TTL (days)', option_comment: 'Specify the number of days after which a stored shopping cart should be considered old and should be removed. Leave empty if old carts should never be removed (not recommended)' }] }
   - { name: internal_cron_enabled, category: General, type: checkbox, orderby: 398, value: Y, translations: [{ code: en, option_name: 'Enable internal cron service', option_comment: "This setting allows you to enable/disable the use of your store's internal cron service. This service schedules the run of certain maintenance tasks for your store - like removing customers' expired shopping carts - at the periodicity of once per 100 user sessions." }] }
-  - { name: orders_department, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 480, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'Sales department e-mail' }] }
+  - { name: orders_department, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 480, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'Sales department e-mail', option_comment: '"TO:" address for notifications about orders (creation of new orders, changes of order status, etc). "FROM:" address for low limit warning messages.' }] }
   - { name: orders_per_page, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 430, value: 30, widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'Orders per page' }] }
-  - { name: products_per_page, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 250, value: 9, widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'Products per category listing page' }] }
+  - { name: products_per_page, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 250, value: 12, widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'Products per category listing page' }] }
   - { name: products_per_page_max, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 250, value: 100, widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'Maximum products per category listing page' }] }
   - { name: products_per_page_admin, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 410, value: '10', widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'Products per page' }] }
   - { name: recent_orders, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 440, value: '10', widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'The number of orders in the recent order list' }] }
@@ -79,7 +79,7 @@ XLite\Model\Config:
   - { name: shop_closed, category: Internal, type: checkbox, orderby: 110, value: N, translations: [{ code: en, option_name: 'Close the shop temporarily' }] }
   - { name: shop_currency, category: General, type: '', orderby: 605, value: 840, translations: [{ code: en, option_name: 'Shop currency' }] }
   - { name: trailing_zeroes, category: General, type: '', orderby: 605, value: 0, translations: [{ code: en, option_name: 'Hide trailing zeros in fractional part' }] }
-  - { name: site_administrator, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 460, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'Site administrator e-mail' }] }
+  - { name: site_administrator, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 460, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'Site administrator e-mail', option_comment: '"TO:" address for information on access to your store in safe mode (Hard and Soft reset links), notifications about failed administrator login attempts, low limit warnings, etc.<br />"FROM:" address for most notifications about user profiles.' }] }
   - { name: smtp_password, category: Email, type: 'XLite\View\FormField\Input\PasswordWithValue', orderby: 160, translations: [{ code: en, option_name: Password }] }
   - { name: smtp_security, category: Email, type: 'XLite\View\FormField\Select\SMTPSecurity', orderby: 170, value: no, translations: [{ code: en, option_name: 'Secure connection' }] }
   - { name: smtp_server, category: Email, type: separator, orderby: 100, translations: [{ code: en, option_name: 'SMTP server' }] }
@@ -89,22 +89,22 @@ XLite\Model\Config:
   - { name: start_year, category: Company, type: 'XLite\View\FormField\Input\Text\PastYear', orderby: 380, value: 2015, translations: [{ code: en, option_name: 'Year when store started its operation' }] }
   - { name: subcategories_look, category: General, type: 'XLite\View\FormField\Select\SubcategoriesLook', orderby: 220, value: icons, translations: [{ code: en, option_name: 'Subcategory listings format' }] }
   - { name: default_products_sort_order, category: General, type: 'XLite\View\FormField\Select\DefaultProductSortOrder', orderby: 225, value: 'default', translations: [{ code: en, option_name: 'Default order to sort products within a category' }] }
-  - { name: support_department, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 490, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'HelpDesk/Support service e-mail' }] }
+  - { name: support_department, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 490, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'HelpDesk/Support service e-mail', option_comment: "Address for messages sent by store visitors via the Contact us form." }] }
   - { name: time_format, category: Units, type: 'XLite\View\FormField\Select\TimeFormat', orderby: 670, value: '%H:%M', translations: [{ code: en, option_name: 'Time format' }] }
   - { name: time_zone, category: Units, type: 'XLite\View\FormField\Select\TimeZone', orderby: 680, translations: [{ code: en, option_name: 'Time zone' }] }
-  - { name: users_department, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 470, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'Customer relations e-mail' }] }
+  - { name: users_department, category: Company, type: 'XLite\View\FormField\Input\Text\Email', orderby: 470, value: bit-bucket@x-cart.com, translations: [{ code: en, option_name: 'Customer relations e-mail', option_comment: '"TO:" address for notifications about user profile related events (creation of a new user profile, deletion of a user profile, etc). "FROM:" address for password reset messages.' }] }
   - { name: users_per_page, category: General, type: 'XLite\View\FormField\Input\Text\Integer', orderby: 420, value: '30', widgetParameters: { min: 1 }, translations: [{ code: en, option_name: 'Users per page' }] }
   - { name: use_smtp, category: Email, type: checkbox, orderby: 110, value: N, translations: [{ code: en, option_name: 'Use SMTP server' }] }
   - { name: use_smtp_auth, category: Email, type: checkbox, orderby: 140, value: N, translations: [{ code: en, option_name: 'Use authentication' }] }
-  - { name: version, category: Version, value: '5.2.13' }
+  - { name: version, category: Version, value: '5.2.15' }
   - { name: weight_symbol, category: Units, type: text, orderby: 620, value: lbs, translations: [{ code: en, option_name: 'Weight symbol' }] }
   - { name: weight_unit, category: Units, type: 'XLite\View\FormField\Select\WeightUnit', orderby: 610, value: lbs, translations: [{ code: en, option_name: 'Weight unit' }] }
-  - { name: weight_trailing_zeroes, category: Units, type: checkbox, orderby: 621, value: N, translations: [{ code: en, option_name: 'Hide trailing zeros in fractional part' }] }
+  - { name: weight_trailing_zeroes, category: Units, type: checkbox, orderby: 621, value: Y, translations: [{ code: en, option_name: 'Hide trailing zeros in fractional part' }] }
   - { name: weight_format, category: Units, type: 'XLite\View\FormField\Select\FloatFormat', orderby: 622, value: '|.', translations: [{ code: en, option_name: 'Weight format' }] }
   - { name: dim_symbol, category: Units, type: text, orderby: 625, value: in, translations: [{ code: en, option_name: 'Dimensional symbol' }] }
   - { name: dim_unit, category: Units, type: 'XLite\View\FormField\Select\DimUnit', orderby: 623, value: in, translations: [{ code: en, option_name: 'Dimensional unit' }] }
-  - { name: curl_cainfo, category: Environment, type: text, orderby: 110, value: '', translations: [{ code: en, option_name: "The name of a file holding one or more certificates to verify the peer with" }] }
-  - { name: curl_capath, category: Environment, type: text, orderby: 120, value: '', translations: [{ code: en, option_name: "A directory that holds multiple CA certificates" }] }
+  - { name: curl_cainfo, category: Environment, type: text, orderby: 110, value: '', translations: [{ code: en, option_name: "Path to Certificate Authority (CA) bundle" }] }
+  - { name: curl_capath, category: Environment, type: text, orderby: 120, value: '', translations: [{ code: en, option_name: "Directory holding CA certificates" }] }
   - { name: force_login_before_checkout, category: General, type: checkbox, orderby: 305, value: Y, translations: [{ code: en, option_name: 'Ask anonymous users to create an account or sign in before checkout' }] }
   - { name: enable_add2cart_button_grid, category: General, type: checkbox, orderby: 301, value: N, translations: [{ code: en, option_name: 'Display "Add to cart" buttons for products in grid view' }] }
   - { name: clean_url_flag, category: CleanURL, type: checkbox, orderby: 100, value: N, translations: [{ code: en, option_name: 'Clean URL availability flag' }] }
@@ -178,7 +178,7 @@ XLite\Model\Currency:
   - { currency_id: 191, code: HRK, e: 2, symbol: Kn, prefix: Kn, translations: [{ code: en, name: 'Croatian Kuna' }] }
   - { currency_id: 332, code: HTG, e: 2, symbol: G, prefix: G, translations: [{ code: en, name: Gourde }] }
   - { currency_id: 348, code: HUF, e: 2, symbol: ƒ, prefix: ƒ, translations: [{ code: en, name: 'Hungary Forint' }] }
-  - { currency_id: 360, code: IDR, e: 2, symbol: Rp, prefix: Rp, translations: [{ code: en, name: 'Indonesian Rupiah' }] }
+  - { currency_id: 360, code: IDR, e: 0, symbol: Rp, prefix: Rp, translations: [{ code: en, name: 'Indonesian Rupiah' }] }
   - { currency_id: 376, code: ILS, e: 2, symbol: ₪, prefix: ₪, translations: [{ code: en, name: 'New Israeli Sheqel' }] }
   - { currency_id: 356, code: INR, e: 2, symbol: ₹, prefix: ₹, translations: [{ code: en, name: 'Indian Rupee' }] }
   - { currency_id: 368, code: IQD, e: 3, symbol: ع.د, prefix: ع.د, translations: [{ code: en, name: 'Iraqi Dinar' }] }

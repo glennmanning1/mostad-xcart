@@ -127,18 +127,4 @@ class Header extends \XLite\View\AResourcesContainer
     {
         return array();
     }
-
-    /**
-     * Get ZeroClipboard library's SWF URL
-     * 
-     * @return string
-     */
-    protected function getZeroClipboardSWFUrl()
-    {
-        return \XLite\Core\Layout::getInstance()->getResourceWebPath(
-            'ZeroClipboard.swf',
-            \XLite\Core\Layout::WEB_PATH_OUTPUT_SHORT,
-            \XLite::COMMON_INTERFACE
-        );
-    }
 }

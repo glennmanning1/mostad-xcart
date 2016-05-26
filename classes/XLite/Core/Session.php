@@ -561,6 +561,7 @@ class Session extends \XLite\Base\Singleton
         $sid = null;
         $source = null;
         $arg = $this->getName();
+        $session = null;
 
         foreach (array('POST', 'GET', 'COOKIE') as $key) {
             if (isset($GLOBALS['_' . $key][$arg])) {
@@ -570,7 +571,26 @@ class Session extends \XLite\Base\Singleton
             }
         }
 
-        $session = $this->loadSession($sid);
+        if ('COOKIE' == $source && !empty($_SERVER['HTTP_COOKIE'])) {
+
+            // $_SERVER['HTTP_COOKIE'] may contain duplicated xid values when X-Cart is installed in the subdirectory
+            // of other X-Cart installation (see BUG-2983)
+            // We need to try each xid to detect which is correct...
+            foreach (explode(';', $_SERVER['HTTP_COOKIE']) as $elem) {
+                list($name, $value) = explode('=', $elem);
+                if (trim($name) == $arg) {
+                    $session = $this->loadSession(trim($value));
+                    if ($session) {
+                        $sid = trim($value);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!$session) {
+            $session = $this->loadSession($sid);
+        }
 
         // If the $session is null and $source is not a cookie
         //      for example:

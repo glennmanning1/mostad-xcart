@@ -40,6 +40,11 @@ abstract class Catalog extends \XLite\Model\Base\I18n
     const CLEAN_URL_HISTORY_LENGTH = 10;
 
     /**
+     * WEB LC root postprocessing constant
+     */
+    const WEB_LC_ROOT = '{{WEB_LC_ROOT}}';
+
+    /**
      * Clean URLs
      *
      * @var \Doctrine\Common\Collections\Collection
@@ -186,4 +191,60 @@ abstract class Catalog extends \XLite\Model\Base\I18n
             }
         }
     }
+
+    // {{{ Preprocessing text values methods
+
+    /**
+     * Get processed value
+     *
+     * @param string $value Value to process
+     *
+     * @return string
+     */
+    public static function getPreprocessedValue($value)
+    {
+        return str_replace(
+            static::getWebPreprocessingTags(),
+            static::getWebPreprocessingURL(),
+            $value
+        );
+    }
+
+    /**
+     * Register tags to be replaced with some URLs
+     *
+     * @return array
+     */
+    protected static function getWebPreprocessingTags()
+    {
+        return array(
+            static::WEB_LC_ROOT,
+        );
+    }
+
+    /**
+     * Register URLs that should be given instead of tags
+     *
+     * @return array
+     */
+    protected static function getWebPreprocessingURL()
+    {
+        // Get URL of shop. If the HTTPS is used then it should be cleaned from ?xid=<xid> construction
+        $url = \XLite\Core\URLManager::getShopURL(
+            null,
+            \XLite\Core\Request::getInstance()->isHTTPS(),
+            array(),
+            null,
+            false
+        );
+
+        // We are cleaning URL from unnecessary here <xid> construction
+        $url = preg_replace('/(\?.*)/', '', $url);
+
+        return array(
+            $url,
+        );
+    }
+
+    // }}}
 }

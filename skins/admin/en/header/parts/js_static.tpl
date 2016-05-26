@@ -19,6 +19,5 @@ var xliteConfig = {
   base_url:            '{getBaseShopURL()}',
   form_id:             '{xlite.formId}',
   form_id_name:        '{%\XLite::FORM_ID%}',
-  zeroClipboardSWFURL: '{getZeroClipboardSWFUrl()}'
 };
 </script>

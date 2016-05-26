@@ -13,22 +13,24 @@ core.microhandlers.add(
   'BannerRotation',
   '#banner-rotation-widget',
   function (event) {
+    var $this = jQuery(this);
     var options = core.getCommentedData(this);
-    $(this).carousel(options);
-    $(this).carousel('cycle');
+    $this.carousel(options);
+    $this.carousel('cycle');
 
-    var firstItem = $(this).find('.item').first();
+    var firstItem = $this.find('.item').first();
     firstItem.addClass('active');
 
-    var firstIndicator = $(this).find('.carousel-indicators li').first();
+    var firstIndicator = $this.find('.carousel-indicators li').first();
     firstIndicator.addClass('active');
 
     var maxHeight = firstItem.find('img').height();
     if (maxHeight > 0) {
-        firstItem.find('img').onload = function(){
-            $('#banner-rotation-widget .carousel-inner').height(maxHeight);
-        }
-        $('#banner-rotation-widget .carousel-inner').height(maxHeight);
-    };
+      firstItem.find('img').onload = function () {
+        jQuery('#banner-rotation-widget .carousel-inner').height(maxHeight);
+      };
+
+      jQuery('#banner-rotation-widget .carousel-inner').height(maxHeight);
+    }
   }
 );

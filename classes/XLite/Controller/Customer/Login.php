@@ -88,6 +88,7 @@ class Login extends \XLite\Controller\Customer\ACustomer
             \XLite\Core\Auth::getInstance()->isLogged()
             && 'logoff' !== \XLite\Core\Request::getInstance()->{static::PARAM_ACTION}
         ) {
+            $this->setHardRedirect(true);
             $this->setReturnURL($this->buildURL());
         }
 

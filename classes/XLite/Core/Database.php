@@ -190,14 +190,6 @@ class Database extends \XLite\Base\Singleton
             \Doctrine\DBAL\Types\Type::addType('money', 'XLite\Core\ColumnType\Money');
         }
 
-        // Varbinary
-        if (!\Doctrine\DBAL\Types\Type::hasType('varbinary')) {
-            \Doctrine\DBAL\Types\Type::addType('varbinary', 'XLite\Core\ColumnType\VarBinary');
-        }
-        $em->getConnection()
-            ->getDatabasePlatform()
-            ->registerDoctrineTypeMapping('varbinary', 'varbinary');
-
         // Decimal
         if (\Doctrine\DBAL\Types\Type::hasType('decimal')) {
             \Doctrine\DBAL\Types\Type::overrideType('decimal', 'XLite\Core\ColumnType\Decimal');

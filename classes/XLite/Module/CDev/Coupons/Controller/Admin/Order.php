@@ -166,8 +166,8 @@ class Order extends \XLite\Controller\Admin\Order implements \XLite\Base\IDecora
      */
     protected function updateOrderItems($order)
     {
-        $this->processCoupons($order);
         parent::updateOrderItems($order);
+        $this->processCoupons($order);
     }
 
     /**

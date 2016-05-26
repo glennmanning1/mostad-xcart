@@ -154,8 +154,8 @@ class Export extends \XLite\Controller\Admin\AAdmin
             'include'       => $request->section,
             'copyResources' => 'local' == \XLite\Core\Request::getInstance()->options['files'],
             'attrs'         => $request->options['attrs'],
-            'delimiter'     => $request->options['delimiter'] ?: \XLite\Core\Config::getInstance()->Units->csv_delim,
-            'charset'       => $request->options['charset'],
+            'delimiter'     => isset($request->options['delimiter']) ? $request->options['delimiter'] : \XLite\Core\Config::getInstance()->Units->csv_delim,
+            'charset'       => isset($request->options['charset']) ? $request->options['charset'] : \XLite\Core\Config::getInstance()->Units->export_import_charset,
             'filter'        => isset($request->options['filter']) ? $request->options['filter'] : '',
             'selection'     => isset($request->options['selection']) ? $request->options['selection'] : array(),
         );
@@ -169,6 +169,8 @@ class Export extends \XLite\Controller\Admin\AAdmin
     protected function doActionCancel()
     {
         \XLite\Logic\Export\Generator::cancel();
+
+        $this->setSilenceClose(true);
     }
 
     /**
@@ -244,7 +246,7 @@ class Export extends \XLite\Controller\Admin\AAdmin
      */
     public static function defineFreeFormIdActions()
     {
-        return array_merge(parent::defineFreeFormIdActions(), array('itemlist_export', 'pack', 'download'));
+        return array_merge(parent::defineFreeFormIdActions(), array('itemlist_export', 'pack', 'download', 'cancel'));
     }
 
     /**

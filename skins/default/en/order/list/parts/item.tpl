@@ -15,12 +15,7 @@
     <ul class="order-spec-wrapper-list">
       <li class="order-spec-wrapper">{*order number, date, total, num items*}
         <ul class="order-spec">
-          <li class="order-switcher"><i data-interval="0" data-toggle="collapse" id="order-{order.orderId}-action" data-target="#order-{order.orderId}" class="fa fa-plus-square-o"></i></li>
-          <li class="order-number"><a href="{buildURL(#order#,##,_ARRAY_(#order_number#^order.getOrderNumber()))}">#{order.getOrderNumber()}</a></li>
-          <li class="date">{formatTime(order.date)}</li>
-          <li class="order-break-line"></li>
-          <li class="order-total"><span class="order-spec-label total-label">{t(#Total#)}:</span><span class="order-spec-value total-value">{formatOrderPrice(order.getTotal(),order.getCurrency(),1)}</span></li>
-          <li class="order-items-count"><span class="order-spec-label order-items-count-label">{t(#Items#)}:</span><span class="order-spec-value order-items-count-value">{order.countQuantity()}</span></li>
+          <list name="orders.children.spec" />
         </ul>
       </li>
 

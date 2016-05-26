@@ -185,6 +185,17 @@ abstract class ACustomer extends \XLite\Controller\AController
             unset($params['category_id']);
         }
 
+        // Add pageId if it's presented in the current request params for SEO purposes (see BUG-3118)
+        $pageId = intval(\XLite\Core\Request::getInstance()->{\XLite\View\Pager\APager::PARAM_PAGE_ID});
+
+        if (1 < $pageId) {
+            $params[\XLite\View\Pager\APager::PARAM_PAGE_ID] = $pageId;
+        }
+
+        $method = \XLite\Core\Config::getInstance()->Security->customer_security
+            ? 'getSecureShopURL'
+            : 'getShopURL';
+
         if (isset($_SERVER)
             && isset($_SERVER['QUERY_STRING'])
             && '' === $_SERVER['QUERY_STRING']
@@ -197,12 +208,11 @@ abstract class ACustomer extends \XLite\Controller\AController
             $canonicalURL = '';
 
         } elseif ('main' === $target) {
-            $canonicalURL = $this->getShopURL();
+            $canonicalURL = $this->$method();
 
         } else {
-            $canonicalURL = $this->getShopURL(
-                \XLite\Core\Converter::buildURL($target, '', $params, null, true),
-                $this->isHTTPS()
+            $canonicalURL = $this->$method(
+                \XLite\Core\Converter::buildURL($target, '', $params, null, true)
             );
         }
 

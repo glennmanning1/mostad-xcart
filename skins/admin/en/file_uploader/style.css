@@ -30,8 +30,8 @@ div.file-uploader .preview {
   text-align: center;
   padding: 1px;
   max-width: 123px;
-  margin-left: -2px;
-  margin-top: -2px;
+  margin-left: -1px;
+  margin-top: -1px;
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   border-radius: 6px;
@@ -58,7 +58,6 @@ div.multiple-files .ui-state-highlight,
 div.multiple-files div.file-loading,
 div.multiple-files div.file-uploader {
   float: left;
-  padding: 1px;
   margin-right: 10px;
   margin-bottom: 10px;
   background: #fff;

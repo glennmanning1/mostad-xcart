@@ -76,6 +76,18 @@ class Price extends \XLite\View\FormField\Input\Text\Symbol
     }
 
     /**
+     * Prepare request data (typecasting)
+     *
+     * @param mixed $value Value
+     *
+     * @return mixed
+     */
+    public function prepareRequestData($value)
+    {
+        return floatval(parent::prepareRequestData($value));
+    }
+
+    /**
      * Get currency
      *
      * @return \XLite\Model\Currency

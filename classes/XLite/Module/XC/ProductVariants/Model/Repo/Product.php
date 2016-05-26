@@ -45,9 +45,15 @@ abstract class Product extends \XLite\Model\Repo\Product implements \XLite\Base\
     {
         $queryBuilder->linkLeft('p.variants', 'pv');
 
+        $productAmountCnd = new \Doctrine\ORM\Query\Expr\Andx();
+        $productAmountCnd->add('i.amount > :zero');
+        // Product amount counts ONLY IF product have no variants
+        // OR have variant with defaultAmount
+        $productAmountCnd->add('pv IS NULL OR pv.defaultAmount = true');
+
         $orCnd = new \Doctrine\ORM\Query\Expr\Orx();
         $orCnd->add('i.enabled = :disabled');
-        $orCnd->add('i.amount > :zero');
+        $orCnd->add($productAmountCnd);
         $orCnd->add('pv.amount > :zero');
 
         $queryBuilder->andWhere($orCnd)

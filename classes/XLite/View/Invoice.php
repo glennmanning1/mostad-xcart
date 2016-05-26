@@ -140,7 +140,7 @@ class Invoice extends \XLite\View\AView
     {
         $order = $this->getOrder();
 
-        return static::formatPrice($order->getSubtotal(), $order->getCurrency(), true);
+        return static::formatInvoicePrice($order->getSubtotal(), $order->getCurrency(), true);
     }
 
     /**
@@ -152,7 +152,7 @@ class Invoice extends \XLite\View\AView
     {
         $order = $this->getOrder();
 
-        return static::formatPrice($order->getTotal(), $order->getCurrency(), true);
+        return static::formatInvoicePrice($order->getTotal(), $order->getCurrency(), true);
     }
 
     /**

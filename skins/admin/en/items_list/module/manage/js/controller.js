@@ -292,10 +292,18 @@ function updateEnableButtons()
           // Check and disable the checkbox
           jQuery(box).attr('checked', true);
           jQuery(box).attr('disabled', true);
+          var newValueElem = jQuery(box).parents('li.main-action').find('input[type="hidden"].new-value');
+          if (0 < newValueElem.length) {
+            jQuery(newValueElem).attr('value', 1);
+          }
         }
       } else if (jQuery(box).is(':disabled')){
         // Remove 'disabled' attribute of the checkbox
         jQuery(box).attr('disabled', false);
+        var newValueElem = jQuery(box).parents('li.main-action').find('input[type="hidden"].new-value');
+        if (0 < newValueElem.length) {
+          jQuery(newValueElem).attr('value', 0);
+        }
       }
     }
 

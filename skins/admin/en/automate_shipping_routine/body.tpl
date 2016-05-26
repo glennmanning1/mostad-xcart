@@ -20,7 +20,9 @@
         <tr>
           <th></th>
           <th FOREACH="getShippingModules(),module">
-            <img class="logo-image" src="{getImageURL(module)}" alt="{module.getModuleName()}">
+            <div class="logo-image-container">
+              <img class="logo-image" src="{getImageURL(module)}" alt="{module.getModuleName()}">
+            </div>
           </th>
         </tr>
       </thead>

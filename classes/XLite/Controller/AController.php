@@ -1649,11 +1649,13 @@ abstract class AController extends \XLite\Core\Handler
             case 403:
                 header('HTTP/1.0 403 Forbidden', true, 403);
                 header('Status: 403 Forbidden');
+                header('X-Robots-Tag: noindex, nofollow');
                 break;
 
             case 404:
                 header('HTTP/1.0 404 Not Found', true, 404);
                 header('Status: 404 Not Found');
+                header('X-Robots-Tag: noindex, nofollow');
                 break;
 
             default:

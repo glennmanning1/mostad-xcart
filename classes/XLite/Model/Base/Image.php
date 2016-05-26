@@ -157,7 +157,14 @@ abstract class Image extends \XLite\Model\Base\Storage
         $newEntity = parent::cloneEntity();
 
         $newEntity->setPath('');
-        $newEntity->loadFromURL($this->getURL(), true);
+
+        if (static::STORAGE_URL == $this->getStorageType()) {
+            $newEntity->loadFromURL($this->getURL(), true);
+
+        } else {
+            // Clone local image (will be created new file with unique name)
+            $newEntity->loadFromLocalFile($this->getStoragePath(), null, true);
+        }
 
         return $newEntity;
     }

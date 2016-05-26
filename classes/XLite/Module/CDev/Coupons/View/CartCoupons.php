@@ -97,4 +97,14 @@ class CartCoupons extends \XLite\View\AView
     }
 
     // }}}
+
+    /**
+     * Check if coupon panel 'Have a discount coupon?' is visible
+     *
+     * @return boolean
+     */
+    protected function isCouponPanelVisible()
+    {
+        return !$this->getCart()->hasSingleUseCoupon();
+    }
 }

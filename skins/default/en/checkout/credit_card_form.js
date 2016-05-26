@@ -39,8 +39,8 @@ var ccTypeSprites = {
     'SW'      : 'sw',
     'SOLO'    : 'sw',
     'DELTA'   : 'visa',
-    'CUP'     : 'cup',
-}
+    'CUP'     : 'cup'
+};
 
 /**
  * JS functions
@@ -52,21 +52,21 @@ function trim(str) {
 
 function setCardType(type) {
 
-    $('.cardType .icon').attr('class', 'dropdown-toggle icon');
-    $('.cardType .icon .card').attr('class', 'card');
-    $('.cardCVV2 .icon').attr('class', 'icon blank');
-    $('.cardCVV2 .right-text').attr('class', 'right-text').find('.default-text').show().siblings().hide();
+    jQuery('.cardType .icon').attr('class', 'dropdown-toggle icon');
+    jQuery('.cardType .icon .card').attr('class', 'card');
+    jQuery('.cardCVV2 .icon').attr('class', 'icon blank');
+    jQuery('.cardCVV2 .right-text').attr('class', 'right-text').find('.default-text').show().siblings().hide();
 
-    $('#card_type').val('');
+    jQuery('#card_type').val('');
 
-    $('.cardCVV2').show();
+    jQuery('.cardCVV2').show();
     if (typeof type == 'undefined') {
-        accountNumber = $('#cc_number').val().replace(/[^0-9]/g, '');
+        var accountNumber = jQuery('#cc_number').val().replace(/[^0-9]/g, '');
 
         if ('' == accountNumber) {
-            $('.cardType .icon').addClass('blank');
-            $('.cardCVV2 .right-text').addClass('blank');
-            $('.cardCVV2').hide();
+            jQuery('.cardType .icon').addClass('blank');
+            jQuery('.cardCVV2 .right-text').addClass('blank');
+            jQuery('.cardCVV2').hide();
             return;
         }
 
@@ -80,30 +80,30 @@ function setCardType(type) {
     }
 
     if (typeof type == 'undefined') {
-        $('.cardCVV2').hide();
-        $('.cardType .icon').addClass('unknown');
-        $('.cardCVV2 .right-text').addClass('unknown').find('.default-text').show().siblings().hide();
+        jQuery('.cardCVV2').hide();
+        jQuery('.cardType .icon').addClass('unknown');
+        jQuery('.cardCVV2 .right-text').addClass('unknown').find('.default-text').show().siblings().hide();
         return;
     }
 
-    $('#card_type').val(type);
+    jQuery('#card_type').val(type);
 
     if (ccTypeSprites[type]) {
-        $('.cardType .icon .card').addClass(ccTypeSprites[type]);
-        $('.cardCVV2 .icon').removeClass('blank').addClass(ccTypeSprites[type]);
+        jQuery('.cardType .icon .card').addClass(ccTypeSprites[type]);
+        jQuery('.cardCVV2 .icon').removeClass('blank').addClass(ccTypeSprites[type]);
     }
 
-    var textSpan = $('.cardCVV2 .right-text').find('.'+type);
+    var textSpan = jQuery('.cardCVV2 .right-text').find('.'+type);
     if (textSpan.length) {
         textSpan.show().siblings().hide();
     } else {
-        $('.cardCVV2 .right-text').attr('class', 'right-text').find('.default-text').show().siblings().hide();
+        jQuery('.cardCVV2 .right-text').attr('class', 'right-text').find('.default-text').show().siblings().hide();
     }
 }
 
 function cardTypeHandlersSetter() {
-    if ($('.cc-form').length) {
-        var numberField = $('#cc_number');
+    if (jQuery('.cc-form').length) {
+        var numberField = jQuery('#cc_number');
         numberField.change(function () { setCardType(); });
         numberField.keyup(function () { setCardType(); });
         setCardType();

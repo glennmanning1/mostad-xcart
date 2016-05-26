@@ -970,7 +970,8 @@ class Product extends \XLite\Model\Base\Catalog implements \XLite\Model\Base\IOr
     {
         return $this->getInventory()->getEnabled()
             && $this->getInventory()->getLowLimitEnabledCustomer()
-            && $this->getInventory()->isLowLimitReached(true);
+            && $this->getInventory()->isLowLimitReached(true)
+            && !$this->isOutOfStock();
     }
 
     /**
@@ -1005,6 +1006,34 @@ class Product extends \XLite\Model\Base\Catalog implements \XLite\Model\Base\IOr
     public function getCommonDescription()
     {
         return $this->getBriefDescription() ?: $this->getDescription();
+    }
+
+    /**
+     * Get processed product brief description
+     *
+     * @return string
+     */
+    public function getProcessedBriefDescription()
+    {
+        $value = $this->getBriefDescription();
+
+        return $value
+            ? static::getPreprocessedValue($value)
+            : $value;
+    }
+
+    /**
+     * Get processed product description
+     *
+     * @return string
+     */
+    public function getProcessedDescription()
+    {
+        $value = $this->getDescription();
+
+        return $value
+            ? static::getPreprocessedValue($value)
+            : $value;
     }
 
     /**

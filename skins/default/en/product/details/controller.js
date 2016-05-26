@@ -38,7 +38,9 @@ function ProductDetailsController(base)
     core.bind(
       'updateCart',
       function(event, data) {
-        for (var i = 0; i < data.items.length; i++) {
+        var i;
+
+        for (i = 0; i < data.items.length; i++) {
           if (data.items[i].object_type == 'product' && data.items[i].object_id == o.productId) {
             if (0 < data.items[i].quantity && !jQuery('body').hasClass('added-product')) {
               jQuery('body').addClass('added-product')
@@ -52,7 +54,7 @@ function ProductDetailsController(base)
         }
 
         if (!o.selfAdded) {
-          for (var i = 0; i < data.items.length; i++) {
+          for (i = 0; i < data.items.length; i++) {
             if (data.items[i].object_type == 'product' && data.items[i].object_id == o.productId) {
               o.block.load();
             }
@@ -106,14 +108,15 @@ ProductDetailsController.prototype.initialize = function()
  * Main widget
  */
 
-function ProductDetailsView(base, productId)
-{
+function ProductDetailsView (base, productId) {
   this.callSupermethod('constructor', arguments);
 
   this.productId = productId;
 
   core.bind('mm-menu.created', function(event, api){
-    $.colorbox.remove();
+    if (jQuery.colorbox) {
+      jQuery.colorbox.remove();
+    };
   });
 
   this.linkClickHandler = _.bind(
@@ -212,7 +215,9 @@ ProductDetailsView.prototype.postprocess = function(isSuccess, initial)
           rel.zoomHeight = img.height();
           core.setRelArray(jQuery(this), rel);
 
-          jQuery(this).CloudZoom();
+          if (typeof jQuery(this).CloudZoom !== "undefined") {
+            jQuery(this).CloudZoom();
+          };
 
         } else {
 
@@ -381,7 +386,7 @@ ProductDetailsView.prototype.openTab = function(link)
   tabsBase.find('.tabs-container #' + link.data('id')).show();
 
   this.triggerVent('tab.open', { widget: this, tab: link });
-}
+};
 
 ProductDetailsView.prototype.checkLocation = function()
 {
@@ -419,7 +424,7 @@ ProductDetailsView.prototype.checkLocation = function()
         this.openTab(state.tab);
       }
     }
-}
+};
 
 ProductDetailsView.prototype.showLightbox = function()
 {
@@ -447,38 +452,34 @@ ProductDetailsView.prototype.hideLightbox = function()
     );
 };
 
-ProductDetailsView.prototype.getColorboxOptions = function()
-{
+ProductDetailsView.prototype.getColorboxOptions = function () {
   return {
-    onComplete: function() {
+    onComplete: function () {
       jQuery('#cboxCurrent').css('display', 'none');
     },
     onClosed: _.bind(this.hideLightbox, this),
     maxWidth: jQuery(document).width(),
     maxHeight: jQuery(document).height()
   };
-}
+};
 
 // Get base element for shade / unshade operation
-ProductDetailsView.prototype.getShadeBase = function() {
+ProductDetailsView.prototype.getShadeBase = function () {
   return jQuery('.shade-base', this.base).eq(0);
 };
 
 // Image gallery switcher
-ProductDetailsView.prototype.switchImage = function(diff)
-{
+ProductDetailsView.prototype.switchImage = function (diff) {
   var selected = -1;
   var i = 0;
 
   // Detect current index
-  this.gallery.each(
-      function() {
-        if (selected == -1 && jQuery(this).hasClass('selected')) {
-          selected = i;
-        }
-        i++;
-      }
-  );
+  this.gallery.each(function () {
+    if (selected == -1 && jQuery(this).hasClass('selected')) {
+      selected = i;
+    }
+    i++;
+  });
 
   if (selected == -1) {
     selected = 0;
@@ -497,12 +498,11 @@ ProductDetailsView.prototype.switchImage = function(diff)
 };
 
 // Select image from gallery
-ProductDetailsView.prototype.selectImage = function(pos)
-{
+ProductDetailsView.prototype.selectImage = function (pos) {
   this.gallery.removeClass('selected');
 
   // Refresh main image and another options + cloud zoom plugin restart
-  next = this.gallery.eq(pos);
+  var next = this.gallery.eq(pos);
   next.addClass('selected');
 
   if (this.zoomWidget) {

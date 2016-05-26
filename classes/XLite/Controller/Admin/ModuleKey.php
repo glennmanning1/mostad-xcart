@@ -96,7 +96,7 @@ class ModuleKey extends \XLite\Controller\Admin\AAdmin
      */
     protected function doActionRegisterKey()
     {
-        $key = \XLite\Core\Request::getInstance()->key;
+        $key = trim(\XLite\Core\Request::getInstance()->key);
 
         if ($key) {
             $keysInfo = \XLite\Core\Marketplace::getInstance()->checkAddonKey($key);
@@ -139,7 +139,9 @@ class ModuleKey extends \XLite\Controller\Admin\AAdmin
 
                     $isValid = true;
 
-                    if (\XLite::isFreeLicense($entity)) {
+                    $isFreeLicense = \XLite::isFreeLicense($entity);
+
+                    if ($isFreeLicense) {
                         if (0 == \XLite\Core\Database::getRepo('XLite\Model\Module')->hasMarketplaceModules(true)) {
                             $isValid = false;
                             $this->showError(
@@ -154,7 +156,7 @@ class ModuleKey extends \XLite\Controller\Admin\AAdmin
                         \XLite\Core\Database::getEM()->persist($entity);
                         \XLite\Core\Database::getEM()->flush();
 
-                        if (\XLite::isFreeLicense()) {
+                        if ($isFreeLicense) {
                             // Search for modules from non-free edition
                             $nonFreeModules = \XLite\Core\Database::getRepo('XLite\Model\Module')
                                 ->getNonFreeEditionModulesList(false);

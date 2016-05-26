@@ -1,0 +1,20 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Demo store (menu)
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Module\CDev\SimpleCMS\Model\Menu:
+  - { link: 'shipping.html', type: P, position: 200, translations: [{ code: en, name: Shipping }, { code: ru, name: Доставка }]}
+  - { link: '{new arrivals}', visibleFor: AL, type: P, position: 400, enabled: 1, translations: [{ code: en, name: New! },{ code: ru, name: Новинки }] }
+  - { link: '{coming soon}', visibleFor: AL, type: P, position: 500, enabled: 1, translations: [{ code: en, name: Coming soon },{ code: ru, name: 'Скоро в продаже' }] }
+  - { visibleFor: AL, type: P, position: 150, translations: [{ code: en, name: "Hot deals" }, { code: ru, name: "Акции" }], children: [{ enabled: 1, link: '{sale}', visibleFor: AL, type: P, position: 100, translations: [{ code: en, name: Sale }, { code: ru, name: "Распродажа" }]},{ enabled: 1, link: '{bestsellers}', visibleFor: AL, type: P, position: 200, translations: [{ code: en, name: "Bestsellers" }, { code: ru, name: "Бестселлеры" }]},{ enabled: 0, link: '?target=special_offers', visibleFor: AL, type: P, position: 300, translations: [{ code: en, name: "Special offers" }, { code: ru, name: "Специальные предложения" }]}]}
+  - { link: '{contact us}', type: P, position: 700, translations: [{ code: en, name: "Contact us" }, { code: ru, name: "Напишите нам" }]}
+
+  - { link: 'terms-and-conditions.html', type: F, position: 100, translations: [{ code: en, name: "Terms & Conditions" }, { code: ru, name: "Условия" }]}
+  - { link: 'shipping.html', type: F, position: 200, translations: [{ code: en, name: Shipping }, { code: ru, name: "Доставка" }]}
+  - { link: '?target=map', type: F, position: 300, translations: [{ code: en, name: "Sitemap" },{ code: ru, name: "Карта сайта" }]}
+

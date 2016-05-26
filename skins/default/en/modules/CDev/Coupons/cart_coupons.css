@@ -62,3 +62,7 @@
   width: 105px;
   white-space: normal;
 }
+
+.checkout-block .steps .coupons .inline-error {
+  position: static;
+}

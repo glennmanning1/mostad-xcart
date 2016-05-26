@@ -66,6 +66,7 @@ class Marketplace extends \XLite\Base\Singleton
     const FIELD_VERSION               = 'version';
     const FIELD_VERSION_MAJOR         = 'major';
     const FIELD_VERSION_MINOR         = 'minor';
+    const FIELD_VERSION_BUILD         = 'build';
     const FIELD_MIN_CORE_VERSION      = 'minorRequiredCoreVersion';
     const FIELD_REVISION              = 'revision';
     const FIELD_REVISION_DATE         = 'revisionDate';
@@ -440,7 +441,7 @@ class Marketplace extends \XLite\Base\Singleton
                     static::FIELD_NAME   => $module->getName(),
                     static::FIELD_AUTHOR => $module->getAuthor(),
                     static::FIELD_VERSION_MAJOR  => $module->getMajorVersion(),
-                    static::FIELD_VERSION_MINOR  => $module->getMinorVersion(),
+                    static::FIELD_VERSION_MINOR  => $module->getFullMinorVersion(),
                     static::FIELD_MODULE_ENABLED => $module->getEnabled() ? 1 : 0,
                 );
             }
@@ -638,15 +639,20 @@ class Marketplace extends \XLite\Base\Singleton
             $coreVersion = $core[static::FIELD_VERSION];
             $coreVersionMajor = $coreVersion[static::FIELD_VERSION_MAJOR];
             $coreVersionMinor = $coreVersion[static::FIELD_VERSION_MINOR];
+            $coreVersionBuild = !empty($coreVersion[static::FIELD_VERSION_BUILD])
+                ? $coreVersion[static::FIELD_VERSION_BUILD]
+                : 0;
+
+            $fullCoreVersionMinor = $coreVersionMinor . ($coreVersionBuild ? '.' . $coreVersionBuild : '');
 
             if (isset($result[$coreVersionMajor])) {
                 $currentVersion = $result[$coreVersionMajor][static::FIELD_VERSION];
                 $currentVersionMinor = $currentVersion[static::FIELD_VERSION_MINOR];
             }
 
-            if (!isset($currentVersionMinor) || version_compare($currentVersionMinor, $coreVersionMinor, '<')) {
+            if (!isset($currentVersionMinor) || version_compare($currentVersionMinor, $fullCoreVersionMinor, '<')) {
                 $result[$coreVersionMajor] = array(
-                    $coreVersionMinor,
+                    $fullCoreVersionMinor,
                     $core[static::FIELD_REVISION_DATE],
                     $core[static::FIELD_LENGTH]
                 );
@@ -1140,12 +1146,20 @@ class Marketplace extends \XLite\Base\Singleton
             // Module versions
             $majorVersion = $this->getField($version, static::FIELD_VERSION_MAJOR);
             $minorVersion = $this->getField($version, static::FIELD_VERSION_MINOR);
+            $build = $this->getField($version, static::FIELD_VERSION_BUILD) ?: 0;
 
             // Short names
             $key = $author . '_' . $name . '_' . $majorVersion;
 
             // To make modules list unique
-            if (!isset($result[$key]) || version_compare($result[$key]['minorVersion'], $minorVersion, '<')) {
+            if (
+                !isset($result[$key])
+                || version_compare($result[$key]['minorVersion'], $minorVersion, '<')
+                || (
+                    version_compare($result[$key]['minorVersion'], $minorVersion, '=')
+                    && version_compare($result[$key]['build'], $build, '<')
+                )
+            ) {
                 // It's the structure of \XLite\Model\Module class data
                 $result[$key] = array(
                     'name'            => $name,
@@ -1158,6 +1172,7 @@ class Marketplace extends \XLite\Base\Singleton
                     'currency'        => $this->getField($module, static::FIELD_CURRENCY),
                     'majorVersion'    => $majorVersion,
                     'minorVersion'    => $minorVersion,
+                    'build'           => $build,
                     'minorRequiredCoreVersion' => $this->getField($module, static::FIELD_MIN_CORE_VERSION),
                     'revisionDate'    => $this->getField($module, static::FIELD_REVISION_DATE),
                     'landingPosition' => $this->getField($module, static::FIELD_LANDING_POSITION),
@@ -1983,7 +1998,7 @@ class Marketplace extends \XLite\Base\Singleton
                         static::FIELD_NAME => $module->getName(),
                         static::FIELD_AUTHOR => $module->getAuthor(),
                         static::FIELD_VERSION_MAJOR => $module->getMajorVersion(),
-                        static::FIELD_VERSION_MINOR => $module->getMinorVersion(),
+                        static::FIELD_VERSION_MINOR => $module->getFullMinorVersion(),
                     );
                 }
             }
@@ -2567,9 +2582,12 @@ class Marketplace extends \XLite\Base\Singleton
      */
     protected function getVersionField($versionMajor, $versionMinor)
     {
+        list($versionMinor, $build) = \Includes\Utils\Converter::parseMinorVersion($versionMinor);
+
         return array(
             static::FIELD_VERSION_MAJOR => $versionMajor,
             static::FIELD_VERSION_MINOR => $versionMinor,
+            static::FIELD_VERSION_BUILD => $build,
         );
     }
 

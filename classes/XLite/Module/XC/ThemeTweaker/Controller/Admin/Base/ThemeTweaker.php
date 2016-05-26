@@ -121,7 +121,8 @@ abstract class ThemeTweaker extends \XLite\Controller\Admin\AAdmin
             array('value' => isset(\XLite\Core\Request::getInstance()->use))
         );
 
-        $this->saveCode(\XLite\Core\Request::getInstance()->code);
+        $data = \XLite\Core\Request::getInstance()->getNonFilteredData();
+        $this->saveCode($data['code']);
     }
 
     /**

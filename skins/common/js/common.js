@@ -370,7 +370,7 @@ function visibleBox(id, skipOpenClose)
 /**
  * Attach tooltip to some element on hover action
  */
-function attachTooltip(elm, content, forcePlacement)
+function attachTooltip(elm, content, forcePlacement, ttl)
 {
   var placement = 'right';
 
@@ -398,7 +398,9 @@ function attachTooltip(elm, content, forcePlacement)
 
           var to;
           var obj = jQuery(this);
-          var ttl = 500;
+          if (undefined === ttl) {
+            ttl = 500;
+          };
           obj.tooltip({
             html:      true,
             title:     content,

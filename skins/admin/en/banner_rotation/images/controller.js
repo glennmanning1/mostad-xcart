@@ -9,10 +9,9 @@
  * @link      http://www.x-cart.com/
  */
 
-jQuery(document).ready(function($) {
-    // $('.create-tpl').die();
+jQuery(function() {
     core.bind('list.model.table.newLineCreated', function(event, data) {
-        var line = $('.create-line').last();
+        var line = jQuery('.create-line').last();
 
         var uploader = line.find('div.file-uploader');
 
@@ -25,7 +24,7 @@ jQuery(document).ready(function($) {
           .find(':input')
           .each(
             function () {
-                var el = $(this).parents('.table-value').children('div');
+                var el = jQuery(this).parents('.table-value').children('div');
 
                 if (el.data('name') && data.idx) {
                     var newName = el.data('name').replace(/\[0\]/, '[' + (-1 * data.idx) + ']');

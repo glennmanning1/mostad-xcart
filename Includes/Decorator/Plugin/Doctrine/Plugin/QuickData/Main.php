@@ -104,6 +104,8 @@ class Main extends \Includes\Decorator\Plugin\Doctrine\Plugin\APlugin
         if (static::isCalculateCacheAllowed()
             && \Includes\Decorator\Utils\CacheInfo::get('rebuildBlockMark')
         ) {
+            \XLite\Core\Database::getRepo('XLite\Model\Category')->correctCategoriesStructure();
+
             $i = static::getCounter();
             do {
                 $processed = \XLite\Core\QuickData::getInstance()->updateChunk($i, static::CHUNK_LENGTH);

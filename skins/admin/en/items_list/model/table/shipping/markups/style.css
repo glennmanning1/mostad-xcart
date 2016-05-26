@@ -125,7 +125,8 @@
   font-weight: bold;
 }
 
-.items-list-table.shipping-markups table.list tbody.lines tr.line td.formula {
+.items-list-table.shipping-markups table.list tbody.lines tr.line td.formula,
+.items-list-table.shipping-markups table.list tbody.create tr.line td.formula {
   padding-top: 0;
 }
 

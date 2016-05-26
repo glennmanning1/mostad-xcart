@@ -920,8 +920,16 @@ form.searchpanel-label-main .search-conditions li.actions button[type="submit"] 
 
 .items-list.languages .cell.name .tooltip-main {
   display: inline-block;
-  padding-top: 2px;
+  padding-top: 0;
 }
+
+.items-list.languages .cell.name .flag,
+.items-list.languages .cell.name .tooltip-main,
+.items-list.languages .cell.name a
+{
+  vertical-align: middle;
+}
+
 
 .language-labels .label-name {
   cursor: pointer;

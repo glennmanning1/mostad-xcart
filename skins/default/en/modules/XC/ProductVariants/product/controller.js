@@ -201,8 +201,6 @@ ProductDetailsView.prototype.processVariantImageAsImage = function(data)
       .attr('alt', data.main[3])
       .css({ width: data.main[0] + 'px', height: data.main[1] + 'px' });
 
-    elm.parents('.image').width(data.main[0]);
-
     this.fakeLoupeLink.attr('href', data.full[2]);
     this.base.find('.loupe').show();
 
@@ -228,6 +226,7 @@ ProductDetailsView.prototype.applyDefaultImage = function()
         'width':  img.attr('width') + 'px',
         'height': img.attr('height') + 'px'
       });
+
     this.fakeLoupeLink.attr('href', a.attr('href'));
     this.base.find('.loupe').show();
 
@@ -258,5 +257,4 @@ ProductDetailsView.prototype.applyDefaultImage = function()
       .unbind('click')
       .click(function() { return false; });
   }
-  
 }

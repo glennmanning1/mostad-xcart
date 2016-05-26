@@ -132,33 +132,28 @@ TopMessages.prototype.ttl = 10000;
  */
 
 // Check visibility
-TopMessages.prototype.isVisible = function()
-{
+TopMessages.prototype.isVisible = function () {
   return this.container.css('display') != 'none';
-}
+};
 
 // Show widget
-TopMessages.prototype.show = function()
-{
+TopMessages.prototype.show = function () {
   this.container.slideDown();
-}
+};
 
 // Hide widget
-TopMessages.prototype.hide = function(callback)
-{
+TopMessages.prototype.hide = function (callback) {
   this.container.slideUp(callback);
-}
+};
 
-TopMessages.prototype.getSameRecord = function(ul, text)
-{
-  return ul.find('li').filter(function() {
+TopMessages.prototype.getSameRecord = function (ul, text) {
+  return ul.find('li').filter(function () {
     var reg = new RegExp(text + " \\\((\\\d*?)\\\)", "i");
-    return $(this).text() === text || $(this).text().match(reg);
+    return jQuery(this).text() === text || jQuery(this).text().match(reg);
   }).get(0);
-}
+};
 
-TopMessages.prototype.updateRecord = function(li)
-{
+TopMessages.prototype.updateRecord = function (li) {
   var recordLi = jQuery(li);
   var array = /(.*) \((\d*?)\)/i.exec(recordLi.text());
   var oldText = array && array[1]
@@ -169,13 +164,11 @@ TopMessages.prototype.updateRecord = function(li)
     : 0;
 
   recordLi.text(oldText + ' (' + (intval(oldIndex)+1) + ')');
-}
+};
 
 // Add record
-TopMessages.prototype.addRecord = function(text, type)
-{
-  if (
-    !type
+TopMessages.prototype.addRecord = function (text, type) {
+  if (!type
     || (MESSAGE_INFO != type && MESSAGE_WARNING != type && MESSAGE_ERROR != type)
   ) {
     type = MESSAGE_INFO;
@@ -197,7 +190,7 @@ TopMessages.prototype.addRecord = function(text, type)
     li.style.display = 'none';
 
     ul.append(li);
-  };
+  }
 
   if (
     ul.find('li').length
@@ -211,7 +204,7 @@ TopMessages.prototype.addRecord = function(text, type)
   if (type == MESSAGE_INFO) {
     this.setTimer(li);
   }
-}
+};
 
 // Clear record
 TopMessages.prototype.hideRecord = function(li)
@@ -227,20 +220,18 @@ TopMessages.prototype.hideRecord = function(li)
       }
     );
   }
-}
+};
 
 // Clear all records
-TopMessages.prototype.clearRecords = function()
-{
+TopMessages.prototype.clearRecords = function () {
   var container = this.container;
   this.hide(function () {
     jQuery('li', container).remove();
   });
-}
+};
 
 // Set record timer
-TopMessages.prototype.setTimer = function(li)
-{
+TopMessages.prototype.setTimer = function (li) {
   li = jQuery(li).get(0);
 
   if (li.timer) {
@@ -250,21 +241,18 @@ TopMessages.prototype.setTimer = function(li)
 
   var o = this;
   li.timer = setTimeout(
-    function() {
+    function () {
       o.hideRecord(li);
     },
     this.ttl
   );
-}
+};
 
 // onmessage event handler
-TopMessages.prototype.messageHandler = function(text, type)
-{
+TopMessages.prototype.messageHandler = function (text, type) {
   this.addRecord(text, type);
-}
+};
 
-jQuery(document).ready(
-  function () {
-    new TopMessages(jQuery('#status-messages'));
-  }
-);
+jQuery(function () {
+  new TopMessages(jQuery('#status-messages'));
+});

@@ -15,7 +15,7 @@
 
 <ul IF="isDiscountCouponSubpanelVisible(surcharge)" class="discount-coupons-panel">
   <li FOREACH="getDiscountCoupons(),usedCoupon">
-    <span>{usedCoupon.getPublicCode()}</span>
+    <span>{usedCoupon.getPublicName()}</span>
     <a IF="isDiscountCouponRemoveVisible()" href="{buildUrl(#coupon#,#remove#,_ARRAY_(#id#^usedCoupon.getId()))}">{t(#Remove#)}</a>
   </li>
 </ul>

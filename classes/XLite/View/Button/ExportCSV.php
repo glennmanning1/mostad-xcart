@@ -99,6 +99,7 @@ class ExportCSV extends \XLite\View\Button\APopupButton
         return array(
             'target' => 'export',
             'widget' => 'XLite\View\PopupExport',
+            'exportReturnURL' => \XLite\Core\URLManager::getCurrentURL(),
         );
     }
 

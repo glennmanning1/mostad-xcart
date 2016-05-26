@@ -39,6 +39,7 @@ class Distr extends \XLite\Core\Pack\APack
      */
     const METADATA_FIELD_VERSION_MINOR = 'VersionMinor';
     const METADATA_FIELD_VERSION_MAJOR = 'VersionMajor';
+    const METADATA_FIELD_VERSION_BUILD = 'VersionBuild';
 
     /**
      * List of patterns which are not required in pack
@@ -127,7 +128,8 @@ class Distr extends \XLite\Core\Pack\APack
     {
         return parent::getMetadata() + array(
             self::METADATA_FIELD_VERSION_MAJOR => \XLite::getInstance()->getMajorVersion(),
-            self::METADATA_FIELD_VERSION_MINOR => \XLite::getInstance()->getMinorVersion(),
+            self::METADATA_FIELD_VERSION_MINOR => \XLite::getInstance()->getMinorOnlyVersion(),
+            self::METADATA_FIELD_VERSION_BUILD => \XLite::getInstance()->getBuildVersion(),
         );
     }
 

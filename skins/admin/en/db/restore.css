@@ -14,23 +14,29 @@
   font-size: 14px;
 }
 
-.db-restore-form {
-  
-}
-
 .db-restore-form button {
   min-width: 170px;
-  margin: 0px 0px 20px 0px;  
-  display: block;
-  float: left;
 }
 
-.db-restore-form div.tooltip-main,
-  .db-restore-form input
-{
+.db-restore-form input {
   margin: 0px 0px 20px 0px;
 }
 
 .db-restore-form input.input-file {
   border: none;
+}
+
+.db-restore-form div.tooltip-main,
+.db-restore-form button,
+.db-restore-form .button-block {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.db-restore-form div.tooltip-main {
+    padding: 0px 11px 0px 7px;
+}
+
+.db-restore-form .button-block{
+    margin: 0px 0px 20px 0px;
 }

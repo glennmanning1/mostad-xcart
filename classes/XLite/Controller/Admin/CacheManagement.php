@@ -138,6 +138,8 @@ class CacheManagement extends \XLite\Controller\Admin\Settings
     protected function doActionQuickData()
     {
         \XLite\Logic\QuickData\Generator::run($this->assembleQuickDataOptions());
+
+        \XLite\Core\Database::getRepo('XLite\Model\Category')->correctCategoriesStructure();
     }
 
     /**

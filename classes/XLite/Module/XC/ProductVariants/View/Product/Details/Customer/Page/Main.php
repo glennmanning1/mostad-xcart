@@ -35,14 +35,13 @@ namespace XLite\Module\XC\ProductVariants\View\Product\Details\Customer\Page;
 class Main extends \XLite\View\Product\Details\Customer\Page\Main implements \XLite\Base\IDecorator
 {
     /**
-     * Get JS files 
-     * 
+     * Get JS files
+     *
      * @return array
      */
     public function getJSFiles()
     {
         $list = parent::getJSFiles();
-
         $list[] = 'modules/XC/ProductVariants/product/controller.js';
 
         return $list;
@@ -56,11 +55,12 @@ class Main extends \XLite\View\Product\Details\Customer\Page\Main implements \XL
     protected function getContainerAttributes()
     {
         $list = parent::getContainerAttributes();
+        $product = $this->getProduct();
+        $repo = \XLite\Core\Database::getRepo('XLite\Module\XC\ProductVariants\Model\Image\ProductVariant\Image');
 
-        if (
-            $this->getProduct()->mustHaveVariants()
-            && 0 < \XLite\Core\Database::getRepo('XLite\Module\XC\ProductVariants\Model\Image\ProductVariant\Image')->countByProduct($this->getProduct())
-        )  {
+        if ($product->mustHaveVariants()
+            && 0 < $repo->countByProduct($product)
+        ) {
             $list['data-variants-has-images'] = true;
         }
 

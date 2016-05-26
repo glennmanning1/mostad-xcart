@@ -192,6 +192,19 @@ class State extends \XLite\Model\Repo\ARepo
     }
 
     /**
+     * Find states by country code and by state code or state name
+     *
+     * @param string $countryCode Country code
+     * @param string $code        State code or name
+     *
+     * @return \XLite\Model\State|void
+     */
+    public function findOneByCountryAndState($countryCode, $code)
+    {
+        return $this->defineOneByCountryAndStateQuery($countryCode, $code)->getSingleResult();
+    }
+
+    /**
      * Find states by country code and state code
      *
      * @param string $countryCode Country code
@@ -347,6 +360,28 @@ class State extends \XLite\Model\Repo\ARepo
             ->andWhere('country.code = :country AND s.code = :code')
             ->setParameter('country', $countryCode)
             ->setParameter('code', $code);
+    }
+
+    /**
+     * Define query for findOneByCountryAndState() method
+     *
+     * @param string $countryCode Country code
+     * @param string $code        State code or name
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function defineOneByCountryAndStateQuery($countryCode, $code)
+    {
+        $orCnd = new \Doctrine\ORM\Query\Expr\Orx();
+                $orCnd->add('s.code = :stateCode');
+                $orCnd->add('s.state = :stateCode');
+
+        return $this->createQueryBuilder()
+            ->innerJoin('s.country', 'country')
+            ->andWhere('country.code = :country')
+            ->andWhere($orCnd)
+            ->setParameter('country', $countryCode)
+            ->setParameter('stateCode', $code);
     }
 
     // {{{ Cache

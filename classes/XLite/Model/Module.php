@@ -193,16 +193,25 @@ class Module extends \XLite\Model\AEntity
     /**
      * Minor version
      *
-     * @var string
+     * @var integer
      *
      * @Column (type="integer")
      */
     protected $minorVersion;
 
     /**
+     * Version build number (4th digit of version number)
+     *
+     * @var integer
+     *
+     * @Column (type="integer")
+     */
+    protected $build = 0;
+
+    /**
      * Minor core version which is required for module functionality
      *
-     * @var string
+     * @var integer
      *
      * @Column (type="integer")
      */
@@ -408,6 +417,16 @@ class Module extends \XLite\Model\AEntity
      */
     protected $isSkin = false;
 
+    /**
+     * Returns string representation of module entity
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getActualName() . ' v' . $this->getVersion();
+    }
+
     // {{{ Routines to access methods of (non)installed modules
 
     /**
@@ -484,7 +503,18 @@ class Module extends \XLite\Model\AEntity
      */
     public function getVersion()
     {
-        return \Includes\Utils\Converter::composeVersion($this->getMajorVersion(), $this->getMinorVersion());
+        return \Includes\Utils\Converter::composeVersion($this->getMajorVersion(), $this->getFullMinorVersion());
+    }
+
+    /**
+     * Return module full minor version
+     *
+     * @return string
+     */
+    public function getFullMinorVersion()
+    {
+        return $this->getMinorVersion()
+            . ($this->getBuild() ? '.' . $this->getBuild() : '');
     }
 
     /**
@@ -869,12 +899,18 @@ class Module extends \XLite\Model\AEntity
      */
     public function getIdentityData()
     {
-        return array(
+        $data = array(
             'author'       => $this->getAuthor(),
             'name'         => $this->getName(),
             'majorVersion' => $this->getMajorVersion(),
             'minorVersion' => $this->getMinorVersion(),
         );
+
+        if ($this->getBuild()) {
+            $data['build'] = $this->getBuild();
+        }
+
+        return $data;
     }
 
     /**

@@ -9,5 +9,5 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="save-mode-localy">{t(#Сhanges of attributes locally#)}</div>
+<div class="save-mode-localy">{t(#Changes of attributes locally#)}</div>
 <div class="save-mode-globaly">{t(#Changes of attributes globally#)}</div>

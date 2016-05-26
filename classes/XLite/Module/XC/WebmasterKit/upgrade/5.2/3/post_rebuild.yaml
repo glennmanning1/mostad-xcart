@@ -1,0 +1,16 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Fixtures
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Config:
+  - name: markTemplates
+    category: XC\WebmasterKit
+    translations:
+      - code: en
+        option_name: Mark templates
+        option_comment: "Template tracking is a feature that allows you to find out the place of a specific page element in your site's template hierarchy. With this feature, simply by pointing your cursor at any element on a page, you can find out the name of the template file in which this element is declared, as well as view the hierarchy of parent templates for this element."

@@ -68,7 +68,7 @@ abstract class Discount extends \XLite\Logic\Order\Modifier\ADiscount
      *
      * @return void
      */
-    protected function distributeDiscount($discountTotal)
+    public function distributeDiscount($discountTotal)
     {
         // Get order items
         $orderItems = $this->getOrderItems();

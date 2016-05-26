@@ -41,6 +41,7 @@ class Tooltip extends \XLite\View\AView
     const PARAM_TEXT         = 'text';
     const PARAM_WIDGET       = 'helpWidget';
     const PARAM_PLACEMENT    = 'placement';
+    const PARAM_DELAY        = 'delay';
     const PARAM_CLASS        = 'className';
     const PARAM_CAPTION      = 'caption';
     const PARAM_IS_IMAGE_TAG = 'isImageTag';
@@ -89,6 +90,7 @@ class Tooltip extends \XLite\View\AView
             static::PARAM_TEXT         => new \XLite\Model\WidgetParam\String('Text to show in tooltip', ''),
             static::PARAM_WIDGET       => new \XLite\Model\WidgetParam\String('Widget to show in tooltip', ''),
             static::PARAM_PLACEMENT    => new \XLite\Model\WidgetParam\String('Tooltip placement', ''),
+            static::PARAM_DELAY        => new \XLite\Model\WidgetParam\Int('Tooltip delay', 500),
             static::PARAM_ID           => new \XLite\Model\WidgetParam\String('ID of element', ''),
             static::PARAM_CLASS        => new \XLite\Model\WidgetParam\String('CSS class for caption', ''),
             static::PARAM_CAPTION      => new \XLite\Model\WidgetParam\String('Caption', ''),

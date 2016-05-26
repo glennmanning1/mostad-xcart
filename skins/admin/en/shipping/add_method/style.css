@@ -36,8 +36,10 @@ ul.online-carriers li a .image img {
 .ui-dialog-content .add-shipping {
   padding-top: 15px;
 }
+
 .form-field-link.shippingzone-link {
   margin-left: 15px;
+  vertical-align: baseline;
 }
 .offline-help,
 .online-help {

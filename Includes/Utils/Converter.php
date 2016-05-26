@@ -395,6 +395,26 @@ abstract class Converter extends \Includes\Utils\AUtils
     }
 
     /**
+     * Parse version and return array contained minorVersion and build number
+     *
+     * @param string $version Version (e.g '0', '1.1')
+     *
+     * @return array
+     */
+    public static function parseMinorVersion($version)
+    {
+        if (preg_match('/^(\d+)(?:\.(\d+))$/', $version, $match)) {
+            $version = $match[1];
+            $build = !empty($match[2]) ? $match[2] : 0;
+
+        } else {
+            $build = 0;
+        }
+
+        return array($version, $build);
+    }
+
+    /**
      * Prepare human-readable output for file size
      *
      * @param integer $size      Size in bytes
@@ -507,6 +527,8 @@ abstract class Converter extends \Includes\Utils\AUtils
     {
         $tr = array();
 
+        $string = static::normalizeUTF8($string);
+
         foreach (static::$translitMap as $letter => $set) {
             $letters = explode(',', $set);
             foreach ($letters as $v) {
@@ -529,5 +551,20 @@ abstract class Converter extends \Includes\Utils\AUtils
         }
 
         return strtr($string, $tr);
+    }
+
+    /**
+     * Normalize string to avoid grapheme cluster boundaries
+     * @see http://www.unicode.org/reports/tr29/#Grapheme_Cluster_Boundaries
+     *
+     * @param string $string String to normalize
+     *
+     * @return string
+     */
+    public static function normalizeUTF8($string)
+    {
+        return class_exists('Normalizer')
+            ? \Normalizer::normalize($string, \Normalizer::FORM_KC)
+            : $string;
     }
 }

@@ -37,8 +37,8 @@ class CopyLink extends \XLite\View\Button\AButton
     /**
      * Several inner constants
      */
-    const BUTTON_JS       = 'button/js/copy_link.js';
-    const BUTTON_CSS       = 'button/css/copy_link.css';
+    const BUTTON_JS  = 'button/js/copy_link.js';
+    const BUTTON_CSS = 'button/css/copy_link.css';
 
     /**
      * Widget parameters to use
@@ -68,7 +68,7 @@ class CopyLink extends \XLite\View\Button\AButton
         $list = parent::getCommonFiles();
 
         $list[static::RESOURCE_JS][] = array(
-            'file'      => 'js/zero-clipboard.min.js',
+            'file'      => 'js/clipboard.min.js',
             'no_minify' => true,
         );
 

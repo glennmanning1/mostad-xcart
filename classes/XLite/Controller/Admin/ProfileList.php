@@ -92,7 +92,7 @@ class ProfileList extends \XLite\Controller\Admin\AAdmin
             ? $searchParams[$paramName]
             : '';
 
-        return (empty($value) && isset(\XLite\Core\Request::getInstance()->{$paramName}))
+        return isset(\XLite\Core\Request::getInstance()->{$paramName})
             ? \XLite\Core\Request::getInstance()->{$paramName}
             : $value;
     }

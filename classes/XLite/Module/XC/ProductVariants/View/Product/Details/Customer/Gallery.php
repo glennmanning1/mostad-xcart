@@ -34,7 +34,6 @@ namespace XLite\Module\XC\ProductVariants\View\Product\Details\Customer;
  */
 class Gallery extends \XLite\View\Product\Details\Customer\Gallery implements \XLite\Base\IDecorator
 {
-
     /**
      * Check visibility
      *
@@ -42,10 +41,11 @@ class Gallery extends \XLite\View\Product\Details\Customer\Gallery implements \X
      */
     protected function isVisible()
     {
+        $product = $this->getProduct();
         $repo = \XLite\Core\Database::getRepo('\XLite\Module\XC\ProductVariants\Model\Image\ProductVariant\Image');
 
         return parent::isVisible()
-            || $repo->countByProduct($this->getProduct());
+            || ($product->hasVariants() && $repo->countByProduct($product));
     }
 
 
@@ -60,12 +60,10 @@ class Gallery extends \XLite\View\Product\Details\Customer\Gallery implements \X
     protected function getListItemClass($i, \XLite\Model\Base\Image $image)
     {
         $classes = parent::getListItemClass($i, $image);
-
-        if ($image instanceOf \XLite\Module\XC\ProductVariants\Model\Image\ProductVariant\Image) {
+        if ($image instanceof \XLite\Module\XC\ProductVariants\Model\Image\ProductVariant\Image) {
             $classes[] = 'variant-image';
         }
 
         return $classes;
     }
-
 }

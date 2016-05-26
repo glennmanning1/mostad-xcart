@@ -44,7 +44,20 @@ class Carriers extends \XLite\View\ItemsList\Model\Shipping\Carriers implements 
     protected function isAllowEntityRemove(\XLite\Model\AEntity $entity)
     {
         /** @var \XLite\Model\Shipping\Method $entity */
-        return !$entity->getFree() && !$this->isFixedFeeMethod($entity);
+        return parent::isAllowEntityRemove($entity) && !$entity->getFree() && !$this->isFixedFeeMethod($entity);
+    }
+
+    /**
+     * Disable removing special methods
+     *
+     * @param \XLite\Model\AEntity $entity Shipping method object
+     *
+     * @return boolean
+     */
+    protected function isAllowEntitySwitch(\XLite\Model\AEntity $entity)
+    {
+        /** @var \XLite\Model\Shipping\Method $entity */
+        return parent::isAllowEntitySwitch($entity) && !$entity->getFree() && !$this->isFixedFeeMethod($entity);
     }
 
     /**
@@ -69,6 +82,22 @@ class Carriers extends \XLite\View\ItemsList\Model\Shipping\Carriers implements 
     {
         return array_merge(
             parent::getRightActions(),
+            array(
+                'modules/XC/FreeShipping/free_shipping_tooltip.tpl',
+                'modules/XC/FreeShipping/shipping_freight_tooltip.tpl'
+            )
+        );
+    }
+
+    /**
+     * Add left actions
+     *
+     * @return array
+     */
+    protected function getLeftActions()
+    {
+        return array_merge(
+            parent::getLeftActions(),
             array(
                 'modules/XC/FreeShipping/free_shipping_tooltip.tpl',
                 'modules/XC/FreeShipping/shipping_freight_tooltip.tpl'

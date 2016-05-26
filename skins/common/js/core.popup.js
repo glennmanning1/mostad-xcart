@@ -30,6 +30,9 @@ popup.currentPopup = null;
 // Load options
 popup.loadOptions = null;
 
+// Do not do real close popup in popup.close()
+popup.pseudoClose = false;
+
 /**
  * Methods
  */
@@ -416,7 +419,9 @@ popup.getPopupOptions = function(box)
         this.close();
       },
       this
-    )
+    ),
+
+    beforeClose:  _.bind(this.beforeClose, this)
   };
 };
 
@@ -458,7 +463,9 @@ popup.close = function()
   var box;
   if (this.currentPopup && this.currentPopup.box) {
     box = this.currentPopup.box;
-    this.currentPopup.box.dialog('close');
+    if (!this.pseudoClose) {
+      box.dialog('close');
+    }
 
     if (this.currentUnblockCallback && _.isFunction(this.currentUnblockCallback)) {
       this.currentUnblockCallback();
@@ -469,6 +476,16 @@ popup.close = function()
   this.currentPopup = null;
 
   core.trigger('popup.close', { 'widget': this, 'box': box });
+};
+
+popup.beforeClose = function(event)
+{
+  var box;
+  if (this.currentPopup && this.currentPopup.box) {
+    box = this.currentPopup.box;
+  }
+
+  core.trigger('popup.beforeClose', { 'widget': this, 'box': box });
 };
 
 jQuery(window).resize(

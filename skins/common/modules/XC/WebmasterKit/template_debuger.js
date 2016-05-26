@@ -164,11 +164,6 @@ jQuery(document).ready(
       }
     );
 
-    // Add help mark
-    var help = box.appendChild(document.createElement('div'));
-    help.className = 'help';
-    help.title = 'Templates tracking is a utility, showing the template hierarchy of the selected element. If displays the template, where the element which you point at with your mouse is declared and the hierarchy of templates which are called before this template.';
-
     switcher.switchDebugging = function() {
       this.enabled = !this.enabled;
 

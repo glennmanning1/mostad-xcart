@@ -10,42 +10,35 @@
  */
 
 // Main class
-function FileUploader(base)
-{
+function FileUploader (base) {
   this.commonData = jQuery(base).parent().data();
-  this.commonData.target = 'files'
+  this.commonData.target = 'files';
   this.callSupermethod('constructor', arguments);
 }
 
-function repositionFiles(base, saveAsInitial)
-{
+function repositionFiles (base, saveAsInitial) {
   base = jQuery(base);
 
   var min = 10;
-  base.find('input.input-position').each(
-    function () {
-      min = parseInt(10 == min ? min : Math.min(this.value, min));
-    }
-  );
+  base.find('input.input-position').each(function () {
+    min = parseInt(10 == min ? min : Math.min(this.value, min));
+  });
 
-  base.find('input.input-position').each(
-    function () {
-      jQuery(this).attr('value', min);
-      if (saveAsInitial) {
-        this.commonController.saveValue();
+  base.find('input.input-position').each(function () {
+    jQuery(this).attr('value', min);
+    if (saveAsInitial) {
+      this.commonController.saveValue();
 
-      } else {
-        jQuery(this).change();
-      }
-      min += 10;
+    } else {
+      jQuery(this).change();
     }
-  );
+    min += 10;
+  });
 }
 
 extend(FileUploader, ALoadable);
 
-FileUploader.autoload = function()
-{
+FileUploader.autoload = function () {
   jQuery('div.file-uploader').each(
     function() {
       new FileUploader(this);
@@ -62,6 +55,11 @@ FileUploader.autoload = function()
       update:               function(event, ui)
       {
         repositionFiles(this);
+      },
+      activate: function(event, ui) {
+        if (ui.item.hasClass('open')) {
+          ui.item.find('.link').dropdown('toggle');
+        };
       }
     });
 
@@ -71,10 +69,9 @@ FileUploader.autoload = function()
       }
     );
   }
-}
+};
 
-FileUploader.prototype.request = function(formData, multiple)
-{
+FileUploader.prototype.request = function (formData, multiple) {
   var o = this;
 
   formData.append('object_id', jQuery(o.base).data('objectId'));
@@ -90,8 +87,7 @@ FileUploader.prototype.request = function(formData, multiple)
     url: URLHandler.buildURL(o.commonData),
     type: 'post',
     xhr: function() {
-      var myXhr = $.ajaxSettings.xhr();
-      return myXhr;
+      return jQuery.ajaxSettings.xhr();
     },
     success: function (data) {
       o.loadHandler(null, null, data);
@@ -110,14 +106,12 @@ FileUploader.prototype.request = function(formData, multiple)
     contentType: false,
     processData: false
   });
-}
+};
 
 // Postprocess widget
-FileUploader.prototype.postprocess = function(isSuccess)
-{
+FileUploader.prototype.postprocess = function (isSuccess) {
   if (isSuccess) {
     var o = this;
-    var parentDiv = jQuery(o.base).parent();
 
     jQuery('a.from-computer', o.base).bind(
       'click',
@@ -163,7 +157,7 @@ FileUploader.prototype.postprocess = function(isSuccess)
       {
         var formData = new FormData();
         o.commonData.action = 'uploadFromFile';
-        for (i = 0; i < this.files.length; i++) {
+        for (var i = 0; i < this.files.length; i++) {
           formData.append('file', this.files[i]);
           o.request(formData, viaUrlPopup.data('multiple'));
         }
@@ -172,8 +166,7 @@ FileUploader.prototype.postprocess = function(isSuccess)
 
     jQuery('a.via-url', o.base).bind(
       'click',
-      function (event)
-      {
+      function (event) {
         viaUrlPopup.dialog('open');
         jQuery('.dropdown').click();
 
@@ -183,8 +176,7 @@ FileUploader.prototype.postprocess = function(isSuccess)
 
     jQuery('li.alt-text .value', o.base).bind(
       'click',
-      function (event)
-      {
+      function (event) {
         jQuery(this).hide();
         jQuery('li.alt-text .input-group', o.base).css('display','table');
         jQuery('li.alt-text .input-group input', o.base).focus();
@@ -195,8 +187,7 @@ FileUploader.prototype.postprocess = function(isSuccess)
 
     jQuery('input.input-alt', o.base).bind(
       'click',
-      function (event)
-      {
+      function (event) {
         return false;
       }
     ).bind(
@@ -255,6 +246,6 @@ FileUploader.prototype.postprocess = function(isSuccess)
     );
 
   }
-}
+};
 
 core.autoload(FileUploader);

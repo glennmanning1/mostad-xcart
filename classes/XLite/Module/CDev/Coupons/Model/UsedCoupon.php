@@ -112,6 +112,24 @@ class UsedCoupon extends \XLite\Model\AEntity
     }
 
     /**
+     * Is coupon percent
+     *
+     * @return string
+     */
+    public function getPublicName()
+    {
+        $suffix = '';
+
+        if ($this->getCoupon()
+            && $this->getCoupon()->getType() === \XLite\Module\CDev\Coupons\Model\Coupon::TYPE_PERCENT
+        ) {
+            $suffix = sprintf('(-%s%%)', $this->getCoupon()->getValue());
+        }
+
+        return $this->getPublicCode() . ' ' . $suffix;
+    }
+
+    /**
      * Get actual code
      *
      * @return string

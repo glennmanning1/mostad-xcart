@@ -71,6 +71,7 @@ class ProductPageCollection extends \XLite\View\AWidgetsCollection
     {
         return array(
             '\XLite\View\Price',
+            '\XLite\View\Product\Details\Customer\CommonAttributes',
         );
     }
 
@@ -85,11 +86,22 @@ class ProductPageCollection extends \XLite\View\AWidgetsCollection
     {
         $result = true;
 
-        if ('\XLite\View\Price' == $name) {
-            $types = $this->getProductModifierTypes();
-            if (empty($types['price'])) {
-                $result = false;
-            }
+        switch ($name) {
+            case '\XLite\View\Price':
+                $types = $this->getProductModifierTypes();
+                if (empty($types['price'])) {
+                    $result = false;
+                }
+                break;
+
+            case '\XLite\View\Product\Details\Customer\CommonAttributes':
+                $types = $this->getProductModifierTypes();
+                if (empty($types['weight']) && empty($types['sku'])) {
+                    $result = false;
+                }
+                break;
+
+            default:
         }
 
         return $result;

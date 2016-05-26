@@ -20,11 +20,11 @@ function CleanURLSwitcher () {
         page: 'Environment',
         action: 'switch_clean_url'
       })
-    ).done(function(data) {
+    ).done(function (data) {
       if (false === data['Success']) {
         jQuery('.clean-url-setting-error-msg').html(data['Error']['msg']);
         jQuery('.clean-url-setting-error-body').html(data['Error']['body']);
-        $('#clean-url-flag').prop('checked', false);
+        jQuery('#clean-url-flag').prop('checked', false);
       }else{
         jQuery('.clean-url-setting-error-msg').html('&nbsp;');
         jQuery('.clean-url-setting-error-body').html('&nbsp;');        

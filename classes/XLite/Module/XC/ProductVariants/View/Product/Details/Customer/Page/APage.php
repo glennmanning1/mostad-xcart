@@ -41,10 +41,15 @@ abstract class APage extends \XLite\View\Product\Details\Customer\Page\APage imp
      */
     protected function isLoupeVisible()
     {
-        $repo = \XLite\Core\Database::getRepo('\XLite\Module\XC\ProductVariants\Model\Image\ProductVariant\Image');
+        $result = parent::isLoupeVisible();
+        $product = $this->getProduct();
 
-        return parent::isLoupeVisible()
-            || $repo->countByProduct($this->getProduct());
+        if (!$result && $product->hasVariants()) {
+            $repo = \XLite\Core\Database::getRepo('XLite\Module\XC\ProductVariants\Model\Image\ProductVariant\Image');
+
+            return $repo->countByProduct($product);
+        }
+
+        return $result;
     }
-
 }

@@ -72,7 +72,7 @@ class PopupExport extends \XLite\View\AView
     {
         $list = parent::getJSFiles();
 
-        $list[] = 'export/popup_controller.js';
+        $list[] = 'export/controller_popup.js';
 
         return $list;
     }

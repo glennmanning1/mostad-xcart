@@ -602,7 +602,7 @@ XLite\Model\LanguageLabel:
   - { name: "Clean URL", translations: [{ code: en, label: "Clean URL" }] }
   - { name: 'Enable clean URL', translations: [{ code: en, label: 'Enable clean URL' }] }
   - { name: 'Error code explanation:', translations: [{ code: en, label: 'Error code explanation' }] }
-  - { name: 'More information about clean urls in X-Cart is available in ', translations: [{ code: en, label: 'More information about clean urls in X-Cart is available in {{url}}' }] }
+  - { name: 'More information about clean urls in X-Cart is available in ', translations: [{ code: en, label: 'More information about clean urls in X-Cart is available in <a href="{{url}}" target="blank">{{url}}</a>' }] }
   - { name: 'Clean_urls_error_message', translations: [{ code: en, label: 'We made a test request to <a href="{{url}}">{{url}}</a> URL and got the following result. <br>It means that your SEO-friendly URLs may not work properly after enabling.' }] }
   - { name: "Clean aggregation cache", translations: [{ code: en, label: "Clear aggregation cache" }] }
   - { name: "Clean widgets cache", translations: [{ code: en, label: "Clear widgets cache" }] }
@@ -1595,6 +1595,8 @@ XLite\Model\LanguageLabel:
   - { name: "The process of export may take much time. You may close the page, the operation will be in progress as background. If the operation takes long enough, we will send you a notification when it is complete.", translations: [{ code: en, label: "The export process may take a while to complete. You may close the page, the process will continue in the background. If the process takes long enough, we will send you a notification when it is completed." }] }
   - { name: "The process of export may take much time. Please do not close this page until the export is complete", translations: [{ code: en, label: "The export process may take a while to complete. Please do not close this page until the process is fully completed. If you have closed the page, please re-open it to complete the export process as it is in progress only when the page is open. If the process takes long enough, we will send you a notification when it is completed." }] }
   - { name: "Export failed", translations: [{ code: en, label: "Export failed" }] }
+  - { name: "Export not started", translations: [{ code: en, label: "Export was not started" }] }
+  - { name: "Export cannot be started because it is disabled or there is another running export process", translations: [{ code: en, label: "Export cannot be started because it is disabled or there is another running export process. Try again later." }] }
   - { name: "Export in CSV", translations: [{ code: en, label: "Export in CSV" }] }
   - { name: "Please, make sure that the following modules are installed and enabled:", translations: [{ code: en, label: "Please make sure the following modules are installed and enabled:" }] }
   - { name: "You have no payment methods enabled in your shop", translations: [{ code: en, label: "You have no payment methods enabled at your store" }] }
@@ -1611,6 +1613,7 @@ XLite\Model\LanguageLabel:
   - { name: "Click to edit states", translations: [{ code: en, label: "Click to edit states" }] }
   - { name: "Click to add states", translations: [{ code: en, label: "Click to add states" }] }
   - { name: "Add states", translations: [{ code: en, label: "Add states" }] }
+  - { name: "Add state", translations: [{ code: en, label: "Add state" }] }
   - { name: "Click to edit all this label translations", translations: [{ code: en, label: "Click to edit all the translations for this label" }] }
   - { name: "Warning! Installing this module will overwrite all language labels translated to the appropriate language.", translations: [{ code: en, label: "Warning! Installing this module will overwrite any existing label translations for this language." }] }
   - { name: "Please", translations: [{ code: en, label: "Please" }] }
@@ -1710,9 +1713,9 @@ XLite\Model\LanguageLabel:
   - { name: "Last 7 days", translations: [{ code: en, label: "Last 7 days" }] }
   - { name: "Last month", translations: [{ code: en, label: "Last month" }] }
   - { name: "Store lifetime", translations: [{ code: en, label: "Store lifetime" }] }
-  - { name: "View all low inventory products", translations: [{ code: en, label: "View all low inventory products" }] }
+  - { name: "View all low inventory products", translations: [{ code: en, label: "View all" }] }
   - { name: "Changes of attributes globally", translations: [{ code: en, label: "Changes of attribute values will affect only this product. Changes of attribute names and of the attribute list will affect all the products of the corresponding class." }] }
-  - { name: "Сhanges of attributes locally", translations: [{ code: en, label: "Сhanges of attribute values will affect only this product. Changes of attribute names and of the attribute list will affect all the products" }] }
+  - { name: "Changes of attributes locally", translations: [{ code: en, label: "Changes of attribute values will affect only this product. Changes of attribute names and of the attribute list will affect all the products" }] }
   - { name: "Apply value changes locally", translations: [{ code: en, label: "Apply value changes locally" }] }
   - { name: "Apply value changes globally", translations: [{ code: en, label: "Apply value changes globally" }] }
   - { name: "The password is the one you specified during checkout.", translations: [{ code: en, label: "The password is the one you specified during checkout." }] }
@@ -1934,8 +1937,8 @@ XLite\Model\LanguageLabel:
   - { name: "Your order details will be sent to your e-mail address", translations: [{ code: en, label: "Your order details will be sent to your email address" }] }
   - { name: "{{count}} created", translations: [{ code: en, label: "{{count}} created" }] }
   - { name: "{{count}} updated", translations: [{ code: en, label: "{{count}} updated" }] }
-  - { name: "The script found {{number}} errors during verification", translations: [{ code: en, label: "The script found {{number}} errors during verification" }] }
-  - { name: "The script found {{number}} errors during import", translations: [{ code: en, label: "The script found {{number}} errors during import" }] }
+  - { name: "The script found {{number}} errors during verification", translations: [{ code: en, label: "The script found {{number}} problem(s) during verification" }] }
+  - { name: "The script found {{number}} errors during import", translations: [{ code: en, label: "The script found {{number}} problem(s) during import" }] }
   - { name: "Row {{number}}", translations: [{ code: en, label: "Row {{number}}" }] }
   - { name: "Row(s) {{numbers}}", translations: [{ code: en, label: "Row(s) {{numbers}}" }] }
   - { name: "Critical error", translations: [{ code: en, label: "Critical error" }] }
@@ -2065,7 +2068,7 @@ XLite\Model\LanguageLabel:
   - { name: "Order status changed from {{oldStatus}} to {{newStatus}}", translations: [{ code: en, label: "Order status changed from {{oldStatus}} to {{newStatus}}" }] }
   - { name: "Year when store started its operation", translations: [{ code: en, label: "Year in which the store opened" }] }
   - { name: "Force customer to choose product options before the product can be added to cart", translations: [{ code: en, label: "Force customer to choose product options before adding a product to cart" }] }
-  - { name: "The English language cannot be removed as it is primary language for all texts", translations: [{ code: en, label: "The English language cannot be removed as it is primary language for all texts" }] }
+  - { name: "The English language cannot be removed as it is primary language for all texts.", translations: [{ code: en, label: "The English language cannot be removed as it is primary language for all texts." }] }
   - { name: "Priority", translations: [{ code: en, label: "Priority" }] }
   - { name: "Disabled modules hooks message head", translations: [{ code: en, label: "Either enable or uninstall the modules below." }] }
   - { name: "Disabled modules hooks message body", translations: [{ code: en, label: "The modules below must be either <strong>enabled</strong> or <strong>uninstalled</strong> before the upgrade is started. Otherwise your store may crash during the upgrade. Do not worry, you can still install and use these modules after the upgrade." }] }
@@ -2485,10 +2488,11 @@ XLite\Model\LanguageLabel:
   - { name: 'X-Cart could not find a valid SSL certificate on your server X.', translations: [{ code: en, label: 'X-Cart could not find a valid SSL certificate on your server (<span>{{domain}}</span>).' }] }
   - { name: 'Before enabling HTTPS protocol read this article:', translations: [{ code: en, label: 'Before enabling HTTPS protocol read this article: <a href="{{articleUrl}}">Inaccessible Admin area after enabling HTTPS</a>' }] }
   - { name: 'You are operating as:', translations: [{ code: en, label: 'You are operating as:' }] }
-  - { name: 'Operate as user', translations: [{ code: en, label: 'Operate as user' }] }
+  - { name: 'Operate as user', translations: [{ code: en, label: 'Operate as this customer' }] }
   - { name: 'Quit', translations: [{ code: en, label: 'Quit' }] }
   - { name: 'You are operating as: user', translations: [{ code: en, label: 'You are operating as: {{user}}' }] }
-  - { name: 'Finished operating as user', translations: [{ code: en, label: 'Finished operating as user' }] }
+  - { name: 'You are logged in as: user', translations: [{ code: en, label: 'You are logged in as: {{user}}' }] }
+  - { name: 'Finished operating as user', translations: [{ code: en, label: 'Finished operating as customer' }] }
   - { name: 'Avalara, a leader in US sales tax automation, provides a solution that can make your life easier by providing accurate and up-to-date tax rates for products you sell.', translations: [{ code: en, label: '<a href="http://www.avalara.com" target="_blank">Avalara</a>, a leader in US sales tax automation, provides a solution that can make your life easier by providing accurate and up-to-date tax rates for products you sell.' }] }
   - { name: 'New to Avalara?', translations: [{ code: en, label: 'New to Avalara? <a href="http://www.avalara.com/integrations/x-cart/" target="_blank">Sign up here!</a>' }] }
   - { name: 'Existing Avalara user?', translations: [{ code: en, label: 'Existing Avalara user? Enable and configure AvaTax <a href="{{moduleSettings}}">here</a>' }] }
@@ -2552,6 +2556,8 @@ XLite\Model\LanguageLabel:
   - { name: 'Files cannot be updated', translations: [{ code: en, label: 'Files cannot be updated' }] }
   - { name: 'Trying to run pre-upgrade hooks while not all archives were unpacked', translations: [{ code: en, label: 'Trying to run pre-upgrade hooks while not all archives were unpacked' }] }
   - { name: '...Invoke {{type}} hook for {{entry}}...', translations: [{ code: en, label: '...Invoke {{type}} hook for {{entry}}...' }] }
+  - { name: '...Hooks {{hooksCount}}, Items {{itemsCount}}...', translations: [{ code: en, label: '...Hooks {{hooksCount}}, Items {{itemsCount}}...' }] }
+  - { name: '...Hooks {{hooksCount}}', translations: [{ code: en, label: '...Hooks {{hooksCount}}' }] }
   - { name: '...Unpacking {{entry}}...{{status}}', translations: [{ code: en, label: '...Unpacking {{entry}}...{{status}}' }] }
   - { name: '...Downloading {{entry}}...{{status}}', translations: [{ code: en, label: '...Downloading {{entry}}...{{status}}' }] }
 
@@ -2667,11 +2673,11 @@ XLite\Model\LanguageLabel:
 
   - { name: 'Products search', translations: [{ code: en, label: 'Products search' }] }
   - { name: 'Requires shipping', translations: [{ code: en, label: 'Requires shipping' }] }
-  - { name: 'Convert failed transactions into real orders', translations: [{ code: en, label: 'Convert failed transactions into real orders' }] }
+  - { name: 'Convert failed transactions into real orders', translations: [{ code: en, label: 'Learn how to convert failed transactions into real orders' }] }
 
   - { name: 'na_customer', translations: [{ code: en, label: 'Customer' }] }
 
-  - { name: "Couldn't download the image {{value}} from URL", translations: [{ code: en, label: "Couldn't download the image \"{{value}}\" from URL" }] }
+  - { name: "Couldn't download the image {{value}} from URL", translations: [{ code: en, label: "Couldn't download the image \"{{value}}\"" }] }
 
   - { name: 'Show low stock warning on product page', translations: [{ code: en, label: 'Show low stock warning on product page' }] }
   - { name: 'Notify administrator if the stock quantity of this product goes below a certain limit', translations: [{ code: en, label: 'Notify administrator if the stock quantity of this product goes below a certain limit' }] }
@@ -2702,3 +2708,7 @@ XLite\Model\LanguageLabel:
   - { name: 'Test[TT]', translations: [{ code: en, label: 'Test' }] }
 
   - { name: 'Get a more powerful banner system for your store', translations: [{ code: en, label: 'Need a more powerful banner system for your store? <a href="{{url}}">Get it now!</a>' }] }
+
+  - { name: 'Log in as this admin', translations: [{ code: en, label: 'Log in as this admin' }] }
+
+  - { name: 'na_admin', translations: [{ code: en, label: 'Administrator' }] }

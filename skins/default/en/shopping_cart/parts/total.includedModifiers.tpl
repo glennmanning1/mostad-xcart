@@ -8,13 +8,10 @@
  * @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
  * @link      http://www.x-cart.com/
  *
- * @ListChild (list="cart.totals", weight="30")
  * @ListChild (list="cart.panel.totals", weight="30")
  *}
 
-{if:cart.getItemsIncludeSurchargesTotals()}  
-  <li class='included-surcharge' FOREACH="cart.getItemsIncludeSurchargesTotals(),row">
-    <strong>{t(#Including X#,_ARRAY_(#name#^row.surcharge.getName()))}:</strong>
-    <span class="value"><widget class="XLite\View\Surcharge" surcharge="{row.cost}" currency="{cart.getCurrency()}" />
-  </li>
-{end:}
+<li class='included-surcharge' FOREACH="cart.getItemsIncludeSurchargesTotals(),row">
+  <strong>{t(#Including X#,_ARRAY_(#name#^row.surcharge.getName()))}:</strong>
+  <span class="value"><widget class="XLite\View\Surcharge" surcharge="{row.cost}" currency="{cart.getCurrency()}" />
+</li>

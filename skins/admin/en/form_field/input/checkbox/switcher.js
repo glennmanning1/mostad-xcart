@@ -11,7 +11,7 @@
 
 CommonForm.elementControllers.push(
   {
-    pattern: '.line .input-field-wrapper.switcher',
+    pattern: '.line .input-field-wrapper.switcher:not(.switcher-read-only)',
     handler: function () {
       var input = jQuery(':checkbox', this);
       var cnt = jQuery(this);

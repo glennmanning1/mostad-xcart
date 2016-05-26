@@ -13,6 +13,6 @@
 {if:order.getItemsIncludeSurchargesTotals()}  
     <li class='included-surcharge' FOREACH="order.getItemsIncludeSurchargesTotals(),row">
       <span class="name">{t(#Including X#,_ARRAY_(#name#^row.surcharge.getName()))}:</span>
-      <span class="value"><widget class="XLite\View\Surcharge" surcharge="{row.cost}" currency="{order.getCurrency()}" />
+      <span class="value"><widget class="XLite\View\Surcharge" surcharge="{row.cost}" currency="{order.getCurrency()}" /></span>
     </li>
 {end:}

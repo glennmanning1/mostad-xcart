@@ -243,6 +243,7 @@ class Import extends \XLite\Controller\Admin\AAdmin
 
             if ($this->getImporter()->isNextStepAllowed()) {
                 $this->getImporter()->switchToNextStep(array('warningsAccepted' => true));
+                \XLite\Core\Database::getRepo('XLite\Model\ImportLog')->deleteByType(\XLite\Model\ImportLog::TYPE_WARNING);
             }
         }
     }

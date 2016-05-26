@@ -293,8 +293,10 @@ class Module extends \XLite\Model\Repo\ARepo
         if ($searchPhrase) {
             $queryBuilder->addSelect(
                 sprintf(
-                    'RELEVANCE(\'%s\', %s, %s) as relevance',
-                    $value,
+                    'RELEVANCE(%s, %s, %s) as relevance',
+                    \XLite\Core\Database::getEM()->getConnection()->quote(
+                        str_replace("'", '', $value)
+                    ),
                     $this->getRelevanceTitleField(),
                     $this->getRelevanceTextField()
                 )
@@ -599,7 +601,7 @@ class Module extends \XLite\Model\Repo\ARepo
                     'XLite\Model\Module',
                     'updated',
                     \Doctrine\ORM\Query\Expr\Join::WITH,
-                    'updated.majorVersion = m.majorVersion AND updated.minorVersion > m.minorVersion AND updated.author = m.author AND updated.name = m.name'
+                    'updated.majorVersion = m.majorVersion AND (updated.minorVersion > m.minorVersion OR (updated.minorVersion = m.minorVersion AND updated.build > m.build)) AND updated.author = m.author AND updated.name = m.name'
                 )
                 ->leftJoin(
                     'XLite\Model\Module',
@@ -1380,17 +1382,26 @@ class Module extends \XLite\Model\Repo\ARepo
             \Includes\Utils\ModulesManager::disableModule($module->getActualName());
             \Includes\Utils\ModulesManager::removeModuleFromDisabledStructure($module->getActualName());
 
-            // Remove module from DB
-            try {
-                // Refresh module entity as it was changed by disableModule() method above
-                $module = $this->find($module->getModuleID());
-                $this->delete($module);
+            // Get installed module record from database
+            $moduleToDelete = $this->getModuleInstalled($module);
 
-            } catch (\Exception $e) {
-                $messages[] = $e->getMessage();
+            if (!\XLite\Core\Database::getEM()->contains($moduleToDelete)) {
+                // Detached entity: reload from database
+                $moduleToDelete = \XLite\Core\Database::getEM()->merge($moduleToDelete);
             }
 
-            if ($module->getModuleID()) {
+            if ($moduleToDelete) {
+
+                try {
+                    // Remove module from DB
+                    $this->delete($moduleToDelete);
+
+                } catch (\Exception $e) {
+                    $messages[] = $e->getMessage();
+                }
+            }
+
+            if ($moduleToDelete->getModuleID()) {
                 $messages[] = \XLite\Core\Translation::getInstance()->translate('A DB error occurred while uninstalling the module X', $params);
 
             } else {

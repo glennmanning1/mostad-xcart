@@ -130,6 +130,8 @@
   color: black;
   white-space: normal;
   word-break: break-word;
+  max-width: calc(100% - 80px);
+  display: inline-block;
 }
 
 .items-list-table.order-items table.list tbody td.cell.name ul.subitem,

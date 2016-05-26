@@ -308,13 +308,25 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
     }
 
     /**
-     * Check product has variants or nit
+     * Check product has variants or not
      *
      * @return boolean
      */
     public function hasVariants()
     {
         return 0 < $this->getVariants()->count();
+    }
+
+    /**
+     * Return product amount available to add to cart
+     *
+     * @return integer
+     */
+    public function getAvailableAmount()
+    {
+        return $this->hasVariants()
+            ? $this->getVariant()->getAvailableAmount()
+            : parent::getAvailableAmount();
     }
 
     /**

@@ -16,7 +16,9 @@
 .items-list-table.wholesale-prices table.list tbody.bottom-create tr.create-line {
   background-color: #eff8fe;
 }
-
+.items-list-table.wholesale-prices table.list tr{
+  height: 47px;
+}
 .items-list-table.wholesale-prices table.list tbody tr.disabled td {
   color: #8f8f8f;
 }
@@ -54,6 +56,11 @@
   text-align: right;
 }
 
+.items-list-table.wholesale-prices table.list tr:not(.edit-open-mark) td.price .editable .view{
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .items-list-table.wholesale-prices table.list .view.not-editable {
   padding: 0 10px;
 }
@@ -84,6 +91,7 @@
 
 .items-list-table.wholesale-prices .text-grey {
   color: #8f8f8f;
+  margin-right: 3px;
 }
 
 .wholesale-prices-membership-note {

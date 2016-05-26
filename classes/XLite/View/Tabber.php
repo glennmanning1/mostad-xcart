@@ -109,10 +109,17 @@ class Tabber extends \XLite\View\AView
 
             if (is_array($dialogPages)) {
                 foreach ($dialogPages as $page => $title) {
+                    $linkTemplate = null;
+                    if (is_array($title)) {
+                        $linkTemplate = $title['linkTemplate'];
+                        $title = $title['title'];
+                    }
                     $p = new \XLite\Base();
                     $pageURL = preg_replace('/' . $switch . '=(\w+)/', $switch . '=' . $page, $url);
                     $p->set('url', $pageURL);
                     $p->set('title', $title);
+                    $p->set('linkTemplate', $linkTemplate);
+                    $p->set('key', $page);
                     $pageSwitch = sprintf($switch . '=' . $page);
                     $p->set('selected', (preg_match('/' . preg_quote($pageSwitch) . '(\Z|&)/Ss', $url)));
                     $this->pages[] = $p;

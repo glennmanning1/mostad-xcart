@@ -111,6 +111,11 @@ abstract class APrepare extends \XLite\View\Upgrade\Step\AStep
         return $module->getInstalledURL();
     }
 
+    /**
+     * Return true if cell is an upgrade cell (changes major version)
+     *
+     * @return boolean
+     */
     protected function isUpgrade()
     {
         return \XLite\Upgrade\Cell::getInstance()->isUpgrade();

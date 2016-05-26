@@ -10,4 +10,4 @@
  *
  * @ListChild (list="invoice.item.name", weight="10")
  *}
-<li style="list-style: none;line-height: 1.6em;color: #5a5a5a;">{t(#SKU#)} {item.getSku()}</li>
+<li style="list-style: none;line-height: 1.6em;display:inline;color: #5a5a5a;">{t(#SKU#)} {item.getSku()}</li>

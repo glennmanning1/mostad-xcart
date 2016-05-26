@@ -308,7 +308,7 @@ ALoadable.prototype.extractContent = function(box)
 {
   box = jQuery(this.containerRequestPattern, box);
   if (box.children().eq(0).hasClass('block')) {
-    box = jQuery('.block > .content', box.eq(0));
+    box = jQuery('.block:first > .content', box.eq(0));
   }
 
   return box;

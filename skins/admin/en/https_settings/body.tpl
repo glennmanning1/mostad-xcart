@@ -50,7 +50,11 @@
 
     {if:!isEnabledHTTPS()}
       {if:!isAvailableHTTPS()&isValidSSL()}
-        <widget class="\XLite\View\Button\ConfirmRegular" confirmText="Are you sure you want to enable https anyway?" label="Enable HTTPS" jsCode="self.location='{buildURL(#https_settings#,#enable_HTTPS#)}'" style="{getButtonStyle()}" />
+        <widget class="\XLite\View\Button\ConfirmRegular"
+                confirmText="{t(#Are you sure you want to enable https anyway?#)}"
+                label="Enable HTTPS"
+                jsCode="self.location='{buildURL(#https_settings#,#enable_HTTPS#)}'"
+                style="{getButtonStyle()}" />
       {else:}
         <widget class="\XLite\View\Button\Regular" label="Enable HTTPS" jsCode="self.location='{buildURL(#https_settings#,#enable_HTTPS#)}'" style="{getButtonStyle()}" />
       {end:}

@@ -17,7 +17,7 @@
     <div class="page-tabs" IF="isTabsNavigationVisible()">
 
       <ul>
-        <li FOREACH="getTabberPages(),tabPage" class="tab{if:tabPage.selected}-current{end:}"><a href="{tabPage.url}">{t(tabPage.title)}</a></li>
+        <li FOREACH="getTabberPages(),tabPage" class="tab{if:tabPage.selected}-current{end:} tabkey-{tabPage.key}">{if:tabPage.linkTemplate}<widget template="{tabPage.linkTemplate}" />{else:}<a href="{tabPage.url}">{t(tabPage.title)}</a>{end:}</li>
       </ul>
       <div class="list-after-tabs" IF="isViewListVisible(#page.tabs.after#)"><list name="page.tabs.after" /></div>
 

@@ -21,17 +21,16 @@ CommonForm.elementControllers.push(
 
       var value = '';
       jQuery(input).bind('keydown', function () {
-        value = $(this).val();
+        value = jQuery(this).val();
       });
 
       jQuery(input).bind('keyup', function () {
-        if ($(this).val() !== value) {
+        if (jQuery(this).val() !== value) {
           jQuery(input.form).find('[name="profileId"]:hidden').val('');
         }
       });
 
-      this.autocompleteSource = function(request, response)
-      {
+      this.autocompleteSource = function (request, response) {
         core.get(
           unescape(jQuery(this).data('source-url')).replace('%term%', request.term),
           null,
@@ -52,8 +51,7 @@ CommonForm.elementControllers.push(
         );
       };
 
-      this.autocompleteAssembleOptions = function()
-      {
+      this.autocompleteAssembleOptions = function () {
         var input = this;
 
         return {
@@ -62,11 +60,9 @@ CommonForm.elementControllers.push(
           },
           minLength: jQuery(this).data('min-length') || 2,
           select: function( event, ui ) {
-            jQuery.each(input._data, function(index, value) {
+            jQuery.each(input._data, function (index, value) {
               if (value.label == ui.item.value) {
                 jQuery(input.form).find('[name="profileId"]:hidden').val(value.value);
-
-                return;
               }
             });
           }

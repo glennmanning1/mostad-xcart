@@ -219,6 +219,8 @@ if (COPYRIGHT_EXISTS) {
     $params = (isset($_POST['params']) && is_array($_POST['params']) ? $_POST['params'] : array());
 }
 
+$mysqlVersion = !empty($params['mysqlVersion']) ? $params['mysqlVersion'] : null;
+
 // Process 'Go back' action: remove params
 if (isset($_POST['go_back']) && $_POST['go_back'] === '1') {
 
@@ -284,7 +286,7 @@ show_install_css();
 
 <script src="skins/common/js/jquery.min.js"></script>
 <script src="skins/common/bootstrap/js/bootstrap.min.js"></script>
-<script src="skins/common/js/zero-clipboard.min.js"></script>
+<script src="skins/common/js/clipboard.min.js"></script>
 
 <?php
 
@@ -420,14 +422,17 @@ var gaIsCalled = false;
         m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-ga('set', 'dimension1', '<?php print phpversion(); ?>');
-ga('set', 'dimension2', '<?php print LC_VERSION; ?>');
-ga('set', 'dimension3', '<?php print XLITE_EDITION_LNG; ?>');
-
 ga('create', '<?php print constant('XC_INSTALL_GA'); ?>', 'auto');
 
 ga('send', 'pageview', {
     'title': '<?php printf ('X-Cart v.%s Installation Wizard', LC_VERSION); ?>',
+    'dimension1': '<?php print phpversion(); ?>',
+    'dimension2': '<?php print LC_VERSION; ?>',
+    'dimension3': '<?php print XLITE_EDITION_LNG; ?>',
+<?php if (!empty($mysqlVersion)): ?>
+    'dimension4': '<?php print str_replace("'", '\'', $mysqlVersion); ?>',
+<?php endif; ?>
+    'dimension5': '<?php print str_replace("'", '\'', php_uname('s')); ?>',
     'hitCallback': function() {
         gaIsCalled = true;
     }
@@ -578,6 +583,10 @@ if ($current < count($modules)) {
 
 
     if (!empty($params)) {
+
+        if (!empty($mysqlVersion)) {
+            $params['mysqlVersion'] = $mysqlVersion;
+        }
 
 	    foreach ($params as $key => $val) {
 

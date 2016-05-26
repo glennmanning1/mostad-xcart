@@ -76,7 +76,7 @@ class ModelOrderItemSelector extends \XLite\Controller\Admin\ModelProductSelecto
         $orderItem->calculate();
         $orderItem->renew();
 
-        $data['clear_price'] = $orderItem->getClearPrice();
+        $data['clear_price'] = $orderItem->getItemPrice();
         $data['selected_price'] = $orderItem->getDisplayPrice();
 
         $data['max_qty'] = $orderItem->getProductAvailableAmount();
@@ -87,7 +87,7 @@ class ModelOrderItemSelector extends \XLite\Controller\Admin\ModelProductSelecto
             $data['selected_sku'] = $orderItem->getSku();
             $data['presentation'] = $this->formatItem($orderItem);
 
-            $data['clear_price'] = $orderItem->getClearPrice();
+            $data['clear_price'] = $orderItem->getItemPrice();
             $data['server_price_control'] = $orderItem->isPriceControlledServer();
 
             if ($data['server_price_control']) {

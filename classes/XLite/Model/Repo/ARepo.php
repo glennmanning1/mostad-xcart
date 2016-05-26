@@ -2056,7 +2056,7 @@ abstract class ARepo extends \Doctrine\ORM\EntityRepository
     public function clearExportFilter()
     {
         $alias = $this->getDefaultAlias();
-        $this->createPureQueryBuilder()
+        $this->getQueryBuilder()
              ->update($this->_entityName, $alias)
              ->set($alias . '.xcPendingExport', 0)
              ->execute();

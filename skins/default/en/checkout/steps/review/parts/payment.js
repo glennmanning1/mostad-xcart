@@ -23,6 +23,7 @@ function PaymentTplView(base)
   if (args[0].length) {
     core.bind('updateCart', _.bind(this.handleUpdateCart, this));
     this.bind('local.loaded', _.bind(this.handleLoaded, this));
+    this.bind('local.loadingError', _.bind(this.unblock, this));
   }
 
   PaymentTplView.superclass.constructor.apply(this, args);
@@ -54,12 +55,19 @@ PaymentTplView.prototype.handleUpdateCart = function(event, data)
 {
   if ('undefined' != typeof(data.paymentMethodId)) {
     this.load();
+    core.trigger('checkout.common.block');
   }
 };
 
 PaymentTplView.prototype.handleLoaded = function(event)
 {
+  this.unblock();
   core.trigger('checkout.common.anyChange', this);
+};
+
+PaymentTplView.prototype.unblock = function(event)
+{
+  core.trigger('checkout.common.unblock');
 };
 
 // Get event namespace (prefix)

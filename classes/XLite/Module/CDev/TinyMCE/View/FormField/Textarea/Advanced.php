@@ -156,7 +156,7 @@ class Advanced extends \XLite\View\FormField\Textarea\Advanced implements \XLite
                 false // Remove $xid parameter
             ),
             'convertUrls'   => $this->getParam(static::PARAM_CONVERT_URLS),
-            'shopURLRoot'   => \XLite\Model\Category::WEB_LC_ROOT,
+            'shopURLRoot'   => \XLite\Model\Base\Catalog::WEB_LC_ROOT,
             'bodyClass'     => $this->getParam(static::PARAM_STYLE),
             'base'          => dirname(\XLite\Singletons::$handler->layout->getResourceWebPath(
                 $this->getDir() . '/js/tinymce/tiny_mce.js',
@@ -174,7 +174,7 @@ class Advanced extends \XLite\View\FormField\Textarea\Advanced implements \XLite
     {
         return htmlentities(
             str_replace(
-                \XLite\Model\Category::WEB_LC_ROOT,
+                \XLite\Model\Base\Catalog::WEB_LC_ROOT,
                 htmlentities(\XLite::getInstance()->getShopURL(null)),
                 $this->getValue()
             ),

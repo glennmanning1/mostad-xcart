@@ -54,12 +54,22 @@ class CheckoutFailed extends \XLite\Controller\Customer\Cart
         $this->setReturnURL($this->buildURL('checkout'));
 
         if ($this->getCart()) {
-            $cart = $this->getCart()->getNotFinishedOrder() ?: $this->getCart();
+            $cart = $this->getFailedCart();
             $reason = $cart->getFailureReason()
                 ?: $this->getDefaultFailureReason();
 
             \XLite\Core\TopMessage::addError($reason);
         }
+    }
+
+    /**
+     * Get failed cart object
+     *
+     * @return \XLite\Model\Cart
+     */
+    protected function getFailedCart()
+    {
+        return $this->getCart();
     }
 
     /**

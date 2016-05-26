@@ -923,7 +923,7 @@ class Install extends \XLite\View\ItemsList\Module\AModule
         return $installed
             && (
                 version_compare($installed->getMajorVersion(), $module->getMajorVersion(), '=')
-                && version_compare($installed->getMinorVersion(), $module->getMinorVersion(), '<')
+                && version_compare($installed->getFullMinorVersion(), $module->getFullMinorVersion(), '<')
                 || version_compare($installed->getMajorVersion(), $module->getMajorVersion(), '<')
             );
     }

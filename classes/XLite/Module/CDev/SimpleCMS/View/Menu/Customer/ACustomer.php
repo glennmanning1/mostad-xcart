@@ -35,6 +35,18 @@ namespace XLite\Module\CDev\SimpleCMS\View\Menu\Customer;
 abstract class ACustomer extends \XLite\View\Menu\Customer\ACustomer implements \XLite\Base\IDecorator
 {
     /**
+     * Check if url is same as current URL
+     *
+     * @param string    $url    URL to check
+     *
+     * @return boolean
+     */
+    protected function isSameAsCurrent($url)
+    {
+        return \XLite::getInstance()->getShopURL($url) === \XLite\Core\URLManager::getCurrentURL();
+    }
+
+    /**
      * Check - specified item is active or not
      *
      * @param array $item Menu item
@@ -47,7 +59,7 @@ abstract class ACustomer extends \XLite\View\Menu\Customer\ACustomer implements 
 
         if (false === $item['controller']) {
 
-            $result = (\XLite::getInstance()->getShopURL($item['url']) === \XLite\Core\URLManager::getCurrentURL())
+            $result = $item['url'] && $this->isSameAsCurrent($item['url'])
                 ?: $result;
 
         } else {
@@ -95,8 +107,7 @@ abstract class ACustomer extends \XLite\View\Menu\Customer\ACustomer implements 
                 }
                 $result = $found;
             } else {
-                $childLink = \XLite::getInstance()->getShopURL($item->getLink());
-                $result = $childLink === \XLite\Core\URLManager::getCurrentURL();
+                $result = $this->isSameAsCurrent($item->getURL());
             }
         }
 
@@ -112,7 +123,9 @@ abstract class ACustomer extends \XLite\View\Menu\Customer\ACustomer implements 
      */
     protected function isActiveItem(array $item)
     {
-        $linkMatched = isset($item['url']) && (\XLite::getInstance()->getShopURL($item['url']) === \XLite\Core\URLManager::getCurrentURL());
+        $linkMatched = isset($item['url'])
+            && $item['url']
+            && $this->isSameAsCurrent($item['url']);
 
         return ($linkMatched || $this->checkChilden($item['id']))
             ?:

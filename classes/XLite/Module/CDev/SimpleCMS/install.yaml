@@ -81,15 +81,12 @@ XLite\Module\CDev\SimpleCMS\Model\Page:
 
 XLite\Module\CDev\SimpleCMS\Model\Menu:
   - { link: '{home}', type: P, position: 100, translations: [{ code: en, name: Home }, { code: ru, name: Главная }]}
-  - { link: 'shipping.html', type: P, position: 200, translations: [{ code: en, name: Shipping }, { code: ru, name: Доставка }]}
-  - { link: '{my account}', visibleFor: L, type: P, position: 600, translations: [{ code: en, name: "My Account" }, { code: ru, name: "Мой профиль" }]}
-  - { link: '{contact us}', type: P, position: 700, translations: [{ code: en, name: "Contact us" }, { code: ru, name: "Напишите нам" }]}
-  - { link: 'terms-and-conditions.html', type: F, position: 100, translations: [{ code: en, name: "Terms & Conditions" }, { code: ru, name: "Условия" }]}
-  - { link: 'shipping.html', type: F, position: 200, translations: [{ code: en, name: Shipping }, { code: ru, name: "Доставка" }]}
+  - { link: '{my account}', visibleFor: L, type: P, position: 600, translations: [{ code: en, name: "My Account" }, { code: ru, name: "Мой профиль" }], children: [{ enabled: 1, link: '?target=order_list', visibleFor: L, type: P, position: 100, translations: [{ code: en, name: My orders }, { code: ru, name: "Мои заказы" }]},{ enabled: 1, link: '?target=address_book', visibleFor: L, type: P, position: 200, translations: [{ code: en, name: My address book }, { code: ru, name: "Мои адреса" }]}]}
 
 XLite\Model\LanguageLabel:
   - { name: "Contact us", translations: [{ code: en, label: "Contact us" }] }
   - { name: "Logo", translations: [{ code: en, label: "Logo" }] }
+  - { name: "Favicon", translations: [{ code: en, label: "Favicon" },{ code: ru, label: "Фавикон" }] }
   - { name: "Shipping", translations: [{ code: en, label: "Shipping" }] }
   - { name: "Menu links help text", translations: [{ code: en, label: "If you want to add an external link, you should specify it with the <strong>http://</strong> prefix, e.g. <strong>http://www.example.com/</strong>.<br /><br />If you want to add a link to a page within your store (e.g. the checkout page), you can specify it as <strong>cart.php?target=checkout</strong> (relative path) or as <strong>{{URL}}cart.php?target=checkout</strong> (absolute path).<br /><br />Also the '{home}' shortcut value will lead to Home page" }] }
   - { name: "Failed to update page image", translations: [{ code: en, label: "Failed to update the page image" }] }
@@ -105,3 +102,6 @@ XLite\Model\LanguageLabel:
   - { name: "Terms and conditions", translations: [{ code: en, label: "Terms and conditions" }] }
   - { name: 'Open graph image', translations: [{ code: 'en', label: 'Open graph image' }] }
   - { name: 'The "{{file}}" file is not allowed image and was not uploaded. Allowed images are: {{extensions}}', translations: [{ code: 'en', label: 'The "{{file}}" file is not allowed image and was not uploaded. Allowed images are: {{extensions}}' }] }
+  - { name: "Submenu", translations: [{ code: en, label: "Submenu" },{ code: ru, label: "Подменю" }] }
+  - { name: "Content page title", translations: [{ code: en, label: "Content page title" },{ code: ru, label: "Заголовок страницы" }] }
+  - { name: "Leave blank to use page name as Page Title.", translations: [{ code: en, label: "Leave blank to use page name as Page Title." },{ code: ru, label: "Оставьте поле незаполненным чтобы использовать имя страницы в качестве заголовка." }] }

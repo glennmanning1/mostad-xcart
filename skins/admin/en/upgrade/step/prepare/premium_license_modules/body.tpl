@@ -17,7 +17,7 @@
 <table class="incompatible-modules-list premium-license-modules-list">
   <tr FOREACH="getModules(),entry">
     <td class="module-info">
-      <a href="{entry.getModuleInstalledPageURL()}">
+      <a href="{entry.getInstalledURL()}">
         <span class="name">{entry.getName()}</span>
         <span class="author">({t(#by#)} {entry.getAuthor()})</span>
       </a>

@@ -11,7 +11,7 @@
  * @ListChild (list="invoice.bottom.address.billing", weight="10")
  *}
 <strong style="color: #000;font-size: 20px;font-weight: normal;padding-bottom: 3px;">{t(#Billing address#)}</strong>
-<ul style="padding-top: 12px;list-style: none;margin: 0;padding-left: 0;margin-left: 0px;margin-bottom:0px;">
+<ul IF="{baddress}" style="padding-top: 12px;list-style: none;margin: 0;padding-left: 0;margin-left: 0px;margin-bottom:0px;">
   {foreach:getAddressSectionData(baddress),idx,field}
   <widget IF="{getAddressFiledTemplate(#b#,idx,field)}" template="{getAddressFiledTemplate(#b#,idx,field)}" field="{field}" />
   {end:}

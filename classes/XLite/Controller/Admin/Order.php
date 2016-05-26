@@ -840,7 +840,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
 
         // Set this flag to prevent duplicate 'Order changed' email notifications
         $this->getOrder()->setIgnoreCustomerNotifications(!$this->getSendNotificationFlag());
-        $this->getOrder()->setIsNotificationSent(true);
+        $oldSentFlagValue = $this->getOrder()->setIsNotificationSent(true);
 
         if ($this->isOrderEditable()) {
             // Update order items list
@@ -850,9 +850,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
             $this->updateCommonForm();
         }
 
-        if (!$this->getOrderChanges()) {
-            $this->getOrder()->setIsNotificationSent(false);
-        }
+        $this->getOrder()->setIsNotificationSent($oldSentFlagValue);
 
         // Process change order statuses
         $this->updateOrderStatus();
@@ -938,7 +936,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
      */
     protected function sendOrderChangeNotification()
     {
-        if ($this->getSendNotificationFlag()) {
+        if ($this->getSendNotificationFlag() && !$this->getOrder()->isNotificationSent()) {
             \XLite\Core\Mailer::getInstance()->sendOrderAdvancedChangedCustomer($this->getOrder());
         }
     }
@@ -1309,7 +1307,7 @@ class Order extends \XLite\Controller\Admin\AAdmin
     protected function defineSurchargeTotals()
     {
         return $this->postprocessSurchargeTotals(
-            $this->getOrderForm()->getModelObject()->getSurchargeTotals()
+            $this->getOrderForm()->getModelObject()->getCompleteSurchargeTotals()
         );
     }
 

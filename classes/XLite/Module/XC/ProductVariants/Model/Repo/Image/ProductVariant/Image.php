@@ -45,10 +45,10 @@ class Image extends \XLite\Model\Repo\Base\Image
     }
 
     /**
-     * Count by product 
-     * 
+     * Count by product
+     *
      * @param \XLite\Model\Product $product Product
-     *  
+     *
      * @return integer
      */
     public function countByProduct(\XLite\Model\Product $product)
@@ -59,5 +59,4 @@ class Image extends \XLite\Model\Repo\Base\Image
             ->setParameter('product', $product)
             ->count();
     }
-
 }

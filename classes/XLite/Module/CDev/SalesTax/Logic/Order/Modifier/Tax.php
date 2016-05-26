@@ -166,9 +166,13 @@ class Tax extends \XLite\Logic\Order\Modifier\ATax
 
             if ($rates) {
                 $ratesExists = true;
-
+                $previousClasses = array();
                 foreach ($rates as $rate) {
-                    $cost += $this->getShippingTaxCost($rate);
+                    $taxClass = $rate->getTaxClass() ?: null;
+                    if (!in_array($taxClass, $previousClasses)) {
+                        $cost += $this->getShippingTaxCost($rate);
+                        $previousClasses[] = $taxClass;
+                    }
                 }
             }
 
@@ -202,7 +206,7 @@ class Tax extends \XLite\Logic\Order\Modifier\ATax
             $shippingRate = $modifier->getSelectedRate();
 
             if ($shippingRate && $shippingRate->getMethod()) {
-                $totalShippingCost = $shippingRate->getTaxableBasis();
+                $totalShippingCost = $this->getOrderShippingCost();
                 $totalWeight       = $modifier->getModifier()->getWeight();
                 $orderSubtotal     = $modifier->getModifier()->getSubtotal();
                 $orderItems        = $modifier->getModifier()->getItems();
@@ -264,11 +268,21 @@ class Tax extends \XLite\Logic\Order\Modifier\ATax
             $shippingRate = $modifier->getSelectedRate();
 
             if ($rate->isAppliedToObject($shippingRate->getMethod())) {
-                $result = $rate->calculateShippingTax($shippingRate->getTaxableBasis());
+                $result = $rate->calculateShippingTax($this->getOrderShippingCost());
             }
         }
 
         return $result;
+    }
+
+    /**
+     * Get order total shipping cost
+     *
+     * @return float
+     */
+    protected function getOrderShippingCost()
+    {
+        return $this->getOrder()->getSurchargeSumByType(\XLite\Model\Base\Surcharge::TYPE_SHIPPING);
     }
 
     /**

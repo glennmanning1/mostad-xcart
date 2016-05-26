@@ -439,3 +439,21 @@ div.export-failed .header h2,
 .files-option div.table-value select {
   width: 150px;
 }
+
+.widget-popupexport .export-not-started .header {
+  display: none;
+}
+
+.export-not-started .content .message {
+  font-size: 15px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.export-not-started .content .icon {
+  font-size: 48px;
+  color: #EFBF1B;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 10px;
+}

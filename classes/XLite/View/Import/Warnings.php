@@ -55,7 +55,6 @@ class Warnings extends \XLite\View\Import\Failed
     {
         return parent::isVisible()
             && $this->getImporter()
-            && $this->getImporter()->getOptions()->updateOnly
             && (
                 \XLite\Logic\Import\Importer::hasWarnings()
                 || \XLite\Logic\Import\Importer::hasErrors()

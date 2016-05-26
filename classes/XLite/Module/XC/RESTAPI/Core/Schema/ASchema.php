@@ -547,21 +547,21 @@ abstract class ASchema extends \XLite\Base
     {
         $data = null;
 
-        $request = $this->config->request;
+        $requestData = $this->config->request->getNonFilteredData();
 
-        if (!empty($request->model)) {
-            if (is_string($request->model)) {
-                $data = json_decode($request->model, true);
+        if (!empty($requestData['model'])) {
+            if (is_string($requestData['model'])) {
+                $data = json_decode($requestData['model'], true);
                 if (!is_array($data)) {
                     $data = null;
                 }
 
-            } elseif (is_array($request->model)) {
-                $data = $request->model;
+            } elseif (is_array($requestData['model'])) {
+                $data = $requestData['model'];
             }
 
         } else {
-            $data = $request->getData();
+            $data = $requestData;
             foreach ($this->getServiceInputKeys() as $key) {
                 if (isset($data[$key])) {
                     unset($data[$key]);

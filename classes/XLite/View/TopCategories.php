@@ -70,17 +70,160 @@ class TopCategories extends \XLite\View\SideBarBox
      */
     protected $pathIds;
 
+    /**
+     * Collection of categories DTOs
+     * @var array
+     */
+    protected $categories = null;
+
+    /**
+     * categoriesPath runtime cache
+     * @var array
+     */
+    protected static $categoriesPath;
+
+    protected function getProductsCount($categoryDTO)
+    {
+        $result = $categoryDTO['productsCount'];
+
+        foreach ($categoryDTO['children'] as $child) {
+            $result += $this->getProductsCount($child);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Preprocess DTO
+     *
+     * @param  array    $categoryDTO
+     * @return array
+     */
+    protected function preprocessDTO($categoryDTO)
+    {
+        $categoryDTO['link']                = $this->buildURL('category', '', array('category_id' => $categoryDTO['id']));
+        $categoryDTO['hasSubcategories']    = 0 < $categoryDTO['subcategoriesCount'];
+        $categoryDTO['children']            = array();
+
+        if (!$categoryDTO['name']) {
+            $categoryDTO['name'] = $this->getFirstTranslatedName($categoryDTO['id']);
+        }
+
+        return $categoryDTO;
+    }
+
+    /**
+     * Get name fallback
+     *
+     * @param integer $categoryId Category id
+     *
+     * @return string
+     */
+    protected function getFirstTranslatedName($categoryId)
+    {
+        return \XLite\Core\Database::getRepo('XLite\Model\Category')
+            ->getFirstTranslatedName($categoryId);
+    }
+
+    /**
+     * Get cache parameters for proprocessed DTOs
+     *
+     * @return array
+     */
+    protected function getProcessedDTOsCacheParameters()
+    {
+        $cacheParameters = array(
+            'categoriesDTOs'
+        );
+
+        if (\XLite\Core\Session::getInstance()->getLanguage()) {
+            $cacheParameters[] = \XLite\Core\Session::getInstance()->getLanguage()->getCode();
+        }
+
+        $auth = \XLite\Core\Auth::getInstance();
+        if ($auth->isLogged()
+            && $auth->getProfile()->getMembership()
+        ) {
+            $cacheParameters[] = $auth->getProfile()->getMembership()->getMembershipId();
+        }
+
+        return $cacheParameters;
+    }
+
+    /**
+     * Collect categories collection
+     *
+     * @return array
+     */
+    protected function collectCategories()
+    {
+        $cacheKey = md5(serialize($this->getProcessedDTOsCacheParameters()));
+        $driver = \XLite\Core\Database::getCacheDriver();
+
+        if ($driver->contains($cacheKey)) {
+            return $driver->fetch($cacheKey);
+        }
+
+        $preprocessedDTOs = array();
+
+        $dtos = \XLite\Core\Database::getRepo('XLite\Model\Category')->getCategoriesAsDTO();
+        foreach ($dtos as $key => $categoryDTO) {
+            $preprocessedDTOs[] = $this->preprocessDTO($categoryDTO);
+        }
+
+        foreach ($preprocessedDTOs as $categoryDTO) {
+            // Make tree structure
+            $preprocessedDTOs[$categoryDTO['parent_id']]['children'][] = $categoryDTO;
+        }
+
+        $driver->save($cacheKey, $preprocessedDTOs);
+
+        return $preprocessedDTOs;
+    }
+
+    /**
+     * Check if category included into active trail or not
+     *
+     * @param integer $categoryId Category id
+     *
+     * @return boolean
+     */
+    protected function isActiveTrail($categoryId)
+    {
+        if ($this->pathIds === null) {
+
+            $this->pathIds = array();
+
+            if (static::$categoriesPath === null) {
+                static::$categoriesPath = \XLite\Core\Database::getRepo('\XLite\Model\Category')
+                    ->getCategoryPath($this->getCategoryId());
+            }
+
+            if (is_array(static::$categoriesPath)) {
+
+                foreach (static::$categoriesPath as $cat) {
+
+                    $this->pathIds[] = $cat->getCategoryId();
+
+                }
+
+            }
+
+        }
+
+        return in_array($categoryId, $this->pathIds);
+    }
 
     /**
      * Display item CSS class name as HTML attribute
      *
      * @param integer               $index    Item number
      * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
+     * @param array                 $category Current category
      *
      * @return string
      */
-    public function displayItemClass($index, $count, \XLite\Model\Category $category)
+    public function displayItemClass($index, $count, $category)
     {
         $className = $this->assembleItemClassName($index, $count, $category);
 
@@ -92,11 +235,11 @@ class TopCategories extends \XLite\View\SideBarBox
      *
      * @param integer               $i        Item number
      * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
+     * @param array                 $category Current category
      *
      * @return string
      */
-    public function displayLinkClass($i, $count, \XLite\Model\Category $category)
+    public function displayLinkClass($i, $count, $category)
     {
         $className = $this->assembleLinkClassName($i, $count, $category);
 
@@ -148,9 +291,17 @@ class TopCategories extends \XLite\View\SideBarBox
      */
     protected function getCategories($categoryId = null)
     {
-        return \XLite\Core\Database::getRepo('\XLite\Model\Category')->getSubcategories(
-            $categoryId ?: $this->getParam(self::PARAM_ROOT_ID)
-        );
+        if(null === $this->categories) {
+            $this->categories = $this->collectCategories();
+        }
+
+        if (!$categoryId) {
+            $categoryId = 1;
+        }
+
+        return isset($this->categories[$categoryId]['children'])
+            ? $this->categories[$categoryId]['children']
+            : array();
     }
 
     /**
@@ -198,52 +349,21 @@ class TopCategories extends \XLite\View\SideBarBox
     }
 
     /**
-     * Check if category included into active trail or not
-     *
-     * @param \XLite\Model\Category $category Category
-     *
-     * @return boolean
-     */
-    protected function isActiveTrail(\XLite\Model\Category $category)
-    {
-        if (!isset($this->pathIds)) {
-
-            $this->pathIds = array();
-
-            $categoriesPath = \XLite\Core\Database::getRepo('\XLite\Model\Category')
-                ->getCategoryPath($this->getCategoryId());
-
-            if (is_array($categoriesPath)) {
-
-                foreach ($categoriesPath as $cat) {
-
-                    $this->pathIds[] = $cat->getCategoryId();
-
-                }
-
-            }
-
-        }
-
-        return in_array($category->getCategoryId(), $this->pathIds);
-    }
-
-    /**
      * Assemble item CSS class name
      *
      * @param integer               $index    Item number
      * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
+     * @param array                 $category Current category
      *
      * @return string
      */
-    protected function assembleItemClassName($index, $count, \XLite\Model\Category $category)
+    protected function assembleItemClassName($index, $count, $category)
     {
         $classes = array();
 
         $active = $this->isActiveTrail($category);
 
-        if (!$category->hasSubcategories()) {
+        if (!$category['hasSubcategories']) {
             $classes[] = 'leaf';
 
         } elseif (self::DISPLAY_MODE_LIST != $this->getParam(self::PARAM_DISPLAY_MODE)) {
@@ -277,13 +397,13 @@ class TopCategories extends \XLite\View\SideBarBox
      *
      * @param integer               $i        Item number
      * @param integer               $count    Items count
-     * @param \XLite\Model\Category $category Current category
+     * @param array                 $category Current category
      *
      * @return string
      */
-    protected function assembleLinkClassName($i, $count, \XLite\Model\Category $category)
+    protected function assembleLinkClassName($i, $count, $category)
     {
-        return \XLite\Core\Request::getInstance()->category_id == $category->getCategoryId()
+        return \XLite\Core\Request::getInstance()->category_id == $category['id']
             ? 'active'
             : '';
     }

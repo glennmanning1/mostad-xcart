@@ -115,4 +115,30 @@ class ImportLog extends \XLite\Model\Repo\ARepo
         return intval($qb->getSingleScalarResult());
     }
 
+    /**
+     * Delete log records by type
+     *
+     * @param string $type Log entry type (e.g. W or E)
+     *
+     * @return void
+     */
+    public function deleteByType($type)
+    {
+        $this->prepareDeleteByTypeQueryBuilder($type)->execute();
+    }
+
+    /**
+     * Prepare query builder for deleteByType() method
+     *
+     * @param string $type Log entry type
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    protected function prepareDeleteByTypeQueryBuilder($type)
+    {
+        return $this->getQueryBuilder()
+            ->delete($this->_entityName, 'il')
+            ->andWhere('il.type = :type')
+            ->setParameter('type', $type);
+    }
 }

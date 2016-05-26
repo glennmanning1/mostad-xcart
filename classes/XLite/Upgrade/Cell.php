@@ -447,7 +447,7 @@ class Cell extends \XLite\Base\Singleton
             ? array_filter(
                 $this->upgradeHooks,
                 function ($value) {
-                    return -1 == $value || 0 < $value;
+                    return null !== $value;
                 }
             )
             : array();
@@ -464,7 +464,7 @@ class Cell extends \XLite\Base\Singleton
             ? array_filter(
                 $this->upgradeHooks,
                 function ($value) {
-                    return 0 == $value;
+                    return null === $value;
                 }
             )
             : array();
@@ -473,14 +473,14 @@ class Cell extends \XLite\Base\Singleton
     /**
      * Add passed hook
      *
-     * @param string  $file   Hook file name
-     * @param integer $status Status of passed upgrade hook
+     * @param string $file   Hook file name
+     * @param mixed  $status Status of passed upgrade hook
      *
      * @return void
      */
-    public function addPassedHook($file, $status = 0)
+    public function addPassedHook($file, $status)
     {
-        $this->upgradeHooks[$file] = intval($status);
+        $this->upgradeHooks[$file] = $status;
     }
 
     /**
@@ -501,7 +501,7 @@ class Cell extends \XLite\Base\Singleton
 
             if ($entry) {
                 $ds = preg_quote(LC_DS, '/');
-                $prefix = 'Core' == $entry->getActualName()
+                $prefix = 'Core' === $entry->getActualName()
                     ? '^(' . $ds . '?)'
                     : preg_quote(str_replace('\\', LC_DS, $entry->getActualName()) . LC_DS, '/');
 
@@ -1066,6 +1066,7 @@ class Cell extends \XLite\Base\Singleton
                     }
 
                 } else {
+                    $this->errorEntries[] = $entry->getName();
                     break;
                 }
             }
@@ -1149,7 +1150,7 @@ class Cell extends \XLite\Base\Singleton
     /**
      * Preload helpers
      *
-     * @return void
+     * @return array
      */
     public function preloadHelpers()
     {

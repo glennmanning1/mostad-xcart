@@ -91,24 +91,16 @@ abstract class Order extends \XLite\Controller\Customer\ACustomer
     }
 
     /**
-     * Check if currently logged user is an admin
-     *
-     * @return boolean
-     */
-    protected function isAdmin()
-    {
-        return \XLite\Core\Auth::getInstance()->isAdmin();
-    }
-
-    /**
      * Check if order corresponds to current user
      *
      * @return boolean
      */
     protected function checkOrderProfile()
     {
-        return \XLite\Core\Auth::getInstance()->getProfile()->getProfileId()
-            == $this->getOrder()->getOrigProfile()->getProfileId();
+        return $this->getOrder()
+            && $this->getOrder()->getOrigProfile()
+            && \XLite\Core\Auth::getInstance()->getProfile()->getProfileId()
+                == $this->getOrder()->getOrigProfile()->getProfileId();
     }
 
     /**
@@ -118,7 +110,7 @@ abstract class Order extends \XLite\Controller\Customer\ACustomer
      */
     protected function checkOrderAccess()
     {
-        return \XLite\Core\Auth::getInstance()->isLogged() && ($this->isAdmin() || $this->checkOrderProfile());
+        return \XLite\Core\Auth::getInstance()->isLogged() && $this->checkOrderProfile();
     }
 
     /**

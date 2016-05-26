@@ -65,6 +65,12 @@ class Category extends \XLite\Model\Repo\Base\I18n
     protected static $rootCategory;
 
     /**
+     * Categories dtos
+     * @var array|null
+     */
+    protected $runtimeDtosCache = null;
+
+    /**
      * Return the reserved ID of root category
      *
      * @param boolean $override Override flag OPTIONAL
@@ -869,10 +875,27 @@ class Category extends \XLite\Model\Repo\Base\I18n
      */
     protected function performUpdate(\XLite\Model\AEntity $entity, array $data = array())
     {
-        if (isset($data['enabled']) && $entity->getParent() && ($entity->getEnabled() xor ((bool) $data['enabled']))) {
+        if (!empty($data)) {
+            $changeset = array(
+                'enabled' => array(
+                    $entity->getEnabled(),
+                    isset($data['enabled']) ? $data['enabled'] : null
+                )
+            );
+
+        } else {
+            $uow = \XLite\Core\Database::getEM()->getUnitOfWork();
+            $uow->computeChangeSets();
+            $changeset = $uow->getEntityChangeSet($entity);
+        }
+
+        if (isset($changeset['enabled'][0]) && isset($changeset['enabled'][1])
+            && $entity->getParent()
+            && ($changeset['enabled'][0] xor ((bool) $changeset['enabled'][1]))
+        ) {
             $this->updateQuickFlags(
                 $entity->getParent(),
-                $this->prepareQuickFlags(0, ($entity->getEnabled() ? -1 : 1))
+                $this->prepareQuickFlags(0, ($changeset['enabled'][0] ? -1 : 1))
             );
         }
 
@@ -1138,137 +1161,35 @@ class Category extends \XLite\Model\Repo\Base\I18n
      */
     public function correctCategoriesStructure()
     {
-        $all = $this->getCategoriesRawData();
+        $nestedSetCorrector = new \XLite\Logic\NestedSet(
+            $this->getCategoriesRawData()
+        );
 
-        if (!empty($all)) {
-            $allCategories = array();
-            $byKey = array();
+        list($data, $quickFlags) = $nestedSetCorrector->recalculateStructure();
 
-            foreach ($all as $category) {
-                $byKey[intval($category['parent_id'])][] = array(
-                    'category_id' => $category['category_id'],
-                    'parent_id'   => $category['parent_id'],
-                    'lpos'        => 0,
-                    'rpos'        => 0,
-                    'depth'       => 0,
-                    'pos'         => $category['pos'],
-                    'enabled'     => $category['enabled'],
-                    'subcats'     => 0,
-                    'subcats_enabled' => 0,
-                    'total_subcats' => 0,
-                );
-            }
-
-            ksort($byKey);
-
-            foreach ($byKey as $children) {
-                foreach ($children as $c) {
-                    $allCategories[] = $c;
-                }
-            }
-
-            $byKey = array();
-            unset($byKey);
-
-            $allCategories[0]['lpos'] = 1;
-            $allCategories[0]['rpos'] = 2;
-            $allCategories[0]['depth'] = -1;
-
-            $this->correctCategoryData($allCategories);
-
-            $categories = array();
-            foreach ($allCategories as $c) {
-                $categories[$c['category_id']] = $c;
-            }
-
-            $data = array();
-            $quickFlags = array();
-
-            // Collect data to update...
-            foreach ($all as $category) {
-                $catId = intval($category['category_id']);
-                if (
-                    $category['lpos'] != $categories[$catId]['lpos']
-                    || $category['rpos'] != $categories[$catId]['rpos']
-                    || $category['depth'] != $categories[$catId]['depth']
-                ) {
-                    // Add category to update list if lpos/rpos/depth were changed
-                    $data[$catId] = array(
-                        'lpos'  => $categories[$catId]['lpos'],
-                        'rpos'  => $categories[$catId]['rpos'],
-                        'depth' => $categories[$catId]['depth'],
-                    );
-                }
-                if (
-                    is_null($category['subcategories_count_all'])
-                    || is_null($category['subcategories_count_enabled'])
-                    || intval($category['subcategories_count_all']) != $categories[$catId]['subcats']
-                    || intval($category['subcategories_count_enabled']) != $categories[$catId]['subcats_enabled']
-                ) {
-                    // Add quick flags to update list if its values were changed
-                    $quickFlags[$catId] = array(
-                        'category_id'                 => $catId,
-                        'subcategories_count_all'     => $categories[$catId]['subcats'],
-                        'subcategories_count_enabled' => $categories[$catId]['subcats_enabled'],
-                    );
-                }
-            }
-
-            if ($data) {
-                foreach ($data as $catId => $d) {
-                    $query = 'UPDATE ' . $this->getTableName()
-                        . ' SET ' . implode(', ', array_map(function($v) { return $v . ' = ?'; }, array_keys($d)))
-                        . ' WHERE category_id = ?';
-                    array_push($d, $catId);
-                    \XLite\Core\Database::getEM()->getConnection()->executeUpdate($query, array_values($d));
-                }
-            }
-
-            if ($quickFlags) {
-                foreach ($quickFlags as $qfData) {
-                    $qfQuery = 'REPLACE INTO '
-                        . \XLite\Core\Database::getRepo('XLite\Model\Category\QuickFlags')->getTableName()
-                        . ' (' . implode(', ', array_keys($qfData)) . ')'
-                        . ' VALUES (' . implode(', ', array_fill(0, count($qfData), '?')) . ')';
-                    \XLite\Core\Database::getEM()->getConnection()->executeUpdate($qfQuery, array_values($qfData));
-                }
+        if ($data) {
+            foreach ($data as $catId => $d) {
+                $query = 'UPDATE ' . $this->getTableName()
+                    . ' SET ' . implode(', ', array_map(function($v) { return $v . ' = ?'; }, array_keys($d)))
+                    . ' WHERE category_id = ?';
+                array_push($d, $catId);
+                \XLite\Core\Database::getEM()->getConnection()->executeUpdate($query, array_values($d));
             }
         }
-    }
 
-    /**
-     * Recursively calculate lpos, rpos and depth
-     *
-     * @param array   &$categories Categories data array
-     * @param integer $currentId   Current categories array index OPTIONAL
-     *
-     * @return void
-     */
-    protected function correctCategoryData(&$categories, $currentId = 0)
-    {
-        $current = $categories[$currentId];
+        if ($quickFlags) {
+            $qfKeys = array(
+                'category_id',
+                'subcategories_count_all',
+                'subcategories_count_enabled',
+            );
 
-        $idx = $current['lpos'] + 1;
-
-        foreach ($categories as $i => $c) {
-            if ($c['parent_id'] == $current['category_id']) {
-                $categories[$i]['depth'] = $current['depth'] + 1;
-                $categories[$i]['lpos'] = $idx;
-                $categories[$i]['rpos'] = $idx + 1;
-
-                $this->correctCategoryData($categories, $i);
-
-                $categories[$currentId]['rpos'] = $categories[$i]['rpos'] + 1;
-
-                $categories[$currentId]['subcats']++;
-
-                if ($c['enabled']) {
-                    $categories[$currentId]['subcats_enabled']++;
-                }
-
-                $categories[$currentId]['total_subcats'] += (1 + $categories[$i]['total_subcats']);
-
-                $idx += (2 + 2 * $categories[$i]['total_subcats']);
+            foreach ($quickFlags as $qfData) {
+                $qfQuery = 'REPLACE INTO '
+                    . \XLite\Core\Database::getRepo('XLite\Model\Category\QuickFlags')->getTableName()
+                    . ' (' . implode(', ', $qfKeys) . ')'
+                    . ' VALUES (' . implode(', ', array_fill(0, count($qfData), '?')) . ')';
+                \XLite\Core\Database::getEM()->getConnection()->executeUpdate($qfQuery, array_values($qfData));
             }
         }
     }
@@ -1281,15 +1202,15 @@ class Category extends \XLite\Model\Repo\Base\I18n
     protected function getCategoriesRawData()
     {
         $fields = array(
-            'c.category_id',
+            'c.category_id as id',
             'c.parent_id',
             'c.lpos',
             'c.rpos',
             'c.depth',
             'c.pos',
             'c.enabled',
-            'qf.subcategories_count_all',
-            'qf.subcategories_count_enabled',
+            'qf.subcategories_count_all         as subnodes_count_all',
+            'qf.subcategories_count_enabled     as subnodes_count_enabled',
         );
 
         $query = 'SELECT ' . implode(',', $fields) . ' FROM ' . $this->getTableName() . ' c '
@@ -1337,4 +1258,76 @@ class Category extends \XLite\Model\Repo\Base\I18n
     }
 
     // }}}
+
+    /**
+     * Get categories as dtos wtih runtime cache
+     *
+     * @return array
+     */
+    public function getCategoriesAsDTO()
+    {
+        if (null === $this->runtimeDtosCache) {
+            $this->runtimeDtosCache = $this->getCategoriesAsDTOQueryBuilder()->getResult();
+        }
+
+        return $this->runtimeDtosCache;
+    }
+
+    /**
+     * Get categories as dtos queryBuilder
+     *
+     * @return \XLite\Model\QueryBuilder\AQueryBuilder
+     */
+    public function getCategoriesAsDTOQueryBuilder()
+    {
+        $queryBuilder = $this->createQueryBuilder();
+
+        $queryBuilder->select('c.category_id as id');
+
+        if ($this->getTranslationCode() != \XLite::getDefaultLanguage()) {
+            // Add additional join to translations with default language code
+            $this->addDefaultTranslationJoins(
+                $queryBuilder,
+                $this->getMainAlias($queryBuilder),
+                'defaults',
+                \XLite::getDefaultLanguage()
+            );
+            $queryBuilder->addSelect('(CASE WHEN translations.name IS NOT NULL WHEN translations.name ELSE defaults.name END) as name');
+        } else {
+            $queryBuilder->addSelect('translations.name');
+        }
+
+        $queryBuilder->addSelect('IDENTITY(c.parent) as parent_id');
+        $queryBuilder->addSelect('c.depth as depth');
+        $queryBuilder->addSelect('quickFlags.subcategories_count_enabled as subcategoriesCount');
+
+
+        $queryBuilder->linkLeft('c.quickFlags');
+
+        $queryBuilder->addGroupBy('c.category_id');
+
+        return $queryBuilder;
+    }
+
+    /**
+     * Get translation
+     *
+     * @param integer $categoryId Category id
+     *
+     * @return string
+     */
+    public function getFirstTranslatedName($categoryId)
+    {
+        $result = $this->createPureQueryBuilder()
+            ->select('translations.name')
+            ->linkLeft('c.translations')
+            ->where('translations.name IS NOT NULL')
+            ->where('c.category_id = :category_id')
+            ->setParameter('category_id', $categoryId)
+            ->getSingleScalarResult();
+
+        return is_string($result)
+            ? $result
+            : '';
+    }
 }

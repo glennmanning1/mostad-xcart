@@ -1028,11 +1028,13 @@ abstract class AEntry
             $helpers = (array) $helpers;
 
             $invokedHooks = \XLite\Upgrade\Cell::getInstance()->getInvokedHooks();
+            $invokedHooksCount = count($invokedHooks);
             $pendingHooks = \XLite\Upgrade\Cell::getInstance()->getPendingHooks();
+            $hooksCount = count($invokedHooks) + count($pendingHooks);
 
             foreach ($helpers as $file) {
 
-                if (isset($invokedHooks[$file])) {
+                if (array_key_exists($file, $invokedHooks)) {
                     // Hook has been invoked earlier, skip...
                     continue;
                 }
@@ -1043,23 +1045,47 @@ abstract class AEntry
                 // Prepare argument for hook function
                 $suffix = '';
                 $arg = null;
-                if (!empty($pendingHooks[$file]) && 0 < $pendingHooks[$file]) {
+                if (!empty($pendingHooks[$file]) && -1 !== $pendingHooks[$file]) {
                     $arg = $pendingHooks[$file];
-                    $suffix = sprintf(' (%d)', $arg);
+                    if (is_array($arg)) {
+                        $suffix = sprintf('%d/%d [%d%%]', $arg[0], $arg[1], 100 * $arg[0] / $arg[1]);
+                    } else {
+                        $suffix = sprintf('%d', $arg);
+                    }
                 }
 
-                \Includes\Utils\Operator::showMessage(
-                    \XLite\Core\Translation::getInstance()->translate(
-                        '...Invoke {{type}} hook for {{entry}}...',
-                        array(
-                            'type' => $file,
-                            'entry' => addslashes($this->getActualName()) . $suffix
-                        )
+                \Includes\Decorator\Utils\CacheManager::logMessage(PHP_EOL);
+                $message = \XLite\Core\Translation::getInstance()->translate(
+                    '...Invoke {{type}} hook for {{entry}}...',
+                    array(
+                        'type' => $file,
+                        'entry' => addslashes($this->getActualName()) . ' (' . $suffix . ')',
                     )
                 );
+                \Includes\Decorator\Utils\CacheManager::logMessage($message);
+
+                if ($hooksCount > 1) {
+                    if ($arg) {
+                        $message = \XLite\Core\Translation::getInstance()->translate(
+                            '...Hooks {{hooksCount}}, Items {{itemsCount}}...',
+                            array(
+                                'hooksCount' => sprintf('%d/%d', $invokedHooksCount + 1, $hooksCount),
+                                'itemsCount' => $suffix
+                            )
+                        );
+                    } else {
+                        $message = \XLite\Core\Translation::getInstance()->translate(
+                            '...Hooks {{hooksCount}}',
+                            array(
+                                'hooksCount' => sprintf('%d/%d', $invokedHooksCount + 1, $hooksCount)
+                            )
+                        );
+                    }
+                }
+                \Includes\Utils\Operator::showMessage($message);
 
                 // Run hook function
-                $hookResult = (int) $function($arg);
+                $hookResult = $function($arg);
 
                 // Hook has been invoked - return true
                 $result = true;
@@ -1070,8 +1096,12 @@ abstract class AEntry
                 $this->addInfoMessage(
                     'Update hook is run: {{type}}:{{file}}',
                     true,
-                    array('type' => $this->getActualName(), 'file' => $file . $suffix)
+                    array('type' => $this->getActualName(), 'file' => $file . ' (' . $suffix . ')')
                 );
+
+                if (null === $hookResult) {
+                    $invokedHooksCount++;
+                }
 
                 if (0 < $hookResult) {
                     \XLite\Upgrade\Cell::getInstance()->setHookRedirect(true);
@@ -1186,27 +1216,20 @@ abstract class AEntry
     public function getHelpers($type = null)
     {
         $helpers = array();
+        $helperTypes = $type ? array($type) : $this->getHelperTypes();
 
         foreach ($this->getUpgradeHelperMajorVersions() as $majorVersion) {
             foreach ($this->getUpgradeHelperMinorVersions($majorVersion) as $minorVersion) {
-
-                if (!empty($type)) {
-                    $helperTypes = array($type);
-
-                } else {
-                    $helperTypes = $this->getHelperTypes();
-                }
-
-                foreach ($helperTypes as $htype) {
-                    $file = $this->getUpgradeHelperFile($htype, $majorVersion, $minorVersion);
-                    if ($file) {
-                        $helpers[] = $file;
+                foreach ($helperTypes as $helperType) {
+                    $files = $this->getUpgradeHelperFiles($helperType, $majorVersion, $minorVersion);
+                    if ($files) {
+                        $helpers[] = $files;
                     }
                 }
             }
         }
 
-        return $helpers;
+        return $helpers ? call_user_func_array('array_merge', $helpers) : array();
     }
 
     /**
@@ -1276,25 +1299,24 @@ abstract class AEntry
      * @param string $majorVersion Major version to upgrade to
      * @param string $minorVersion Minor version to upgrade to
      *
-     * @return string
+     * @return array|null
      */
-    protected function getUpgradeHelperFile($type, $majorVersion, $minorVersion)
+    protected function getUpgradeHelperFiles($type, $majorVersion, $minorVersion)
     {
-        $file = null;
+        $result = array();
         $path = $this->getUpgradeHelpersDir();
 
         if ($path) {
-            $file = $majorVersion . LC_DS . $minorVersion . LC_DS . $type . '.php';
+            $files = glob($path . $majorVersion . LC_DS . $minorVersion . LC_DS . $type . '*.php');
+            sort($files, \SORT_NATURAL);
 
-            if (\Includes\Utils\FileManager::isFile($path . $file)) {
-                $file = $this->getUpgradeHelpersDir(false) . $file;
-
-            } else {
-                $file = null;
+            $upgradeHelpersDir = $this->getUpgradeHelpersDir(false);
+            foreach ($files as $file) {
+                $result[] = $upgradeHelpersDir . str_replace($path, '', $file);
             }
         }
 
-        return $file;
+        return $result ?: null;
     }
 
     /**

@@ -163,6 +163,10 @@ class OrderModifierTotal extends \XLite\View\FormField\Inline\Input\Text\Price\A
             );
         }
 
+        if ($this->getEntity()->getType() === \XLite\Model\Base\Surcharge::TYPE_DISCOUNT) {
+            $this->getEntity()->getModifier()->distributeDiscount($value * -1);
+        }
+
         $this->getEntity()->setValue($value);
     }
 

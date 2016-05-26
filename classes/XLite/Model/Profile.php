@@ -423,7 +423,19 @@ class Profile extends \XLite\Model\AEntity
 
         return $address && ($address->getFirstname() || $address->getLastname())
             ? trim($address->getFirstname() . ' ' . $address->getLastname())
-            : ($useDefault ? static::t('na_customer') : '');
+            : ($useDefault ? $this->getDefaultName() : '');
+    }
+
+    /**
+     * Get default name
+     *
+     * @return string
+     */
+    protected function getDefaultName()
+    {
+        return $this->isAdmin()
+            ? static::t('na_admin')
+            : static::t('na_customer');
     }
 
     /**
@@ -835,7 +847,9 @@ class Profile extends \XLite\Model\AEntity
         // Assign current language
         $language = $this->getLanguage(true);
 
-        if (empty($language)) {
+        if (empty($language)
+            && ($this->isPersistent() || !$this->language)
+        ) {
             $this->setLanguage(\XLite\Core\Session::getInstance()->getLanguage()->getCode());
         }
 

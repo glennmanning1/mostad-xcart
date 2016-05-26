@@ -1,0 +1,18 @@
+# vim: set ts=2 sw=2 sts=2 et:
+#
+# Data
+#
+# @author    Qualiteam software Ltd <info@x-cart.com>
+# @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
+# @license   http://www.x-cart.com/license-agreement.html X-Cart 5 License Agreement
+# @link      http://www.x-cart.com/
+
+XLite\Model\Config:
+  - { name: curl_cainfo, category: Environment, translations: [{ code: en, option_name: 'Path to Certificate Authority (CA) bundle' }] }
+  - { name: curl_capath, category: Environment, translations: [{ code: en, option_name: 'Directory holding CA certificates' }] }
+
+XLite\Model\Notification:
+  - { templatesDirectory: failed_transaction, availableForAdmin: true, availableForCustomer: false, enabledForAdmin: true, enabledForCustomer: false, translations: [{ code: en, name: Failed transaction, description: "This notification is sent to the administrator if payment transaction was failed", adminSubject: Failed transaction, adminText: "" }]}
+
+XLite\Model\LanguageLabel:
+  - { name: 'More information about clean urls in X-Cart is available in ', translations: [{ code: en, label: 'More information about clean urls in X-Cart is available in <a href="{{url}}" target="blank">{{url}}</a>' }] }

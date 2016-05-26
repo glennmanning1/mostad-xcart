@@ -139,6 +139,10 @@ class ActivateFreeLicense extends \XLite\Controller\Admin\ModuleKey
                 ? $key[\XLite\Core\Marketplace::FIELD_KEY]
                 : \XLite\Core\Marketplace::XC_FREE_LICENSE_KEY;
 
+            if (isset($key[\XLite\Core\Marketplace::FIELD_KEY])) {
+                unset($key[\XLite\Core\Marketplace::FIELD_KEY]);
+            }
+
             \XLite\Core\Database::getRepo('\XLite\Model\ModuleKey')->insert(
                 $key + array(
                     'keyValue' => $keyValue,

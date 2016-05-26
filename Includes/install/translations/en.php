@@ -139,11 +139,12 @@ X-Cart Installation Wizard
 
 ',
   'Installation complete' => 'Installation completed',
+  'X-Cart installation complete' => 'X-Cart installation complete',
   'X-Cart software has been successfully installed and is now available at the following URLs:' => 'X-Cart software has been installed successfully and is now available at the following URLs:',
   'CUSTOMER ZONE (FRONT-END)' => 'CUSTOMER ZONE (FRONT-END)',
   'ADMINISTRATOR ZONE (BACKOFFICE)' => 'ADMINISTRATOR ZONE (BACKOFFICE)',
   'Your auth code for running install.php in the future is:' => 'Your auth code for running install.php in the future is:',
-  'PLEASE WRITE THIS CODE DOWN UNLESS YOU ARE GOING TO REMOVE ":filename"' => 'PLEASE WRITE THIS CODE DOWN UNLESS YOU ARE GOING TO REMOVE ":filename"',
+  'PLEASE WRITE THIS CODE DOWN IN CASE YOU ARE GOING TO REMOVE ":filename"' => 'PLEASE WRITE THIS CODE DOWN IN CASE YOU ARE GOING TO REMOVE ":filename"',
   'Creating directory: [:dirname]... ' => 'Creating directory: [:dirname]...',
   'Already exists' => 'Already exists',
   'Failed to create directories' => 'Failed to create directories',

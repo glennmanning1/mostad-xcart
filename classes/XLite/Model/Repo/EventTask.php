@@ -52,6 +52,25 @@ class EventTask extends \XLite\Model\Repo\ARepo
     }
 
     /**
+     * Clean event tasks
+     *
+     * @param string    $eventName  Event name
+     * @param int       $exceptId   Task id
+     *
+     * @return void
+     */
+    public function cleanTasks($eventName, $exceptId)
+    {
+        $this->getQueryBuilder()
+            ->delete($this->_entityName, 'e')
+            ->andWhere('e.name = :eventName')
+            ->andWhere('e.id != :exceptId')
+            ->setParameter('eventName', $eventName)
+            ->setParameter('exceptId', $exceptId)
+            ->execute();
+    }
+
+    /**
      * Define query for findQuery() method
      *
      * @param integer $limit Tasks limit

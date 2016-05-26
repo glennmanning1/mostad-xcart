@@ -101,7 +101,8 @@ class QuickData extends \XLite\Base\Singleton implements \Countable
             $this->updateProductDataInternal($product);
             $processed++;
         }
-
+        \XLite\Core\Database::getEM()->flush();
+        
         return $processed;
     }
 

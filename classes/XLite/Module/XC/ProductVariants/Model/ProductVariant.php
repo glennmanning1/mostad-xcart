@@ -330,7 +330,8 @@ class ProductVariant extends \XLite\Model\AEntity
     {
         return $this->getProduct()->getInventory()->getEnabled()
             && $this->getProduct()->getInventory()->getLowLimitEnabledCustomer()
-            && $this->isLowLimitReached();
+            && $this->isLowLimitReached()
+            && !$this->isOutOfStock();
     }
 
     /**

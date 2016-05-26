@@ -10,7 +10,6 @@
  *
  * @ListChild (list="product.details.page", weight="20")
  *}
-
-<div class="image{if:!product.hasImage()} empty{end:}" style="width: {getMaxImageWidth()}px;">
+<div class="image{if:!product.hasImage()} empty{end:}"  style="width: {getMaxImageWidth()}px;">
   <list name="product.details.page.image" />
 </div>

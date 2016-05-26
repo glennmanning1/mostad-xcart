@@ -359,16 +359,14 @@ CommonForm.prototype.unmarkAsInvalid = function()
   this.$form.removeClass('invalid-form')
 };
 
-CommonForm.prototype.getFormId = function()
-{
+CommonForm.prototype.getFormId = function () {
   return this.$form
     .find('input[type="hidden"]')
     .filter('input[name="' + this.formIdName + '"]').eq(0)
     .val();
-}
+};
 
-CommonForm.prototype.getErrorPlace = function()
-{
+CommonForm.prototype.getErrorPlace = function () {
   if (!this.errorPlace) {
     this.errorPlace = jQuery('<div></div>')
       .addClass('form-error')
@@ -380,20 +378,16 @@ CommonForm.prototype.getErrorPlace = function()
 };
 
 // Undo all changes
-CommonForm.prototype.undo = function()
-{
-  this.getElements().filter('input,select,textarea').each(
-    function () {
-      this.commonController.undo();
-    }
-  );
+CommonForm.prototype.undo = function () {
+  this.getElements().filter('input,select,textarea').each(function () {
+    this.commonController.undo();
+  });
   this.$form.trigger('undo');
   this.$form.change();
 };
 
 // Enabled background submit mode and set callbacks
-CommonForm.prototype.enableBackgroundSubmit = function(beforeCallback, afterCallback)
-{
+CommonForm.prototype.enableBackgroundSubmit = function(beforeCallback, afterCallback) {
   this.backgroundSubmit = true;
 
   if (beforeCallback) {
@@ -521,14 +515,12 @@ CommonForm.prototype.postprocessBackgroundSubmit = function()
   this.getElements().commonController('postprocessBackgroundSubmit');
 };
 
-CommonForm.prototype.isSaveValue = function(element)
-{
+CommonForm.prototype.isSaveValue = function (element) {
   return true;
-}
+};
 
 // Skip current background submit
-CommonForm.prototype.skipCurrentBgSubmit = function()
-{
+CommonForm.prototype.skipCurrentBgSubmit = function () {
   if (this.form.isBgSubmitting) {
     this.form.isBgSubmitting = false;
 
@@ -542,13 +534,10 @@ CommonForm.prototype.skipCurrentBgSubmit = function()
 };
 
 // Form has any changed state watcher's elements
-CommonForm.prototype.hasChangedWatcher = function()
-{
-  return 0 < this.getElements().filter(
-    function() {
-      return this.isChangedWatcher();
-    }
-  ).length;
+CommonForm.prototype.hasChangedWatcher = function () {
+  return 0 < this.getElements().filter(function() {
+    return this.isChangedWatcher();
+  }).length;
 };
 
 // Check - form changed or not
@@ -598,7 +587,7 @@ CommonForm.prototype.checkDependencyState = function()
     var depField, depValue, value;
     var input, element;
     for (depField in deps) if (deps.hasOwnProperty(depField)) {
-      input = jQuery('[name="' + depField + '"]', $(this.form)).not('[type="hidden"]').get(0);
+      input = jQuery('[name="' + depField + '"]', jQuery(this.form)).not('[type="hidden"]').get(0);
       if (!input.commonController) {
         continue;
       }
@@ -612,7 +601,7 @@ CommonForm.prototype.checkDependencyState = function()
       }
 
       if (show) {
-        if (depValue == value || _.contains(depValue, value)) {
+        if (depValue == value || ((typeof depValue === 'object') && _.contains(depValue, value))) {
           if (state[field] !== false) {
             state[field] = true;
           }
@@ -620,12 +609,12 @@ CommonForm.prototype.checkDependencyState = function()
           state[field] = false;
         }
       } else {
-        if (depValue == value || _.contains(depValue, value)) {
-          state[field] = false;
-        } else {
-          if (state[field] !== false) {
-            state[field] = true;
+        if (depValue == value || ((typeof depValue === 'object') && _.contains(depValue, value))) {
+          if (state[field] !== true) {
+            state[field] = false;
           }
+        } else {
+          state[field] = true;
         }
       }
     }
@@ -636,8 +625,8 @@ CommonForm.prototype.checkDependencyState = function()
   _.each(
     this.getDependency(),
     function(value, field) {
-      state = checkState(state, field, value.show, true);
       state = checkState(state, field, value.hide, false);
+      state = checkState(state, field, value.show, true);
     }
   );
 
@@ -684,7 +673,7 @@ CommonForm.prototype.setElementDependency = function (state, field)
       elementController.hideByDependency();
     }
   }
-}
+};
 
 // {{{ Form readiness
 
@@ -763,9 +752,7 @@ CommonElement.prototype.bindElement = function(elm)
   this.element = elm;
   this.$element = jQuery(elm);
 
-  var o = this;
-
-  this.element.commonController = o;
+  this.element.commonController = this;
 
   // Add methods and properties
   var methods = [
@@ -805,16 +792,14 @@ CommonElement.prototype.bindElement = function(elm)
   this.triggerVent('bind');
 };
 
-CommonElement.prototype.getForm = function()
-{
+CommonElement.prototype.getForm = function () {
   return (this.element.form && this.element.form.commonController)
     ? this.element.form.commonController
     : null;
-}
+};
 
 // Get validators by form element
-CommonElement.prototype.getValidators = function()
-{
+CommonElement.prototype.getValidators = function () {
   var validators = [];
 
   if (this.element.className) {
@@ -1032,11 +1017,9 @@ CommonElement.prototype.unmarkAsInvalid = function()
     .data('lastValidationKey', null)
     .removeClass('validation-error')
     .removeClass('server-validation-error')
-    .each(
-      function() {
-        this.hideInlineError();
-      }
-    );
+    .each(function() {
+      this.hideInlineError();
+    });
 
   this.$element.parent().removeClass('has-error');
   if ('undefined' != typeof(this.element.errorTooltipAssigned) && this.element.errorTooltipAssigned) {
@@ -1474,16 +1457,12 @@ CommonElement.prototype.linkWithCountry = function()
     this.element.isFocused = false;
 
     jQuery(this.$element)
-      .focus(
-        function() {
-          this.isFocused = true;
-        }
-      )
-      .blur(
-        function() {
-          this.isFocused = false;
-        }
-      );
+      .focus(function() {
+        this.isFocused = true;
+      })
+      .blur(function() {
+        this.isFocused = false;
+      });
 
     var stateSwitcher = document.createElement('input');
     stateSwitcher.type = 'hidden';
@@ -1520,16 +1499,12 @@ CommonElement.prototype.linkWithCountry = function()
       }
 
       jQuery(this.stateInput)
-        .focus(
-          function() {
-            this.isFocused = true;
-          }
-        )
-        .blur(
-          function() {
-            this.isFocused = false;
-          }
-        );
+        .focus(function() {
+          this.isFocused = true;
+        })
+        .blur(function() {
+          this.isFocused = false;
+        });
 
       o.bind(inp);
     };

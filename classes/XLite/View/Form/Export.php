@@ -53,4 +53,20 @@ class Export extends \XLite\View\Form\AForm
     {
         return 'export';
     }
+
+    /**
+     * Return list of additional params
+     *
+     * @return array
+     */
+    protected function getFormParams()
+    {
+        $params = parent::getFormParams();
+
+        if (\XLite\Core\Request::getInstance()->exportReturnURL) {
+            $params[\XLite\Controller\AController::RETURN_URL] = \XLite\Core\Request::getInstance()->exportReturnURL;
+        }
+
+        return $params;
+    }
 }

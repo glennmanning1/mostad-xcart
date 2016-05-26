@@ -294,6 +294,10 @@ class Importer extends \XLite\Base
 
                 if (false === strpos($fileName, static::PART_IDENTIFIER) && $fileSize > static::MAX_FILE_SIZE) {
                     $newFiles[$file->getRealPath()] = $processor->divideCSVFile($file);
+
+                } elseif (0 < $fileSize) {
+                    // Add empty line at the end to avoid problems in some environments (see BUG-2636)
+                    $this->correctLastNewline($file);
                 }
             }
         }
@@ -316,6 +320,30 @@ class Importer extends \XLite\Base
         }
 
         return !empty($newFiles);
+    }
+
+    /**
+     * Check that file contains new line at the end and add its if end line not found.
+     * Return true if new line was added
+     *
+     * @param \SplFileInfo $file File
+     *
+     * @return boolean
+     */
+    protected function correctLastNewline($file)
+    {
+        $result = false;
+
+        $fo = $file->openFile('r');
+        $fo->fseek(-1, SEEK_END);
+        $char = $fo->fgetc();
+
+        if (!preg_match("/\n|\r/", $char)) {
+            \Includes\Utils\FileManager::write($file->getRealPath(), PHP_EOL, FILE_APPEND);
+            $result = true;
+        }
+
+        return $result;
     }
 
     /**
@@ -345,7 +373,7 @@ class Importer extends \XLite\Base
      */
     public function isImportAllowed()
     {
-        return $this->valid() && (!static::hasWarnings() || $this->getOptions()->warningsAccepted);
+        return $this->valid() && !static::hasErrors();
     }
 
     /**

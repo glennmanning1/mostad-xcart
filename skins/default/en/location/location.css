@@ -21,7 +21,6 @@ ul.location-subnodes {
   background-color: #fff;
   z-index: 10000;
   display: inline;
-  visibility: hidden;
 }
 
 ul.location-subnodes li {

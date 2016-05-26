@@ -116,7 +116,7 @@ a:focus {
       vertical-align: middle;
 
       div span {
-        padding: 1px 2px;
+        padding: 2px 2px;
       }
     }
 
@@ -1432,6 +1432,11 @@ button.btn-warning span,
 }
 
 
+.dropdown-menu > li.panel-subcell > a,
+.dropdown-menu > li.panel-subcell > button.btn{
+  min-width: 100%;
+}
+
 .dropdown-menu > li > a,
 .dropdown-menu > li > button {
   & {
@@ -1441,11 +1446,10 @@ button.btn-warning span,
     font-weight: normal;
     line-height: @line-height-base;
     color: #154bab;
-    width: 100%;
+    width: auto;
     white-space: nowrap;
     text-decoration: none;
   }
-
   & span {
     text-decoration: none;
     color: #154bab;

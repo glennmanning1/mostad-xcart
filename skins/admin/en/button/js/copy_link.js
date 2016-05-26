@@ -1,7 +1,7 @@
 /* vim: set ts=2 sw=2 sts=2 et: */
 
 /**
- * Print invoice button controller
+ * Copy link button controller
  *
  * @author    Qualiteam software Ltd <info@x-cart.com>
  * @copyright Copyright (c) 2011-2015 Qualiteam software Ltd <info@x-cart.com>. All rights reserved
@@ -11,14 +11,8 @@
 
 jQuery().ready(
   function () {
-    var clip = new ZeroClipboard(
-      jQuery('button.copy-link'),
-      {
-        moviePath: xliteConfig.zeroClipboardSWFURL
-      }
-    );
-
-    clip.on('complete', function (client, args) {
+    var clipboard = new Clipboard('button.copy-link');
+    clipboard.on('success', function(e) {
       core.trigger('message', {type: 'info', message: core.t('The link was copied to your clipboard')});
     });
   }

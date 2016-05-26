@@ -221,7 +221,9 @@ class Languages extends \XLite\View\ItemsList\Model\Table
     {
         $class = parent::getColumnClass($column, $entity);
 
-        if (in_array($column[static::COLUMN_CODE], array('defaultCustomer', 'defaultAdmin')) && !$entity->getEnabled()) {
+        if (in_array($column[static::COLUMN_CODE], array('defaultCustomer', 'defaultAdmin'), true)
+            && !$entity->getEnabled()
+        ) {
             $class .= ' disabled';
         }
 
@@ -240,7 +242,7 @@ class Languages extends \XLite\View\ItemsList\Model\Table
         return $this->isAllowEntityRemove($entity) && $entity->setAdded(false) && $entity->removeTranslations();
     }
 
-    /**
+    /**The English language cannot be removed as it is primary language for all texts.
      * Disable removing English language (as all texts are hardcoded in English)
      *
      * @param \XLite\Model\Language $entity Language object
@@ -249,7 +251,7 @@ class Languages extends \XLite\View\ItemsList\Model\Table
      */
     protected function isAllowEntityRemove(\XLite\Model\AEntity $entity)
     {
-        return 'en' != $entity->getCode() && !$entity->getValidModule();
+        return 'en' !== $entity->getCode() && !$entity->getValidModule();
     }
 
     /**
@@ -313,8 +315,8 @@ class Languages extends \XLite\View\ItemsList\Model\Table
             $moduleName = sprintf('%s (%s)', $moduleClass::getModuleName(), $moduleClass::getAuthorName());
             $message = static::t('This language is added by module and cannot be removed.', array('module' => $moduleName));
 
-        } elseif ('en' == $entity->getCode()) {
-            $message = 'English language cannot be removed as it is primary language for all texts.';
+        } elseif ('en' === $entity->getCode()) {
+            $message = static::t('The English language cannot be removed as it is primary language for all texts.');
         }
 
         return $message;
@@ -329,6 +331,6 @@ class Languages extends \XLite\View\ItemsList\Model\Table
      */
     protected function getRemoveMessage($count)
     {
-        return \XLite\Core\Translation::lbl('X languages have been removed', array('count' => $count));
+        return static::t('X languages have been removed', array('count' => $count));
     }
 }

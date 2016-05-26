@@ -12,7 +12,7 @@
 
   {foreach:getSchemaFields(),fieldName,fieldData}
 
-    <li class="{getFieldStyle(fieldName)}" IF="{getFieldValue(fieldName)}">
+    <li class="{getFieldStyle(fieldName)}" IF="{getFieldValue(fieldName,1)}">
 
       <ul class="address-text">
         <li class="address-text-label address-text-label-{fieldName}">{fieldData.label}:</li>

@@ -36,7 +36,7 @@ if (!defined('XLITE_INSTALL_MODE')) {
 }
 
 // Current X-Cart version
-define('LC_VERSION', '5.2.13');
+define('LC_VERSION', '5.2.15');
 
 // Minimum PHP version supported
 define('LC_PHP_VERSION_MIN', '5.3.10');
@@ -101,14 +101,17 @@ $lcSettings = array(
             'sql' . LC_DS . 'xlite_demo_ru.yaml',
             'sql' . LC_DS . 'xlite_data_ru.yaml',
             'sql' . LC_DS . 'xlite_demo_sale.yaml',
-            'sql' . LC_DS . 'xlite_demo_bestsellers.yaml',
             'sql' . LC_DS . 'product_attributes.sql',
+            'sql' . LC_DS . 'xlite_demo_reviews.sql',
+            'sql' . LC_DS . 'xlite_menu.yaml',
+
         ) : array(
             'sql' . LC_DS . 'xlite_demo.yaml',
             'sql' . LC_DS . 'xlite_demo_orders_en.yaml',
             'sql' . LC_DS . 'xlite_demo_sale.yaml',
-            'sql' . LC_DS . 'xlite_demo_bestsellers.yaml',
             'sql' . LC_DS . 'product_attributes.sql',
+            'sql' . LC_DS . 'xlite_demo_reviews.sql',
+            'sql' . LC_DS . 'xlite_menu.yaml',
         ),
     ),
 

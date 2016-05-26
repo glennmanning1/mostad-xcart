@@ -29,11 +29,14 @@
 
 return function()
 {
-    $ids = \XLite\Core\Database::getEM()
-        ->createQuery('SELECT i.id from XLite\Model\ImageSettings i where i.id not in (select max(ii.id) from XLite\Model\ImageSettings ii group by ii.code, ii.model)')
-        ->getResult();
+    // Check if class defined (version >5.2.6) without autoloading
+    if (class_exists('\XLite\Model\ImageSettings', false)) {
+        $ids = \XLite\Core\Database::getEM()
+            ->createQuery('SELECT i.id from XLite\Model\ImageSettings i where i.id not in (select max(ii.id) from XLite\Model\ImageSettings ii group by ii.code, ii.model)')
+            ->getResult();
 
-    foreach ($ids as $id) {
-        \XLite\Core\Database::getRepo('XLite\Model\ImageSettings')->deleteById($id);
+        foreach ($ids as $id) {
+            \XLite\Core\Database::getRepo('XLite\Model\ImageSettings')->deleteById($id);
+        }
     }
 };

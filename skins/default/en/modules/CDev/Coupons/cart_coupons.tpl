@@ -9,7 +9,7 @@
  * @link      http://www.x-cart.com/
  *}
 
-<div class="coupons clearfix">
+<div IF="isCouponPanelVisible()" class="coupons clearfix">
 
   <div IF="!getCoupons()" class="new more"><a href="#"><span>{t(#Have a discount coupon?#)}</span></a></div>
   <div IF="getCoupons()" class="new add"><a href="#"><span>{t(#Have more coupons?#)}</span></a></div>

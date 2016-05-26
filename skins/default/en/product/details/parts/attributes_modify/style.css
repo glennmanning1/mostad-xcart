@@ -14,6 +14,7 @@ ul.attribute-values {
   padding: 13px 20px 1px;
   background-color: #f4f4f4;
   list-style: none;
+  max-width: 100%;
 }
 
 .ui-dialog ul.attribute-values {

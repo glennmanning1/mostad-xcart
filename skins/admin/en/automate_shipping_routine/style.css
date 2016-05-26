@@ -47,6 +47,10 @@
     width: 100%;
 }
 
+.automate-shipping-routine-wrapper .shipping-list-table .logo-image-container {
+  width: 210px;
+}
+
 .automate-shipping-routine-wrapper .shipping-list-table .logo-image {
     max-height: 100%;
     max-width: 100%;

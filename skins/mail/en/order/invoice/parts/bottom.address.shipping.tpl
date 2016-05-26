@@ -12,7 +12,7 @@
  *}
 <strong style="color: #000;font-size: 20px;font-weight: normal;padding-bottom: 3px;">{t(#Shipping address#)}</strong>
 
-<ul style="padding-top: 12px;list-style: none;margin: 0;padding-left: 0;margin-left: 0px;">
+<ul IF="{saddress}" style="padding-top: 12px;list-style: none;margin: 0;padding-left: 0;margin-left: 0px;">
   {foreach:getAddressSectionData(saddress),idx,field}
     <widget IF="{getAddressFiledTemplate(#s#,idx,field)}" template="{getAddressFiledTemplate(#s#,idx,field)}" field="{field}" />
   {end:}

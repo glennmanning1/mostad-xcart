@@ -28,10 +28,13 @@
     <button type="button" class="btn regular-button always-enabled ">
       <span>{t(getButtonLabel())}</span>: <span>{getFirstProviderLabel()}</span>
     </button>
-    <div class='hidden'>
-      {foreach:getAdditionalButtons(),button}
-        {button.display():h}
-      {end:}
-    </div>
   {end:}
 </div>
+
+{if:!isMultipleOptions()}
+<div class='hidden'>
+  {foreach:getAdditionalButtons(),button}
+  {button.display():h}
+  {end:}
+</div>
+{end:}

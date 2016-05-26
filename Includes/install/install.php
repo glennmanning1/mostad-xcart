@@ -899,6 +899,9 @@ function checkMysqlVersion(&$errorMsg, &$value, $isConnected = false)
         // Check version
         if ($version) {
 
+            global $mysqlVersion;
+            $mysqlVersion = $version;
+
             x_install_log(xtr('MySQL version: ' . $version));
 
             if (version_compare($version, constant('LC_MYSQL_VERSION_MIN')) < 0) {
@@ -1564,6 +1567,8 @@ function doFinishInstallation(&$params, $silentMode = false)
             $perms = '<li>' . implode("</li>\n<li>", $_perms) . '</li>';
             $permsTitle = xtr('correct_permissions_text');
             $copyText = xtr('Copy to clipboard');
+            $perms2Copy = strip_tags($perms);
+
             $permsHTML =<<<OUT
 
 <div class="field-label">{$permsTitle}</div>
@@ -1576,6 +1581,7 @@ $perms
 <div class="clipbrd">
   <input type="button" class="btn btn-default copy2clipboard" value="{$copyText}" />
   <div class="copy2clipboard-alert alert-success" style="display: none;"></div>
+  <div class="permissions-list" style="display: none;">{$perms2Copy}</div>
 </div>
 OUT;
 
@@ -1600,7 +1606,7 @@ OUT;
     );
 
     // Send email notification to the admin account email
-    @mail($params["login"], "X-Cart installation complete", $message,
+    @mail($params["login"], xtr("X-Cart installation complete"), $message,
         "From: \"X-Cart software\" <" . $params["login"] . ">\r\n" .
         "X-Mailer: PHP");
 
@@ -1632,7 +1638,7 @@ OUT;
 <p>
 <?php echo xtr('Your auth code for running install.php in the future is:'); ?> <code><?php echo get_authcode(); ?></code>
 <br />
-<?php echo xtr('PLEASE WRITE THIS CODE DOWN UNLESS YOU ARE GOING TO REMOVE ":filename"', array(':filename' => $install_name)); ?>
+<?php echo xtr('PLEASE WRITE THIS CODE DOWN IN CASE YOU ARE GOING TO REMOVE ":filename"', array(':filename' => $install_name)); ?>
 </p>
 
 <img src="//www.x-cart.com/img/spacer2.gif" width="1" height="1" alt="" />
@@ -3226,7 +3232,7 @@ function applySuggestedDefValues(&$paramFields)
     $paramFields['mysqluser']['def_value'] = ini_get('mysqli.default_user') ?: (ini_get('mysql.default_user') ?: '');
     $paramFields['mysqlpass']['def_value'] = ini_get('mysqli.default_pw') ?: (ini_get('mysql.default_password') ?: '');
     $paramFields['mysqlport']['def_value'] = ini_get('mysqli.default_port') ?: (ini_get('mysql.default_port') ?: '');
-    $paramFields['mysqlsock']['def_value'] = ini_get('pdo_mysql.default_socket') ?: (ini_get('mysqli.default_host') ?: (ini_get('mysql.default_socket') ?: ''));
+    $paramFields['mysqlsock']['def_value'] = ini_get('pdo_mysql.default_socket') ?: (ini_get('mysqli.default_socket') ?: (ini_get('mysql.default_socket') ?: ''));
     $paramFields['mysqlprefix']['def_value'] = 'xc_';
 
     $paramFields['demo']['def_value'] = '1';
@@ -3658,31 +3664,67 @@ function module_install_cache(&$params, $silentMode = false)
     $result = false;
 
     if (!empty($params['new_installation']) && 'Y' == $params['demo']) {
-        $dump_file = LC_DIR_ROOT . 'dump.sql';
 
-        if (file_exists($dump_file) && is_readable($dump_file)) {
+        // Get all dump_*.sql files
+        $dumpFiles = array();
+
+        $errorFiles = false;
+
+        foreach ((array) glob(LC_DIR_ROOT . 'dump_*.sql') as $dFile) {
+
+            if (is_readable($dFile)) {
+                $dumpFiles[] = $dFile;
+
+            } else {
+                $errorFiles = true;
+                break;
+            }
+        }
+
+        if (!$errorFiles && $dumpFiles) {
 
             echo xtr('Uploading dump.sql into database...');
 
-            $sql = file_get_contents($dump_file);
-            $sql = str_replace('`xlite_', '`' . $params['mysqlprefix'], $sql);
-
             $randPrefix = rand(0, 99);
-            $sql = str_replace('`FK_',  '`FK_'  . $randPrefix, $sql);
-            $sql = str_replace('`IDX_', '`IDX_' . $randPrefix, $sql);
 
             // Drop existing X-Cart tables
             if (doDropDatabaseTables($params)) {
 
-                // Load SQL dump to the database
-                $pdoErrorMsg = '';
-                dbExecute($sql, $pdoErrorMsg);
-                if (empty($pdoErrorMsg)) {
-                    $result = true;
+                $result = true;
+
+                foreach ($dumpFiles as $dump_file) {
+
+                    $sql = file_get_contents($dump_file);
+                    $sql = str_replace('`xlite_', '`' . $params['mysqlprefix'], $sql);
+                    $sql = str_replace('`FK_',  '`FK_'  . $randPrefix, $sql);
+                    $sql = str_replace('`IDX_', '`IDX_' . $randPrefix, $sql);
+
+
+                    // Load SQL dump to the database
+                    $pdoErrorMsg = '';
+                    dbExecute($sql, $pdoErrorMsg);
+                    if (!empty($pdoErrorMsg)) {
+                        $result = false;
+                        global $mysqlVersion;
+                        try {
+                            $mysqlVersion = \Includes\Utils\Database::getDbVersion();
+
+                        } catch(\Exception $e) {
+                            $mysqlVersion = '';
+                        }
+
+                        if (!empty($mysqlVersion)) {
+                            $version = 'MySQL v' . $mysqlVersion . ': ';
+                        }
+
+                        ga_event('warning', 'dump_upload_failed', $version . $pdoErrorMsg);
+                        break;
+                    }
+
+                    @unlink($dump_file);
                 }
             }
 
-            @unlink($dump_file);
             if ($result) {
 
                 echo '<span class="status-ok">OK</span>';

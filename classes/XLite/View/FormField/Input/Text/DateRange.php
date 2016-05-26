@@ -62,14 +62,14 @@ class DateRange extends \XLite\View\FormField\Input\Text
             if (!empty($dates[0])) {
                 $startDate = \DateTime::createFromFormat($format, trim($dates[0]) . ' 0:00:00');
                 if ($startDate) {
-                    $result[0] = $startDate->getTimestamp();
+                    $result[0] = \XLite\Core\Converter::convertTimeToServer($startDate->getTimestamp());
                 }
             }
 
             if (!empty($dates[1])) {
                 $endDate = \DateTime::createFromFormat($format, trim($dates[1]) . ' 23:59:59');
                 if ($endDate) {
-                    $result[1] = $endDate->getTimestamp();
+                    $result[1] = \XLite\Core\Converter::convertTimeToServer($endDate->getTimestamp());
                 }
             }
         }

@@ -36,6 +36,11 @@
 class XLite extends \XLite\Base
 {
     /**
+     * Core version
+     */
+    const XC_VERSION = '5.2.15';
+
+    /**
      * Endpoints
      */
     const CART_SELF  = 'cart.php';
@@ -90,6 +95,14 @@ class XLite extends \XLite\Base
      * URI to check clean URLS availability
      */
     const CLEAN_URL_CHECK_QUERY = 'check/for/clean/urls.html';
+
+    /**
+     * Parsed version.
+     * Array with the following keys: major, minor, build, minorFull
+     *
+     * @var array
+     */
+    protected $parsedVersion;
 
     /**
      * Current area flag
@@ -749,7 +762,12 @@ class XLite extends \XLite\Base
                 }
 
             } else {
-                $result = (static::isCheckForCleanURL() ? $result : null);
+                $result = null;
+                if (static::isCheckForCleanURL()) {
+                    // Request to detect support of clean URLs
+                    // Just display 'OK' and exit to speedup this checking
+                    die('OK');
+                };
             }
         }
 
@@ -824,6 +842,22 @@ class XLite extends \XLite\Base
 
     // {{{ Application versions
 
+    final protected function getParsedVersion($partName = null)
+    {
+        if (!isset($this->parsedVersion)) {
+            $version = explode('.', $this->getVersion());
+            $this->parsedVersion = array(
+                'major' => $version[0] . '.' . $version[1],
+                'minor' => !empty($version[2]) ? $version[2] : '0',
+                'build' => !empty($version[3]) ? $version[3] : '0',
+            );
+            $this->parsedVersion['minorFull'] = $this->parsedVersion['minor']
+                . ($this->parsedVersion['build'] ? '.' . $this->parsedVersion['build'] : '');
+        }
+
+        return !is_null($partName) ? $this->parsedVersion[$partName] : $this->parsedVersion;
+    }
+
     /**
      * Get application version
      *
@@ -831,27 +865,47 @@ class XLite extends \XLite\Base
      */
     final public function getVersion()
     {
-        return \Includes\Utils\Converter::composeVersion($this->getMajorVersion(), $this->getMinorVersion());
+        return static::XC_VERSION;
     }
 
     /**
-     * Get application major version
+     * Get application major version (X.X.x.x)
      *
      * @return string
      */
     final public function getMajorVersion()
     {
-        return '5.2';
+        return $this->getParsedVersion('major');
     }
 
     /**
-     * Get application minor version
+     * Get application minor version (x.x.X.X)
      *
      * @return string
      */
     final public function getMinorVersion()
     {
-        return '13';
+        return $this->getParsedVersion('minorFull');
+    }
+
+    /**
+     * Get application version build number (x.x.x.X)
+     *
+     * @return string
+     */
+    final public function getBuildVersion()
+    {
+        return $this->getParsedVersion('build');
+    }
+
+    /**
+     * Get application minor version (x.x.X.x)
+     *
+     * @return string
+     */
+    final public function getMinorOnlyVersion()
+    {
+        return $this->getParsedVersion('minor');
     }
 
     /**

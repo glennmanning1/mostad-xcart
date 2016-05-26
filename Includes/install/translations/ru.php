@@ -136,11 +136,12 @@ $translation = array (
 
 ',
   'Installation complete' => 'Установка завершена',
+  'X-Cart installation complete'  => 'Установка X-Cart завершена',
   'X-Cart software has been successfully installed and is now available at the following URLs:' => 'Магазин на базе X‑Cart успешно установлен и доступен по следующим ссылкам:',
   'CUSTOMER ZONE (FRONT-END)' => 'ЗОНА ПОКУПАТЕЛЯ (ГЛАВНАЯ СТРАНИЦА)',
   'ADMINISTRATOR ZONE (BACKOFFICE)' => 'ЗОНА АМИНИСТРАТОРА (ПАНЕЛЬ УПРАВЛЕНИЯ)',
   'Your auth code for running install.php in the future is:' => 'Код авторизации для запуска install.php в будущем:',
-  'PLEASE WRITE THIS CODE DOWN UNLESS YOU ARE GOING TO REMOVE ":filename"' => 'ПОЖАЛУЙСТА, ЗАПИШИТЕ ЭТОТ КОД, ЕСЛИ ТОЛЬКО ВЫ НЕ СОБИРАЕТЕСЬ УДАЛЯТЬ ":filename"',
+  'PLEASE WRITE THIS CODE DOWN IN CASE YOU ARE GOING TO REMOVE ":filename"' => 'ПОЖАЛУЙСТА, ЗАПИШИТЕ ЭТОТ КОД НА СЛУЧАЙ, ЕСЛИ ВЫ СОБИРАЕТЕСЬ УДАЛИТЬ ":filename"',
   'Creating directory: [:dirname]... ' => 'Идет создание директории: [:dirname]...',
   'Already exists' => 'Уже существует',
   'Failed to create directories' => 'Не удалось создать директории',

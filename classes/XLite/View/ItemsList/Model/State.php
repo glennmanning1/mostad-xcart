@@ -164,9 +164,7 @@ class State extends \XLite\View\ItemsList\Model\Table
      */
     protected function getCreateButtonLabel()
     {
-        $country = $this->getValidCountry();
-
-        return 'Add state for ' . $country->getCountry();
+        return 'Add state';
     }
 
     /**
@@ -272,7 +270,7 @@ class State extends \XLite\View\ItemsList\Model\Table
      *
      * @return array
      */
-    static public function getSearchParams()
+    public static function getSearchParams()
     {
         return array(
             \XLite\Model\Repo\State::P_COUNTRY_CODE  => static::PARAM_COUNTRY_CODE,
@@ -336,5 +334,4 @@ class State extends \XLite\View\ItemsList\Model\Table
     {
         return 'XLite\View\StickyPanel\State\Admin\Search';
     }
-
 }

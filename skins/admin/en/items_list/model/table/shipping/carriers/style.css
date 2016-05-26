@@ -18,8 +18,14 @@
   color: #e4a037;
   margin-left: 4px;
 }
-.items-list-table.shipping-carriers .tooltip-main {
+.items-list-table.shipping-carriers table.list tbody.lines td.actions.right .tooltip-main {
   padding: 0;
+}
+.items-list-table.shipping-carriers table.list tbody.lines td.actions.left .tooltip-main {
+  padding-left: 10px;
+  padding-right: 6px;
+  width: 31px;
+  padding-top: 1px;
 }
 .items-list-table.shipping-carriers table.list tbody.lines td.actions.right .action {
   display: block;

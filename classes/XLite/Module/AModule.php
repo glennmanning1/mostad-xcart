@@ -287,13 +287,35 @@ abstract class AModule
     }
 
     /**
+     * Get module build number (4th number in the version)
+     *
+     * @return string
+     */
+    public static function getBuildVersion()
+    {
+        '0';
+    }
+
+    /**
      * Get module version
      *
      * @return string
      */
     public static function getVersion()
     {
-        return \Includes\Utils\Converter::composeVersion(static::getMajorVersion(), static::getMinorVersion());
+        return \Includes\Utils\Converter::composeVersion(static::getMajorVersion(), static::getFullMinorVersion());
+    }
+
+    /**
+     * Get module version
+     *
+     * @return string
+     */
+    public static function getFullMinorVersion()
+    {
+        $build = static::getBuildVersion();
+
+        return static::getMinorVersion() . (!empty($build) ? '.' . $build : '');
     }
 
     /**

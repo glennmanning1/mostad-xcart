@@ -96,6 +96,7 @@ DiscountCouponsView.prototype.handleUpdateCart = function(event, data)
       this.base.find('input[name="code"]').val('');
     }
   }
+  this.load();
 }
 
 // Get event namespace (prefix)

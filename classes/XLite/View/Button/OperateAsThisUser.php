@@ -119,7 +119,17 @@ class OperateAsThisUser extends \XLite\View\Button\Link
     protected function isVisible()
     {
         return parent::isVisible()
-            && $this->getProfile()
+            && $this->isProfileAllowed();
+    }
+
+    /**
+     * Return true if profile meets conditions
+     *
+     * @return boolean
+     */
+    protected function isProfileAllowed()
+    {
+        return $this->getProfile()
             && $this->getProfile()->isPersistent()
             && !$this->getProfile()->getAnonymous()
             && !$this->getProfile()->isAdmin();

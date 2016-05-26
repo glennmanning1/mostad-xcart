@@ -441,14 +441,6 @@ div.content
   margin-bottom: 5px;
 }
 
-.status-report-box .copy2clipboard.zeroclipboard-is-hover {
-   color: #69a4c9;
-}
-
-.status-report-box .copy2clipboard.zeroclipboard-is-active {
-   color: #69a4f9;
-}
-
 .error-text.lc_file_permissions .copy2clipboard-alert {
   position: absolute;
   padding: 6px;

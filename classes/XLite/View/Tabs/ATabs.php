@@ -361,4 +361,17 @@ abstract class ATabs extends \XLite\View\AView
     {
         return \Includes\Utils\ArrayManager::getIndex($this->getTabs(), $this->getCurrentTarget());
     }
+
+    /**
+     * Get tab link template
+     *
+     * @param array $tab Tab data
+     *
+     * @return boolean|string
+     */
+    protected function getTabLinkTemplate(array $tab)
+    {
+        return false;
+    }
+
 }

@@ -1182,7 +1182,7 @@ abstract class AProcessor extends \XLite\Base implements \SeekableIterator, \Cou
             } else {
                 $result = $this->isValueLengthValid($value, $limit);
                 if (!$result && $sanitize) {
-                    $value = $this->getSanitizedValue($value, $limit);;
+                    $value = $this->getSanitizedValue($value, $limit);
                 }
             }
         }

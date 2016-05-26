@@ -49,9 +49,10 @@ class ConfirmRegular extends \XLite\View\Button\Regular
         parent::defineWidgetParams();
 
         $this->widgetParams += array(
-            self::PARAM_CONFIRM_TEXT    => new \XLite\Model\WidgetParam\String('Confirm text', 'Are you sure?'),
+            self::PARAM_CONFIRM_TEXT    => new \XLite\Model\WidgetParam\String('Confirm text', static::t('Are you sure?')),
         );
     }
+
     /**
      * Return specified (or default) JS code with confirmation
      *
@@ -59,8 +60,10 @@ class ConfirmRegular extends \XLite\View\Button\Regular
      */
     protected function getJSCode()
     {
-        $jsCode = parent::getJSCode();
-
-        return sprintf('if (confirm(core.t("%s"))) %s', $this->getParam(self::PARAM_CONFIRM_TEXT), parent::getJSCode());
+        return sprintf(
+            'if (confirm("%s")) { %s };',
+            $this->getParam(self::PARAM_CONFIRM_TEXT),
+            parent::getJSCode()
+        );
     }
 }

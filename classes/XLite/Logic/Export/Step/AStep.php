@@ -798,10 +798,25 @@ OUT;
         $result = array();
 
         foreach (array_keys($this->getColumns()) as $name) {
-            $result[] = isset($row[$name]) ? $row[$name] : '';
+            $result[] = isset($row[$name]) ? $this->filterCellValue($name, $row[$name]) : '';
         }
 
         return $result;
+    }
+
+    /**
+     * Filter cell value to avoid data corruption in spreadsheet
+     *
+     * @param string $name  Name
+     * @param string $value Value
+     *
+     * @return string
+     */
+    protected function filterCellValue($name, $value)
+    {
+        return strpos($value, '=') === 0
+            ? '\'' . $value
+            : $value;
     }
 
     /**

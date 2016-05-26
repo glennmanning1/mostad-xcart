@@ -55,6 +55,16 @@ class SearchTotal extends \XLite\View\ItemsList\Model\Order\Admin\Search
     }
 
     /**
+     * Re-define session cell name to get search condition from search orders list session cell
+     *
+     * @return string
+     */
+    public static function getSessionCellName()
+    {
+        return str_replace('\\', '', 'XLite\View\ItemsList\Model\Order\Admin\Search');
+    }
+
+    /**
      * Return widget default template
      *
      * @return string
@@ -87,11 +97,7 @@ class SearchTotal extends \XLite\View\ItemsList\Model\Order\Admin\Search
      */
     protected function getSearchTotals()
     {
-        // Get search conditions
-        $name = \XLite\View\ItemsList\Model\Order\Admin\Search::getSessionCellName();
-        $cnd = new \XLite\Core\CommonCell(\XLite\Core\Session::getInstance()->$name);
-
-        return \XLite\Core\Database::getRepo('XLite\Model\Order')->getSearchTotal($cnd);
+        return \XLite\Core\Database::getRepo('XLite\Model\Order')->getSearchTotal($this->getSearchCondition());
     }
 
     /**

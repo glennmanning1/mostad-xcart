@@ -43,9 +43,8 @@ class Tabber extends \XLite\View\Tabber implements \XLite\Base\IDecorator
     {
         $result = parent::isTabsNavigationVisible();
 
-        if (
-            $result
-            && 'product_variant' == $this->getTarget()
+        if ($result
+            && 'product_variant' === $this->getTarget()
         ) {
             $result = 2 < count($this->getTabberPages());
         }
