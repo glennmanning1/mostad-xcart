@@ -1,0 +1,2 @@
+XLite\Model\Order\Modifier:
+    - { class: '\XLite\Module\Mostad\Washington\Logic\Order\Modifier\WashingtonTaxes', weight: 100 }
