@@ -24,16 +24,11 @@ class WashingtonTaxes extends Tax
 {
     const STATE_NAME = 'Washington';
     const STATE_TAX_API_BASE_URL = 'http://dor.wa.gov/AddressRates.aspx?';
+    // fallback rate in case the WA API fails to return a response.
+    const STATE_TAX_FALLBACK = 0.099;
 
-    public function calculate()
+    public function determineTaxRate($address)
     {
-        $results = parent::calculate();
-
-        $address = $this->getOrderAddress();
-
-        if ($address->getState()->getState() != self::STATE_NAME) {
-            return $results;
-        }
         // http://dor.wa.gov/AddressRates.aspx?output=xml&addr=6500%20Linderson%20way&city=&zip=98501
         $url = self::STATE_TAX_API_BASE_URL
             . 'output=xml'
@@ -46,14 +41,37 @@ class WashingtonTaxes extends Tax
 
         /*
          * <response loccode="3406" localrate="0.024" rate="0.089" code="0">
-<addressline houselow="6500" househigh="6598" evenodd="E" street="LINDERSON WAY SW" state="WA" zip="98501" plus4="6561" period="Q22016" code="3406" rta="N" ptba="Thurston PTBA" cez=""/>
-<rate name="TUMWATER" code="3406" staterate="0.065" localrate="0.024"/>
-</response>
+            <addressline houselow="6500" househigh="6598" evenodd="E" street="LINDERSON WAY SW" state="WA" zip="98501" plus4="6561" period="Q22016" code="3406" rta="N" ptba="Thurston PTBA" cez=""/>
+            <rate name="TUMWATER" code="3406" staterate="0.065" localrate="0.024"/>
+            </response>
          */
+
+        if (!$response) {
+            return self::STATE_TAX_FALLBACK;
+        }
+
         $xmlResponse = simplexml_load_string($response->body);
 
         $attributes = $xmlResponse->attributes();
         $rate = (double)$attributes->rate;
+        if (empty($rate)) {
+            return self::STATE_TAX_FALLBACK;
+        }
+
+        return $rate;
+    }
+
+    public function calculate()
+    {
+        $results = parent::calculate();
+
+        $address = $this->getOrderAddress();
+
+        if ($address->getState()->getState() != self::STATE_NAME) {
+            return $results;
+        }
+
+        $rate = $this->determineTaxRate($address);
 
         $salesTax = $this->getOrder()->getDisplaySubtotal() * $rate;
 
