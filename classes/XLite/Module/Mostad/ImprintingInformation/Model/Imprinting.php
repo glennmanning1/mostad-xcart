@@ -68,13 +68,13 @@ class Imprinting extends \XLite\Model\AEntity
      */
     protected $firmName;
 
-//    /**
-//     * @var \XLite\Model\Address
-//     *
-//     * @ManyToOne(targetEntity="\XLite\Model\Address")
-//     * @JoinColumn(name="address_id", referencedColumnName="id", onDelete="SET NULL", nullable=true)
-//     */
-//    protected $address;
+    /**
+     * @var \XLite\Model\Address
+     *
+     * @ManyToOne(targetEntity="\XLite\Model\Address")
+     * @JoinColumn(name="address_id", referencedColumnName="address_id", onDelete="SET NULL", nullable=true)
+     */
+    protected $address;
 
     /**
      * @var string

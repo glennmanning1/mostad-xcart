@@ -163,4 +163,12 @@ class Imprinting extends \XLite\View\Model\AModel
 
         return $result;
     }
+
+    protected function setModelProperties(array $data)
+    {
+        parent::setModelProperties($data);
+        $this->getModelObject()->setAddress(\XLite\Core\Database::getRepo('XLite\Model\Address')->find($data['address']));
+    }
+
+
 }
