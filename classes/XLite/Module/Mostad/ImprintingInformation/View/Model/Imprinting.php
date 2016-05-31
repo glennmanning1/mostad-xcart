@@ -96,11 +96,37 @@ class Imprinting extends \XLite\View\Model\AModel
      */
     protected function getDefaultModelObject()
     {
-        $model = $this->getModelId()
-            ? \XLite\Core\Database::getRepo('XLite\Module\Mostad\ImprintingInformation\Model\Imprinting')->find($this->getModelId())
-            : null;
+        $model = \XLite\Core\Database::getRepo('XLite\Module\Mostad\ImprintingInformation\Model\Imprinting')
+                                     ->findOneByOrder($this->getCart(false)->getUniqueIdentifier());
 
-        return $model ?: new \XLite\Module\Mostad\ImprintingInformation\Model\Imprinting;
+        if ($model) {
+            $model->confirm = false;
+            return $model;
+        }
+
+        $model = \XLite\Core\Database::getRepo('XLite\Module\Mostad\ImprintingInformation\Model\Imprinting')
+                                     ->findLatestByProfileId($this->getProfileId());
+
+        if ($model) {
+            $model->confirm = false;
+            $model->status = null;
+            return $model;
+        }
+
+        return new \XLite\Module\Mostad\ImprintingInformation\Model\Imprinting;
+    }
+
+
+    /**
+     * Return current profile ID
+     *
+     * @return integer
+     */
+    protected function getProfileId()
+    {
+        return \XLite\Core\Auth::getInstance()->isOperatingAsUserMode()
+            ? \XLite\Core\Auth::getInstance()->getOperatingAs()
+            : \XLite\Core\Session::getInstance()->profile_id;
     }
 
     /**
