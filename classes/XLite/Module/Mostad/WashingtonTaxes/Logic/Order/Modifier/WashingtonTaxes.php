@@ -67,7 +67,7 @@ class WashingtonTaxes extends Tax
 
         $address = $this->getOrderAddress();
 
-        if ($address->getState()->getState() != self::STATE_NAME) {
+        if (!$address || !$address->getState() || $address->getState()->getState() != self::STATE_NAME) {
             return $results;
         }
 
