@@ -61,6 +61,11 @@ class Imprinting extends \XLite\Controller\Customer\ACustomer
         }
     }
 
+    public function getProfileId()
+    {
+        return $this->getCart(false)->getProfile()->getId();
+    }
+
     /**
      * Get current aAddress id
      *

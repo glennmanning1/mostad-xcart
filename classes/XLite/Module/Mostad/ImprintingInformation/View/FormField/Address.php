@@ -19,8 +19,35 @@
 namespace XLite\Module\Mostad\ImprintingInformation\View\FormField;
 
 
-class Address extends \XLite\View\FormField\Select\Model\AModel
+class Address extends \XLite\View\FormField\Select\RadioButtonsList\ARadioButtonsList
 {
+
+    /**
+     * Get default options list
+     *
+     * @return array
+     */
+    protected function getDefaultOptions()
+    {
+        $addresses = $this->getCart()->getProfile()->getAddresses();
+
+        $formattedAddresses = [];
+        foreach ($addresses as $address) {
+            $formattedAddresses[$address->getAddressId()] = $address;
+        }
+
+        return $formattedAddresses;
+    }
+
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+
+        $list[] = 'address/style.css';
+
+        return $list;
+    }
+
 
     public function getJSFiles()
     {
@@ -31,36 +58,13 @@ class Address extends \XLite\View\FormField\Select\Model\AModel
         return $list;
     }
 
-    protected function getDataType()
-    {
-        return 'address';
-    }
-
-    protected function getDefaultEmptyPhrase()
-    {
-        return 'No address selected';
-    }
-
-    protected function getDefaultTemplate()
-    {
-        return $this->buildURL('model_address_selector');
-    }
-
-
     /**
-     * Defines the text value of the model
+     * Return widget default template
      *
      * @return string
      */
-    protected function getTextValue()
+    protected function getDefaultTemplate()
     {
-        $address = \XLite\Core\Database::getRepo('XLite\Model\Address')->find('1');
-
-        return $address ? 'wat' : 'nope';
-    }
-
-    protected function getTextName()
-    {
-        return $this->getParam(static::PARAM_NAME) . '_text';
+        return 'modules/Mostad/ImprintingInformation/address/body.tpl';
     }
 }

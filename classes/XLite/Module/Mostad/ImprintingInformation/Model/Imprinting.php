@@ -128,9 +128,9 @@ class Imprinting extends \XLite\Model\AEntity
     public static function getStatusArray()
     {
         return array(
-            self::STATUS_SAME => 'My imprint has NOT changed. Use my imprint information that you have on file.',
-            self::STATUS_UPDATE => 'My imprint information has changed. My imprint changes are indicated in the fields below.',
-            self::STATUS_NEW => 'I am ordering imprinting for the first time. I have indicated my imprint information in the fields below.',
+                self::STATUS_NEW => 'I am ordering imprinting for the first time. I have indicated my imprint information in the fields below.',
+                self::STATUS_UPDATE => 'My imprint information has changed. My imprint changes are indicated in the fields below.',
+                self::STATUS_SAME => 'My imprint has NOT changed. Use my imprint information that you have on file.',
         );
     }
 
