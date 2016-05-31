@@ -81,4 +81,12 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
         return $this->getImprintingInfo()->getEmail();
     }
 
+    /**
+     * @return \XLite\Model\Address
+     */
+    public function getImprintingAddress()
+    {
+        return $this->getImprintingInfo()->getAddress();
+    }
+
 }
