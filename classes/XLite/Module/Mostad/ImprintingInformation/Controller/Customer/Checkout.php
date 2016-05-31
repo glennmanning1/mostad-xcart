@@ -19,6 +19,8 @@
 namespace XLite\Module\Mostad\ImprintingInformation\Controller\Customer;
 
 
+use XLite\Module\Mostad\ImprintingInformation\Model\Imprinting;
+
 class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Base\IDecorator
 {
 
@@ -41,7 +43,7 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
         parent::handleRequest();
     }
 
-    protected function cartHasItemsNeedingImprinting()
+    public function cartHasItemsNeedingImprinting()
     {
 
         /** @var OrderItem $item */
@@ -56,8 +58,27 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
 
     protected function orderHasConfirmedImprinting()
     {
-        $imprinting = $this->getCart(false)->getImprinting();
-
-        return ($imprinting && $imprinting->getConfirm());
+        return ($this->getImprintingInfo() && $this->getImprintingInfo()->getConfirm());
     }
+
+    public function getImprintingInfo()
+    {
+        return $this->getCart(false)->getImprinting() ?: new Imprinting();
+    }
+
+    public function getImprintingFirmName()
+    {
+        return $this->getImprintingInfo()->getFirmName();
+    }
+
+    public function getImprintingWebsite()
+    {
+        return $this->getImprintingInfo()->getWebsite();
+    }
+
+    public function getImprintingEmail()
+    {
+        return $this->getImprintingInfo()->getEmail();
+    }
+
 }
