@@ -19,6 +19,7 @@
 namespace XLite\Module\Mostad\WashingtonTaxes\Logic\Order\Modifier;
 
 use XLite\Module\CDev\SalesTax\Logic\Order\Modifier\Tax;
+use XLite\Module\NovaHorizons\WholesaleClasses\Logic\Order\Modifier\VolumePricing;
 
 class WashingtonTaxes extends Tax
 {
@@ -74,6 +75,11 @@ class WashingtonTaxes extends Tax
         $rate = $this->determineTaxRate($address);
 
         $salesTax = $this->getOrder()->getDisplaySubtotal() * $rate;
+
+        /** @var \XLite\Model\Order\Surcharge $surcharge */
+        foreach ($this->getOrder()->getSurchargesByType(VolumePricing::MODIFIER_TYPE) as $surcharge) {
+            $salesTax += $surcharge->getValue() * $rate;
+        }
 
         $results[] = $this->addOrderSurcharge(self::MODIFIER_CODE, $salesTax);
         return $results;
