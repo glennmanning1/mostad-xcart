@@ -94,6 +94,6 @@ class Contact extends ContactUs
      */
     public function getPageBody()
     {
-        return $this->getCmsPage ? $this->getCmsPage()->getBody() : null;
+        return $this->getCmsPage() ? $this->getCmsPage()->getBody() : null;
     }
 }
