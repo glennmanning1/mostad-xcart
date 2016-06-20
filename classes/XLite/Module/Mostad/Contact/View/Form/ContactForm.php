@@ -4,12 +4,12 @@
  */
 
 namespace XLite\Module\Mostad\Contact\View\Form;
-use XLite\Module\Mostad\Contact\View\Page\Customer\Catalog;
+use XLite\Module\Mostad\Contact\View\Page\Customer\Contact;
 
 /**
  * Contact us form
  */
-class CatalogForm extends \XLite\View\Form\AForm
+class ContactForm extends \XLite\View\Form\AForm
 {
     /**
      * Return default value for the "target" parameter
@@ -18,7 +18,7 @@ class CatalogForm extends \XLite\View\Form\AForm
      */
     protected function getDefaultTarget()
     {
-        return Catalog::TARGET;
+        return Contact::TARGET;
     }
 
     /**

@@ -1,5 +1,5 @@
 <p>
-    Catalog Request
+    <b>{t(#Submitted Page#)}:</b> {data.page-title}<br/>
 </p>
 <p>
     <b>{t(#Name#)}:</b> {data.name}<br/>

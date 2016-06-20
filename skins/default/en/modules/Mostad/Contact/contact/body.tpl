@@ -1,3 +1,7 @@
+{if:getPageBody()}
+    {getPageBody():h}
+{else:}
+
 <div class="contact-us-description">
     <h3>Get started now!</h3>
     <p>Effective marketing has the power to build the kind of accounting practice you want.</p>
@@ -6,10 +10,10 @@
 </div>
 
 <hr class="contact-us-description-hr"/>
+{end:}
+<widget class="\XLite\Module\Mostad\Contact\View\Form\ContactForm" name="contact_request"/>
 
-<widget class="\XLite\Module\Mostad\Contact\View\Form\CatalogForm" name="catalog_request"/>
-
-<div id="catalog_request">
+<div id="contact_request">
 
     <div id="contact-site-form">
         <div class="form-item">
@@ -126,9 +130,11 @@
             </button>
         </div>
 
+        <widget class="XLite\View\FormField\Input\Hidden" fieldName="page-title" value="{getPageId()}" fieldOnly="true" required="false"/>
+
     </div>
 
 
 </div>
 
-<widget name="catalog_request" end/>
+<widget name="contact_request" end/>

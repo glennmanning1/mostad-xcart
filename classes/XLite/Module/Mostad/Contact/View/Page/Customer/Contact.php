@@ -7,10 +7,10 @@ namespace XLite\Module\Mostad\Contact\View\Page\Customer;
  *
  * @ListChild (list="center")
  */
-class Catalog extends \XLite\View\AView
+class Contact extends \XLite\View\AView
 {
 
-    const TARGET = 'catalog';
+    const TARGET = 'contact';
 
     /**
      * Return list of allowed targets
@@ -43,7 +43,7 @@ class Catalog extends \XLite\View\AView
      */
     protected function getDefaultTemplate()
     {
-        return 'modules/Mostad/Contact/catalog/body.tpl';
+        return 'modules/Mostad/Contact/contact/body.tpl';
     }
 
     protected function getCaptcha()

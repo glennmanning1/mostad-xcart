@@ -38,7 +38,7 @@ abstract class Mailer extends \XLite\Core\Mailer implements \XLite\Base\IDecorat
       *
       * @return string | null
       */
-     public static function sendCatalogRequestMessage(array $data, $email)
+     public static function sendRequestMessage(array $data, $email)
      {
          static::$fromStorage = $data['email'];
          $data['message'] = htmlspecialchars($data['message']);
@@ -49,7 +49,7 @@ abstract class Mailer extends \XLite\Core\Mailer implements \XLite\Base\IDecorat
              static::TYPE_CATALOG_REQUEST,
              static::getSiteAdministratorMail(),
              $email,
-             'modules/Mostad/Contact/Catalog',
+             'modules/Mostad/Contact/Contact',
              array(),
              true,
              \XLite::ADMIN_INTERFACE
