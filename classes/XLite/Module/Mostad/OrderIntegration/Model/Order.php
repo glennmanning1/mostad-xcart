@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping\Column;
 class Order extends \XLite\Model\Order implements \XLite\Base\IDecorator
 {
     /**
-     * @Column (type="string", length=32)
+     * @Column (type="string", length=32, nullable=true)
      */
     protected $qopOrderId;
     
