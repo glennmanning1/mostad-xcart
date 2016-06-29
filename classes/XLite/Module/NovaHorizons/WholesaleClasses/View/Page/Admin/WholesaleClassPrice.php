@@ -18,9 +18,6 @@
 
 namespace XLite\Module\NovaHorizons\WholesaleClasses\View\Page\Admin;
 
-/**
- * @ListChild (list="admin.center", zone="admin")
- */
 
 class WholesaleClassPrice extends \XLite\View\AView
 {

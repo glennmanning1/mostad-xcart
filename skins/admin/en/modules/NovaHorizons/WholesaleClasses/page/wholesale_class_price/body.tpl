@@ -10,7 +10,7 @@
  *}
 
 <div>
-    <h1 class="title">Wholesale Class Prices</h1>
+    <h1 class="title">Wholesale Prices</h1>
     <div class="description">
         <p>
             Create your pricing here.

@@ -21,6 +21,38 @@ namespace XLite\Module\NovaHorizons\WholesaleClasses\Controller\Admin;
 
 class WholesaleClassPrice extends \XLite\Controller\Admin\AAdmin
 {
+
+    protected $params = array('target', 'pricing_set_id', 'page');
+
+    /**
+     * Get pages sections
+     *
+     * @return array
+     */
+    public function getPages()
+    {
+        $list = parent::getPages();
+
+        $list['wholesale_pricing'] = 'Wholesale Pricing';
+
+        return $list;
+    }
+
+    /**
+     * Get pages templates
+     *
+     * @return array
+     */
+    protected function getPageTemplates()
+    {
+        $list = parent::getPageTemplates();
+
+        $list['default'] = 'modules/NovaHorizons/WholesaleClasses/page/wholesale_class_price/body.tpl';
+        $list['wholesale_pricing'] = 'modules/NovaHorizons/WholesaleClasses/page/wholesale_class_price/body.tpl';
+
+        return $list;
+    }
+
     public function doActionUpdate()
     {
         $list = new \XLite\Module\NovaHorizons\WholesaleClasses\View\ItemsList\Model\WholesaleClassPrice();
@@ -34,6 +66,11 @@ class WholesaleClassPrice extends \XLite\Controller\Admin\AAdmin
     {
         return \XLite\Core\Database::getRepo('\XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
                 ->find(\XLite\Core\Request::getInstance()->pricing_set_id);
+    }
+
+    public function getTitle()
+    {
+        return $this->getPriceSet()->getName() . ' Class Pricing';
     }
 
 }
