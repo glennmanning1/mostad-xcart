@@ -19,29 +19,23 @@
 namespace XLite\Module\Mostad\QuantityPricing\View\Form\ItemsList;
 
 
-/**
- * Class QuantityPricing
- * @package XLite\Module\Mostad\QuantityPricing\View\Form\ItemsList
- */
-class QuantityPricing extends \XLite\View\Form\ItemsList\AItemsList
+class WholesaleClassQuantityPricing extends \XLite\Module\Mostad\QuantityPricing\View\Form\ItemsList\QuantityPricing implements \XLite\Base\IDecorator
 {
-    /**
-     * @return string
-     */
-    protected function getDefaultAction()
-    {
-        return 'quantity_pricing_update';
-    }
-
-    /**
+     /**
+     * Return list of the form default parameters
+     *
      * @return array
      */
     protected function getDefaultParams()
     {
-        $list = parent::getDefaultParams();
+        if ('wholesale_class_price' == $this->getTarget()) {
+            $list['page'] = $this->page;
+            $list['id'] = $this->getPriceSet()->getId();
+            $list['pricing_set_id'] = $this->getPriceSet()->getId();
 
-        $list['page'] = $this->page;
-        $list['id'] = $this->getObject()->getId();
+        } else {
+            $list = parent::getDefaultParams();
+        }
 
         return $list;
     }

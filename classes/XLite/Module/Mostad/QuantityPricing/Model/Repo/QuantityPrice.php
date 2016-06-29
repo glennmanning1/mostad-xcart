@@ -54,6 +54,8 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
             $this->callSearchConditionHandler($value, $key, $queryBuilder, $countOnly);
         }
 
+        $queryBuilder->orderBy('q.quantity');
+
         return $countOnly
             ? $this->searchCount($queryBuilder)
             : $this->searchResult($queryBuilder);
