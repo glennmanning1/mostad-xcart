@@ -25,9 +25,28 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
 {
     protected $options;
 
+    protected $quantityPrices;
+
+    const PARAM_PRODUCT_VARIANT = 'productVariant';
+
+
+    /**
+     * Define widget parameters
+     *
+     * @return void
+     */
+    protected function defineWidgetParams()
+    {
+        parent::defineWidgetParams();
+
+        $this->widgetParams += array(
+            self::PARAM_PRODUCT_VARIANT => new \XLite\Model\WidgetParam\Object('ProductVariant', null, false, '\XLite\Module\CDev\Wholesale\Model\ProductVariant')
+        );
+    }
+
     protected function isSelectBox()
     {
-        return count($this->getProduct()->getQuantityPrices() > 0) && !$this->getOrderItem();
+        return count($this->getQuantityPrices() > 0) && !$this->getOrderItem();
     }
 
     protected function getQuantitiesAsOptions()
@@ -41,7 +60,7 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
                 'qty'      => 0,
             ];
             /** @var QuantityPrice $quantityPrice */
-            foreach ($this->getProduct()->getQuantityPrices() as $quantityPrice) {
+            foreach ($this->getQuantityPrices() as $quantityPrice) {
                 $this->options[ strval($quantityPrice->getQuantity()) ] = [
                     'name'     => $quantityPrice->getQuantity() . ' for ' . static::formatPrice($quantityPrice->getPrice()),
                     'quantity' => $quantityPrice->getQuantity(),
@@ -57,6 +76,34 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
     protected function isSelectedQuantity($id)
     {
         return false;
+    }
+
+    protected function getProductVariant()
+    {
+//        return $this->getOrderItem()
+//            ? $this->getOrderItem()->getProduct()
+//            : $this->getParam(self::PARAM_PRODUCT_VARIANT);
+
+        return $this->getParam(self::PARAM_PRODUCT_VARIANT);
+    }
+
+    protected function getQuantityPrices()
+    {
+        if (!$this->quantityPrices) {
+            $this->quantityPrices = array();
+            /** @var Product $product */
+            $product = $this->getProduct();
+            /** @var ProductVariant $variant */
+            $variant = $this->getProductVariant();
+
+            if(!$variant->getDefaultValue() && $variant->getQuantityPrices()) {
+                $this->quantityPrices = $variant->getQuantityPrices();
+            } else {
+                $this->quantityPrices = $product->getQuantityPrices();
+            }
+        }
+
+        return $this->quantityPrices;
     }
 
 }
