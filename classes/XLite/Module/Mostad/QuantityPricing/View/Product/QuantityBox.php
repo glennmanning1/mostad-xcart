@@ -54,6 +54,8 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
 
     protected function getQuantitiesAsOptions()
     {
+        $isOrderItem = $this->getOrderItem() ? true : false;
+
         if (!$this->options) {
             $this->options    = [];
             $this->options[0] = [
@@ -65,7 +67,7 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
             /** @var QuantityPrice $quantityPrice */
             foreach ($this->getQuantityPrices() as $quantityPrice) {
                 $this->options[ strval($quantityPrice->getQuantity()) ] = [
-                    'name'     => $this->getQuantityPriceName($quantityPrice),
+                    'name'     => $this->getQuantityPriceName($quantityPrice, $isOrderItem),
                     'quantity' => $quantityPrice->getQuantity(),
                     'unit_id'  => false,
                     'qty'      => $quantityPrice->getQuantity(),
@@ -90,10 +92,18 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
     {
         if (!$this->quantityPrices) {
             $this->quantityPrices = array();
-            /** @var Product $product */
-            $product = $this->getProduct();
-            /** @var ProductVariant $variant */
-            $variant = $this->getProductVariant();
+
+            if ($this->getOrderItem()) {
+                /** @var Product $product */
+                $product = $this->getOrderItem()->getProduct();
+                /** @var ProductVariant $variant */
+                $variant = $this->getOrderItem()->getVariant();
+            } else {
+                /** @var Product $product */
+                $product = $this->getProduct();
+                /** @var ProductVariant $variant */
+                $variant = $this->getProductVariant();
+            }
 
             if($variant && !$variant->getDefaultValue() && $variant->getQuantityPrices()) {
                 $this->quantityPrices = $variant->getQuantityPrices();
@@ -114,9 +124,9 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
         return $this->quantityPrices;
     }
 
-    protected function getQuantityPriceName($quantityPrice)
+    protected function getQuantityPriceName($quantityPrice, $isOrderItem = false)
     {
-        if ($this->hasWholesClassPricing) {
+        if ($this->hasWholesClassPricing || $isOrderItem) {
             return $quantityPrice->getQuantity();
         }
         return $quantityPrice->getQuantity() . ' for ' . static::formatPrice($quantityPrice->getPrice());
