@@ -27,6 +27,8 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
 
     protected $quantityPrices;
 
+    protected $hasWholesClassPricing = false;
+
     const PARAM_PRODUCT_VARIANT = 'productVariant';
 
 
@@ -46,7 +48,8 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
 
     protected function isSelectBox()
     {
-        return count($this->getQuantityPrices() > 0) && !$this->getOrderItem();
+        $quantityPrices = $this->getQuantityPrices();
+        return !empty($quantityPrices) && !$this->getOrderItem();
     }
 
     protected function getQuantitiesAsOptions()
@@ -62,7 +65,7 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
             /** @var QuantityPrice $quantityPrice */
             foreach ($this->getQuantityPrices() as $quantityPrice) {
                 $this->options[ strval($quantityPrice->getQuantity()) ] = [
-                    'name'     => $quantityPrice->getQuantity() . ' for ' . static::formatPrice($quantityPrice->getPrice()),
+                    'name'     => $this->getQuantityPriceName($quantityPrice),
                     'quantity' => $quantityPrice->getQuantity(),
                     'unit_id'  => false,
                     'qty'      => $quantityPrice->getQuantity(),
@@ -75,15 +78,11 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
 
     protected function isSelectedQuantity($id)
     {
-        return false;
+        return $id == $this->getBoxValue();
     }
 
     protected function getProductVariant()
     {
-//        return $this->getOrderItem()
-//            ? $this->getOrderItem()->getProduct()
-//            : $this->getParam(self::PARAM_PRODUCT_VARIANT);
-
         return $this->getParam(self::PARAM_PRODUCT_VARIANT);
     }
 
@@ -96,14 +95,31 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
             /** @var ProductVariant $variant */
             $variant = $this->getProductVariant();
 
-            if(!$variant->getDefaultValue() && $variant->getQuantityPrices()) {
+            if($variant && !$variant->getDefaultValue() && $variant->getQuantityPrices()) {
                 $this->quantityPrices = $variant->getQuantityPrices();
             } else {
-                $this->quantityPrices = $product->getQuantityPrices();
+                if (
+                    $this->getProduct()->getProductClass()
+                    && $this->getProduct()->getProductClass()->isWholesalePriceClass()
+                    && $this->getProduct()->getProductClass()->hasWholesaleQuantityPricing()
+                ) {
+                    $this->hasWholesClassPricing = true;
+                    $this->quantityPrices = $this->getProduct()->getProductClass()->getWholesaleQuantityPrices();
+                } else {
+                    $this->quantityPrices = $product->getQuantityPrices();
+                }
             }
         }
 
         return $this->quantityPrices;
+    }
+
+    protected function getQuantityPriceName($quantityPrice)
+    {
+        if ($this->hasWholesClassPricing) {
+            return $quantityPrice->getQuantity();
+        }
+        return $quantityPrice->getQuantity() . ' for ' . static::formatPrice($quantityPrice->getPrice());
     }
 
 }
