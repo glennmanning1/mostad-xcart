@@ -26,10 +26,11 @@ class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
      */
     public function hasWholesalePriceClass()
     {
-        $result = \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
-            ->findBy(array('class' => $this->getProduct()->getProductClass()));
+        if ($this->getProduct()->getProductClass()) {
+            return $this->getProduct()->getProductClass()->isWholesalePriceClass();
+        }
 
-        return !empty($result);
+        return false;
     }
 
 }
