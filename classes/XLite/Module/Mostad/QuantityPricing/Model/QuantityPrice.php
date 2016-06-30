@@ -86,6 +86,5 @@ class QuantityPrice extends \XLite\Model\AEntity
         $this->setModelType(get_class($model));
 
         return $this;
-    }
-    
+    }    
 }

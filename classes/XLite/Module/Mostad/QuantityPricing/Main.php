@@ -84,4 +84,16 @@ abstract class Main extends \XLite\Module\AModule
         return '0';
     }
 
+    /**
+     * @inheritdoc
+     */
+    protected static function moveTemplatesInLists()
+    {
+        return [
+            'product/quantity_box/parts/quantity_box.tpl' => array(
+               array('product.quantity-box', 'customer'),
+            ),
+        ];
+    }
+
 }
