@@ -30,12 +30,21 @@ class ProductVariant extends \XLite\Module\XC\ProductVariants\View\ItemsList\Mod
     {
         $columns = parent::defineColumns();
 
+        if (!$this->getProduct()->getQuantityPriceEnabled()) {
+            return $columns;
+        }
+
         if (isset($columns['price'])) {
             $columns['quantityPricing'] =  array(
                 static::COLUMN_CLASS   => 'XLite\Module\Mostad\QuantityPricing\View\FormField\QuantityPricing',
+                static::COLUMN_NAME    => 'Quantity Pricing',
                 static::COLUMN_ORDERBY => $columns['price'][static::COLUMN_ORDERBY] + 2,
             );
         }
+
+        unset($columns['price']);
+        unset($columns['wholesalePrices']);
+
 
         return $columns;
     }

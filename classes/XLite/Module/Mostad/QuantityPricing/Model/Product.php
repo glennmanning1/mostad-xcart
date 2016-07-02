@@ -34,6 +34,13 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
     protected $lowestQuantityPrice;
 
     /**
+     * @var boolean
+     *
+     * @Column(name="quantity_price_enabled", type="boolean")
+     */
+    protected $quantityPriceEnabled = false;
+
+    /**
      * @var string
      */
     protected $quantityPriceDescriptor;
@@ -81,6 +88,9 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 
     public function hasQuantityPrices()
     {
+        if (!$this->getQuantityPriceEnabled()) {
+            return false;
+        }
         $result = $this->getQuantityPrices();
 
         return !empty($result);

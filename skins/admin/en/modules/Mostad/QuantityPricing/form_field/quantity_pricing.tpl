@@ -1,8 +1,8 @@
 <div class="tooltip-main">
     <a class="tooltip-caption" href="{getLink()}">
-        <img  src="http://placehold.it/20x20" alt="" />
+        Edit Quantity Pricing
     </a>
     <div class="help-text" style="display: none;">
-        Words about words for words
+        Set up prices based on quantity for products and their variants.
     </div>
 </div>

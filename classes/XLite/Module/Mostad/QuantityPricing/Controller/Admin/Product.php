@@ -31,8 +31,9 @@ abstract class Product extends \XLite\Controller\Admin\Product implements \XLite
     {
         $list = parent::getPages();
 
-        if (!$this->isNew()) {
+        if (!$this->isNew() && $this->getProduct()->getQuantityPriceEnabled()) {
             $list['quantity_pricing'] = 'Quantity pricing';
+            unset($list['wholesale_pricing']);
         }
 
         return $list;
@@ -47,8 +48,9 @@ abstract class Product extends \XLite\Controller\Admin\Product implements \XLite
     {
         $list = parent::getPageTemplates();
 
-        if (!$this->isNew()) {
+        if (!$this->isNew() && $this->getProduct()->getQuantityPriceEnabled()) {
             $list['quantity_pricing'] = 'modules/Mostad/QuantityPricing/tabs/product.tpl';
+            unset($list['wholesale_pricing']);
         }
 
         return $list;
