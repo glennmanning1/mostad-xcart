@@ -38,4 +38,13 @@ class WholesaleClassPricingSet extends \XLite\Module\NovaHorizons\WholesaleClass
         return $this->quantityPrices;
     }
 
+    public function hasQuantityPrices()
+    {
+
+        $result = $this->getQuantityPrices();
+
+        return !empty($result);
+
+    }
+
 }

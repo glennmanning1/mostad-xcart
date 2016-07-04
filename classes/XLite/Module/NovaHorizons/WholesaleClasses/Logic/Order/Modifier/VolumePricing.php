@@ -113,7 +113,7 @@ class VolumePricing extends \XLite\Logic\Order\Modifier\AModifier
 
             $surcharge->setName($pricingSets[$classId]->getName() . " volume price");
 
-            $surchages[] = $surcharge;
+            $surcharges[] = $surcharge;
         }
 
         return $surcharges;

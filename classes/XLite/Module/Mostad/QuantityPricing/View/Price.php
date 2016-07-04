@@ -59,6 +59,10 @@ class Price extends \XLite\View\Price implements \XLite\Base\IDecorator
             parent::getProductVariant();
         }
 
+        if (!$this->productVariant) {
+            return null;
+        }
+
         $this->productVariant->setCurrentQuantity($this->getParam(static::PARAM_QUANTITY));
 
         return $this->productVariant;

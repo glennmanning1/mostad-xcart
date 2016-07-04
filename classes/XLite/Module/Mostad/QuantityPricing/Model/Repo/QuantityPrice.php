@@ -30,6 +30,7 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
      */
     const P_MODEL_ID   = 'modelId';
     const P_MODEL_TYPE = 'modelType';
+    const P_QUANTITY   = 'quantity';
 
     /**
      * @return string
@@ -47,6 +48,17 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
      */
     public function search(\XLite\Core\CommonCell $cnd, $countOnly = false)
     {
+        $queryBuilder = $this->getAndPrepareQueryBuilder($cnd);
+
+        $queryBuilder->orderBy('q.quantity');
+
+        return $countOnly
+            ? $this->searchCount($queryBuilder)
+            : $this->searchResult($queryBuilder);
+    }
+
+    protected function getAndPrepareQueryBuilder(\XLite\Core\CommonCell $cnd)
+    {
         $queryBuilder = $this->createQueryBuilder('q');
         $this->currentSearchCnd = $cnd;
 
@@ -54,11 +66,7 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
             $this->callSearchConditionHandler($value, $key, $queryBuilder, $countOnly);
         }
 
-        $queryBuilder->orderBy('q.quantity');
-
-        return $countOnly
-            ? $this->searchCount($queryBuilder)
-            : $this->searchResult($queryBuilder);
+        return $queryBuilder;
     }
 
     /**
@@ -113,6 +121,7 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
        return array(
            static::P_MODEL_TYPE,
            static::P_MODEL_ID,
+           static::P_QUANTITY,
        );
     }
 
@@ -140,5 +149,29 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
             $queryBuilder->andWhere('q.modelType = :modelType')
                 ->setParameter('modelType', $value);
         }
+    }
+
+    protected function prepareCndQuantity(\Doctrine\ORM\QueryBuilder $queryBuilder, $value, $countOnly)
+    {
+        if (!empty($value)) {
+            $queryBuilder->andWhere('q.quantity = :quantity')
+                ->setParameter('quantity', $value);
+        }
+
+    }
+
+    public function getPriceBySetAndQuantity($wholesalePricingSet, $quantity)
+    {
+
+        $cnd = new \XLite\Core\CommonCell();
+        $cnd->{static::P_MODEL_ID}   = $wholesalePricingSet->getId();
+        $cnd->{static::P_MODEL_TYPE} = 'XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet';
+        $cnd->{static::P_QUANTITY}   = $quantity;
+
+        $queryBuilder = $this->getAndPrepareQueryBuilder($cnd);
+
+        $result = $queryBuilder->getQuery()->getOneOrNullResult();
+
+        return $result ? $result->getPrice() : 0;
     }
 }
