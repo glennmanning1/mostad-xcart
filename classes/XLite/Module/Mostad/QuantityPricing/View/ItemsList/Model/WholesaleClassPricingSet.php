@@ -34,9 +34,10 @@ class WholesaleClassPricingSet extends \XLite\Module\NovaHorizons\WholesaleClass
         return $list;
     }
 
-    protected function getEditQuantityPricingURL()
+    protected function getEditQuantityPricingURL($entity)
     {
-        return $this->buildURL();
+        //wholesale_class_price&pricing_set_id=2&page=quantity_pricing
+        return $entity ? $this->buildURL('wholesale_class_price', null, array('pricing_set_id' => $entity->getId(), 'page' => 'quantity_pricing')) : null;
     }
 
 }
