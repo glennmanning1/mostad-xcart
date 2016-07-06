@@ -93,10 +93,10 @@ abstract class Main extends \XLite\Module\AModule
             'product/quantity_box/parts/quantity_box.tpl' => array(
                array('product.quantity-box', 'customer'),
             ),
-            /*'modules/CDev/Wholesale/product_price/parts/block-parts/price.tpl' => array(
+            'modules/CDev/Wholesale/product_price/parts/block-parts/price.tpl' => array(
                 array('wholesale.price.widgetlist', 'customer'),
             ),
-            'modules/CDev/Wholesale/product_price/parts/price-block.tpl' => array(
+            /*'modules/CDev/Wholesale/product_price/parts/price-block.tpl' => array(
                 array('wholesale.price', 'customer'),
             ),
             'modules/CDev/Wholesale/product_price/parts/block-parts/save-price.tpl' => array(

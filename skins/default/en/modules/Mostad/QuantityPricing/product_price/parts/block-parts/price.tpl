@@ -1,12 +1,11 @@
 {**
- * @ListChild (list="wholesale.classes.price.widgetlist", weight="40")
+ * @ListChild (list="wholesale.price.widgetlist", weight="40")
  *}
 
 <td>
-  <span class="price-value">{formatPrice(wholesaleClassPrice.getDisplayPrice(),null,1):h}</span>
-    blerb
+  <span class="price-value">{formatPrice(wholesalePrice.getDisplayPrice(),null,1):h}</span>
     {if:!hasQuantityPricing()}
         <span class="price-label">/ {t(#each#)}</span>
-    {e}
+    {end:}
 </td>
 
