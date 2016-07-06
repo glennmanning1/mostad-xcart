@@ -33,6 +33,10 @@ class WholesaleClassPricingSet extends \XLite\Module\NovaHorizons\WholesaleClass
 
             $this->quantityPrices = \XLite\Core\Database::getRepo('XLite\Module\Mostad\QuantityPricing\Model\QuantityPrice')
                 ->search($cnd, false);
+
+            foreach ($this->quantityPrices as $quantityPrice) {
+                $quantityPrice->setModel($this);
+            }
         }
 
         return $this->quantityPrices;

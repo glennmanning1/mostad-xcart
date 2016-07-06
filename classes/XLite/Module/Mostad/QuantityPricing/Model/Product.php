@@ -54,6 +54,10 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 
             $this->quantityPrices = \XLite\Core\Database::getRepo('XLite\Module\Mostad\QuantityPricing\Model\QuantityPrice')
                 ->search($cnd, false);
+
+            foreach ($this->quantityPrices as $quantityPrice) {
+                $quantityPrice->setModel($this);
+            }
         }
         
         return $this->quantityPrices;

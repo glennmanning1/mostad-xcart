@@ -9,7 +9,9 @@
                 <tr>
                     <th>Quantity</th>
                     <th>Price</th>
+                    {if:!hasQuantityPricing()}
                     <th>Savings each</th>
+                    {end:}
                 </tr>
             </thead>
             <tbody>

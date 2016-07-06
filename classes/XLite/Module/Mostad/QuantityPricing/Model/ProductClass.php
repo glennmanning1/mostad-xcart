@@ -25,7 +25,7 @@ class ProductClass extends \XLite\Model\ProductClass implements \XLite\Base\IDec
     
     public function getWholesaleQuantityPrices()
     {
-        if (!$this->wholesaleQuantityPrices) {
+        if (!$this->wholesaleQuantityPrices && $this->getWholesalePricingSet()) {
             $this->wholesaleQuantityPrices = $this->getWholesalePricingSet()->getQuantityPrices();
         }
 

@@ -39,6 +39,10 @@ class ProductVariant extends \XLite\Module\XC\ProductVariants\Model\ProductVaria
 
             $this->quantityPrices = \XLite\Core\Database::getRepo('XLite\Module\Mostad\QuantityPricing\Model\QuantityPrice')
                 ->search($cnd, false);
+
+            foreach ($this->quantityPrices as $quantityPrice) {
+                $quantityPrice->setModel($this);
+            }
         }
 
         return $this->quantityPrices;

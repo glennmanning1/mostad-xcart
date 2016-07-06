@@ -86,5 +86,32 @@ class QuantityPrice extends \XLite\Model\AEntity
         $this->setModelType(get_class($model));
 
         return $this;
-    }    
+    }
+
+    public function getDisplayPrice()
+    {
+        return $this->price;
+    }
+
+    public function getQuantityRangeBegin()
+    {
+        return $this->quantity;
+    }
+
+    public function getQuantityRangeEnd()
+    {
+        return $this->quantity;
+    }
+
+    public function getSavePriceValue()
+    {
+        $basePrice = $this->getModel()->getBasePrice();
+        $qtyPrice = $this->price / $this->quantity;
+
+        if ($basePrice > 0 && $qtyPrice > 0 && $basePrice != $qtyPrice) {
+            return number_format(($qtyPrice/ $basePrice) * 100);
+        }
+
+        return 0;
+    }
 }
