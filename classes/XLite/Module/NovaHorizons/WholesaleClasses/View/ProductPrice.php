@@ -19,38 +19,47 @@
 namespace XLite\Module\NovaHorizons\WholesaleClasses\View;
 
 
-class ProductPrice extends \XLite\View\Product\Details\Customer\Widget
+class ProductPrice extends \XLite\Module\CDev\Wholesale\View\ProductPrice implements \XLite\Base\IDecorator
 {
     protected $wholesalePrices = null;
 
-    /**
-     * Return the specific widget service name to make it visible as specific CSS class
-     *
-     * @return null|string
-     */
-    public function getFingerprint()
-    {
-        return 'widget-fingerprint-product-wholesale-class-prices';
-    }
-    
-    protected function getDefaultTemplate()
-    {
-        return 'modules/NovaHorizons/WholesaleClasses/product_price/body.tpl';
-    }
+//    /**
+//     * Return the specific widget service name to make it visible as specific CSS class
+//     *
+//     * @return null|string
+//     */
+//    public function getFingerprint()
+//    {
+//        return 'widget-fingerprint-product-wholesale-class-prices';
+//    }
+//
+//    protected function getDefaultTemplate()
+//    {
+//        return 'modules/NovaHorizons/WholesaleClasses/product_price/body.tpl';
+//    }
 
     protected function defineWholesalePrices()
     {
-        return \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
-            ->getWholesalePrices($this->getProduct());
-    }
-
-    protected function getWholesaleClassPrices()
-    {
-        if (!$this->wholesalePrices) {
-            $this->wholesalePrices = $this->defineWholesalePrices();
+        if ($this->getProduct()->getProductClass()->isWholesalePriceClass()) {
+            return \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
+                ->getWholesalePrices($this->getProduct());
         }
 
-        return $this->wholesalePrices;
+        return parent::defineWholesalePrices();
+    }
+
+    protected function getWholesalePrices()
+    {
+        if ($this->getProduct()->getProductClass()->isWholesalePriceClass()) {
+
+            if (!$this->wholesalePrices) {
+                $this->wholesalePrices = $this->defineWholesalePrices();
+            }
+            return $this->wholesalePrices;
+        }
+
+        return parent::getWholesalePrices();
+
     }
 
 
