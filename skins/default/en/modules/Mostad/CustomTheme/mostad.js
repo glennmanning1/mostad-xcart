@@ -55,8 +55,19 @@ core.registerTriggersBind(
 core.registerTriggersBind(
     'update-product-page',
     function(product) {
+        cleanupDialogs();
         bindDialogs();
     });
+
+function cleanupDialogs() {
+    $('.dialog-target:not(.ui-dialog-content)').each(function(index, element){
+        var id = $(element).attr('id');
+        if (typeof id  == 'string') {
+            $("[id='"+id+"'].ui-dialog-content").remove();
+        }
+
+    });
+}
 
 
 function bindDialogs() {
