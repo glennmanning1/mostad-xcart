@@ -55,5 +55,15 @@ class QuantityPricing extends \XLite\View\AView
     {
         return 'modules/Mostad/QuantityPricing/page/quantity_pricing/body.tpl';
     }
+    
+    public function getCSSFiles()
+    {
+        return array_merge(
+            parent::getCSSFiles(),
+            array(
+                'modules/Mostad/QuantityPricing/styles/style.css',
+            )
+        );
+    }
 
 }
