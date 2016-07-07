@@ -13,7 +13,11 @@
     <h3 class="title">Import From CSV</h3>
     <div class="description">
         <p>
-
+            CSV should contain at least two columns, separated by the pipe character "<code>|</code>" and no headers.  First column should be the SKU of the product or variant,
+            or the name of the Wholesale Class Pricing Set. The second column should be a string of comma separated
+            quantity price sets, where the price is the per piece price of the item.
+            <code>25:13.840,50:9.608,75:8.332</code>
+            This program will floor the price.
         </p>
     </div>
 </div>
@@ -37,7 +41,14 @@
 
 <h3 class="title">Export to CSV</h3>
 <div class="description">
-    <p>CSV should contain two columns and no headers. First column should be the Target URL, second column should be
-        the Path that the user should be redirected to. Any other columns are ignored.</p>
+    <p>
+        Export of all the current quantity pricing for ease of updating.
+    </p>
 </div>
+<div class="quantity_pricing_export">
+    <widget class="\XLite\Module\Mostad\QuantityPricing\View\Form\CsvExport" name="csv_export" />
 
+      <widget class="\XLite\View\Button\Submit" style="upload-restore" label="Export" />
+
+    <widget name="csv_export" end />
+</div>

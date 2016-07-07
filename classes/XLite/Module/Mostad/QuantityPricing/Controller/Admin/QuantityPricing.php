@@ -28,7 +28,9 @@
  */
 
 namespace XLite\Module\Mostad\QuantityPricing\Controller\Admin;
+
 use XLite\Module\Mostad\QuantityPricing\Model\QuantityPrice;
+use XLite\Module\Mostad\QuantityPricing\Model\WholesaleClassPricingSet;
 
 /**
  * Quantity pricing controller
@@ -38,7 +40,7 @@ class QuantityPricing extends \XLite\Controller\Admin\AAdmin
     public function doActionImport()
     {
         // Check uploaded file with SQL data
-        if (isset($_FILES['userfile']) && !empty($_FILES['userfile']['tmp_name']) ) {
+        if (isset($_FILES['userfile']) && !empty($_FILES['userfile']['tmp_name'])) {
 
             $sqlFile = LC_DIR_TMP . sprintf('quantity.pricing.uploaded.%d.sql', \XLite\Core\Converter::time());
 
@@ -53,16 +55,16 @@ class QuantityPricing extends \XLite\Controller\Admin\AAdmin
             if ($_POST['import_mode'] == 'replace') {
                 $connection = \XLite\Core\Database::getEM()->getConnection();
                 $dbPlatform = $connection->getDatabasePlatform();
-                $q = $dbPlatform->getTruncateTableSql($repo->getTableName());
+                $q          = $dbPlatform->getTruncateTableSql($repo->getTableName());
                 $connection->executeQuery($q);
             }
 
-            $skipped = [];
-            $prices = [];
+            $skipped     = [];
+            $prices      = [];
             $totalPrices = 0;
-            $processed = [];
-            if (($handle = fopen($sqlFile, "r")) !== FALSE) {
-                while (($data = fgetcsv($handle, 1000, "|")) !== FALSE) {
+            $processed   = [];
+            if (($handle = fopen($sqlFile, "r")) !== false) {
+                while (($data = fgetcsv($handle, 1000, "|")) !== false) {
 
                     if (count($data) != 6 || empty($data[0]) || empty($data[1])) {
                         $skipped[] = $data;
@@ -74,12 +76,14 @@ class QuantityPricing extends \XLite\Controller\Admin\AAdmin
 
                     // check for a variant by sku
                     if (!$model) {
-                        $model = \XLite\Core\Database::getRepo('XLite\Module\XC\ProductVariants\Model\ProductVariant')->findOneBySku($data[0]);
+                        $model = \XLite\Core\Database::getRepo('XLite\Module\XC\ProductVariants\Model\ProductVariant')
+                            ->findOneBySku($data[0]);
                     }
 
                     // check for a product class by name
                     if (!$model) {
-                        $model = \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')->findOneByName($data[0]);
+                        $model = \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
+                            ->findOneByName($data[0]);
                     }
 
                     if (empty($model)) {
@@ -89,19 +93,19 @@ class QuantityPricing extends \XLite\Controller\Admin\AAdmin
 
                     $priceData = (explode(',', $data[1]));
 
-                    if (count($priceData) < 2){
+                    if (count($priceData) < 2) {
                         continue;
                     }
 
-                    if (isset($processed[$data[0]])) {
+                    if (isset($processed[ $data[0] ])) {
                         continue;
                     } else {
-                        $processed[$data[0]] = true;
+                        $processed[ $data[0] ] = true;
                     }
 
                     foreach ($priceData as $key => $item) {
                         $priceParts = explode(':', $item);
-                        $price = new QuantityPrice();
+                        $price      = new QuantityPrice();
                         $price->setModel($model);
                         $price->setQuantity($priceParts[0]);
                         $price->setPrice(floor($priceParts[0] * $priceParts[1]));
@@ -125,7 +129,7 @@ class QuantityPricing extends \XLite\Controller\Admin\AAdmin
                 $repo->insertInBatch($prices);
             }
 
-            \XLite\Core\TopMessage::addInfo("$totalPrices prices added, ".count($skipped)." skipped due to errors");
+            \XLite\Core\TopMessage::addInfo("$totalPrices prices added, " . count($skipped) . " skipped due to errors");
 
             $this->redirect();
             exit (0);
@@ -134,6 +138,47 @@ class QuantityPricing extends \XLite\Controller\Admin\AAdmin
 
     public function doActionExport()
     {
+        $prices    = \XLite\Core\Database::getRepo('\XLite\Module\Mostad\QuantityPricing\Model\QuantityPrice')
+            ->findAll();
+        $priceRows = [];
+
+        /** @var QuantityPrice $price */
+        foreach ($prices as $price) {
+            $model = \XLite\Core\Database::getRepo($price->getModelType())->find($price->getModelId());
+
+            if ($model instanceof \XLite\Module\Mostad\QuantityPricing\Model\WholesaleClassPricingSet) {
+                $sku = $model->getName();
+            } else {
+                $sku = $model->getSku();
+            }
+
+            if (!isset($priceRows[ $sku ])) {
+                $priceRows[ $sku ] = [];
+            }
+
+            $priceRows[ $sku ][] = $price->getQuantity().":".number_format($price->getPrice()/$price->getQuantity(), 4);
+
+        }
+        
+        $name = 'quantity-prices-' . microtime() . '.csv';
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename=' . $name);
+        header('Pragma: no-cache');
+        header("Expires: 0");
+
+        $outstream = fopen("php://output", "w");
+
+        foreach ($priceRows as $sku => $row) {
+            $result = [
+                $sku,
+                implode(',', $row),
+            ];
+            fputcsv($outstream, $result, "|");
+        }
+
+        fclose($outstream);
+        exit (0);
         
     }
 }
