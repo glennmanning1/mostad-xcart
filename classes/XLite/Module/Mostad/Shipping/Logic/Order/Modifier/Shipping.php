@@ -33,7 +33,7 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
 
     protected $itemCount;
 
-    protected $excludeBaseShipping = true;
+    protected $excludeBaseShipping = false;
 
     /**
      * Calculate and return added surcharge or array of surcharges
@@ -65,7 +65,7 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
                     && $item->getProduct()->getShippable()
                     && !$item->getProduct()->getFreeShipping()
                 ) {
-                    $this->excludeBaseShipping = false;
+                    $this->excludeBaseShipping = true;
                 }
                 continue;
             }
