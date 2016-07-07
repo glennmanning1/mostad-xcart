@@ -49,6 +49,6 @@ class QuantityPricing extends \XLite\View\AView
      */
     protected function getDefaultTemplate()
     {
-        return 'modules/Mostad/QuantityPricing/pages/quantity_pricing.tpl';
+        return 'modules/Mostad/QuantityPricing/page/quantity_pricing.tpl';
     }
 }

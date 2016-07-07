@@ -83,7 +83,11 @@ class QuantityPrice extends \XLite\Model\AEntity
 
         $this->setModelId($model->getId());
 
-        $this->setModelType(get_class($model));
+        $class = get_class($model);
+
+        $class = str_replace('XLite\Model\Proxy\__CG__\\', '', $class);
+
+        $this->setModelType($class);
 
         return $this;
     }

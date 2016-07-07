@@ -26,8 +26,8 @@ class WholesaleClassPricingSet extends \XLite\Module\NovaHorizons\WholesaleClass
         $list = parent::defineColumns();
 
         $list['quantity_pricing'] = [
-            static::COLUMN_TEMPLATE      => 'modules/Mostad/QuantityPricing/pages/wholesale_class_pricing_set/parts/edit_quantity_pricing.tpl',
-            static::COLUMN_HEAD_TEMPLATE => 'modules/Mostad/QuantityPricing/pages/wholesale_class_pricing_set/parts/quantity_pricing_header.tpl',
+            static::COLUMN_TEMPLATE      => 'modules/Mostad/QuantityPricing/page/wholesale_class_pricing_set/parts/edit_quantity_pricing.tpl',
+            static::COLUMN_HEAD_TEMPLATE => 'modules/Mostad/QuantityPricing/page/wholesale_class_pricing_set/parts/quantity_pricing_header.tpl',
             static::COLUMN_ORDERBY       => 400,
         ];
 

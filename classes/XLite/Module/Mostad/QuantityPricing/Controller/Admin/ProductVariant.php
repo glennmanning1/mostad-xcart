@@ -33,7 +33,7 @@ class ProductVariant extends \XLite\Module\XC\ProductVariants\Controller\Admin\P
     protected function getPageTemplates()
     {
         $list = parent::getPageTemplates();
-        $list[static::PAGE_QUANTITY_PRICING] = 'modules/Mostad/QuantityPricing/pages/quantity_pricing.tpl';
+        $list[static::PAGE_QUANTITY_PRICING] = 'modules/Mostad/QuantityPricing/page/quantity_pricing.tpl';
         
         return $list;
     }
