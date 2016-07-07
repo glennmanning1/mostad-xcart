@@ -18,6 +18,7 @@
 
 namespace XLite\Module\Mostad\ImprintingInformation\Model;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
@@ -113,11 +114,16 @@ class Imprinting extends \XLite\Model\AEntity
     protected $onlineWebsite;
 
     /**
+     * @var bool
+     * @Column(name="online_add_logo", type="boolean")
+     */
+    protected $onlineAddLogo = false;
+
+    /**
      * @var boolean
      * @Column(name="online_add_to_site", type="boolean")
      */
     protected $onlineAddToSite = false;
-
     /**
      * @var boolean
      * @Column(type="boolean")

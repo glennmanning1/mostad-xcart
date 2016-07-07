@@ -1,0 +1,2 @@
+XLite\Model\Order\Modifier:
+    - { class: '\XLite\Module\Mostad\ImprintingInformation\Logic\Order\Modifier\Imprinting', weight: 100 }
