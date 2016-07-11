@@ -40,7 +40,7 @@ class ProductPrice extends \XLite\Module\CDev\Wholesale\View\ProductPrice implem
 
     protected function defineWholesalePrices()
     {
-        if ($this->getProduct()->getProductClass()->isWholesalePriceClass()) {
+        if ($this->getProduct()->getProductClass() && $this->getProduct()->getProductClass()->isWholesalePriceClass()) {
             return \XLite\Core\Database::getRepo('XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet')
                 ->getWholesalePrices($this->getProduct());
         }
@@ -50,7 +50,7 @@ class ProductPrice extends \XLite\Module\CDev\Wholesale\View\ProductPrice implem
 
     protected function getWholesalePrices()
     {
-        if ($this->getProduct()->getProductClass()->isWholesalePriceClass()) {
+        if ($this->getProduct()->getProductClass() && $this->getProduct()->getProductClass()->isWholesalePriceClass()) {
 
             if (!$this->wholesalePrices) {
                 $this->wholesalePrices = $this->defineWholesalePrices();

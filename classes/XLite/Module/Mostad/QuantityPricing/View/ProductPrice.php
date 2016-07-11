@@ -52,7 +52,7 @@ class ProductPrice extends \XLite\Module\CDev\Wholesale\View\ProductPrice implem
             }
         }
 
-         if ($this->getProduct()->getProductClass()->hasWholesaleQuantityPricing()) {
+         if ($this->getProduct()->getProductClass() && $this->getProduct()->getProductClass()->hasWholesaleQuantityPricing()) {
             $this->quantityPricing = $this->getProduct()->getProductClass()->getWholesaleQuantityPrices();
         }
 
