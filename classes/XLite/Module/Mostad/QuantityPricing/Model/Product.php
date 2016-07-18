@@ -18,7 +18,9 @@
 
 namespace XLite\Module\Mostad\QuantityPricing\Model;
 
-
+/**
+ * @LC_Dependencies ("CDev\Wholesale")
+ */
 class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 {
 
@@ -150,4 +152,35 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
         return false;
     }
 
+    public function isWholesalePricesEnabled()
+    {
+        if ($this->hasQuantityPrices()) {
+            return false;
+        }
+
+        return parent::isWholesalePricesEnabled();
+    }
+
+
+    /**
+     * Set quantityPriceEnabled
+     *
+     * @param boolean $quantityPriceEnabled
+     * @return Product
+     */
+    public function setQuantityPriceEnabled($quantityPriceEnabled)
+    {
+        $this->quantityPriceEnabled = $quantityPriceEnabled;
+        return $this;
+    }
+
+    /**
+     * Get quantityPriceEnabled
+     *
+     * @return boolean 
+     */
+    public function getQuantityPriceEnabled()
+    {
+        return $this->quantityPriceEnabled;
+    }
 }

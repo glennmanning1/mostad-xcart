@@ -18,7 +18,9 @@
 
 namespace XLite\Module\Mostad\QuantityPricing\Model;
 
-
+/**
+ * @LC_Dependencies ("CDev\Wholesale", "XC\ProductVariants")
+ */
 class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
 {
     protected $quantityPrice;
@@ -66,6 +68,29 @@ class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
 
     }
 
+    /**
+     * @return float
+     */
+    public function getClearPrice()
+    {
+        $this->setQuantityPriceValues();
+
+        return parent::getClearPrice();
+    }
+
+
+    /**
+     * 
+     */
+    protected function setQuantityPriceValues()
+    {
+        $this->getProduct()->setCurrentQuantity($this->getAmount());
+
+        if ($this->getVariant()) {
+            $this->getVariant()->setCurrentQuantity($this->getAmount());
+        }
+    }
+
 //    public function setPrice($price)
 //    {
 //        if ($this->getQuantityPrice()) {
@@ -79,7 +104,4 @@ class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
 //
 //        return $this;
 //    }
-
-
-
 }

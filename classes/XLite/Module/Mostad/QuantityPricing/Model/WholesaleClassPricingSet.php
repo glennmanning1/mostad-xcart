@@ -18,7 +18,9 @@
 
 namespace XLite\Module\Mostad\QuantityPricing\Model;
 
-
+/**
+ * @LC_Dependencies ("CDev\Wholesale", "NovaHorizons\WholesaleClasses")
+ */
 class WholesaleClassPricingSet extends \XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet implements \XLite\Base\IDecorator
 {
     protected $quantityPrices;

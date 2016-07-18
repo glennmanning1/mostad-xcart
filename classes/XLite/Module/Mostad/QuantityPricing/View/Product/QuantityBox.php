@@ -48,6 +48,9 @@ class QuantityBox extends \XLite\View\Product\QuantityBox implements \XLite\Base
 
     protected function isSelectBox()
     {
+        if (!$this->getProduct()->getQuantityPriceEnabled()) {
+            return false;
+        }
         $quantityPrices = $this->getQuantityPrices();
         return !empty($quantityPrices);
     }
