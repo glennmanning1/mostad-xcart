@@ -21,7 +21,7 @@ namespace XLite\Module\Mostad\Shipping\Logic\Order\Modifier;
 
 class Shipping extends \XLite\Logic\Order\Modifier\Shipping
 {
-    protected $productClassData = array();
+    protected $productClassData = [];
 
     protected $additionalShipping;
 
@@ -35,6 +35,8 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
 
     protected $excludeBaseShipping = false;
 
+    protected $hasStandardItems = false;
+
     /**
      * Calculate and return added surcharge or array of surcharges
      *
@@ -44,7 +46,7 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
     {
         $this->additionalShipping = 0;
 
-        $this->productClassData = array();
+        $this->productClassData = [];
 
         $this->itemCount = 0;
 
@@ -57,34 +59,35 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
             // If we don't have a product class, bounce.
             // If we're not shippable, bounce.
             // If we are shippable, but have free shipping set up, bounce.
-            if (empty($productClass)
-                || !$item->getProduct()->getShippable()
+            if (
+                !$item->getProduct()->getShippable()
                 || ($item->getProduct()->getShippable() && $item->getProduct()->getFreeShipping())
             ) {
-                if (empty($productClass)
-                    && $item->getProduct()->getShippable()
-                    && !$item->getProduct()->getFreeShipping()
-                ) {
-                    $this->excludeBaseShipping = true;
-                }
+                $this->excludeBaseShipping = true;
+                continue;
+            }
+
+            if (empty($productClass)) {
+                $this->hasStandardItems = true;
                 continue;
             }
 
             $productClassId = $productClass->getId();
 
-            if (!isset($this->productClassData[$productClassId])) {
-                $this->productClassData[$productClassId] = array(
+            if (!isset($this->productClassData[ $productClassId ])) {
+                $this->productClassData[ $productClassId ]         = [
                     'quantity' => 0,
-                );
-                $this->productClassData[$productClassId]['skus'] = array();
+                ];
+                $this->productClassData[ $productClassId ]['skus'] = [];
 
             }
 
-            $this->productClassData[$productClassId]['quantity'] += $item->getAmount();
+            $this->productClassData[ $productClassId ]['quantity'] += $item->getAmount();
 
             $attrValues = $item->getProduct()->getAttrValues();
 
-            $this->productClassData[$productClassId]['skus'][$item->getProduct()->getSku()] = $item->getAttributeValuesAsString();
+            $this->productClassData[ $productClassId ]['skus'][ $item->getProduct()
+                ->getSku() ] = $item->getAttributeValuesAsString();
 
         }
 
@@ -110,11 +113,15 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
     {
         $chocolateProductClass = \XLite\Core\Config::getInstance()->Mostad->Shipping->chocolates_class;
 
-        if (empty($chocolateProductClass) || !isset($this->productClassData[$chocolateProductClass])) {
+        if (empty($chocolateProductClass) || !isset($this->productClassData[ $chocolateProductClass ])) {
             return;
         }
 
-        $quantity = $this->productClassData[$chocolateProductClass]['quantity'];
+        $quantity = $this->productClassData[ $chocolateProductClass ]['quantity'];
+
+        if ($quantity == $this->itemCount) {
+            $this->excludeBaseShipping = true;
+        }
 
         if ($quantity <= 3) {
             $this->additionalShipping += 19.00;
@@ -130,14 +137,18 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
     {
         $newsletterProductClass = \XLite\Core\Config::getInstance()->Mostad->Shipping->newsletter_class;
 
-        if (empty($newsletterProductClass) || !isset($this->productClassData[$newsletterProductClass])) {
+        if (empty($newsletterProductClass) || !isset($this->productClassData[ $newsletterProductClass ])) {
             return;
         }
 
-        $quantity = $this->productClassData[$newsletterProductClass]['quantity'];
+        $quantity = $this->productClassData[ $newsletterProductClass ]['quantity'];
+
+        if ($quantity == $this->itemCount) {
+            $this->excludeBaseShipping = true;
+        }
 
         if ($quantity > 0) {
-            $this->additionalShipping += (60 * count($this->productClassData[$newsletterProductClass]['skus']));
+            $this->additionalShipping += (60 * count($this->productClassData[ $newsletterProductClass ]['skus']));
         }
     }
 
@@ -149,15 +160,19 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
     {
         $tplProductClass = \XLite\Core\Config::getInstance()->Mostad->Shipping->planning_letters_class;
 
-        if (empty($tplProductClass) || !isset($this->productClassData[$tplProductClass])) {
+        if (empty($tplProductClass) || !isset($this->productClassData[ $tplProductClass ])) {
             return;
         }
 
-        $quantity = $this->productClassData[$tplProductClass]['quantity'];
+        $quantity = $this->productClassData[ $tplProductClass ]['quantity'];
+
+        if ($quantity == $this->itemCount) {
+            $this->excludeBaseShipping = true;
+        }
 
         if ($quantity > 0) {
             $issueCount = 0;
-            foreach ($this->productClassData[$tplProductClass]['skus'] as $sku => $attrString) {
+            foreach ($this->productClassData[ $tplProductClass ]['skus'] as $sku => $attrString) {
                 preg_match('`.*(\d+)\sIssues.*`', $attrString, $matches);
 
                 if (isset($matches[1])) {
@@ -174,9 +189,10 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
      */
     protected function checkDefaultShipping()
     {
-
-        if ($this->excludeBaseShipping && $this->additionalShipping > 15) {
-            $this->additionalShipping -= 15;
+        if ($this->additionalShipping > 15) {
+            if ($this->excludeBaseShipping || !$this->hasStandardItems) {
+                $this->additionalShipping -= 15;
+            }
         }
     }
 }
