@@ -136,4 +136,13 @@ class ProductVariant extends \XLite\Module\XC\ProductVariants\Model\ProductVaria
         return  \XLite\Module\XC\ProductVariants\Model\ProductVariantAbstract::getClearPrice();
     }
 
+    public function getLowestPrice()
+    {
+        if ($this->hasQuantityPrices()) {
+            return $this->getLowestQuantityPrice() / $this->getLowestQuantity();
+        }
+
+        return $this->getClearPrice();
+    }
+
 }

@@ -116,7 +116,7 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 
     public function getLowestQuantityPrice()
     {
-        if (!$this->lowestQuantityPrice()) {
+        if (!$this->lowestQuantityPrice) {
             $this->setLowestValues();
         }
 
@@ -182,5 +182,14 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
     public function getQuantityPriceEnabled()
     {
         return $this->quantityPriceEnabled;
+    }
+
+    public function getLowestPrice()
+    {
+        if ($this->hasQuantityPrices()) {
+            return $this->getLowestQuantityPrice() / $this->getLowestQuantity();
+        }
+
+        return parent::getPrice();
     }
 }

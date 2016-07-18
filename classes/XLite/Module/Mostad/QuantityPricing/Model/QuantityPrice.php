@@ -109,11 +109,11 @@ class QuantityPrice extends \XLite\Model\AEntity
 
     public function getSavePriceValue()
     {
-        $basePrice = $this->getModel()->getBasePrice();
+        $basePrice = $this->getModel()->getLowestPrice();
         $qtyPrice = $this->price / $this->quantity;
 
         if ($basePrice > 0 && $qtyPrice > 0 && $basePrice != $qtyPrice) {
-            return number_format(($qtyPrice/ $basePrice) * 100);
+            return number_format((1 - ($qtyPrice/ $basePrice)) * 100);
         }
 
         return 0;

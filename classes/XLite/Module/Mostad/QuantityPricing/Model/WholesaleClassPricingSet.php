@@ -24,6 +24,8 @@ namespace XLite\Module\Mostad\QuantityPricing\Model;
 class WholesaleClassPricingSet extends \XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet implements \XLite\Base\IDecorator
 {
     protected $quantityPrices;
+    protected $lowestQuantityPrice;
+    protected $lowestQuantity;
 
 
     public function getQuantityPrices()
@@ -51,6 +53,42 @@ class WholesaleClassPricingSet extends \XLite\Module\NovaHorizons\WholesaleClass
 
         return !empty($result);
 
+    }
+
+    public function getLowestPrice()
+    {
+        if ($this->hasQuantityPrices()) {
+            return $this->getLowestQuantityPrice() / $this->getLowestQuantity();
+        }
+
+        return $this->getBasePrice();
+    }
+
+    public function getLowestQuantityPrice()
+    {
+        if (!$this->lowestQuantityPrice) {
+            $this->setLowestValues();
+        }
+
+        return $this->lowestQuantityPrice;
+    }
+
+    public function getLowestQuantity()
+    {
+        if (!$this->lowestQuantity) {
+            $this->setLowestValues();
+        }
+        return $this->lowestQuantity;
+    }
+
+    protected function setLowestValues()
+    {
+        foreach ($this->getQuantityPrices() as $quantityPrice) {
+            if ($this->lowestQuantity === null || $quantityPrice->getQuantity > $this->lowestQuantity) {
+                $this->lowestQuantity = $quantityPrice->getQuantity();
+                $this->lowestQuantityPrice = $quantityPrice->getPrice();
+            }
+        }
     }
 
 }
