@@ -128,6 +128,8 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
         } else {
             $this->additionalShipping += 32.00;
         }
+
+        unset($this->productClassData[ $chocolateProductClass ]);
     }
 
     /**
@@ -150,6 +152,8 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
         if ($quantity > 0) {
             $this->additionalShipping += (60 * count($this->productClassData[ $newsletterProductClass ]['skus']));
         }
+
+        unset($this->productClassData[ $newsletterProductClass ]);
     }
 
     /**
@@ -182,6 +186,8 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
 
             $this->additionalShipping += (15 * $issueCount);
         }
+
+        unset($this->productClassData[ $tplProductClass ]);
     }
 
     /**
@@ -189,6 +195,10 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
      */
     protected function checkDefaultShipping()
     {
+        if (!empty($this->productClassData)) {
+            $this->hasStandardItems = true;
+        }
+
         if ($this->additionalShipping > 15) {
             if ($this->excludeBaseShipping || !$this->hasStandardItems) {
                 $this->additionalShipping -= 15;
