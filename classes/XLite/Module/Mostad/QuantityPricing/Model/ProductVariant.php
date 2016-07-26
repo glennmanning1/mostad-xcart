@@ -145,4 +145,18 @@ class ProductVariant extends \XLite\Module\XC\ProductVariants\Model\ProductVaria
         return $this->getClearPrice();
     }
 
+    public function getDisplayPrice()
+    {
+        if ($this->getDefaultPrice()) {
+            return $this->getProduct()->getDisplayPrice();
+        }
+
+        if ($this->hasQuantityPrices()) {
+            return $this->getLowestQuantityPrice();
+        }
+
+        return parent::getDisplayPrice();
+
+    }
+
 }

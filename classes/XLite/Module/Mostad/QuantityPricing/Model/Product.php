@@ -192,4 +192,14 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 
         return parent::getPrice();
     }
+
+    public function getDisplayPrice()
+    {
+        if ($this->hasQuantityPrices()) {
+            return $this->getLowestQuantityPrice();
+        }
+
+        return parent::getDisplayPrice();
+
+    }
 }
