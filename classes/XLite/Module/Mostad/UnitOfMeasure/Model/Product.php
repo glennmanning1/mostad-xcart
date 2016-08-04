@@ -49,7 +49,7 @@ class Product extends \XLite\Model\Product implements \XLite\Base\IDecorator
 
     /**
      * @var string
-     * @Column(name="friendly_descriptor", type="string")
+     * @Column(name="friendly_descriptor", type="string", nullable=true)
      */
     protected $friendlyDescriptor;
     
