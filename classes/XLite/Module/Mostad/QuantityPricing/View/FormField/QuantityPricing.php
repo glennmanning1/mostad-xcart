@@ -29,7 +29,7 @@ class QuantityPricing extends \XLite\View\FormField\Inline\Label
 
     protected function getLink()
     {
-        return $this->getEntity()->getDefaultPrice()
+        return $this->getEntity()->getDefaultValue()
             ? $this->buildURL('product', null, array('product_id' => $this->getEntity()->getProduct()->getId(), 'page' => 'quantity_pricing'))
             : $this->buildURL('product_variant', null, array('id' => $this->getEntity()->getId(), 'page' => 'quantity_pricing'));
     }
