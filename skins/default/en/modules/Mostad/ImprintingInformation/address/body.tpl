@@ -19,6 +19,6 @@
         </ul>
     </div>
 
-    <widget class="\XLite\View\Button\AddAddress" label="Add new address"  profileId="{getProfileId()}" />
+    <widget class="\XLite\Module\Mostad\ImprintingInformation\View\Button\AddAddress" label="Add new address"  profileId="{getProfileId()}" />
 
 </li>
