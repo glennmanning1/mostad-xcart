@@ -59,7 +59,7 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
 
     protected function getAndPrepareQueryBuilder(\XLite\Core\CommonCell $cnd)
     {
-        $queryBuilder = $this->createQueryBuilder('q');
+        $queryBuilder           = $this->createQueryBuilder('q');
         $this->currentSearchCnd = $cnd;
 
         foreach ($this->currentSearchCnd as $key => $value) {
@@ -76,7 +76,8 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
      */
     public function searchCount(\Doctrine\ORM\QueryBuilder $qb)
     {
-        $qb->select('COUNT(DISTINCT q.' . $this->getIdField() .  ')');
+        $qb->select('COUNT(DISTINCT q.' . $this->getIdField() . ')');
+
         return intval($qb->getSingleScalarResult());
     }
 
@@ -118,11 +119,11 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
      */
     protected function getHandlingSearchParams()
     {
-       return array(
-           static::P_MODEL_TYPE,
-           static::P_MODEL_ID,
-           static::P_QUANTITY,
-       );
+        return [
+            static::P_MODEL_TYPE,
+            static::P_MODEL_ID,
+            static::P_QUANTITY,
+        ];
     }
 
     /**
@@ -163,7 +164,7 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
     public function getPriceBySetAndQuantity($wholesalePricingSet, $quantity)
     {
 
-        $cnd = new \XLite\Core\CommonCell();
+        $cnd                         = new \XLite\Core\CommonCell();
         $cnd->{static::P_MODEL_ID}   = $wholesalePricingSet->getId();
         $cnd->{static::P_MODEL_TYPE} = 'XLite\Module\NovaHorizons\WholesaleClasses\Model\WholesaleClassPricingSet';
         $cnd->{static::P_QUANTITY}   = $quantity;
@@ -173,5 +174,21 @@ class QuantityPrice extends \XLite\Model\Repo\ARepo
         $result = $queryBuilder->getQuery()->getOneOrNullResult();
 
         return $result ? $result->getPrice() : 0;
+    }
+
+    public function getModifierTypesByProduct(\XLite\Model\Product $product)
+    {
+        $price = $this->createQueryBuilder('q')
+            ->andWhere('q.modelId = :modelId')
+            ->andWhere('q.modelType = :modelType')
+            ->setParameters([
+                'modelId' => $product->getProductId(),
+                'modelType' => 'XLite\Model\Product',
+            ])->setMaxResults(1)
+            ->getResult();
+
+        return array(
+            'wholesalePrice' => !empty($price)
+        );
     }
 }

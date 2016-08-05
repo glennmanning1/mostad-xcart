@@ -79,4 +79,17 @@ class ProductPrice extends \XLite\Module\CDev\Wholesale\View\ProductPrice implem
         return $this->defineWholesalePrices();
     }
 
+    /**
+     * Return JS files for widget
+     *
+     * @return array
+     */
+    public function getJSFiles()
+    {
+        $list   = parent::getJSFiles();
+        $list[] = 'modules/Mostad/QuantityPricing/quantity_controller.js';
+
+        return $list;
+    }
 }
+
