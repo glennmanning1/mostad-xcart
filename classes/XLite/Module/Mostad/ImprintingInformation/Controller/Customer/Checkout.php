@@ -31,9 +31,11 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
      */
     public function handleRequest()
     {
-        if ($this->target == 'checkout' &&
-                $this->cartHasItemsNeedingImprinting() &&
-                !$this->orderHasConfirmedImprinting()
+        if (
+            $this->getProfile() &&
+            $this->target == 'checkout' &&
+            $this->cartHasItemsNeedingImprinting() &&
+            !$this->orderHasConfirmedImprinting()
         ) {
             $this->setHardRedirect();
             $this->setReturnURL($this->buildURL('imprinting'));
@@ -86,7 +88,13 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
      */
     public function getImprintingAddress()
     {
-        return $this->getImprintingInfo()->getAddress();
+        $address = $this->getImprintingInfo()->getAddress();
+
+        if (!$address) {
+            $address = \XLite\Model\Address::createDefaultShippingAddress();
+        }
+
+        return $address;
     }
 
 }
