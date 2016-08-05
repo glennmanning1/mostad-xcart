@@ -3,10 +3,10 @@
 {**
  * Template
  *
- * @author    Nova Horzions LLC <info@novahorizons.io>
- * @copyright Copyright (c) 2015 Nova Horzions LLC <info@novahorizons.io>. All rights reserved
- * @license   http://novahorizons.io/ License Agreement
- * @link      http://novahorizons.io/
+ * @author    Nova Horizons LLC <xcart@novahorizons.io>
+ * @copyright Copyright (c) 2015 Nova Horizons LLC <xcart@novahorizons.io>. All rights reserved
+ * @license   https://novahorizons.io/ License Agreement
+ * @link      https://novahorizons.io/
 *}
 <div>
     <h1 class="title">Redirects</h1>

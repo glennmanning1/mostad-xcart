@@ -64,4 +64,3 @@ class CsvImport extends \XLite\View\Form\AForm
         return true;
     }
 }
-

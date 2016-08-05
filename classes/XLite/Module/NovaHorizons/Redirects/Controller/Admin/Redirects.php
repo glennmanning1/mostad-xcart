@@ -10,10 +10,10 @@
  * that is bundled with this package in the file LICENSE.txt.
  *
  * @category  X-Cart 5
- * @author    Nova Horzions LLC <info@novahorizons.io>
- * @copyright Copyright (c) 2015 Nova Horzions LLC <info@novahorizons.io>. All rights reserved
- * @license   http://novahorizons.io/x-cart/license License Agreement
- * @link      http://novahorizons.io/
+ * @author    Nova Horizons LLC <xcart@novahorizons.io>
+ * @copyright Copyright (c) 2015 Nova Horizons LLC <xcart@novahorizons.io>. All rights reserved
+ * @license   https://novahorizons.io/x-cart/license License Agreement
+ * @link      https://novahorizons.io/
  */
 
 namespace XLite\Module\NovaHorizons\Redirects\Controller\Admin;
@@ -37,8 +37,7 @@ class Redirects extends \XLite\Controller\Admin\AAdmin
     protected function doActionRedirectsImport()
     {
         // Check uploaded file with SQL data
-        if (isset($_FILES['userfile']) && !empty($_FILES['userfile']['tmp_name']) ) {
-
+        if (isset($_FILES['userfile']) && !empty($_FILES['userfile']['tmp_name'])) {
             $sqlFile = LC_DIR_TMP . sprintf('redirects.uploaded.%d.sql', \XLite\Core\Converter::time());
 
             $tmpFile = $_FILES['userfile']['tmp_name'];
@@ -56,12 +55,11 @@ class Redirects extends \XLite\Controller\Admin\AAdmin
                 $connection->executeQuery($q);
             }
 
-            $skipped = [];
-            $redirects = [];
+            $skipped = array();
+            $redirects = array();
             $totalRedirects = 0;
-            if (($handle = fopen($sqlFile, "r")) !== FALSE) {
-                while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-
+            if (($handle = fopen($sqlFile, "r")) !== false) {
+                while (($data = fgetcsv($handle, 1000, ",")) !== false) {
                     if (empty($data[0]) || empty($data[1])) {
                         $skipped[] = $data;
                         continue;
@@ -85,7 +83,7 @@ class Redirects extends \XLite\Controller\Admin\AAdmin
                     if (count($redirects) % 100 == 0) {
                         $totalRedirects += count($redirects);
                         $repo->insertInBatch($redirects);
-                        $redirects = [];
+                        $redirects = array();
                     }
                 }
                 fclose($handle);
@@ -101,7 +99,7 @@ class Redirects extends \XLite\Controller\Admin\AAdmin
             \XLite\Core\TopMessage::addInfo("$totalRedirects redirects added, ".count($skipped)." skipped due to errors");
 
             $this->redirect();
-            exit (0);
+            exit(0);
         }
     }
 
