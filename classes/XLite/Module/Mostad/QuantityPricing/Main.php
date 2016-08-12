@@ -97,7 +97,10 @@ abstract class Main extends \XLite\Module\AModule
                 array('wholesale.price.widgetlist', 'customer'),
             ),
             'product/details/parts/common.price.tpl' => array(
-                'product.details.page.info','product.details.quicklook.info',
+                static::TO_DELETE => array(
+                    array('product.details.page.info','customer'),
+                    array('product.details.quicklook.info', 'customer')
+                ),
             ),
             /*'modules/CDev/Wholesale/product_price/parts/price-block.tpl' => array(
                 array('wholesale.price', 'customer'),
