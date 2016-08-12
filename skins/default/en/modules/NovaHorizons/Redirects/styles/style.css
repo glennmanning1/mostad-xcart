@@ -1,0 +1,29 @@
+div.description {
+    max-width: 70%;
+    padding: 10px 0 50px 0;
+}
+
+.db-restore-form button {
+  min-width: 170px;
+  margin: 0px 0px 20px 0px;
+  display: block;
+  float: left;
+}
+
+.db-restore-form div.tooltip-main,
+  .db-restore-form input
+{
+  margin: 0px 0px 20px 0px;
+}
+
+.redirects_import input.input-file {
+  border: none;
+}
+
+.redirects_import input, .redirects_import ul {
+    margin-bottom: 10px;
+}
+
+.redirects_import li {
+    margin-bottom: 3px;
+}
