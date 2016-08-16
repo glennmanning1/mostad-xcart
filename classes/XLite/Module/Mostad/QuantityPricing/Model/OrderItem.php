@@ -46,6 +46,10 @@ class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
     {
         $product = $this->getProduct();
 
+        if (!$product->getQuantityPriceEnabled()) {
+            return null;
+        }
+
         $variant = $this->getVariant();
 
         $quantityPrices = array();
