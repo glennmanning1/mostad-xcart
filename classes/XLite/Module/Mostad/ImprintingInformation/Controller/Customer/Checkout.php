@@ -42,6 +42,23 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
             $this->doRedirect();
         }
 
+        if (
+            !$this->getProfile() &&
+            $this->target == 'checkout' &&
+            $this->cartHasItemsNeedingImprinting() &&
+            !$this->orderHasConfirmedImprinting()
+        ) {
+            \XLite\Core\Request::getInstance()->setCookie(
+                'headedToCheckout',
+                1,
+                3600
+            );
+
+            $this->setHardRedirect();
+            $this->setReturnURL($this->buildURL('profile', '', ['mode' => 'register']));
+            $this->doRedirect();
+        }
+
         parent::handleRequest();
     }
 
@@ -55,6 +72,7 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
                 return true;
             }
         }
+
         return false;
     }
 
