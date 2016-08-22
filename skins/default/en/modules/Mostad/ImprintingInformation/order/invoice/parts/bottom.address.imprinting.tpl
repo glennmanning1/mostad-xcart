@@ -24,7 +24,7 @@
         Website: {imprinting.website}
     </li>
     <li>
-        Add Logo?: {imprinting.addLogo}
+        Add Logo?: {if:imprinting.addLogo}Yes{else:}No{end:}
     </li>
 </ul>
 
@@ -37,6 +37,9 @@
         Website: {imprinting.onlineWebsite}
     </li>
     <li>
-        Add Logo?: {imprinting.onlineAddLogo}
+        Add Logo?: {if:imprinting.onlineAddLogo}Yes{else:}No{end:}
+    </li>
+    <li>
+        Add to my website? {if:imprinting.onlineAddToSite}Yes{else:}No{end:}
     </li>
 </ul>

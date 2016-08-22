@@ -91,6 +91,7 @@ abstract class Main extends \XLite\Module\AModule
                 static::TO_DELETE => array(
                     array('invoice.base', 'customer'),
                     array('invoice.base', 'admin'),
+                    array('invoice.base', 'mail'),
                 )
             )
         );
