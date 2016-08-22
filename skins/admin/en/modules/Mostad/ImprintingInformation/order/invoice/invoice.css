@@ -1,0 +1,16 @@
+strong.sub-title {
+    padding: 10px 0;
+
+}
+.invoice-box .addresses strong.sub-title {
+    font-size: 15px;
+}
+
+ul.information-section { }
+
+ul.information-section li {
+    background: none;
+    padding: 0;
+    margin: 0;
+}
+

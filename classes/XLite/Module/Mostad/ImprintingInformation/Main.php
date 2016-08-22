@@ -84,4 +84,16 @@ abstract class Main extends \XLite\Module\AModule
         return '0';
     }
 
+    public static function moveTemplatesInLists()
+    {
+        return array(
+            'order/invoice/parts/bottom.tpl' => array(
+                static::TO_DELETE => array(
+                    array('invoice.base', 'customer'),
+                    array('invoice.base', 'admin'),
+                )
+            )
+        );
+    }
+
 }
