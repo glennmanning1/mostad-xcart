@@ -32,7 +32,7 @@
                 <widget class="XLite\View\FormField\Input\Text\Email" fieldName="email" label="E-mail" attributes="{_ARRAY_(#class#^#disable-for-same#)}"/>
             </div>
             <div class="form-item">
-                <widget class="XLite\View\FormField\Input\Text\Url" fieldName="website" label="Website" attributes="{_ARRAY_(#class#^#disable-for-same#)}"/>
+                <widget class="XLite\View\FormField\Input\Text\URL" fieldName="website" label="Website" attributes="{_ARRAY_(#class#^#disable-for-same#)}"/>
             </div>
             <div class="form-checkbox">
                 <label for="addLogo">
@@ -52,7 +52,7 @@
                 <widget class="XLite\View\FormField\Input\Text\Email" fieldName="onlineEmail" label="E-mail" attributes="{_ARRAY_(#class#^#disable-for-same#)}"/>
             </div>
             <div class="form-item">
-                <widget class="XLite\View\FormField\Input\Text\Url" fieldName="onlineWebsite" label="Website" attributes="{_ARRAY_(#class#^#disable-for-same#)}"/>
+                <widget class="XLite\View\FormField\Input\Text\URL" fieldName="onlineWebsite" label="Website" attributes="{_ARRAY_(#class#^#disable-for-same#)}"/>
             </div>
             <div class="form-checkbox">
                 <label for="addLogo">

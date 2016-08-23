@@ -46,7 +46,7 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
         ),
         'website' => array(
-            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Url',
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\URL',
             self::SCHEMA_LABEL    => 'Website',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
@@ -70,7 +70,7 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
         ),
         'onlineWebsite' => array(
-            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Url',
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\URL',
             self::SCHEMA_LABEL    => 'Website',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
