@@ -1,12 +1,12 @@
-<li class="">
+<div class="">
     <div class="table-label">
         <label>Address</label>
     </div>
-    <div class="star">
-        &nbsp;  </div>
+    <div class="star">&nbsp;</div>
+    <widget class="\XLite\Module\Mostad\ImprintingInformation\View\Button\AddAddress" label="Add new address"  profileId="{getProfileId()}" />
 
     <div class="table-value">
-        <ul class="address-entry">
+        <ul class="address-entry list-inline">
             {displayCommentedData(getCommentedData())}
             {foreach:getOptions(),optionValue,address}
             <li class="imprinting-address">
@@ -19,6 +19,5 @@
         </ul>
     </div>
 
-    <widget class="\XLite\Module\Mostad\ImprintingInformation\View\Button\AddAddress" label="Add new address"  profileId="{getProfileId()}" />
 
-</li>
+</div>
