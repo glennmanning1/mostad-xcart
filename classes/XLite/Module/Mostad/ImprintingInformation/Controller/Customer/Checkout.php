@@ -32,7 +32,7 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
     public function handleRequest()
     {
         if (
-            $this->getProfile() &&
+            $this->isCheckoutAvailable() &&
             $this->target == 'checkout' &&
             $this->cartHasItemsNeedingImprinting() &&
             !$this->orderHasConfirmedImprinting()
@@ -48,15 +48,12 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
             $this->cartHasItemsNeedingImprinting() &&
             !$this->orderHasConfirmedImprinting()
         ) {
+            // Leaving this in for now, incase we need it for changes later.
             \XLite\Core\Request::getInstance()->setCookie(
                 'headedToCheckout',
                 1,
                 3600
             );
-
-            $this->setHardRedirect();
-            $this->setReturnURL($this->buildURL('profile', '', ['mode' => 'register']));
-            $this->doRedirect();
         }
 
         parent::handleRequest();
@@ -113,6 +110,21 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
         }
 
         return $address;
+    }
+
+    /**
+     * Hi-jacK the UpdateProfile action let it do it's work, then go to imprinting if we need to.
+     */
+    protected function doActionUpdateProfile() {
+        parent::doActionUpdateProfile();
+
+        if ($this->cartHasItemsNeedingImprinting() &&
+            !$this->orderHasConfirmedImprinting()
+        ) {
+            $this->setHardRedirect();
+            $this->setReturnURL($this->buildURL('imprinting'));
+            $this->doRedirect();
+        }
     }
 
 }
