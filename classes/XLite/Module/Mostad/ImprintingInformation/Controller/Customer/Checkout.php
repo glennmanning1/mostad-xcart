@@ -103,6 +103,21 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
         return $this->getImprintingInfo()->getAddress2();
     }
 
+    public function isImprintingNew()
+    {
+        return $this->getImprintingInfo()->isNew();
+    }
+
+    public function isImprintingSame()
+    {
+        return $this->getImprintingInfo()->isSame();
+    }
+
+    public function isImprintingUpdate()
+    {
+        return $this->getImprintingInfo()->isUpdate();
+    }
+
     public function getImprintingCityStateZip()
     {
         $output = '';
