@@ -89,12 +89,14 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
             self::SCHEMA_FIELD_ONLY => true,
+            \XLite\View\FormField\Input\Text::PARAM_WRAPPER_CLASS => 'phone-number',
         ),
         'faxCode' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
             self::SCHEMA_FIELD_ONLY => true,
+            \XLite\View\FormField\Input\Text::PARAM_WRAPPER_CLASS => 'phone-code',
         ),
         'fax' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Phone',
@@ -102,6 +104,7 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
             self::SCHEMA_FIELD_ONLY => true,
+            \XLite\View\FormField\Input\Text::PARAM_WRAPPER_CLASS => 'phone-number',
         ),
         'email' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Email',
@@ -231,6 +234,9 @@ class Imprinting extends \XLite\View\Model\AModel
 
     protected function setModelProperties(array $data)
     {
+        if (is_string($data['state'])) {
+            $data['state'] = \XLite\Core\Database::getRepo('XLite\Model\State')->find($data['state']);
+        }
         parent::setModelProperties($data);
     }
 

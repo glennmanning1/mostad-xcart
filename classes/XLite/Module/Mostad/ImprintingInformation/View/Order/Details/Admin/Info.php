@@ -16,13 +16,10 @@
  * @link      http://novahorizons.io/
  */
 
-namespace XLite\Module\Mostad\ImprintingInformation\View;
+namespace \XLite\Module\Mostad\ImprintingInformation\View\Order\Details\Admin;
 
-
-class Invoice extends \XLite\View\Invoice implements \XLite\Base\IDecorator
+class Info extends \XLite\View\Order\Details\Admin\Info implements \XLite\Base\IDecorator
 {
-
-
 
     /**
      * Register CSS files
@@ -32,8 +29,10 @@ class Invoice extends \XLite\View\Invoice implements \XLite\Base\IDecorator
     public function getCSSFiles()
     {
         $list = parent::getCSSFiles();
-        $list[] = 'modules/Mostad/ImprintingInformation/order/invoice/invoice.css';
+
+        $list[] = 'modules/Mostad/ImprintingInformation/order/page/info.css';
 
         return $list;
     }
+
 }

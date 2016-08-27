@@ -14,3 +14,6 @@ ul.information-section li {
     margin: 0;
 }
 
+ul.address-section li.address-field.address-fax .address-title {
+    display: inline;
+}

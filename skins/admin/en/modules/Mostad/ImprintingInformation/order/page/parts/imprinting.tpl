@@ -12,13 +12,28 @@
  *}
 
 <div class="line-2">
+    <h3 class="h3">Imprinting Information</h3>
     <div class="row">
-
+        <div class="col-md-12">
+            <p>Status:
+                    {if:order.imprinting.isNew()}
+                    <strong>New</strong> - Add to the system
+                    {elseif:order.imprinting.isUpdate()}
+                    <strong>Update</strong> - update the system
+                    This information will be updated in the system
+                    {elseif:order.imprinting.isSame()}
+                    <strong>Same</strong> - Use existing information
+                    {end:}
+                </p>
+        </div>
+    </div>
+    {if:!order.imprinting.isSame()}
+    <div class="row">
         <div class="col-md-6">
             <strong class="title">{t(#Imprinting Address Information#)}</strong>
 
             <ul class="address-section shipping-address-section">
-                <li FOREACH="getAddressSectionData(order.imprinting.address),idx,field"
+                <li FOREACH="getImprintingAddressSectionData(order.imprinting),idx,field"
                     class="{field.css_class} address-field">
                     <span class="address-title">{t(field.title)}:</span>
                     <span class="address-field">{field.value}</span>
@@ -38,7 +53,7 @@
                     Website: {order.imprinting.website}
                 </li>
                 <li>
-                    Add Logo?: {order.imprinting.addLogo}
+                    Add Logo?: {if:order.imprinting.addLogo}Yes{else:}No{end:}
                 </li>
             </ul>
         </div>
@@ -47,15 +62,22 @@
             <strong class="sub-title">Online Product Imprinting Information</strong>
             <ul class="information-section">
                 <li>
+                    Firm Name: {order.imprinting.onlineFirmName}
+                </li>
+                <li>
                     Email: {order.imprinting.onlineEmail}
                 </li>
                 <li>
                     Website: {order.imprinting.onlineWebsite}
                 </li>
                 <li>
-                    Add Logo?: {order.imprinting.onlineAddLogo}
+                    Add Logo?: {if:order.imprinting.onlineAddLogo}Yes{else:}No{end:}
+                </li>
+                <li>
+                    Add to my website? {if:order.imprinting.onlineAddToSite}Yes{else:}No{end:}
                 </li>
             </ul>
         </div>
     </div>
+    {end:}
 </div>

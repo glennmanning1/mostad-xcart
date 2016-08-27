@@ -105,7 +105,21 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
 
     public function getImprintingCityStateZip()
     {
-        return $this->getImprintingInfo()->getCity().', '.$this->getImprintingInfo()->getState()->getCode(). ' '.$this->getImprintingInfo()->getZip();
+        $output = '';
+
+        if ($this->getImprintingInfo()->getCity()) {
+            $output .= $this->getImprintingInfo()->getCity().', ';
+        }
+
+        if ($this->getImprintingInfo()->getState()) {
+            $output .= $this->getImprintingInfo()->getState()->getCode(). ' ';
+        }
+
+        if ($this->getImprintingInfo()->getZip()) {
+            $output .= $this->getImprintingInfo()->getZip();
+        }
+
+        return $output;
     }
 
     public function getImprintingWebsite()

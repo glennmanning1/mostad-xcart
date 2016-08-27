@@ -5,9 +5,21 @@
  * @ListChild (list="invoice.bottom.address.imprinting", weight="20")
  *}
 <strong class="title">{t(#Imprinting information#)}</strong>
+<br />
 
+<strong>
+{if:imprinting.isNew()}
+    This is new customer imprint information.
+{elseif:imprinting.isUpdate()}
+    Update system imprinting information.
+{elseif:imprinting.isSame()}
+    Use imprinting info on file.
+{end:}
+</strong>
+
+{if:!imprinting.isSame()}
 <ul class="address-section shipping-address-section">
-  <li FOREACH="getAddressSectionData(imprinting.address),idx,field" class="{field.css_class} address-field">
+  <li FOREACH="getImprintingAddressSectionData(imprinting),idx,field" class="{field.css_class} address-field">
     <span class="address-title">{t(field.title)}:</span>
     <span class="address-field">{field.value}</span>
     <span class="address-comma">,</span>
@@ -31,6 +43,9 @@
 <strong class="sub-title">Online Product Imprinting Information</strong>
 <ul class="information-section">
     <li>
+        Firm Name: {imprinting.onlineFirmName}
+    </li>
+    <li>
         Email: {imprinting.onlineEmail}
     </li>
     <li>
@@ -43,3 +58,4 @@
         Add to my website? {if:imprinting.onlineAddToSite}Yes{else:}No{end:}
     </li>
 </ul>
+{end:}

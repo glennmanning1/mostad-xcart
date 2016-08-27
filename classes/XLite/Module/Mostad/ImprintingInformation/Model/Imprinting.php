@@ -36,8 +36,8 @@ use Doctrine\ORM\Mapping\Table;
  */
 class Imprinting extends \XLite\Model\AEntity
 {
-    const STATUS_NEW = 'NEW';
-    const STATUS_SAME = 'SAME';
+    const STATUS_NEW    = 'NEW';
+    const STATUS_SAME   = 'SAME';
     const STATUS_UPDATE = 'UPDATE';
     /**
      * @var int
@@ -187,16 +187,44 @@ class Imprinting extends \XLite\Model\AEntity
      * @var boolean
      * @Column(type="boolean")
      */
-    protected $confirm = true;
+    protected $confirm = false;
+
+
+    public static $addressFields = [
+        'firmName'    => 'Firm Name',
+        'designation' => 'Designation',
+        'name'        => 'Name',
+        'address'     => 'Address',
+        'address2'    => 'Address 2',
+        'city'        => 'City',
+        'state'       => 'State',
+        'zip'         => 'Zip Code',
+        'phone'       => 'Phone',
+        'fax'         => 'FAX',
+    ];
 
 
     public static function getStatusArray()
     {
-        return array(
-                self::STATUS_NEW => 'I am ordering imprinting for the first time. I have indicated my imprint information in the fields below.',
-                self::STATUS_UPDATE => 'My imprint information has changed. My imprint changes are indicated in the fields below.(Additional $17 change fee will be added to your order.) ',
-                self::STATUS_SAME => 'My imprint has NOT changed. Use my imprint information that you have on file.',
-        );
+        return [
+            self::STATUS_NEW    => 'I am ordering imprinting for the first time. I have indicated my imprint information in the fields below.',
+            self::STATUS_UPDATE => 'My imprint information has changed. My imprint changes are indicated in the fields below.(Additional $17 change fee will be added to your order.) ',
+            self::STATUS_SAME   => 'My imprint has NOT changed. Use my imprint information that you have on file.',
+        ];
     }
 
+    public function isNew()
+    {
+        return $this->status == self::STATUS_NEW;
+    }
+
+    public function isSame()
+    {
+        return $this->status == self::STATUS_SAME;
+    }
+
+    public function isUpdate()
+    {
+        return $this->status == self::STATUS_UPDATE;
+    }
 }
