@@ -66,4 +66,22 @@ class Imprinting extends \XLite\View\AView
         return 'address/order/model.tpl';
     }
 
+    public function getCSSFiles()
+    {
+        $list = parent::getCSSFiles();
+
+        $list[] = 'modules/Mostad/ImprintingInformation/page/imprinting/imprinting.css';
+
+        return $list;
+    }
+
+    public function getJSFiles()
+    {
+        $list = parent::getJSFiles();
+
+        $list[] = 'modules/Mostad/ImprintingInformation/page/imprinting/imprinting.js';
+
+        return $list;
+    }
+
 }

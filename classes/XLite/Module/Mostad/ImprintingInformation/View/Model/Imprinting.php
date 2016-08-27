@@ -33,11 +33,75 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
         ),
+        'designation' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
+            self::SCHEMA_LABEL    => 'Designation',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+        ),
+        'name' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
+            self::SCHEMA_LABEL    => 'Name',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+        ),
         'address' => array(
-            self::SCHEMA_CLASS    => 'XLite\Module\Mostad\ImprintingInformation\View\FormField\Address',
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
             self::SCHEMA_LABEL    => 'Address',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+        ),
+        'address2' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
+            self::SCHEMA_LABEL    => 'Address 2',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+        ),
+        'city' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
+            self::SCHEMA_LABEL    => 'City',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+        ),
+        'state' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Select\State',
+            self::SCHEMA_LABEL    => 'State',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            'country' => 'US',
+        ),
+        'zip' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
+            self::SCHEMA_LABEL    => 'Zip Code',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+        ),
+        'phoneCode' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            self::SCHEMA_FIELD_ONLY => true,
+            \XLite\View\FormField\Input\Text::PARAM_WRAPPER_CLASS => 'phone-code',
+        ),
+        'phone' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Phone',
+            self::SCHEMA_LABEL    => 'Phone',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            self::SCHEMA_FIELD_ONLY => true,
+        ),
+        'faxCode' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            self::SCHEMA_FIELD_ONLY => true,
+        ),
+        'fax' => array(
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Phone',
+            self::SCHEMA_LABEL    => 'FAX',
+            self::SCHEMA_REQUIRED => false,
+            self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            self::SCHEMA_FIELD_ONLY => true,
         ),
         'email' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\Email',
@@ -91,6 +155,7 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Enabled',
             self::SCHEMA_LABEL    => 'I have reviewed my imprint information above and verified that it is correct.',
             self::SCHEMA_REQUIRED => true,
+            self::SCHEMA_FIELD_ONLY => true,
         ),
     );
 
@@ -166,11 +231,25 @@ class Imprinting extends \XLite\View\Model\AModel
 
     protected function setModelProperties(array $data)
     {
-        if (is_string($data['address'])) {
-            $data['address'] = \XLite\Core\Database::getRepo('XLite\Model\Address')->find($data['address']);
-        }
         parent::setModelProperties($data);
     }
+
+    protected function getTemplate()
+    {
+        return 'modules/Mostad/ImprintingInformation/model/form/content.tpl';
+    }
+
+    public function displayField($section, $name)
+    {
+        $field = $this->getFormField($section, $name);
+
+        if ($field->getValue() !== $this->getModelObjectValue($name)) {
+            $field->setValue($this->getModelObjectValue($name));
+        }
+
+        return $field->display();
+    }
+
 
 
 }

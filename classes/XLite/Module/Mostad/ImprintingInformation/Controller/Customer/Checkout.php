@@ -88,6 +88,26 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
         return $this->getImprintingInfo()->getFirmName();
     }
 
+    public function getImprintingDesignation()
+    {
+        return $this->getImprintingInfo()->getDesignation();
+    }
+
+    public function getImprintingAddress()
+    {
+        return $this->getImprintingInfo()->getAddress();
+    }
+
+    public function getImprintingAddress2()
+    {
+        return $this->getImprintingInfo()->getAddress2();
+    }
+
+    public function getImprintingCityStateZip()
+    {
+        return $this->getImprintingInfo()->getCity().', '.$this->getImprintingInfo()->getState()->getCode(). ' '.$this->getImprintingInfo()->getZip();
+    }
+
     public function getImprintingWebsite()
     {
         return $this->getImprintingInfo()->getWebsite();
@@ -96,20 +116,6 @@ class Checkout extends \XLite\Controller\Customer\Checkout implements \XLite\Bas
     public function getImprintingEmail()
     {
         return $this->getImprintingInfo()->getEmail();
-    }
-
-    /**
-     * @return \XLite\Model\Address
-     */
-    public function getImprintingAddress()
-    {
-        $address = $this->getImprintingInfo()->getAddress();
-
-        if (!$address) {
-            $address = \XLite\Model\Address::createDefaultShippingAddress();
-        }
-
-        return $address;
     }
 
     /**

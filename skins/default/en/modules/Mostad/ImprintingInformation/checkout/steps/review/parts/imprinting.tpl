@@ -6,7 +6,10 @@
     <h4>Imprinting Information</h4>
     <ul>
         <li IF="getImprintingFirmName()">{getImprintingFirmName()}</li>
-        <widget template="select_address/address.tpl" address="{getImprintingAddress()}"/>
+        <li IF="getImprintingDesignation()">{getImprintingDesignation()}</li>
+        <li IF="getImprintingAddress()">{getImprintingAddress()}</li>
+        <li IF="getImprintingAddress2()">{getImprintingAddress2()}</li>
+        <li IF="getImprintingCityStateZip()">{getImprintingCityStateZip()}</li>
         <li IF="getImprintingEmail()">{getImprintingEmail()}</li>
         <li IF="getImprintingWebsite()">{getImprintingWebsite()}</li>
     </ul>

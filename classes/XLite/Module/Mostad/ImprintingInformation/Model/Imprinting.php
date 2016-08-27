@@ -70,12 +70,71 @@ class Imprinting extends \XLite\Model\AEntity
     protected $firmName;
 
     /**
-     * @var \XLite\Model\Address
-     *
-     * @ManyToOne(targetEntity="\XLite\Model\Address")
-     * @JoinColumn(name="address_id", referencedColumnName="address_id", onDelete="SET NULL", nullable=true)
+     * @var string
+     * @Column(name="designation", type="string", length=255, nullable=true)
+     */
+    protected $designation;
+
+    /**
+     * @var string
+     * @Column(name="name", type="string", length=255, nullable=true)
+     */
+    protected $name;
+
+    /**
+     * @var string
+     * @Column(name="address", type="string", length=255, nullable=true)
      */
     protected $address;
+
+    /**
+     * @var string
+     * @Column(name="address2", type="string", length=255, nullable=true)
+     */
+    protected $address2;
+    /**
+     * @var string
+     * @Column(name="city", type="string", length=255, nullable=true)
+     */
+    protected $city;
+
+    /**
+     * @var \XLite\Model\State
+     * @OneToOne(targetEntity="\XLite\Model\State")
+     * @JoinColumn(name="state_id", referencedColumnName="state_id")
+     *
+     */
+    protected $state;
+
+    /**
+     * @var string
+     * @Column(name="zip", type="string", length=255, nullable=true)
+     */
+    protected $zip;
+
+    /**
+     * @var string
+     * @Column(name="phone_code", type="string", length=255, nullable=true)
+     */
+    protected $phoneCode;
+
+    /**
+     * @var string
+     * @Column(name="phone", type="string", length=255, nullable=true)
+     */
+    protected $phone;
+
+    /**
+     * @var string
+     * @Column(name="fax_code", type="string", length=255, nullable=true)
+     */
+    protected $faxCode;
+
+    /**
+     * @var string
+     * @Column(name="fax", type="string", length=255, nullable=true)
+     */
+    protected $fax;
 
     /**
      * @var string
@@ -128,7 +187,7 @@ class Imprinting extends \XLite\Model\AEntity
      * @var boolean
      * @Column(type="boolean")
      */
-    protected $confirm = false;
+    protected $confirm = true;
 
 
     public static function getStatusArray()
