@@ -5,30 +5,25 @@
  * @ListChild (list="invoice.bottom.address.imprinting", weight="20")
  *}
 <strong class="title">{t(#Imprinting information#)}</strong>
-<br />
+<br/>
 
 <strong>
-{if:imprinting.isNew()}
+    {if:imprinting.isNew()}
     This is new customer imprint information.
-{elseif:imprinting.isUpdate()}
+    {elseif:imprinting.isUpdate()}
     Update system imprinting information.
-{elseif:imprinting.isSame()}
+    {elseif:imprinting.isSame()}
     Use imprinting info on file.
-{end:}
+    {end:}
 </strong>
 
 {if:!imprinting.isSame()}
 <ul class="address-section shipping-address-section">
-  <li FOREACH="getImprintingAddressSectionData(imprinting),idx,field" class="{field.css_class} address-field">
-    <span class="address-title">{t(field.title)}:</span>
-    <span class="address-field">{field.value}</span>
-    <span class="address-comma">,</span>
-  </li>
-</ul>
-
-<strong class="sub-title">Print Product Imprinting Information</strong>
-
-<ul class="information-section">
+    <li FOREACH="getImprintingAddressSectionData(imprinting),idx,field" class="{field.css_class} address-field">
+        <span class="address-title">{t(field.title)}:</span>
+        <span class="address-field">{field.value}</span>
+        <span class="address-comma">,</span>
+    </li>
     <li>
         Email: {imprinting.email}
     </li>
