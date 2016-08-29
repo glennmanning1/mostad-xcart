@@ -93,7 +93,12 @@ abstract class Main extends \XLite\Module\AModule
                     array('invoice.base', 'admin'),
                     array('invoice.base', 'mail'),
                 )
-            )
+            ),
+            'checkout/parts_signin/parts_login_form/button.tpl' => array(
+                static::TO_DELETE => array(
+                    array('checkout.signin.form', 'customer'),
+                ),
+            ),
         );
     }
 
