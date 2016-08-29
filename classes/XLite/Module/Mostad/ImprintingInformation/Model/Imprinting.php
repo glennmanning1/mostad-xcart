@@ -100,7 +100,7 @@ class Imprinting extends \XLite\Model\AEntity
 
     /**
      * @var \XLite\Model\State
-     * @OneToOne(targetEntity="\XLite\Model\State")
+     * @ManyToOne(targetEntity="\XLite\Model\State")
      * @JoinColumn(name="state_id", referencedColumnName="state_id")
      *
      */
