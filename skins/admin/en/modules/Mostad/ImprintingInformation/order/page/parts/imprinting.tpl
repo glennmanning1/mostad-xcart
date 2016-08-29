@@ -39,13 +39,6 @@
                     <span class="address-field">{field.value}</span>
                     <span class="address-comma">,</span>
                 </li>
-            </ul>
-        </div>
-
-        <div class="col-md-3">
-            <strong class="sub-title">Print Product Imprinting Information</strong>
-
-            <ul class="information-section">
                 <li>
                     Email: {order.imprinting.email}
                 </li>
