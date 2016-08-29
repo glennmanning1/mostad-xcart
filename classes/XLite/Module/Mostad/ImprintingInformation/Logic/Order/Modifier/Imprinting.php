@@ -69,7 +69,7 @@ class Imprinting extends \XLite\Logic\Order\Modifier\AModifier
         }
         $imprinting = $this->getOrder()->getImprinting();
         if ($imprinting) {
-            if ($imprinting->getStatus == \XLite\Module\Mostad\ImprintingInformation\Model\Imprinting::STATUS_UPDATE) {
+            if ($imprinting->getStatus() == \XLite\Module\Mostad\ImprintingInformation\Model\Imprinting::STATUS_UPDATE) {
                 $this->imprintingFee += 17;
             }
             if ($imprinting->getAddLogo()) {
