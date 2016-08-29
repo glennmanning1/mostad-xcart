@@ -40,7 +40,9 @@ abstract class AView extends \XLite\View\AView implements \XLite\Base\IDecorator
 
             switch ($addressField) {
                 case 'state':
-                    $addressFieldValue = $addressFieldValue->getCode();
+                    if ($addressFieldValue) {
+                        $addressFieldValue = $addressFieldValue->getCode();
+                    }
                     break;
                 case 'phone':
                     $addressFieldValue = '(' . $imprintModel->getPhoneCode() . ')' . $addressFieldValue;
