@@ -11,6 +11,7 @@
  * @ListChild (list="order.operations", weight="200")
  *}
 
+{if:order.imprinting}
 <div class="line-2">
     <h3 class="h3">Imprinting Information</h3>
     <div class="row">
@@ -74,3 +75,4 @@
     </div>
     {end:}
 </div>
+{end:}
