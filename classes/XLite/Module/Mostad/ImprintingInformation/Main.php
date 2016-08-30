@@ -99,6 +99,11 @@ abstract class Main extends \XLite\Module\AModule
                     array('checkout.signin.form', 'customer'),
                 ),
             ),
+            'checkout/steps/shipping/parts/address.shipping.create.tpl' => array(
+                static::TO_DELETE => array(
+                    array('checkout.shipping.address.email', 'customer'),
+                )
+            )
         );
     }
 
