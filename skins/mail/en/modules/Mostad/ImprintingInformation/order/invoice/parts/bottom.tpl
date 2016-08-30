@@ -30,13 +30,16 @@
         <td IF="!order.isShippingSectionVisible()" style="min-width: 300px;">&nbsp;</td>
     </tr>
 
+    {if:order.imprinting}
     <tr>
-        <td IF="order.imprinting" style="padding-top: 20px;padding-right: 15px;width: 48%;font-size: 15px;vertical-align: top;">
+        <td IF="order.imprinting"
+            style="padding-top: 20px;padding-right: 15px;width: 48%;font-size: 15px;vertical-align: top;">
             <div style="position: relative;min-width: 300px;background: #f9f9f9;min-height: 270px;border-radius: 6px;padding: 20px;">
-                    <list name="invoice.bottom.address.imprinting" imprinting="{order.imprinting}"/>
+                <list name="invoice.bottom.address.imprinting" imprinting="{order.imprinting}"/>
             </div>
         </td>
     </tr>
+    {end:}
 
     <tr FOREACH="getViewList(#invoice.bottom#,_ARRAY_(#order#^order)),w">
         {w.display()}

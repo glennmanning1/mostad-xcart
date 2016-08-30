@@ -28,11 +28,13 @@
         </div>
     </li>
 
+    {if:order.imprinting}
     <li class="address imprinting">
         <div class="wrapper">
             <list name="invoice.bottom.address.imprinting" imprinting="{order.imprinting}"/>
         </div>
     </li>
+    {end:}
 
     <li FOREACH="getViewList(#invoice.bottom#,_ARRAY_(#order#^order)),w">{w.display()}</li>
 
