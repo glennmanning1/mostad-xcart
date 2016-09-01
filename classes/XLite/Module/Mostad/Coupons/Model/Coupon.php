@@ -38,7 +38,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
      * @var \XLite\Model\Product
      *
      * @ManyToOne(targetEntity="XLite\Model\Product")
-     * @JoinColumn(name="product_id", referencedColumnName="product_id", onDelete="CASCADE")
+     * @JoinColumn(name="product_id", referencedColumnName="product_id", onDelete="CASCADE", nullable=true)
      */
     protected $product;
 

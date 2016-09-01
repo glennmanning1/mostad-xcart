@@ -47,6 +47,8 @@ class Coupon extends \XLite\Module\CDev\Coupons\View\Model\Coupon implements \XL
         $this->schemaDefault['product'] = array(
             self::SCHEMA_CLASS => 'XLite\View\FormField\Select\Model\ProductSelector',
             self::SCHEMA_LABEL => 'Product',
+            self::SCHEMA_REQUIRED => false,
+            \XLite\View\FormField\Select\Model\AModel::PARAM_IS_MODEL_REQUIRED => false,
         );
 
         return parent::__construct($params, $sections);
