@@ -10,7 +10,7 @@ core.registerWidgetsParamsGetter(
             }
 
             return {
-                quantity: $select.val()
+                select_quantity: $select.val()
             }
         }
 

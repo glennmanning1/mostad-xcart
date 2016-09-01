@@ -27,4 +27,33 @@ class Quantity extends \XLite\View\Product\Details\Customer\Quantity implements 
         return 'modules/Mostad/QuantityPricing/product/quantity/body.tpl';
     }
 
+    const PARAM_SELECT_QUANTITY = 'select_quantity';
+
+    /**
+     * Define widget parameters
+     *
+     * @return void
+     */
+    protected function defineWidgetParams()
+    {
+        parent::defineWidgetParams();
+
+        $this->widgetParams += array(
+            static::PARAM_SELECT_QUANTITY  => new \XLite\Model\WidgetParam\Int('Value', null),
+        );
+    }
+
+    /**
+     * Alias
+     *
+     * @return integer
+     */
+    protected function getQuantity()
+    {
+        if ($this->getParam(static::PARAM_SELECT_QUANTITY)) {
+            return $this->getParam(static::PARAM_SELECT_QUANTITY);
+        }
+        return $this->getParam(static::PARAM_QUANTITY);
+    }
+
 }
