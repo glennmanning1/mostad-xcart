@@ -1,4 +1,11 @@
 // perform JavaScript after the document is scriptable.
+var oneId;
+var twoId;
+var threeId;
+var $issueSelect;
+var $issueSelectOptions;
+var $issueBoxes;
+var currentlyChecked;
 $(function() {
     // setup ul.tabs to work as tabs for each div directly under div.panes
 
@@ -10,20 +17,25 @@ $(function() {
 
     bindDialogs();
 
-    if ($('.planning-letter').length == 1) {
-        var oneId;
-        var twoId;
-        var threeId;
-        var $issueSelect;
-        var $issueSelectOptions;
-        var $issueBoxes;
+    if ($('.planning-letter').length >= 1) {
+
         setIssueSelect();
         bindChecks();
 
-
         $('.add2cart').on('click', function(event) {
-            event.preventDefault();
-            event.stopPropagation();
+
+            currentlyChecked = $issueBoxes.filter(':checked').length;
+            if (
+                $issueSelect.val() == oneId && currentlyChecked == 1
+                || $issueSelect.val() == twoId && currentlyChecked == 2
+                || $issueSelect.val() == threeId && currentlyChecked == 3
+            ) {
+
+            } else {
+                alert("You must select all of your desired issues.")
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
         });
 
@@ -41,7 +53,7 @@ core.registerTriggersBind(
         if ($issueSelect.val() == threeId) {
             $issueBoxes.attr('checked', 'checked');
         } else {
-            var currentlyChecked = $issueBoxes.filter(':checked').length;
+            currentlyChecked = $issueBoxes.filter(':checked').length;
             if (
                 $issueSelect.val() == oneId && currentlyChecked > 1
                 || $issueSelect.val() == twoId && currentlyChecked > 2
@@ -57,13 +69,15 @@ core.registerTriggersBind(
     function(product) {
         cleanupDialogs();
         bindDialogs();
+        setIssueSelect();
+        bindChecks();
     });
 
 function cleanupDialogs() {
-    $('.dialog-target:not(.ui-dialog-content)').each(function(index, element){
+    $('.dialog-target:not(.ui-dialog-content)').each(function(index, element) {
         var id = $(element).attr('id');
-        if (typeof id  == 'string') {
-            $("[id='"+id+"'].ui-dialog-content").remove();
+        if (typeof id == 'string') {
+            $("[id='" + id + "'].ui-dialog-content").remove();
         }
 
     });
@@ -121,7 +135,7 @@ function setIssueSelect() {
 function bindChecks() {
     $issueBoxes.off('click.mostad');
     $issueBoxes.on('click.mostad', function(event) {
-        var currentlyChecked = $issueBoxes.filter(':checked').length;
+        currentlyChecked = $issueBoxes.filter(':checked').length;
         if ($issueSelect.val() == oneId && currentlyChecked > 1) {
             event.preventDefault();
             event.stopPropagation();
