@@ -134,7 +134,7 @@ class ProductVariant extends \XLite\Module\XC\ProductVariants\Model\ProductVaria
         }
 
         //return  \XLite\Module\XC\ProductVariants\Model\ProductVariantAbstract::getClearPrice();
-        return !$this->getDefaultValue()
+        return $this->getDefaultValue()
             ? $this->getProduct()->getPrice()
             : $this->getPrice();
     }
