@@ -109,13 +109,13 @@ function setIssueSelect() {
         var $option = $(element);
         var optionString = $option.html();
         if (typeof optionString === "string" && optionString != "") {
-            if (optionString.includes("One")) {
+            if (optionString.indexOf("One") >= 0) {
                 oneId = $option.attr('value');
             }
-            if (optionString.includes("Two")) {
+            if (optionString.indexOf("Two") >= 0) {
                 twoId = $option.attr('value');
             }
-            if (optionString.includes("Three")) {
+            if (optionString.indexOf("Three") >= 0) {
                 threeId = $option.attr('value');
             }
         }
