@@ -47,7 +47,12 @@ class Order extends \XLite\Model\Order implements \XLite\Base\IDecorator
         if ($this->hasDeferredCoupon()) {
             $method = $this->getDeferredMethod();
             $this->setPaymentMethod($method);
+        } else {
+            if ($this->getPaymentMethod() == $this->getDeferredMethod()) {
+                $this->unsetPaymentMethod();
+            }
         }
+
 
         parent::renewPaymentMethod();
     }
