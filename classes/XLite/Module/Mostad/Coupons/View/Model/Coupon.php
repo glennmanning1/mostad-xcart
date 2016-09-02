@@ -61,7 +61,28 @@ class Coupon extends \XLite\Module\CDev\Coupons\View\Model\Coupon implements \XL
     {
         parent::getFormFieldsForSectionDefault();
 
-        $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'] = array(\XLite\Module\CDev\Coupons\Model\Coupon::TYPE_FREESHIP);
+        $freeShippingTypes = array(\XLite\Module\CDev\Coupons\Model\Coupon::TYPE_FREESHIP);
+        $valueTypes = array(\XLite\Module\CDev\Coupons\Model\Coupon::TYPE_DEFERRED);
+
+        if (!isset($this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE])) {
+            $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE] = array();
+        }
+
+        if (isset($this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'])) {
+            $freeShippingTypes += $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'];
+        }
+
+        $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'] = $freeShippingTypes;
+
+        if (!isset($this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE])) {
+            $this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE] = array();
+        }
+
+        if (isset($this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'])) {
+            $valueTypes += $this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'];
+        }
+
+        $this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'] = $valueTypes;
 
         return $this->getFieldsBySchema($this->schemaDefault);
     }

@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
  */
 class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\Base\IDecorator
 {
+    const TYPE_DEFERRED = 'D';
 
     /**
      * @var boolean

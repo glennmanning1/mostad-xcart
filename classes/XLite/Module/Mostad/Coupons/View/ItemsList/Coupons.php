@@ -30,10 +30,15 @@ class Coupons extends \XLite\Module\CDev\Coupons\View\ItemsList\Coupons implemen
     {
         $list = parent::defineColumns();
 
-        $list['freeShipping'] = array(
-            static::COLUMN_NAME => static::t('Free shipping'),
+        $list['freeShipping'] = [
+            static::COLUMN_NAME    => static::t('Free shipping'),
             static::COLUMN_ORDERBY => 350,
-        );
+        ];
+
+        $list['deferred'] = [
+            static::COLUMN_NAME    => static::t('Deferred billing'),
+            static::COLUMN_ORDERBY => 375,
+        ];
 
         return $list;
     }
@@ -60,6 +65,13 @@ class Coupons extends \XLite\Module\CDev\Coupons\View\ItemsList\Coupons implemen
     protected function preprocessFreeShipping($value, array $column, \XLite\Module\CDev\Coupons\Model\Coupon $coupon)
     {
         return $coupon->isFreeShipping()
+            ? static::t('Yes')
+            : static::t('No');
+    }
+
+    protected function preprocessDeferred($value, array $column, \XLite\Module\CDev\Coupons\Model\Coupon $coupon)
+    {
+        return $coupon->getType() == \XLite\Module\CDev\Coupons\Model\Coupon::TYPE_DEFERRED
             ? static::t('Yes')
             : static::t('No');
     }
