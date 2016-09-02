@@ -30,10 +30,10 @@ abstract class Product extends \XLite\Model\Product implements \XLite\Base\IDeco
      */
     public function getAllAttributes()
     {
-        $result = array();
+        $result = [];
 
         foreach (Attribute::getTypes() as $type => $name) {
-            $class = Attribute::getAttributeValueClass($type);
+            $class  = Attribute::getAttributeValueClass($type);
             $result = array_merge(
                 $result,
                 Database::getRepo($class)->findAllAttributes($this)
@@ -45,12 +45,12 @@ abstract class Product extends \XLite\Model\Product implements \XLite\Base\IDeco
 
     public function needsImprinting()
     {
-        $result = array();
+        $result = [];
 
         $attributes = \XLite\Core\Database::getRepo('XLite\Model\Attribute')->findImprintingAttribute($this);
 
         foreach (Attribute::getTypes() as $type => $name) {
-            $class = Attribute::getAttributeValueClass($type);
+            $class  = Attribute::getAttributeValueClass($type);
             $result = array_merge(
                 $result,
                 Database::getRepo($class)->findAllImprintingAttributeValues($this, $attributes)
@@ -58,8 +58,12 @@ abstract class Product extends \XLite\Model\Product implements \XLite\Base\IDeco
         }
 
         foreach ($result as $attributeValue) {
-            if ($attributeValue->getValue()) {
+            if (stripos($attributeValue->getName(), 'imprint') !== false && stripos($attributeValue->getValue(), 'yes') !== false) {
                 return true;
+            }
+
+            if (stripos($attributeValue->getName(), 'imprint') !== false && stripos($attributeValue->getValue(), 'no') !== false) {
+                return false;
             }
         }
 

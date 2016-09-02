@@ -28,6 +28,10 @@ class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
             if (stripos($attributeValue->getName(), 'imprint') !== false && stripos($attributeValue->getValue(),'yes') !== false) {
                 return true;
             }
+
+            if (stripos($attributeValue->getName(), 'imprint') !== false && stripos($attributeValue->getValue(),'no') !== false) {
+                return false;
+            }
         }
         
         return $this->getProduct()->needsImprinting();
