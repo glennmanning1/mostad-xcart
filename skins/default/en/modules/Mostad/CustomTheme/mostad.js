@@ -126,7 +126,7 @@ function setIssueSelect() {
         var $checkbox = $(element);
         var $label = $checkbox.parents('label');
 
-        if ($label.length && !$label.html().includes('Issue')) {
+        if ($label.length && !$label.html().indexOf('Issue') >= 0) {
             $issueBoxes.splice(index, 1);
         }
     });
