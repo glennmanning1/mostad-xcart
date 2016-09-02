@@ -87,7 +87,7 @@ class Order extends \XLite\Model\Order implements \XLite\Base\IDecorator
             return $list;
         }
 
-        return $list->first();
+        return reset($list);
     }
 
 }
