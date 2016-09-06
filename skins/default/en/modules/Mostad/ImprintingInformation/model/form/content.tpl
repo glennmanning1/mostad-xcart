@@ -106,7 +106,7 @@
     <div class="col-md-6">
         <p>
             <strong>Display Information (for online products)</strong><br/>
-            Internet link products have an area for your firm name and e-mail address. Please indicate the
+            Internet link products have an area for your firm name and email address. Please indicate the
             information you'd like displayed.
         </p>
         <div class="form-item">
