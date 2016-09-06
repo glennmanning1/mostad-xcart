@@ -21,9 +21,9 @@ namespace XLite\Module\Mostad\Coupons\Model;
 
 use Doctrine\ORM\Mapping\JoinColumn;
 
-/**
- * @LC_Dependencies("CDev\Coupons","XC\FreeShipping")
- */
+    /**
+     * @LC_Dependencies("CDev\Coupons","XC\FreeShipping")
+     */
 class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\Base\IDecorator
 {
     const TYPE_DEFERRED = 'D';
@@ -122,6 +122,20 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
         }
 
         return $result;
+    }
+
+    /**
+     * Get amount
+     *
+     * @param \XLite\Model\Order $order Order
+     *
+     * @return float
+     */
+    public function getAmount(\XLite\Model\Order $order)
+    {
+        $amount = \XLite\Module\CDev\Coupons\Model\CouponAbstract::getAmount($order);
+
+        return $this->isFreeShipping() ? $amount : $amount;
     }
 
 }
