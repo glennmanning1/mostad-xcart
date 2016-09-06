@@ -18,7 +18,9 @@
 
 namespace XLite\Module\Mostad\Shipping\Logic\Order\Modifier;
 
-
+/**
+ * @LC_Dependencies("XC\FreeShipping")
+ */
 class Shipping extends \XLite\Logic\Order\Modifier\Shipping
 {
     protected $productClassData = [];
@@ -61,6 +63,7 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
             // If we are shippable, but have free shipping set up, bounce.
             if (
                 !$item->getProduct()->getShippable()
+                || $this->isIgnoreShippingCalculation($item)
                 || ($item->getProduct()->getShippable() && $item->getProduct()->getFreeShipping())
             ) {
                 $this->excludeBaseShipping = true;
