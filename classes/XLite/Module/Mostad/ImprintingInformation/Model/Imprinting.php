@@ -52,7 +52,7 @@ class Imprinting extends \XLite\Model\AEntity
      *
      * @var \XLite\Model\Order
      *
-     * @OneToOne  (targetEntity="XLite\Model\Order", inversedBy="imprinting")
+     * @OneToOne  (targetEntity="XLite\Model\Order", inversedBy="imprinting", cascade={"persist"})
      * @JoinColumn (name="order_id", referencedColumnName="order_id", onDelete="CASCADE")
      */
     protected $order;
