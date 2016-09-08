@@ -64,13 +64,14 @@ class WashingtonTaxes extends Tax
 
     public function calculate()
     {
-        $results = parent::calculate();
 
         $address = $this->getOrderAddress();
 
         if (!$address || !$address->getState() || $address->getState()->getState() != self::STATE_NAME) {
-            return $results;
+            return array();
         }
+
+        $results = parent::calculate();
 
         $rate = $this->determineTaxRate($address);
 
