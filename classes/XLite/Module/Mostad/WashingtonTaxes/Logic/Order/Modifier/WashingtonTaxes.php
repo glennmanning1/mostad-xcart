@@ -82,6 +82,10 @@ class WashingtonTaxes extends Tax
             $salesTax += $surcharge->getValue() * $rate;
         }
 
+        foreach ($this->getOrder()->getSurchargesByType(\XLite\Model\Base\Surcharge::TYPE_SHIPPING) as $surcharge) {
+            $salesTax += $surcharge->getValue() * $rate;
+        }
+
         $results[] = $this->addOrderSurcharge(self::MODIFIER_CODE, $salesTax);
         return $results;
     }
