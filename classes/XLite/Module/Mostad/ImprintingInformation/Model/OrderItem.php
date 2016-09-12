@@ -25,11 +25,11 @@ class OrderItem extends \XLite\Model\OrderItem implements \XLite\Base\IDecorator
     public function needsImprinting()
     {
         foreach ($this->getAttributeValues() as $attributeValue) {
-            if (stripos($attributeValue->getName(), 'imprint') !== false && stripos($attributeValue->getValue(),'yes') !== false) {
+            if (stripos($attributeValue->getAttribute()->getName(), 'imprint') !== false && ($attributeValue->getValue() === true || stripos($attributeValue->getValue(), 'yes') !== false)) {
                 return true;
             }
 
-            if (stripos($attributeValue->getName(), 'imprint') !== false && stripos($attributeValue->getValue(),'no') !== false) {
+            if (stripos($attributeValue->getAttribute()->getName(), 'imprint') !== false && ($attributeValue->getValue() === false || stripos($attributeValue->getValue(), 'no') !== false)) {
                 return false;
             }
         }
