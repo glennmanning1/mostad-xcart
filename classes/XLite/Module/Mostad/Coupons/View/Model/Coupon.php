@@ -69,7 +69,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\View\Model\Coupon implements \XL
         }
 
         if (isset($this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'])) {
-            $freeShippingTypes += $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'];
+            $freeShippingTypes = array_merge($this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'], $freeShippingTypes);
         }
 
         $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'] = $freeShippingTypes;
@@ -79,7 +79,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\View\Model\Coupon implements \XL
         }
 
         if (isset($this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'])) {
-            $valueTypes += $this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'];
+            $valueTypes = array_merge($this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'],$valueTypes);
         }
 
         $this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'] = $valueTypes;
