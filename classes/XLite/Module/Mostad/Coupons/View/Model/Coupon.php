@@ -34,14 +34,19 @@ class Coupon extends \XLite\Module\CDev\Coupons\View\Model\Coupon implements \XL
      */
     public function __construct(array $params = array(), array $sections = array())
     {
-        $freeShippingField = array();
-        $freeShippingField['freeShipping'] = array(
+        $newFields = array();
+        $newFields['freeShipping'] = array(
             self::SCHEMA_CLASS => 'XLite\Module\CDev\Coupons\View\FormField\Enabled',
             self::SCHEMA_LABEL => 'Include Free Shipping',
         );
 
+        $newFields['deferredBilling'] = array(
+            self::SCHEMA_CLASS => 'XLite\Module\CDev\Coupons\View\FormField\Enabled',
+            self::SCHEMA_LABEL => 'Include Deferred Billing',
+        );
+
         $this->schemaDefault = array_slice($this->schemaDefault, 0, 5, true)
-            + $freeShippingField
+            + $newFields
             + array_slice($this->schemaDefault, 5, count($this->schemaDefault)-5, true);
         
         $this->schemaDefault['product'] = array(
@@ -63,6 +68,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\View\Model\Coupon implements \XL
 
         $freeShippingTypes = array(\XLite\Module\CDev\Coupons\Model\Coupon::TYPE_FREESHIP);
         $valueTypes = array(\XLite\Module\CDev\Coupons\Model\Coupon::TYPE_DEFERRED);
+        $deferredTypes = array(\XLite\Module\Mostad\Coupons\Model\Coupon::TYPE_DEFERRED);
 
         if (!isset($this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE])) {
             $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE] = array();
@@ -71,8 +77,17 @@ class Coupon extends \XLite\Module\CDev\Coupons\View\Model\Coupon implements \XL
         if (isset($this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'])) {
             $freeShippingTypes = array_merge($this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'], $freeShippingTypes);
         }
-
         $this->schemaDefault['freeShipping'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'] = $freeShippingTypes;
+
+        if (!isset($this->schemaDefault['deferredBilling'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE])) {
+            $this->schemaDefault['deferredBilling'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE] = array();
+        }
+
+        if (isset($this->schemaDefault['deferredBilling'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'])) {
+            $deferredTypes = array_merge($this->schemaDefault['deferredBilling'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'], $deferredTypes);
+        }
+        $this->schemaDefault['deferredBilling'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE]['type'] = $deferredTypes;
+
 
         if (!isset($this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE])) {
             $this->schemaDefault['value'][self::SCHEMA_DEPENDENCY][self::DEPENDENCY_HIDE] = array();
