@@ -65,7 +65,7 @@ class Order extends \XLite\Model\Order implements \XLite\Base\IDecorator
         $deferred = false;
 
         foreach ($this->usedCoupons as $usedCoupon) {
-            if ($usedCoupon->getCoupon()->getType() == 'D') {
+            if ($usedCoupon->getCoupon()->isDeferredBilling()) {
                 $deferred = true;
             }
         }

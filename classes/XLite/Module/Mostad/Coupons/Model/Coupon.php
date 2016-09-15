@@ -36,6 +36,13 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
     protected $freeShipping = false;
 
     /**
+     * @var bool
+     *
+     * @Column(name="deferred_billing", type="boolean")
+     */
+    protected $deferredBilling = false;
+
+    /**
      * @var \XLite\Model\Product
      *
      * @ManyToOne(targetEntity="XLite\Model\Product")
@@ -82,6 +89,33 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
     {
         $this->freeShipping = $freeShipping;
 
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeferredBilling()
+    {
+        return static::TYPE_DEFERRED == $this->getType() || $this->deferredBilling;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDeferredBilling()
+    {
+        return $this->deferredBilling;
+    }
+
+    /**
+     * @param $deferredBilling
+     *
+     * @return $this
+     */
+    public function setDeferredBilling($deferredBilling)
+    {
+        $this->deferredBilling = $deferredBilling;
         return $this;
     }
 

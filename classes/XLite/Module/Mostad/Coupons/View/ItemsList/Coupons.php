@@ -71,7 +71,7 @@ class Coupons extends \XLite\Module\CDev\Coupons\View\ItemsList\Coupons implemen
 
     protected function preprocessDeferred($value, array $column, \XLite\Module\CDev\Coupons\Model\Coupon $coupon)
     {
-        return $coupon->getType() == \XLite\Module\CDev\Coupons\Model\Coupon::TYPE_DEFERRED
+        return $coupon->isDeferredBilling()
             ? static::t('Yes')
             : static::t('No');
     }
