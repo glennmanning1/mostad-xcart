@@ -18,7 +18,6 @@ $(function() {
     bindDialogs();
 
     if ($('.planning-letter').length >= 1) {
-
         setIssueSelect();
         bindChecks();
 
@@ -45,7 +44,7 @@ core.registerTriggersBind(
     'update-product-page',
     function(product) {
         // If we don't have the approrpiate parts, get out
-        if ($('.planning-letter').length != 1) {
+        if ($('.planning-letter').length < 1) {
             return;
         }
         setIssueSelect();
@@ -126,7 +125,7 @@ function setIssueSelect() {
         var $checkbox = $(element);
         var $label = $checkbox.parents('label');
 
-        if ($label.length && !$label.html().indexOf('Issue') >= 0) {
+        if ($label.length && $label.text().indexOf('Issue') < 0) {
             $issueBoxes.splice(index, 1);
         }
     });
@@ -146,11 +145,6 @@ function bindChecks() {
             event.preventDefault();
             event.stopPropagation();
             alert('You can only select two issues!');
-        }
-
-        if ($issueSelect.val() == threeId) {
-            event.preventDefault();
-            event.stopPropagation();
         }
     });
 }
@@ -227,7 +221,6 @@ if (typeof ProductDetailsView !== "undefined") {
 }
 
 function checkQty(field, rules, i, options) {
-    console.log(field, rules, i, options);
     var mod = parseInt(rules[9]);
     var val = parseInt(field.val());
     var diff = val % mod;
