@@ -97,7 +97,7 @@ function bindDialogs() {
     $('.dialog-target').dialog({
         autoOpen:  false,
         draggable: false,
-        width:     500
+        minWidth:  'auto'
     });
 }
 function setIssueSelect() {
