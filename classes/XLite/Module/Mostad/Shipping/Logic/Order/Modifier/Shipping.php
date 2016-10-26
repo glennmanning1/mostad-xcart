@@ -180,10 +180,25 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
         if ($quantity > 0) {
             $issueCount = 0;
             foreach ($this->productClassData[ $tplProductClass ]['skus'] as $sku => $attrString) {
-                preg_match('`.*(\d+)\sIssues.*`', $attrString, $matches);
+                preg_match('`.*([\d+|one|two|three])\sIssues.*`i', $attrString, $matches);
 
                 if (isset($matches[1])) {
-                    $issueCount += (int) $matches[1];
+                    if (is_numeric($matches[1])) {
+                        $issueCount += (int) $matches[1];
+                    } else if (is_string($matches[1])) {
+                        $value = strtolower($matches[1]);
+                        switch($value) {
+                            case 'two':
+                                $issueCount += 2;
+                                break;
+                            case 'three':
+                                $issueCount += 3;
+                                break;
+                            case 'one':
+                            default:
+                                $issueCount += 1;
+                        }
+                    }
                 }
             }
 
