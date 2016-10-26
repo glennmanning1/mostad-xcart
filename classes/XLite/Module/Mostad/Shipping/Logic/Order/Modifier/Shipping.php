@@ -180,7 +180,7 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
         if ($quantity > 0) {
             $issueCount = 0;
             foreach ($this->productClassData[ $tplProductClass ]['skus'] as $sku => $attrString) {
-                preg_match('`.*([\d+|one|two|three])\sIssues.*`i', $attrString, $matches);
+                preg_match('`.*(\d+|one|two|three)\sIssue.*`i', $attrString, $matches);
 
                 if (isset($matches[1])) {
                     if (is_numeric($matches[1])) {
@@ -217,7 +217,7 @@ class Shipping extends \XLite\Logic\Order\Modifier\Shipping
             $this->hasStandardItems = true;
         }
 
-        if ($this->additionalShipping > 15) {
+        if ($this->additionalShipping >= 15) {
             if ($this->excludeBaseShipping || !$this->hasStandardItems) {
                 $this->additionalShipping -= 15;
             }
