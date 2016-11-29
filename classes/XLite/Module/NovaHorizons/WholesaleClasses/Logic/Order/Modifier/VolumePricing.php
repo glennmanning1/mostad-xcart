@@ -24,7 +24,7 @@ class VolumePricing extends \XLite\Logic\Order\Modifier\AModifier
 
     const MODIFIER_CODE = 'VOLUME_PRICE_CLASS';
 
-    const MODIFIER_TYPE = 'volume_price_class';
+    const MODIFIER_TYPE = 'vpc';
 
     protected $type = self::MODIFIER_TYPE;
 
