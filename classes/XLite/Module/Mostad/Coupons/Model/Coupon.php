@@ -119,7 +119,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
         return $this;
     }
 
-    public function setProduct(\XLite\Model\Product $product)
+    public function setProduct($product)
     {
         if (!$product instanceof \XLite\Model\Product) {
             $product = \XLite\Core\Database::getRepo('XLite\Model\Product')->find($product);
@@ -132,10 +132,9 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
 
     public function isValidForProduct(\XLite\Model\Product $product)
     {
-        $result = true;
 
-        if ($this->getProduct() == $product) {
-            return $result;
+        if ($this->getProduct() && $this->getProduct()->getId() == $product->getId()) {
+            return true;
         }
 
         if (0 < count($this->getProductClasses())) {
@@ -145,17 +144,15 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
         }
 
         if ($result && 0 < count($this->getCategories())) {
-            // Check categories
-            $result = false;
             foreach ($product->getCategories() as $category) {
                 if ($this->getCategories()->contains($category)) {
-                    $result = true;
+                    return true;
                     break;
                 }
             }
         }
 
-        return $result;
+        return false;
     }
 
     /**
