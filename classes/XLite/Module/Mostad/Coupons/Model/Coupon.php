@@ -21,9 +21,9 @@ namespace XLite\Module\Mostad\Coupons\Model;
 
 use Doctrine\ORM\Mapping\JoinColumn;
 
-    /**
-     * @LC_Dependencies("CDev\Coupons","XC\FreeShipping")
-     */
+/**
+ * @LC_Dependencies("CDev\Coupons","XC\FreeShipping")
+ */
 class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\Base\IDecorator
 {
     const TYPE_DEFERRED = 'D';
@@ -55,7 +55,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
      *
      * @param array $data
      */
-    public function __construct(array $data = array())
+    public function __construct(array $data = [])
     {
         $this->products = new \Doctrine\Common\Collections\ArrayCollection();
 
@@ -116,6 +116,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
     public function setDeferredBilling($deferredBilling)
     {
         $this->deferredBilling = $deferredBilling;
+
         return $this;
     }
 
@@ -133,26 +134,11 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
     public function isValidForProduct(\XLite\Model\Product $product)
     {
 
-        if ($this->getProduct() && $this->getProduct()->getId() == $product->getId()) {
-            return true;
+        if (!empty($this->getProduct())) {
+            return $this->getProduct()->getId() == $product->getId();
         }
 
-        if (0 < count($this->getProductClasses())) {
-            // Check product class
-            $result = $product->getProductClass()
-                && $this->getProductClasses()->contains($product->getProductClass());
-        }
-
-        if ($result && 0 < count($this->getCategories())) {
-            foreach ($product->getCategories() as $category) {
-                if ($this->getCategories()->contains($category)) {
-                    return true;
-                    break;
-                }
-            }
-        }
-
-        return false;
+        return parent::isValidForProduct($product);
     }
 
     /**
