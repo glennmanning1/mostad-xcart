@@ -23,6 +23,8 @@ abstract class APage extends \XLite\View\Product\Details\Customer\Page\APage imp
 {
     protected function getTabs()
     {
-        return array();
+        $tabs = parent::getTabs();
+
+        return $tabs;
     }
 }
