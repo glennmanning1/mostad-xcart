@@ -133,8 +133,9 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
 
     public function isValidForProduct(\XLite\Model\Product $product)
     {
+        $thisProduct = $this->getProduct();
 
-        if (!empty($this->getProduct())) {
+        if (!empty($thisProduct)) {
             return $this->getProduct()->getId() == $product->getId();
         }
 
