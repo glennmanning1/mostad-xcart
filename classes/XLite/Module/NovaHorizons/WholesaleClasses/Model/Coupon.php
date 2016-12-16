@@ -27,11 +27,24 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
     {
         $amount = parent::getAmount($order);
 
-        if ($order->getSurchargesByType(VolumePricing::MODIFIER_TYPE)) {
+        $volPriceClassIds = [];
+
+        foreach ($order->getItems() as $orderItem) {
+            if ($orderItem->hasWholesalePriceClass() && $this->isValidForProduct($orderItem->getProduct())) {
+                $volPriceClassIds[] = $orderItem->getProduct()->getProductClass()->getId();
+            }
+        }
+
+        if (!empty($volPriceClassIds) && $order->getSurchargesByType(VolumePricing::MODIFIER_TYPE)) {
             foreach ($order->getSurchargesByType(VolumePricing::MODIFIER_TYPE) as $item) {
-                $amount += $this->isAbsolute()
-                    ? min($item->getValue(), $this->getValue())
-                    : ($item->getValue() * $this->getValue() / 100);
+                $starter = \XLite\Module\NovaHorizons\WholesaleClasses\Logic\Order\Modifier\VolumePricing::MODIFIER_CODE;
+                $classId = str_replace($starter . '_', '', $item->getCode());
+
+                if (in_array($classId, $volPriceClassIds)) {
+                    $amount += $this->isAbsolute()
+                        ? min($item->getValue(), $this->getValue())
+                        : ($item->getValue() * $this->getValue() / 100);
+                }
             }
         }
 
