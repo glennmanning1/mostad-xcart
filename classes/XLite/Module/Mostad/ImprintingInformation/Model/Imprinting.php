@@ -52,7 +52,7 @@ class Imprinting extends \XLite\Model\AEntity
      *
      * @var \XLite\Model\Order
      *
-     * @OneToOne  (targetEntity="XLite\Model\Order", inversedBy="imprinting")
+     * @OneToOne  (targetEntity="XLite\Model\Order", inversedBy="imprinting", cascade={"persist"})
      * @JoinColumn (name="order_id", referencedColumnName="order_id", onDelete="CASCADE")
      */
     protected $order;
@@ -208,7 +208,7 @@ class Imprinting extends \XLite\Model\AEntity
     {
         return [
             self::STATUS_NEW    => 'I am ordering imprinting for the first time. I have indicated my imprint information in the fields below.',
-            self::STATUS_UPDATE => 'My imprint information has changed. My imprint changes are indicated in the fields below.(Additional $17 change fee will be added to your order.) ',
+            self::STATUS_UPDATE => 'My imprint information has changed. My imprint changes are indicated in the fields below. (Additional $17 change fee will be added to your order.)',
             self::STATUS_SAME   => 'My imprint has NOT changed. Use my imprint information that you have on file.',
         ];
     }

@@ -27,11 +27,61 @@
  * @link      http://www.x-cart.com/
  */
 
-namespace XLite\Module\QSL\WordPressIntegration\Controller\Admin;
+namespace XLite\Module\Mostad\TaxCorrection;
 
 /**
- * Category products controller
+ * Main module
  */
-class CategoryWpCode extends \XLite\Controller\Admin\Category
+abstract class Main extends \XLite\Module\AModule
 {
+    /**
+     * Author name
+     *
+     * @return string
+     */
+    public static function getAuthorName()
+    {
+        return 'Mostad';
+    }
+
+    /**
+     * Module name
+     *
+     * @return string
+     */
+    public static function getModuleName()
+    {
+        return 'Tax correction';
+    }
+
+    /**
+     * Module description
+     *
+     * @return string
+     */
+    public static function getDescription()
+    {
+        return '';
+    }
+
+    /**
+     * Get module major version
+     *
+     * @return string
+     */
+    public static function getMajorVersion()
+    {
+        return '5.2';
+    }
+
+    /**
+     * Module version
+     *
+     * @return string
+     */
+    public static function getMinorVersion()
+    {
+        return '0';
+    }
+
 }

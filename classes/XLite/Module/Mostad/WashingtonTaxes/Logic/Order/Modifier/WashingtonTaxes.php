@@ -64,13 +64,14 @@ class WashingtonTaxes extends Tax
 
     public function calculate()
     {
-        $results = parent::calculate();
 
         $address = $this->getOrderAddress();
 
         if (!$address || !$address->getState() || $address->getState()->getState() != self::STATE_NAME) {
-            return $results;
+            return array();
         }
+
+        $results = parent::calculate();
 
         $rate = $this->determineTaxRate($address);
 
@@ -78,6 +79,10 @@ class WashingtonTaxes extends Tax
 
         /** @var \XLite\Model\Order\Surcharge $surcharge */
         foreach ($this->getOrder()->getSurchargesByType(VolumePricing::MODIFIER_TYPE) as $surcharge) {
+            $salesTax += $surcharge->getValue() * $rate;
+        }
+
+        foreach ($this->getOrder()->getSurchargesByType(\XLite\Model\Base\Surcharge::TYPE_SHIPPING) as $surcharge) {
             $salesTax += $surcharge->getValue() * $rate;
         }
 

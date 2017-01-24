@@ -113,7 +113,7 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
         ),
         'website' => array(
-            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\URL',
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
             self::SCHEMA_LABEL    => 'Website',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
@@ -123,6 +123,7 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_LABEL    => 'Would you like to add a logo?',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            self::SCHEMA_FIELD_ONLY => true,
         ),
         'onlineFirmName' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
@@ -137,7 +138,7 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
         ),
         'onlineWebsite' => array(
-            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text\URL',
+            self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Text',
             self::SCHEMA_LABEL    => 'Website',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
@@ -147,12 +148,14 @@ class Imprinting extends \XLite\View\Model\AModel
             self::SCHEMA_LABEL    => 'Would you like to add a logo?',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            self::SCHEMA_FIELD_ONLY => true,
         ),
         'onlineAddToSite' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Enabled',
             self::SCHEMA_LABEL    => 'Would you like us to add links to your site that we created?',
             self::SCHEMA_REQUIRED => false,
             self::SCHEMA_ATTRIBUTES => ['class' => 'disable-for-same'],
+            self::SCHEMA_FIELD_ONLY => true,
         ),
         'confirm' => array(
             self::SCHEMA_CLASS    => 'XLite\View\FormField\Input\Checkbox\Enabled',

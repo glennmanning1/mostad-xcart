@@ -26,6 +26,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
  */
 class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\Base\IDecorator
 {
+    const TYPE_DEFERRED = 'D';
 
     /**
      * @var boolean
@@ -35,10 +36,17 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
     protected $freeShipping = false;
 
     /**
+     * @var bool
+     *
+     * @Column(name="deferred_billing", type="boolean")
+     */
+    protected $deferredBilling = false;
+
+    /**
      * @var \XLite\Model\Product
      *
      * @ManyToOne(targetEntity="XLite\Model\Product")
-     * @JoinColumn(name="product_id", referencedColumnName="product_id", onDelete="CASCADE")
+     * @JoinColumn(name="product_id", referencedColumnName="product_id", onDelete="CASCADE", nullable=true)
      */
     protected $product;
 
@@ -47,7 +55,7 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
      *
      * @param array $data
      */
-    public function __construct(array $data = array())
+    public function __construct(array $data = [])
     {
         $this->products = new \Doctrine\Common\Collections\ArrayCollection();
 
@@ -84,7 +92,35 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
         return $this;
     }
 
-    public function setProduct(\XLite\Model\Product $product)
+    /**
+     * @return bool
+     */
+    public function isDeferredBilling()
+    {
+        return static::TYPE_DEFERRED == $this->getType() || $this->deferredBilling;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDeferredBilling()
+    {
+        return $this->deferredBilling;
+    }
+
+    /**
+     * @param $deferredBilling
+     *
+     * @return $this
+     */
+    public function setDeferredBilling($deferredBilling)
+    {
+        $this->deferredBilling = $deferredBilling;
+
+        return $this;
+    }
+
+    public function setProduct($product)
     {
         if (!$product instanceof \XLite\Model\Product) {
             $product = \XLite\Core\Database::getRepo('XLite\Model\Product')->find($product);
@@ -97,30 +133,27 @@ class Coupon extends \XLite\Module\CDev\Coupons\Model\Coupon implements \XLite\B
 
     public function isValidForProduct(\XLite\Model\Product $product)
     {
-        $result = true;
+        $thisProduct = $this->getProduct();
 
-        if ($this->getProduct() == $product) {
-            return $result;
+        if (!empty($thisProduct)) {
+            return $this->getProduct()->getId() == $product->getId();
         }
 
-        if (0 < count($this->getProductClasses())) {
-            // Check product class
-            $result = $product->getProductClass()
-                && $this->getProductClasses()->contains($product->getProductClass());
-        }
+        return parent::isValidForProduct($product);
+    }
 
-        if ($result && 0 < count($this->getCategories())) {
-            // Check categories
-            $result = false;
-            foreach ($product->getCategories() as $category) {
-                if ($this->getCategories()->contains($category)) {
-                    $result = true;
-                    break;
-                }
-            }
-        }
+    /**
+     * Get amount
+     *
+     * @param \XLite\Model\Order $order Order
+     *
+     * @return float
+     */
+    public function getAmount(\XLite\Model\Order $order)
+    {
+        $amount = \XLite\Module\CDev\Coupons\Model\CouponAbstract::getAmount($order);
 
-        return $result;
+        return $this->isFreeShipping() ? $amount : $amount;
     }
 
 }

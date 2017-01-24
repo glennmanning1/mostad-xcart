@@ -12,7 +12,7 @@
  *}
 <td class="item-subtotal">
     {if:item.hasWholesalePriceClass()}
-    See subtotals
+    See volume pricing
     {else:}
   <span class="subtotal{if:item.getExcludeSurcharges()} modified-subtotal{end:}"><widget class="XLite\View\Surcharge" surcharge="{item.getDisplayTotal()}" currency="{cart.getCurrency()}" /></span>
   <div IF="item.getExcludeSurcharges()" class="including-modifiers" style="display: none;">
