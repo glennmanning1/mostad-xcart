@@ -12,7 +12,7 @@
 1. Start the virtual box
     * `vagrant up`
     * If the prompt asks for a username or password, it is your system username or password.
-1. Verify site is working by visiting <http://mostad-xcart.dev/>
+1. Verify site is working by visiting <http://mostad-xcart.test/>
 
 ## Usernames and logins
 
